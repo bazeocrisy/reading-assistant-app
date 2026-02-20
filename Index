@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadUp! — Transforming Youth Inc.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sun: #FFD93D;
+    --sky: #6BCB77;
+    --ocean: #4D96FF;
+    --coral: #FF6B6B;
+    --purple: #A259FF;
+    --cloud: #FFF8F0;
+    --ink: #2D2A3E;
+    --soft: #F0EBF8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--cloud); min-height: 100vh; overflow-x: hidden; }
+
+.bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.blob { position: absolute; border-radius: 50%; opacity: 0.18; filter: blur(60px); animation: drift 12s ease-in-out infinite alternate; }
+.blob1 { width: 400px; height: 400px; background: var(–ocean); top: -100px; left: -100px; }
+.blob2 { width: 300px; height: 300px; background: var(–sun); top: 60%; right: -80px; animation-delay: -4s; }
+.blob3 { width: 350px; height: 350px; background: var(–sky); bottom: -80px; left: 30%; animation-delay: -8s; }
+@keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.08); } }
+
+.app { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; }
+
+/* Header */
+header { text-align: center; padding: 24px 0 16px; }
+.logo { font-family: ‘Fredoka One’, cursive; font-size: 3rem; color: var(–ocean); text-shadow: 4px 4px 0 var(–sun); animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+.tagline { font-size: 0.95rem; color: #666; font-weight: 600; margin-top: 4px; }
+.nonprofit-badge { display: inline-block; margin-top: 6px; background: var(–sky); color: white; font-size: 0.72rem; font-weight: 800; letter-spacing: 1px; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; }
+.dedication {
+display: inline-block; margin-top: 8px;
+font-size: 0.78rem; font-weight: 800;
+color: var(–coral);
+letter-spacing: 0.3px;
+font-style: italic;
+}
+.dedication span { color: var(–purple); }
+@keyframes popIn { from { opacity:0; transform: scale(0.5); } to { opacity:1; transform: scale(1); } }
+
+.screen { display: none; animation: fadeUp 0.4s ease both; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+.card { background: white; border-radius: 24px; box-shadow: 0 8px 32px rgba(45,42,62,0.10); padding: 28px; margin-top: 20px; }
+.card-title { font-family: ‘Fredoka One’, cursive; font-size: 1.6rem; color: var(–ink); margin-bottom: 18px; }
+
+.section-label { font-weight: 800; color: #777; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+.option-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.opt-btn { flex: 1; min-width: 56px; padding: 10px 6px; border: 3px solid var(–soft); border-radius: 14px; background: white; font-family: ‘Nunito’; font-weight: 800; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; color: var(–ink); text-align: center; }
+.opt-btn:hover { border-color: #ccc; }
+.opt-btn.sel-grade { border-color: var(–sky); background: #EFFFF4; color: #1B7A3E; }
+.opt-btn.sel-words { border-color: var(–ocean); background: #EEF5FF; color: #1A5CC8; }
+
+.categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cat-btn { background: var(–soft); border: 3px solid transparent; border-radius: 18px; padding: 16px 10px; cursor: pointer; transition: all 0.2s; text-align: center; font-family: ‘Nunito’; font-weight: 800; font-size: 0.9rem; color: var(–ink); }
+.cat-btn .emoji { font-size: 2rem; display: block; margin-bottom: 5px; }
+.cat-btn:hover, .cat-btn.selected { border-color: var(–ocean); background: #EEF5FF; transform: translateY(-3px); box-shadow: 0 6px 18px rgba(77,150,255,0.2); }
+
+/* Buttons */
+.btn-main { display: block; width: 100%; margin-top: 16px; padding: 16px; border-radius: 18px; border: none; background: linear-gradient(135deg, var(–ocean), #6A5AFF); color: white; font-family: ‘Fredoka One’, cursive; font-size: 1.3rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(77,150,255,0.4); }
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(77,150,255,0.5); }
+.btn-main:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn-green { background: linear-gradient(135deg, var(–sky), #1BA053); box-shadow: 0 6px 20px rgba(107,203,119,0.4); }
+.btn-green:hover { box-shadow: 0 10px 28px rgba(107,203,119,0.5); }
+.btn-coral { background: linear-gradient(135deg, var(–coral), #FF9A3C); box-shadow: 0 6px 20px rgba(255,107,107,0.4); }
+.btn-purple { background: linear-gradient(135deg, var(–purple), #FF6FD8); box-shadow: 0 6px 20px rgba(162,89,255,0.35); }
+.btn-purple:hover { box-shadow: 0 10px 28px rgba(162,89,255,0.5); }
+.btn-outline { background: white; color: var(–ocean); border: 3px solid var(–ocean); box-shadow: none; font-size: 1rem; }
+.btn-outline:hover { background: #EEF5FF; box-shadow: none; transform: translateY(-2px); }
+
+/* Race divider */
+.or-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; }
+.or-divider::before, .or-divider::after { content:’’; flex:1; height:2px; background: var(–soft); border-radius:2px; }
+.or-divider span { font-weight: 800; color: #ccc; font-size: 0.85rem; }
+
+/* Story */
+#story-text { font-size: 1.4rem; line-height: 2.1rem; color: var(–ink); font-weight: 700; }
+.word { display: inline-block; padding: 2px 4px; border-radius: 6px; transition: background 0.1s, transform 0.1s; }
+.word.highlight { background: var(–sun); transform: scale(1.12); }
+.word.done { color: var(–sky); }
+
+.controls { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.controls .btn-main { flex: 1; margin-top: 0; font-size: 1rem; }
+
+.progress-wrap { background: var(–soft); border-radius: 20px; height: 12px; margin: 14px 0; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(–ocean), var(–sky)); transition: width 0.3s; width: 0%; }
+
+/* VS live bars */
+.vs-progress { margin: 12px 0; }
+.vs-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.vs-name { font-weight: 800; font-size: 0.82rem; width: 52px; flex-shrink: 0; }
+.vs-bar-wrap { flex: 1; background: var(–soft); border-radius: 20px; height: 10px; overflow: hidden; }
+.vs-bar { height: 100%; border-radius: 20px; transition: width 0.4s; width: 0%; }
+.vs-bar.me-bar { background: linear-gradient(90deg, var(–ocean), #6A5AFF); }
+.vs-bar.them-bar { background: linear-gradient(90deg, var(–coral), #FF9A3C); }
+.vs-pct { font-weight: 800; font-size: 0.8rem; width: 36px; text-align: right; color: #888; flex-shrink: 0; }
+
+.listening-badge { display: none; align-items: center; gap: 8px; background: #FFF0F0; border: 2px solid var(–coral); border-radius: 14px; padding: 10px 16px; margin-top: 14px; font-weight: 800; color: var(–coral); }
+.listening-badge.active { display: flex; }
+.mic-pulse { width: 14px; height: 14px; border-radius: 50%; background: var(–coral); animation: pulse 0.9s ease infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.4);opacity:0.5;} }
+
+/* Room code */
+.room-code-display { background: linear-gradient(135deg, #EEF5FF, #F0EBF8); border-radius: 20px; padding: 22px; text-align: center; margin: 14px 0; }
+.room-code-number { font-family: ‘Fredoka One’; font-size: 4rem; color: var(–ocean); letter-spacing: 12px; line-height: 1; }
+.room-code-label { font-weight: 800; color: #888; font-size: 0.82rem; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+.code-input { width: 100%; padding: 16px; border: 3px solid var(–soft); border-radius: 16px; font-family: ‘Fredoka One’; font-size: 2rem; text-align: center; letter-spacing: 8px; color: var(–ink); outline: none; transition: border 0.2s; margin: 14px 0 4px; }
+.code-input:focus { border-color: var(–ocean); }
+
+.player-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+.player-slot { border: 3px solid var(–soft); border-radius: 18px; padding: 18px; text-align: center; transition: all 0.3s; }
+.player-slot.joined { border-color: var(–sky); background: #EFFFF4; }
+.player-slot.me { border-color: var(–ocean); background: #EEF5FF; }
+.slot-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+.slot-name { font-family: ‘Fredoka One’; font-size: 1rem; color: var(–ink); }
+.slot-status { font-size: 0.76rem; font-weight: 800; color: #aaa; margin-top: 4px; }
+.player-slot.joined .slot-status, .player-slot.me .slot-status { color: var(–sky); }
+
+.waiting-dots span { animation: blink 1.2s ease infinite; display: inline-block; }
+.waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+.waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
+
+/* Countdown */
+.countdown-wrap { text-align: center; padding: 50px 0; }
+.countdown-number { font-family: ‘Fredoka One’; font-size: 8rem; color: var(–ocean); line-height: 1; animation: countPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+.countdown-go { font-family: ‘Fredoka One’; font-size: 5rem; color: var(–sky); animation: countPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes countPop { from { opacity:0; transform:scale(0.3); } to { opacity:1; transform:scale(1); } }
+
+/* Solo results */
+.stars { font-size: 2.8rem; text-align: center; letter-spacing: 8px; margin: 10px 0; }
+.wpm-block { background: linear-gradient(135deg, #EEF5FF, #F0EBF8); border-radius: 20px; padding: 20px; text-align: center; margin: 14px 0; }
+.wpm-number { font-family: ‘Fredoka One’; font-size: 4.5rem; color: var(–ocean); line-height: 1; display: block; }
+.wpm-unit { font-weight: 800; color: #666; font-size: 1.05rem; margin-top: 6px; }
+.wpm-context { font-size: 0.82rem; color: #aaa; font-weight: 700; margin-top: 6px; }
+
+/* Race results */
+.results-vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin: 14px 0; }
+.result-player { border-radius: 20px; padding: 18px 10px; text-align: center; }
+.result-player.winner { background: linear-gradient(135deg, #FFFDE7, #FFF9C4); border: 3px solid var(–sun); }
+.result-player.loser { background: var(–soft); border: 3px solid #e0e0e0; }
+.result-player.tie { background: linear-gradient(135deg, #EEF5FF, #F0EBF8); border: 3px solid var(–ocean); }
+.result-player-name { font-family: ‘Fredoka One’; font-size: 0.95rem; color: var(–ink); margin-bottom: 6px; }
+.result-player-wpm { font-family: ‘Fredoka One’; font-size: 2.8rem; color: var(–ocean); line-height: 1; }
+.result-player-unit { font-size: 0.75rem; font-weight: 800; color: #aaa; }
+.vs-divider { font-family: ‘Fredoka One’; font-size: 1.3rem; color: #ccc; text-align: center; }
+
+.encouragement { background: var(–soft); border-radius: 16px; padding: 14px 18px; font-weight: 700; color: var(–ink); text-align: center; font-size: 1rem; margin-bottom: 16px; }
+
+.spinner { text-align: center; padding: 40px; }
+.spin-circle { width: 52px; height: 52px; border-radius: 50%; border: 6px solid var(–soft); border-top-color: var(–ocean); animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-label { font-family: ‘Fredoka One’; font-size: 1.2rem; color: var(–ocean); }
+
+.error-box { background: #FFF0F0; border: 2px solid var(–coral); border-radius: 14px; padding: 12px 16px; color: var(–coral); font-weight: 700; margin-top: 12px; display: none; }
+
+footer { text-align: center; margin-top: 40px; color: #aaa; font-size: 0.78rem; font-weight: 600; }
+footer strong { color: var(–ocean); }
+
+@media (max-width: 480px) {
+.logo { font-size: 2.4rem; }
+.categories { grid-template-columns: repeat(2, 1fr); }
+#story-text { font-size: 1.15rem; line-height: 1.9rem; }
+.card { padding: 20px 14px; }
+.wpm-number, .countdown-number { font-size: 3.5rem; }
+.result-player-wpm { font-size: 2.2rem; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="bg">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div class="app">
+
+  <header>
+    <div class="logo">📖 ReadUp!</div>
+    <div class="tagline">Stories made just for you</div>
+    <div class="nonprofit-badge">Transforming Youth Inc.</div>
+    <br>
+    <span class="dedication">✨ Inspired by <span>Kamryn</span> &amp; <span>Christopher II</span> ✨</span>
+  </header>
+
+  <!-- ── SCREEN: Pick ── -->
+
+  <div class="screen active" id="screen-pick">
+    <div class="card">
+      <div class="card-title">Build your story! 🌟</div>
+
+```
+  <div class="section-label">Your grade:</div>
+  <div class="option-row" id="grade-row">
+    <button class="opt-btn sel-grade" data-grade="1">1st</button>
+    <button class="opt-btn" data-grade="2">2nd</button>
+    <button class="opt-btn" data-grade="3">3rd</button>
+  </div>
+
+  <div class="section-label">Story length (words):</div>
+  <div class="option-row" id="words-row">
+    <button class="opt-btn" data-words="50">50</button>
+    <button class="opt-btn sel-words" data-words="100">100</button>
+    <button class="opt-btn" data-words="150">150</button>
+    <button class="opt-btn" data-words="200">200</button>
+    <button class="opt-btn" data-words="300">300</button>
+    <button class="opt-btn" data-words="500">500</button>
+  </div>
+
+  <div class="section-label">Pick a topic:</div>
+  <div class="categories">
+    <button class="cat-btn selected" data-cat="Animals 🐾"><span class="emoji">🐾</span>Animals</button>
+    <button class="cat-btn" data-cat="Space 🚀"><span class="emoji">🚀</span>Space</button>
+    <button class="cat-btn" data-cat="Dinosaurs 🦕"><span class="emoji">🦕</span>Dinosaurs</button>
+    <button class="cat-btn" data-cat="Ocean 🐠"><span class="emoji">🐠</span>Ocean</button>
+    <button class="cat-btn" data-cat="Superheroes 🦸"><span class="emoji">🦸</span>Superheroes</button>
+    <button class="cat-btn" data-cat="Magic &amp; Castles 🏰"><span class="emoji">🏰</span>Magic</button>
+    <button class="cat-btn" data-cat="Sports ⚽"><span class="emoji">⚽</span>Sports</button>
+    <button class="cat-btn" data-cat="Cooking 🍕"><span class="emoji">🍕</span>Cooking</button>
+    <button class="cat-btn" data-cat="Friendship 🤝"><span class="emoji">🤝</span>Friends</button>
+  </div>
+
+  <div class="error-box" id="pick-error">Something went wrong. Check your connection and try again.</div>
+
+  <!-- Primary: Solo -->
+  <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
+
+  <!-- Secondary: Race -->
+  <div class="or-divider"><span>or</span></div>
+  <button class="btn-main btn-purple" id="btn-race-start">🏁 Race a Friend</button>
+</div>
+```
+
+  </div>
+
+  <!-- ── SCREEN: Loading ── -->
+
+  <div class="screen" id="screen-loading">
+    <div class="card">
+      <div class="spinner">
+        <div class="spin-circle"></div>
+        <div class="spin-label" id="loading-msg">Writing your story...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Join room (guest) ── -->
+
+  <div class="screen" id="screen-join">
+    <div class="card">
+      <div class="card-title">Join the Race! 🏁</div>
+      <p style="color:#666;font-weight:700;margin-bottom:4px;">Type your friend's room code:</p>
+      <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric">
+      <div class="error-box" id="join-error">Room not found. Check the code!</div>
+      <button class="btn-main btn-green" id="btn-join-room">Join Room →</button>
+      <button class="btn-main btn-outline" id="btn-back-join" style="margin-top:10px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Waiting host ── -->
+
+  <div class="screen" id="screen-waiting-host">
+    <div class="card">
+      <div class="card-title">Waiting for your friend <span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <p style="color:#666;font-weight:700;margin-bottom:6px;">Share this code:</p>
+      <div class="room-code-display">
+        <div class="room-code-number" id="display-room-code">----</div>
+        <div class="room-code-label">Room Code</div>
+      </div>
+      <div class="player-slots">
+        <div class="player-slot me">
+          <span class="slot-icon">🧑</span>
+          <div class="slot-name">You</div>
+          <div class="slot-status">✓ Ready</div>
+        </div>
+        <div class="player-slot" id="slot-guest">
+          <span class="slot-icon">👤</span>
+          <div class="slot-name">Friend</div>
+          <div class="slot-status">Waiting...</div>
+        </div>
+      </div>
+      <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:10px;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Waiting guest ── -->
+
+  <div class="screen" id="screen-waiting-guest">
+    <div class="card">
+      <div class="card-title">You're in! Get ready... 🎉</div>
+      <div class="player-slots">
+        <div class="player-slot joined">
+          <span class="slot-icon">🧑</span>
+          <div class="slot-name">Host</div>
+          <div class="slot-status">✓ Ready</div>
+        </div>
+        <div class="player-slot me">
+          <span class="slot-icon">🧑</span>
+          <div class="slot-name">You</div>
+          <div class="slot-status">✓ Joined!</div>
+        </div>
+      </div>
+      <p style="text-align:center;color:#aaa;font-weight:700;margin-top:10px;">Starting soon...</p>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Countdown ── -->
+
+  <div class="screen" id="screen-countdown">
+    <div class="card">
+      <div class="countdown-wrap">
+        <div id="countdown-display" class="countdown-number">3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Read ── -->
+
+  <div class="screen" id="screen-read">
+    <div class="card">
+      <div class="card-title" id="story-title">Your Story</div>
+
+```
+  <!-- Race live bars -->
+  <div class="vs-progress" id="vs-progress" style="display:none;">
+    <div class="vs-row">
+      <div class="vs-name" style="color:var(--ocean);">You</div>
+      <div class="vs-bar-wrap"><div class="vs-bar me-bar" id="my-progress-bar"></div></div>
+      <div class="vs-pct" id="my-pct">0%</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-name" style="color:var(--coral);">Friend</div>
+      <div class="vs-bar-wrap"><div class="vs-bar them-bar" id="their-progress-bar"></div></div>
+      <div class="vs-pct" id="their-pct">0%</div>
+    </div>
+  </div>
+
+  <!-- Solo bar -->
+  <div class="progress-wrap" id="solo-progress-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <div id="story-text"></div>
+
+  <div class="listening-badge" id="listening-badge">
+    <div class="mic-pulse"></div>
+    Listening... Read out loud!
+  </div>
+
+  <div class="controls">
+    <button class="btn-main btn-green" id="btn-listen">🔊 Hear It First</button>
+    <button class="btn-main btn-coral" id="btn-record">🎤 My Turn!</button>
+  </div>
+  <button class="btn-main btn-outline" id="btn-new" style="margin-top:10px;">← Pick New Topic</button>
+</div>
+```
+
+  </div>
+
+  <!-- ── SCREEN: Solo results ── -->
+
+  <div class="screen" id="screen-solo-results">
+    <div class="card">
+      <div class="card-title" style="text-align:center;">You did it! 🎉</div>
+      <div class="stars" id="solo-stars">⭐⭐⭐</div>
+      <div class="wpm-block">
+        <span class="wpm-number" id="solo-wpm">--</span>
+        <div class="wpm-unit">words per minute</div>
+        <div class="wpm-context" id="solo-context"></div>
+      </div>
+      <div class="encouragement" id="solo-msg"></div>
+      <button class="btn-main btn-green" id="btn-solo-retry">🔄 Read It Again</button>
+      <button class="btn-main" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: Race results ── -->
+
+  <div class="screen" id="screen-race-results">
+    <div class="card">
+      <div class="card-title" style="text-align:center;" id="race-result-title">Race Over!</div>
+      <div class="results-vs">
+        <div class="result-player" id="rp-left">
+          <div class="result-player-name">You</div>
+          <div class="result-player-wpm" id="rp-left-wpm">--</div>
+          <div class="result-player-unit">wpm</div>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="result-player" id="rp-right">
+          <div class="result-player-name">Friend</div>
+          <div class="result-player-wpm" id="rp-right-wpm">--</div>
+          <div class="result-player-unit">wpm</div>
+        </div>
+      </div>
+      <div class="encouragement" id="race-msg"></div>
+      <button class="btn-main btn-green" id="btn-race-retry">🔄 Race Again</button>
+      <button class="btn-main" id="btn-race-new" style="margin-top:10px;">📚 New Story</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>ReadUp!</strong> by Transforming Youth Inc. &nbsp;|&nbsp; Free for all kids &nbsp;|&nbsp; Grades 1–3<br>
+  <span style="color:var(--coral);font-style:italic;">✨ Inspired by Kamryn &amp; Christopher II ✨</span>
+</footer>
+
+<!-- ── Firebase + App Logic ── -->
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyCIiKxtE5YV8GV0Fk3HEAO46rEGKEuFfFc",
+  authDomain: "readup-transforming-youth.firebaseapp.com",
+  databaseURL: "https://readup-transforming-youth-default-rtdb.firebaseio.com",
+  projectId: "readup-transforming-youth",
+  storageBucket: "readup-transforming-youth.firebasestorage.app",
+  messagingSenderId: "394068331923",
+  appId: "1:394068331923:web:d00704316cf6ba4b002c66"
+});
+const db = getDatabase(firebaseApp);
+
+// ── State ────────────────────────────────────────────────
+const S = {
+  grade: "1", wordTarget: 100, category: "Animals 🐾",
+  story: "", storyTitle: "",
+  wordEls: [], recognition: null, recordStart: null,
+  isRace: false, myRole: null,
+  roomCode: null, roomRef: null,
+  unsubscribers: [],
+};
+
+// ── Helpers ──────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function cleanupRoom() {
+  S.unsubscribers.forEach(fn => { try { fn(); } catch(e){} });
+  S.unsubscribers = [];
+  S.roomRef = null; S.roomCode = null; S.myRole = null; S.isRace = false;
+}
+
+// ── Pickers ──────────────────────────────────────────────
+document.querySelectorAll('#grade-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('#grade-row .opt-btn').forEach(b => b.classList.remove('sel-grade'));
+  btn.classList.add('sel-grade'); S.grade = btn.dataset.grade;
+}));
+document.querySelectorAll('#words-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('#words-row .opt-btn').forEach(b => b.classList.remove('sel-words'));
+  btn.classList.add('sel-words'); S.wordTarget = parseInt(btn.dataset.words);
+}));
+document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected'); S.category = btn.dataset.cat;
+}));
+
+// ── Solo flow ────────────────────────────────────────────
+document.getElementById('btn-generate').addEventListener('click', () => {
+  S.isRace = false; S.myRole = null;
+  generateStory();
+});
+
+// ── Race flow: host ──────────────────────────────────────
+document.getElementById('btn-race-start').addEventListener('click', () => {
+  S.isRace = true; S.myRole = 'host';
+  generateStory();
+});
+
+// ── Race flow: guest ─────────────────────────────────────
+document.getElementById('btn-back-join').addEventListener('click', () => show('screen-pick'));
+
+document.getElementById('btn-join-room').addEventListener('click', async () => {
+  const code = document.getElementById('join-code-input').value.trim();
+  const err = document.getElementById('join-error');
+  err.style.display = 'none';
+  if (code.length !== 4) { err.textContent = "Please enter a 4-digit code."; err.style.display = 'block'; return; }
+
+  const snap = await get(ref(db, `rooms/${code}`));
+  if (!snap.exists()) { err.textContent = "Room not found. Check the code!"; err.style.display = 'block'; return; }
+
+  const room = snap.val();
+  S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
+  S.story = room.story; S.storyTitle = room.title;
+  S.grade = room.grade; S.wordTarget = room.wordTarget;
+  S.myRole = 'guest'; S.isRace = true;
+
+  await update(S.roomRef, { guestJoined: true });
+  show('screen-waiting-guest');
+
+  const unsub = onValue(ref(db, `rooms/${code}/status`), snap => {
+    if (snap.val() === 'countdown') { unsub(); startCountdown(); }
+  });
+  S.unsubscribers.push(unsub);
+});
+
+// ── Generate story ────────────────────────────────────────
+async function generateStory() {
+  document.getElementById('pick-error').style.display = 'none';
+  show('screen-loading');
+  document.getElementById('loading-msg').textContent = `Writing your ${S.category} story...`;
+
+  const gradeDesc = {
+    "1": "1st grade reader (age 6-7). Use simple short sentences, common sight words.",
+    "2": "2nd grade reader (age 7-8). Use varied sentences with some multi-syllable words.",
+    "3": "3rd grade reader (age 8-9). Use richer vocabulary and varied sentence structure."
+  };
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1400,
+        messages: [{ role: "user", content:
+          `Write a fun children's reading story for a ${gradeDesc[S.grade]}
+Topic: ${S.category}
+Target length: exactly around ${S.wordTarget} words. Stay very close to this number.
+Format:
+- First line: short fun title only (no label, no asterisks)
+- Then the story body
+- End with one "Think about it:" question
+- Plain text only, no markdown, no asterisks`
+        }]
+      })
+    });
+    if (!res.ok) throw new Error("API " + res.status);
+    const data = await res.json();
+    const text = data.content[0].text.trim();
+    const lines = text.split('\n').filter(l => l.trim());
+    S.storyTitle = lines[0];
+    S.story = lines.slice(1).join(' ').trim();
+
+    if (S.myRole === 'host') {
+      await createRoom();
+    } else {
+      // Guest or solo — show the story directly
+      // For Race: guest flow handles its own story load above
+      setupReadScreen();
+      show('screen-read');
+    }
+  } catch(err) {
+    show('screen-pick');
+    const eb = document.getElementById('pick-error');
+    eb.textContent = "Couldn't reach the story maker. Check your internet!";
+    eb.style.display = 'block';
+  }
+}
+
+// ── Create Firebase room ─────────────────────────────────
+async function createRoom() {
+  const code = String(Math.floor(1000 + Math.random() * 9000));
+  S.roomCode = code;
+  S.roomRef = ref(db, `rooms/${code}`);
+
+  await set(S.roomRef, {
+    story: S.story, title: S.storyTitle,
+    grade: S.grade, wordTarget: S.wordTarget,
+    status: 'waiting',
+    host: { progress: 0, wpm: 0, done: false },
+    guest: { progress: 0, wpm: 0, done: false },
+    createdAt: Date.now()
+  });
+
+  document.getElementById('display-room-code').textContent = code;
+  show('screen-waiting-host');
+
+  const unsub = onValue(S.roomRef, snap => {
+    const room = snap.val();
+    if (!room) return;
+    if (room.guestJoined) {
+      document.getElementById('slot-guest').classList.add('joined');
+      document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Friend';
+      document.getElementById('slot-guest').querySelector('.slot-status').textContent = '✓ Joined!';
+      unsub();
+      setTimeout(() => startCountdown(), 1000);
+    }
+  });
+  S.unsubscribers.push(unsub);
+
+  // Auto-clean after 10 min
+  setTimeout(() => { try { remove(S.roomRef); } catch(e){} }, 600000);
+}
+
+// ── Countdown ────────────────────────────────────────────
+async function startCountdown() {
+  if (S.myRole === 'host') await update(S.roomRef, { status: 'countdown' });
+  show('screen-countdown');
+  const el = document.getElementById('countdown-display');
+  const steps = ['3','2','1','GO!'];
+  let i = 0;
+  const tick = () => {
+    el.textContent = steps[i];
+    el.className = steps[i] === 'GO!' ? 'countdown-go' : 'countdown-number';
+    el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+    i++;
+    if (i < steps.length) setTimeout(tick, 900);
+    else setTimeout(() => { setupReadScreen(); show('screen-read'); setTimeout(() => document.getElementById('btn-record').click(), 300); }, 400);
+  };
+  tick();
+}
+
+// ── Setup read screen ────────────────────────────────────
+function setupReadScreen() {
+  renderStory(S.storyTitle, S.story);
+  document.getElementById('vs-progress').style.display = S.isRace ? 'block' : 'none';
+  document.getElementById('solo-progress-wrap').style.display = S.isRace ? 'none' : 'block';
+
+  if (S.isRace) {
+    document.getElementById('my-progress-bar').style.width = '0%';
+    document.getElementById('their-progress-bar').style.width = '0%';
+    document.getElementById('my-pct').textContent = '0%';
+    document.getElementById('their-pct').textContent = '0%';
+
+    const oppRole = S.myRole === 'host' ? 'guest' : 'host';
+    const unsub = onValue(ref(db, `rooms/${S.roomCode}/${oppRole}`), snap => {
+      const d = snap.val();
+      if (!d) return;
+      const pct = Math.round(d.progress || 0);
+      document.getElementById('their-progress-bar').style.width = pct + '%';
+      document.getElementById('their-pct').textContent = pct + '%';
+      if (d.done && d.wpm != null) receiveTheirResult(d.wpm);
+    });
+    S.unsubscribers.push(unsub);
+  }
+}
+
+function renderStory(title, body) {
+  document.getElementById('story-title').textContent = title;
+  const container = document.getElementById('story-text');
+  container.innerHTML = '';
+  S.wordEls = [];
+  body.split(/(\s+)/).forEach(chunk => {
+    if (/\S/.test(chunk)) {
+      const span = document.createElement('span');
+      span.className = 'word'; span.textContent = chunk;
+      container.appendChild(span); S.wordEls.push(span);
+    } else { container.appendChild(document.createTextNode(chunk)); }
+  });
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('listening-badge').classList.remove('active');
+  document.getElementById('btn-listen').textContent = '🔊 Hear It First';
+  document.getElementById('btn-record').textContent = '🎤 My Turn!';
+  document.getElementById('btn-record').onclick = null;
+}
+
+// ── TTS ──────────────────────────────────────────────────
+let ttsActive = false;
+
+function listenHandler() {
+  if (ttsActive) {
+    window.speechSynthesis.cancel(); ttsActive = false;
+    document.getElementById('btn-listen').textContent = '🔊 Hear It Again'; return;
+  }
+  window.speechSynthesis.cancel();
+  S.wordEls.forEach(w => { w.className = 'word'; });
+  document.getElementById('progress-bar').style.width = '0%';
+
+  const utt = new SpeechSynthesisUtterance(S.story);
+  utt.rate = S.grade === "1" ? 0.78 : S.grade === "2" ? 0.88 : 0.95;
+  utt.pitch = 1.1;
+  const parts = S.story.split(/(\s+)/);
+
+  utt.onboundary = e => {
+    if (e.name !== 'word') return;
+    S.wordEls.forEach(w => w.classList.remove('highlight'));
+    let c = 0, wi = 0;
+    for (const p of parts) {
+      if (/\S/.test(p)) {
+        if (e.charIndex >= c && e.charIndex < c + p.length + 2) {
+          if (S.wordEls[wi]) { S.wordEls[wi].classList.add('highlight'); S.wordEls[wi].scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+          document.getElementById('progress-bar').style.width = Math.round(wi / S.wordEls.length * 100) + '%';
+          break;
+        }
+        wi++; c += p.length + 1;
+      } else { c += p.length; }
+    }
+  };
+  utt.onend = () => {
+    S.wordEls.forEach(w => { w.classList.remove('highlight'); w.classList.add('done'); });
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('btn-listen').textContent = '🔊 Hear It Again';
+    ttsActive = false;
+  };
+  ttsActive = true;
+  document.getElementById('btn-listen').textContent = '⏹ Stop';
+  window.speechSynthesis.speak(utt);
+}
+document.getElementById('btn-listen').addEventListener('click', listenHandler);
+
+// ── Speech recognition ────────────────────────────────────
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recActive = false;
+let myFinalWpm = null;
+let theirFinalWpm = null;
+
+document.getElementById('btn-record').addEventListener('click', startReading);
+
+function startReading() {
+  if (recActive) return;
+  if (!SR) { alert("Speech listening needs Chrome on a laptop or Chromebook!"); return; }
+
+  window.speechSynthesis.cancel(); ttsActive = false;
+  document.getElementById('btn-listen').textContent = '🔊 Hear It Again';
+  S.wordEls.forEach(w => { w.className = 'word'; });
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('my-progress-bar').style.width = '0%';
+  document.getElementById('my-pct').textContent = '0%';
+  document.getElementById('listening-badge').classList.add('active');
+  S.recordStart = Date.now();
+  recActive = true;
+
+  const rec = new SR();
+  rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US';
+  S.recognition = rec;
+
+  let fullTranscript = '', wordsRead = 0;
+
+  rec.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) fullTranscript += e.results[i][0].transcript + ' ';
+      else interim = e.results[i][0].transcript;
+    }
+    const combined = (fullTranscript + interim).toLowerCase().replace(/[^a-z\s]/g,'');
+    wordsRead = combined.trim().split(/\s+/).filter(Boolean).length;
+    S.wordEls.forEach((el, i) => { el.className = 'word'; if (i < wordsRead) el.classList.add('done'); if (i === wordsRead) el.classList.add('highlight'); });
+    const pct = Math.min(100, Math.round(wordsRead / S.wordEls.length * 100));
+    document.getElementById('progress-bar').style.width = pct + '%';
+    if (S.isRace) {
+      document.getElementById('my-progress-bar').style.width = pct + '%';
+      document.getElementById('my-pct').textContent = pct + '%';
+      update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: pct });
+    }
+  };
+
+  rec.onerror = () => {
+    document.getElementById('listening-badge').classList.remove('active');
+    recActive = false;
+    document.getElementById('btn-record').textContent = '🎤 My Turn!';
+    document.getElementById('btn-record').onclick = null;
+  };
+
+  rec.onend = () => {
+    document.getElementById('listening-badge').classList.remove('active');
+    recActive = false;
+    document.getElementById('btn-record').textContent = '🎤 My Turn!';
+    document.getElementById('btn-record').onclick = null;
+    const elapsed = (Date.now() - S.recordStart) / 60000;
+    const wpm = elapsed > 0.05 ? Math.round(wordsRead / elapsed) : 0;
+    if (S.isRace) {
+      update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: 100, wpm, done: true });
+      myFinalWpm = wpm;
+      tryShowRaceResults();
+    } else {
+      showSoloResults(wpm);
+    }
+  };
+
+  rec.start();
+  const timeLimit = Math.max(45, S.wordTarget * 1.2);
+  setTimeout(() => { try { rec.stop(); } catch(e){} }, timeLimit * 1000);
+
+  const btn = document.getElementById('btn-record');
+  btn.textContent = '⏹ Done Reading';
+  btn.onclick = ev => { ev.stopImmediatePropagation(); btn.onclick = null; try { rec.stop(); } catch(err){} };
+}
+
+// ── Race results sync ─────────────────────────────────────
+function receiveTheirResult(wpm) {
+  theirFinalWpm = wpm;
+  tryShowRaceResults();
+}
+
+function tryShowRaceResults() {
+  if (myFinalWpm === null || theirFinalWpm === null) return;
+  const me = myFinalWpm, them = theirFinalWpm;
+  myFinalWpm = null; theirFinalWpm = null;
+
+  let title, msg, lc, rc;
+  if (me > them) {
+    title = "🏆 You Win!"; msg = `You read ${me - them} words per minute faster! Amazing!`;
+    lc = 'winner'; rc = 'loser';
+  } else if (them > me) {
+    title = "Good Race! 💪"; msg = `Your friend was ${them - me} wpm faster. Keep practicing and challenge them again!`;
+    lc = 'loser'; rc = 'winner';
+  } else {
+    title = "🤝 It's a Tie!"; msg = "You both read at the exact same speed! Race again to break it!";
+    lc = 'tie'; rc = 'tie';
+  }
+
+  document.getElementById('race-result-title').textContent = title;
+  document.getElementById('rp-left-wpm').textContent = me;
+  document.getElementById('rp-right-wpm').textContent = them;
+  document.getElementById('rp-left').className = `result-player ${lc}`;
+  document.getElementById('rp-right').className = `result-player ${rc}`;
+  document.getElementById('race-msg').textContent = msg;
+  show('screen-race-results');
+}
+
+// ── Solo results ──────────────────────────────────────────
+function showSoloResults(wpm) {
+  const benchmarks = { "1":60, "2":90, "3":110 };
+  const gradeNames = { "1":"1st", "2":"2nd", "3":"3rd" };
+  const target = benchmarks[S.grade];
+  const ratio = wpm / target;
+  let stars, msg;
+  if (wpm < 10) { stars='⭐'; msg="Good try! Listen again then give it another shot!"; }
+  else if (ratio < 0.6) { stars='⭐⭐'; msg="Nice job! Every practice makes you faster. Try again!"; }
+  else if (ratio < 0.85) { stars='⭐⭐⭐'; msg="Great reading! You're building strong skills!"; }
+  else if (ratio < 1.1) { stars='🌟🌟🌟'; msg="Amazing! You're right on track for your grade!"; }
+  else { stars='🏆🌟🌟🌟'; msg="WOW — you're a reading superstar! Way above grade level!"; }
+
+  document.getElementById('solo-stars').textContent = stars;
+  document.getElementById('solo-wpm').textContent = wpm > 0 ? wpm : '?';
+  document.getElementById('solo-context').textContent = `${gradeNames[S.grade]} grade goal: ${target} words per minute`;
+  document.getElementById('solo-msg').textContent = msg;
+  show('screen-solo-results');
+}
+
+// ── Navigation ────────────────────────────────────────────
+document.getElementById('btn-cancel-host').addEventListener('click', async () => {
+  if (S.roomRef) try { await remove(S.roomRef); } catch(e){}
+  cleanupRoom(); show('screen-pick');
+});
+
+document.getElementById('btn-new').addEventListener('click', () => {
+  window.speechSynthesis.cancel(); ttsActive = false;
+  if (S.recognition) try { S.recognition.stop(); } catch(e){}
+  recActive = false; cleanupRoom(); show('screen-pick');
+});
+
+document.getElementById('btn-solo-retry').addEventListener('click', () => {
+  S.wordEls.forEach(w => { w.className = 'word'; });
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('btn-record').textContent = '🎤 My Turn!';
+  document.getElementById('btn-record').onclick = null;
+  recActive = false; show('screen-read');
+});
+
+document.getElementById('btn-solo-new').addEventListener('click', () => {
+  window.speechSynthesis.cancel(); ttsActive = false; recActive = false; show('screen-pick');
+});
+
+document.getElementById('btn-race-retry').addEventListener('click', () => {
+  myFinalWpm = null; theirFinalWpm = null;
+  setupReadScreen(); show('screen-read');
+  setTimeout(() => document.getElementById('btn-record').click(), 300);
+});
+
+document.getElementById('btn-race-new').addEventListener('click', async () => {
+  window.speechSynthesis.cancel(); ttsActive = false; recActive = false;
+  if (S.roomRef) try { await remove(S.roomRef); } catch(e){}
+  cleanupRoom(); show('screen-pick');
+});
+
+// ── Race entry point ─────────────────────────────────────
+// Show join screen when guest taps "Race a Friend" — handled via a small prompt
+document.getElementById('btn-race-start').addEventListener('click', () => {}, { once: false });
+
+// Override race button to ask host vs guest first
+document.getElementById('btn-race-start').onclick = () => {
+  // Simple in-page prompt using a temporary overlay approach
+  const choice = confirm("Are you creating a room?\n\nTap OK to CREATE a room (you pick the story).\nTap Cancel to JOIN a friend's room (you enter their code).");
+  if (choice) {
+    S.isRace = true; S.myRole = 'host';
+    generateStory();
+  } else {
+    show('screen-join');
+  }
+};
+</script>
+
+</body>
+</html>
