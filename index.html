@@ -475,8 +475,6 @@ header { position: relative; }
 
       <div class="progress-wrap" id="solo-progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
 
-      <div id="story-text"></div>
-
       <!-- Voice selector -->
       <div class="voice-row">
         <span class="voice-label">Voice:</span>
@@ -498,7 +496,7 @@ header { position: relative; }
         </div>
       </div>
 
-      <!-- TTS controls -->
+      <!-- TTS controls — above story so they're always reachable -->
       <div class="tts-controls">
         <button class="btn-main btn-green" id="btn-play">▶ Play</button>
         <button class="btn-main btn-yellow" id="btn-pause" disabled>⏸ Pause</button>
@@ -507,9 +505,13 @@ header { position: relative; }
 
       <div class="hint-tip">💡 Double-tap any word to hear it spoken</div>
 
+      <!-- Story text in scrollable container — keeps auto-scroll contained -->
+      <div id="story-scroll-container" style="max-height:50vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;">
+        <div id="story-text"></div>
+      </div>
+
       <div class="listening-badge" id="listening-badge" style="display:none;"></div>
       <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← Pick New Topic</button>
-      <!-- Bug 5: Silent reading completion button, appears after 10 seconds -->
       <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;">✅ I Finished Reading!</button>
     </div>
   </div>
@@ -867,7 +869,16 @@ function startHighlightLoop() {
       S.wordEls.forEach(w => w.classList.remove('highlight'));
       if (S.wordEls[activeIdx]) {
         S.wordEls[activeIdx].classList.add('highlight');
-        S.wordEls[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Scroll within the story container only — don't yank the whole page
+        const container = document.getElementById('story-scroll-container');
+        const wordEl = S.wordEls[activeIdx];
+        if (container) {
+          const containerRect = container.getBoundingClientRect();
+          const wordRect = wordEl.getBoundingClientRect();
+          if (wordRect.bottom > containerRect.bottom || wordRect.top < containerRect.top) {
+            wordEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
       }
       const pct = Math.round((activeIdx + 1) / S.wordEls.length * 100);
       document.getElementById('progress-bar').style.width = pct + '%';
