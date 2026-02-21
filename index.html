@@ -96,9 +96,7 @@ header { text-align: center; padding: 24px 0 16px; }
 .word.done { color: #6BCB77; }
 
 /* ── Voice selector ── */
-.voice-row {
-  display: flex; gap: 10px; margin: 14px 0 4px; align-items: center;
-}
+.voice-row { display: flex; gap: 10px; margin: 14px 0 4px; align-items: center; }
 .voice-label { font-weight: 800; color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
 .voice-btn {
   flex: 1; padding: 9px 6px; border-radius: 12px;
@@ -110,21 +108,13 @@ header { text-align: center; padding: 24px 0 16px; }
 .voice-btn.sel-voice { border-color: #A259FF; background: #F5EEFF; color: #6A1FCC; }
 
 /* ── Speed slider ── */
-.speed-slider-row {
-  margin: 16px 0 4px;
-}
-.speed-slider-label-row {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
-}
+.speed-slider-row { margin: 16px 0 4px; }
+.speed-slider-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .speed-slider-label { font-weight: 800; color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-.speed-value-badge {
-  background: #EEF5FF; border: 2px solid #4D96FF; border-radius: 10px;
-  padding: 2px 10px; font-family: 'Fredoka One'; font-size: 1rem; color: #4D96FF;
-}
+.speed-value-badge { background: #EEF5FF; border: 2px solid #4D96FF; border-radius: 10px; padding: 2px 10px; font-family: 'Fredoka One'; font-size: 1rem; color: #4D96FF; }
 input[type=range].speed-slider {
   -webkit-appearance: none; appearance: none;
-  width: 100%; height: 10px;
-  border-radius: 10px;
+  width: 100%; height: 10px; border-radius: 10px;
   background: linear-gradient(90deg, #4D96FF 0%, #6BCB77 100%);
   outline: none; cursor: pointer;
 }
@@ -449,7 +439,12 @@ async function generateAIStory(grade, category, wordTarget) {
   const gradeNames = { "1": "1st", "2": "2nd", "3": "3rd" };
   const response = await fetch(CF_STORY, {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ grade: gradeNames[grade] || grade, topic: category, wordCount: wordTarget })
+    body: JSON.stringify({
+      grade: gradeNames[grade] || grade,
+      topic: category,
+      wordCount: wordTarget,
+      instructions: `Write a story that is exactly ${wordTarget} words long. Do NOT include a title, heading, label, or any text before the story. Start the story immediately with the first word. Do not use markdown formatting.`
+    })
   });
   if (!response.ok) throw new Error("Cloud function error: " + response.status);
   const data = await response.json();
@@ -505,7 +500,7 @@ document.querySelectorAll('.voice-btn').forEach(btn => btn.addEventListener('cli
   btn.classList.add('sel-voice');
   S.voiceGender = btn.dataset.voice;
   if (ttsState === 'playing' || ttsState === 'paused') stopTTS();
-  ttsAudioCache.clear(); // clear cache so new voice is fetched
+  ttsAudioCache.clear();
 }));
 
 // ── Speed slider ──────────────────────────────────────────
@@ -527,7 +522,6 @@ let ttsState = 'idle';
 let ttsPausedAtMs = 0;
 let ttsAudioCache = new Map();
 
-// Voice names for Google Neural2
 const VOICE_NAMES = {
   female: { 1: "en-US-Neural2-F", 2: "en-US-Neural2-F", 3: "en-US-Neural2-C" },
   male:   { 1: "en-US-Neural2-D", 2: "en-US-Neural2-D", 3: "en-US-Neural2-A" },
@@ -546,21 +540,16 @@ function resetTTSButtons() {
   ttsState = 'idle';
 }
 
-// ── requestAnimationFrame highlight loop ─────────────────
-// This reads audio.currentTime every frame so highlights are always in sync
 function startHighlightLoop() {
   stopRAF();
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
     const nowMs = (ttsAudio.currentTime * 1000) * S.speed;
-
-    // Find the last word whose startMs <= nowMs
     let activeIdx = -1;
     for (let i = 0; i < ttsWordTimings.length; i++) {
       if (ttsWordTimings[i].startMs <= nowMs) activeIdx = i;
       else break;
     }
-
     if (activeIdx >= 0) {
       S.wordEls.forEach((w, i) => {
         w.classList.remove('highlight');
@@ -594,7 +583,6 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   const voiceName = VOICE_NAMES[voiceGender]?.[parseInt(grade)] || "en-US-Neural2-F";
   const cacheKey = `${voiceName}:${text.substring(0, 80)}`;
   if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
-
   const response = await fetch(CF_TTS, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -603,7 +591,6 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   if (!response.ok) throw new Error('TTS failed: ' + response.status);
   const data = await response.json();
   if (!data.audioBase64) throw new Error('No audio returned');
-
   ttsAudioCache.set(cacheKey, data);
   if (ttsAudioCache.size > 10) ttsAudioCache.delete(ttsAudioCache.keys().next().value);
   return data;
@@ -615,15 +602,12 @@ async function playSpeech(startFromMs) {
   document.getElementById('btn-play').textContent = '⏳ Loading...';
   document.getElementById('btn-play').disabled = true;
   document.getElementById('btn-pause').disabled = true;
-
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
     ttsWordTimings = data.wordTimings || [];
-
     const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
     audio.playbackRate = S.speed;
     ttsAudio = audio;
-
     audio.addEventListener('canplaythrough', () => {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play();
@@ -634,7 +618,6 @@ async function playSpeech(startFromMs) {
       document.getElementById('btn-stop-tts').disabled = false;
       startHighlightLoop();
     }, { once: true });
-
     audio.addEventListener('ended', () => {
       stopRAF();
       S.wordEls.forEach(w => { w.classList.remove('highlight'); w.classList.add('done'); });
@@ -642,9 +625,7 @@ async function playSpeech(startFromMs) {
       resetTTSButtons();
       ttsPausedAtMs = 0;
     });
-
     audio.addEventListener('error', () => { stopRAF(); resetTTSButtons(); });
-
   } catch (err) {
     console.error('TTS error:', err);
     resetTTSButtons();
@@ -678,10 +659,6 @@ document.getElementById('btn-pause').addEventListener('click', () => {
 });
 
 document.getElementById('btn-stop-tts').addEventListener('click', stopTTS);
-
-// ── Also update tts.js to accept voiceName ────────────────
-// The voiceName is now passed from frontend → Cloud Function
-// Make sure tts.js uses req.body.voiceName if provided
 
 // ── Pickers ───────────────────────────────────────────────
 document.querySelectorAll('#grade-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
@@ -801,14 +778,28 @@ function setupReadScreen() {
   }
 }
 
+// ── attachRecordListener: safely wires up btn-record ─────
+function attachRecordListener() {
+  const oldBtn = document.getElementById('btn-record');
+  const newBtn = oldBtn.cloneNode(true);
+  oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+  newBtn.addEventListener('click', startReading);
+  console.log('attachRecordListener ran, btn:', newBtn);
+}
+
 function renderStory(title, body) {
   const titleEl = document.getElementById('story-title');
   titleEl.innerHTML = S.isAIStory ? title + ' <span class="ai-badge">✨ AI</span>' : '';
   if (!S.isAIStory) titleEl.textContent = title;
   const container = document.getElementById('story-text');
   container.innerHTML = ''; S.wordEls = [];
-  const cleanBody = body.replace(/^#+\s*/gm, '').trim();
-cleanBody.split(/(\s+)/).forEach(chunk => {
+  // Strip markdown headers, titles, bold labels from AI output
+  const cleanBody = body
+    .replace(/^#+\s*/gm, '')
+    .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
+    .replace(/^\*\*.*?\*\*\s*/m, '')
+    .trim();
+  cleanBody.split(/(\s+)/).forEach(chunk => {
     if (/\S/.test(chunk)) {
       const span = document.createElement('span');
       span.className = 'word'; span.textContent = chunk;
@@ -818,22 +809,22 @@ cleanBody.split(/(\s+)/).forEach(chunk => {
   document.getElementById('progress-bar').style.width = '0%';
   document.getElementById('listening-badge').classList.remove('active');
   document.getElementById('processing-badge').classList.remove('active');
-  document.getElementById('btn-record').textContent = '🎤 My Turn! Read Aloud';
-  document.getElementById('btn-record').onclick = null;
-  document.getElementById('btn-record').disabled = false;
-  S.wordEls.forEach(w => { w.style.color = ''; });
-  stopTTS();
+  S.wordEls.forEach(w => { w.style.color = ''; w.style.background = ''; });
+  // Stop TTS cleanly WITHOUT marking words green
+  stopRAF();
+  if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
+  resetTTSButtons();
   ttsWordTimings = []; ttsPausedAtMs = 0;
+  // Wire up the mic button fresh every time
+  attachRecordListener();
 }
 
-// ── Google Cloud STT ──────────────────────────────────────
+// ── Live reading state ────────────────────────────────────
 let mediaRecorder = null;
 let audioChunks = [];
 let recActive = false;
 let myFinalWpm = null;
 let theirFinalWpm = null;
-
-// ── Live word-by-word reading tracker ────────────────────
 let currentWordIdx = 0;
 let missedWords = [];
 let stuckTimer = null;
@@ -884,7 +875,7 @@ function levenshteinDistance(a, b) {
 }
 
 function markWordStuck() {
-  if (stuckTimer) return; // already stuck
+  if (stuckTimer) return;
   if (S.wordEls[currentWordIdx]) {
     S.wordEls[currentWordIdx].classList.remove('highlight');
     S.wordEls[currentWordIdx].style.background = '#FF6B6B';
@@ -901,8 +892,7 @@ function teacherSayWord(idx) {
     S.wordEls[idx].style.color = '#ffffff';
   }
   const utt = new SpeechSynthesisUtterance(word);
-  utt.rate = 0.8;
-  utt.pitch = 1.1;
+  utt.rate = 0.8; utt.pitch = 1.1;
   utt.onend = () => advanceWord();
   window.speechSynthesis.speak(utt);
 }
@@ -911,21 +901,17 @@ function advanceWord() {
   clearTimeout(stuckTimer);
   stuckTimer = null;
   currentWordIdx++;
-  if (currentWordIdx >= S.wordEls.length) {
-    finishReading();
-  } else {
-    highlightCurrentWord();
-  }
+  if (currentWordIdx >= S.wordEls.length) finishReading();
+  else highlightCurrentWord();
 }
-
 
 async function startReading() {
   if (recActive) return;
   stopTTS();
   S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; });
   document.getElementById('progress-bar').style.width = '0%';
-  document.getElementById('my-progress-bar').style.width = '0%';
-  document.getElementById('my-pct').textContent = '0%';
+  if (document.getElementById('my-progress-bar')) document.getElementById('my-progress-bar').style.width = '0%';
+  if (document.getElementById('my-pct')) document.getElementById('my-pct').textContent = '0%';
   currentWordIdx = 0;
   missedWords = [];
   stuckTimer = null;
@@ -966,11 +952,9 @@ async function startReading() {
       const spokenWords = fullTranscript.trim().split(/\s+/).filter(Boolean);
       if (spokenWords.length <= lastSpokenCount) return;
       lastSpokenCount = spokenWords.length;
-
       const lastSpoken = normalizeWord(spokenWords[spokenWords.length - 1]);
       const expectedWord = normalizeWord(S.wordEls[currentWordIdx]?.textContent || '');
       const isMatch = lastSpoken === expectedWord || levenshteinDistance(lastSpoken, expectedWord) <= 1;
-
       if (isMatch) {
         clearTimeout(stuckTimer);
         stuckTimer = null;
@@ -987,8 +971,9 @@ async function startReading() {
     liveRecognition.start();
 
     document.getElementById('listening-badge').classList.add('active');
-    document.getElementById('btn-record').textContent = '⏹ Done Reading';
-    document.getElementById('btn-record').onclick = stopReading;
+    const recordBtn = document.getElementById('btn-record');
+    recordBtn.textContent = '⏹ Done Reading';
+    recordBtn.onclick = stopReading;
     const timeLimit = Math.max(60, S.wordTarget * 1.5) * 1000;
     setTimeout(() => { if (recActive) stopReading(); }, timeLimit);
 
@@ -1005,9 +990,7 @@ function stopReading() {
   stuckTimer = null;
   try { liveRecognition?.stop(); } catch(e) {}
   document.getElementById('listening-badge').classList.remove('active');
-  document.getElementById('btn-record').textContent = '🎤 My Turn! Read Aloud';
-  document.getElementById('btn-record').onclick = null;
-  document.getElementById('btn-record').addEventListener('click', startReading, { once: true });
+  attachRecordListener();
   if (mediaRecorder?.state !== 'inactive') mediaRecorder?.stop();
   finishReading();
 }
@@ -1082,12 +1065,36 @@ function showSoloResults(wpm) {
 }
 
 // ── Nav ───────────────────────────────────────────────────
-document.getElementById('btn-cancel-host').addEventListener('click', async () => { if (S.roomRef) try { await remove(S.roomRef); } catch(e) {} cleanupRoom(); show('screen-pick'); });
-document.getElementById('btn-new').addEventListener('click', () => { stopTTS(); recActive = false; cleanupRoom(); show('screen-pick'); });
-document.getElementById('btn-solo-retry').addEventListener('click', () => { S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; }); document.getElementById('progress-bar').style.width = '0%'; document.getElementById('btn-record').textContent = '🎤 My Turn! Read Aloud'; document.getElementById('btn-record').onclick = null; document.getElementById('btn-record').disabled = false; recActive = false; stopTTS(); show('screen-read'); });
-document.getElementById('btn-solo-new').addEventListener('click', () => { stopTTS(); recActive = false; show('screen-pick'); });
-document.getElementById('btn-race-retry').addEventListener('click', () => { myFinalWpm = null; theirFinalWpm = null; setupReadScreen(); show('screen-read'); setTimeout(() => document.getElementById('btn-record').click(), 300); });
-document.getElementById('btn-race-new').addEventListener('click', async () => { stopTTS(); recActive = false; if (S.roomRef) try { await remove(S.roomRef); } catch(e) {} cleanupRoom(); show('screen-pick'); });
+document.getElementById('btn-cancel-host').addEventListener('click', async () => {
+  if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
+  cleanupRoom(); show('screen-pick');
+});
+document.getElementById('btn-new').addEventListener('click', () => {
+  stopTTS(); recActive = false; cleanupRoom(); show('screen-pick');
+});
+document.getElementById('btn-solo-retry').addEventListener('click', () => {
+  S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; });
+  document.getElementById('progress-bar').style.width = '0%';
+  recActive = false;
+  currentWordIdx = 0;
+  missedWords = [];
+  stopTTS();
+  attachRecordListener();
+  show('screen-read');
+});
+document.getElementById('btn-solo-new').addEventListener('click', () => {
+  stopTTS(); recActive = false; show('screen-pick');
+});
+document.getElementById('btn-race-retry').addEventListener('click', () => {
+  myFinalWpm = null; theirFinalWpm = null;
+  setupReadScreen(); show('screen-read');
+  setTimeout(() => document.getElementById('btn-record').click(), 300);
+});
+document.getElementById('btn-race-new').addEventListener('click', async () => {
+  stopTTS(); recActive = false;
+  if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
+  cleanupRoom(); show('screen-pick');
+});
 </script>
 </body>
 </html>
