@@ -620,7 +620,7 @@ async function playSpeech(startFromMs) {
     }, { once: true });
     audio.addEventListener('ended', () => {
       stopRAF();
-      S.wordEls.forEach(w => { w.classList.remove('highlight'); w.classList.add('done'); });
+      S.wordEls.forEach(w => w.classList.remove('highlight'));
       document.getElementById('progress-bar').style.width = '100%';
       resetTTSButtons();
       ttsPausedAtMs = 0;
@@ -784,7 +784,6 @@ function attachRecordListener() {
   const newBtn = oldBtn.cloneNode(true);
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
   newBtn.addEventListener('click', startReading);
-  console.log('attachRecordListener ran, btn:', newBtn);
 }
 
 function renderStory(title, body) {
@@ -959,8 +958,6 @@ async function startReading() {
         clearTimeout(stuckTimer);
         stuckTimer = null;
         advanceWord();
-      } else {
-        markWordStuck();
       }
     };
 
