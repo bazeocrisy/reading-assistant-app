@@ -285,6 +285,14 @@ header { position: relative; }
 .change-pin-row input { flex: 1; padding: 10px 14px; border: 2.5px solid var(--border); border-radius: 12px; font-family: 'Fredoka', sans-serif; font-size: 1.2rem; text-align: center; letter-spacing: 6px; outline: none; }
 .change-pin-row input:focus { border-color: var(--purple); }
 
+/* Fix 2: Styled scrollbar for story container */
+#story-scroll-container::-webkit-scrollbar { width: 6px; }
+#story-scroll-container::-webkit-scrollbar-track { background: transparent; }
+#story-scroll-container::-webkit-scrollbar-thumb { background: var(--purple-light); border-radius: 10px; }
+#story-scroll-container::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: #4a4a6a; }
+body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #6a6a8a; }
+
 @media (max-width: 480px) {
   .logo { font-size: 2.2rem; }
   .categories { grid-template-columns: repeat(2, 1fr); }
@@ -1144,6 +1152,10 @@ function setupReadScreen() {
     document.getElementById('my-pct').textContent = '0%';
     document.getElementById('their-pct').textContent = '0%';
   }
+  // Fix 3: Preload TTS audio in background so Play is instant
+  if (!S.isRace && navigator.onLine && S.story) {
+    fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
+  }
 }
 
 function renderStory(title, body) {
@@ -1178,6 +1190,9 @@ function renderStory(title, body) {
   if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
   resetTTSButtons();
   ttsWordTimings = []; ttsPausedAtMs = 0;
+  // Fix 1: Reset scroll to top so story doesn't start scrolled down
+  const scrollContainer = document.getElementById('story-scroll-container');
+  if (scrollContainer) scrollContainer.scrollTop = 0;
 }
 
 // ── Double-click word helper ──────────────────────────────
