@@ -1862,7 +1862,8 @@ document.getElementById('btn-show-welcome').addEventListener('click', () => {
   });
   document.getElementById('screen-welcome-1').style.display = 'block';
   document.getElementById('screen-welcome-1').classList.add('active');
-  // Re-attach next button handlers in case they were already used
+
+  // Rebind next buttons for screens 1→2→3→4
   const rebind = (fromId, toId) => {
     const btn = document.getElementById('btn-welcome-next-' + fromId);
     const fresh = btn.cloneNode(true);
@@ -1876,6 +1877,19 @@ document.getElementById('btn-show-welcome').addEventListener('click', () => {
     });
   };
   rebind(1, 2); rebind(2, 3); rebind(3, 4);
+
+  // On replay, screen 4 "Start Reading" just returns to pick screen
+  const goBtn = document.getElementById('btn-welcome-go');
+  const freshGo = goBtn.cloneNode(true);
+  freshGo.disabled = false;
+  freshGo.textContent = '← Back to ReadUp!';
+  goBtn.parentNode.replaceChild(freshGo, goBtn);
+  freshGo.addEventListener('click', () => {
+    document.getElementById('screen-welcome-4').classList.remove('active');
+    document.getElementById('screen-welcome-4').style.display = 'none';
+    show('screen-pick');
+  });
+
   window.scrollTo({ top: 0, behavior: 'instant' });
 });
 
