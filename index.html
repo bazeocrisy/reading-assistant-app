@@ -585,6 +585,9 @@ async function playSpeech(startFromMs) {
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
     ttsWordTimings = data.wordTimings || [];
+    console.log('TTS timings count:', ttsWordTimings.length, 'Word els count:', S.wordEls.length);
+    console.log('First 3 timings:', JSON.stringify(ttsWordTimings.slice(0,3)));
+    console.log('Last 3 timings:', JSON.stringify(ttsWordTimings.slice(-3)));
     const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
     audio.playbackRate = S.speed;
     ttsAudio = audio;
