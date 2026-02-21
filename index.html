@@ -781,6 +781,7 @@ STORIES.friends = STORIES.friendship;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 // Bug 6 fix: robust fallback chain handles missing grade levels
 function getStory(cat, grade, wordTarget) {
@@ -1312,7 +1313,14 @@ async function teacherSayWord(idx) {
     S.wordEls[idx].classList.add('highlight');
     S.wordEls[idx].style.background = '#A259FF';
     S.wordEls[idx].style.color = '#ffffff';
-    S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const container = document.getElementById('story-scroll-container');
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      const wordRect = S.wordEls[idx].getBoundingClientRect();
+      if (wordRect.bottom > containerRect.bottom || wordRect.top < containerRect.top) {
+        S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
   }
   const clearHighlight = () => {
     if (S.wordEls[idx]) {
