@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@google-cloud/speech": "^7.2.1",
+    "@google-cloud/text-to-speech": "^6.4.0"
+  }
+}

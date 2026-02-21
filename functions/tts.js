@@ -4,12 +4,6 @@ const cors = require("cors")({ origin: true });
 
 const ttsClient = new TextToSpeechClient();
 
-const VOICE_BY_GRADE = {
-  1: { name: "en-US-Neural2-F", ssmlGender: "FEMALE" },
-  2: { name: "en-US-Neural2-F", ssmlGender: "FEMALE" },
-  3: { name: "en-US-Neural2-C", ssmlGender: "FEMALE" },
-};
-
 function buildSSML(text) {
   const words = text.trim().split(/\s+/);
   const marked = words.map((word, i) => `<mark name="w${i}"/>${word}`).join(" ");
@@ -32,21 +26,24 @@ exports.synthesizeSpeech = onRequest(
     cors(req, res, async () => {
       if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-      const { text, grade = 2 } = req.body;
+      const { text, grade = 2, voiceName } = req.body;
       if (!text || typeof text !== "string") return res.status(400).json({ error: "text is required" });
       if (text.length > 5000) return res.status(400).json({ error: "text too long" });
 
       try {
-        const voice = VOICE_BY_GRADE[grade] || VOICE_BY_GRADE[2];
-        const ssml = buildSSML(text);
         const words = text.trim().split(/\s+/);
+        const ssml = buildSSML(text);
+
+        // Use voiceName from frontend if provided, otherwise fall back to grade defaults
+        const resolvedVoice = voiceName || (grade === 3 ? "en-US-Neural2-C" : "en-US-Neural2-F");
+        const speakingRate = grade === 1 ? 0.85 : grade === 2 ? 0.9 : 1.0;
 
         const [response] = await ttsClient.synthesizeSpeech({
           input: { ssml },
-          voice: { languageCode: "en-US", name: voice.name, ssmlGender: voice.ssmlGender },
+          voice: { languageCode: "en-US", name: resolvedVoice },
           audioConfig: {
             audioEncoding: "MP3",
-            speakingRate: grade === 1 ? 0.85 : grade === 2 ? 0.9 : 1.0,
+            speakingRate,
             pitch: 0.0,
             effectsProfileId: ["headphone-class-device"],
           },
@@ -59,7 +56,7 @@ exports.synthesizeSpeech = onRequest(
         const estimatedDurationMs = lastTp ? Math.round(lastTp.timeSeconds * 1000) + 800 : words.length * 350;
         const wordTimings = buildWordTimings(words, timepoints, estimatedDurationMs);
 
-        return res.status(200).json({ audioBase64, wordTimings, totalWords: words.length, voiceUsed: voice.name });
+        return res.status(200).json({ audioBase64, wordTimings, totalWords: words.length, voiceUsed: resolvedVoice });
       } catch (err) {
         console.error("TTS error:", err);
         return res.status(500).json({ error: "TTS synthesis failed", details: err.message });
