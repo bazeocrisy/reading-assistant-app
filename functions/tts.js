@@ -34,13 +34,17 @@ exports.synthesizeSpeech = onRequest(
         const words = text.trim().split(/\s+/);
         const ssml = buildSSML(text);
 
-        // Use voiceName from frontend if provided, otherwise fall back to grade defaults
-        const resolvedVoice = voiceName || (grade === 3 ? "en-US-Neural2-C" : "en-US-Neural2-F");
+        // Wavenet voices support SSML timepoints; Neural2 does not
+        const resolvedVoice = voiceName || (grade === 3 ? "en-US-Wavenet-C" : "en-US-Wavenet-F");
+
+        // Force Wavenet if a Neural2 voice was passed in — Neural2 won't return timepoints
+        const finalVoice = resolvedVoice.replace("Neural2", "Wavenet");
+
         const speakingRate = grade === 1 ? 0.85 : grade === 2 ? 0.9 : 1.0;
 
         const [response] = await ttsClient.synthesizeSpeech({
           input: { ssml },
-          voice: { languageCode: "en-US", name: resolvedVoice },
+          voice: { languageCode: "en-US", name: finalVoice },
           audioConfig: {
             audioEncoding: "MP3",
             speakingRate,
@@ -56,7 +60,7 @@ exports.synthesizeSpeech = onRequest(
         const estimatedDurationMs = lastTp ? Math.round(lastTp.timeSeconds * 1000) + 800 : words.length * 350;
         const wordTimings = buildWordTimings(words, timepoints, estimatedDurationMs);
 
-        return res.status(200).json({ audioBase64, wordTimings, totalWords: words.length, voiceUsed: resolvedVoice });
+        return res.status(200).json({ audioBase64, wordTimings, totalWords: words.length, voiceUsed: finalVoice });
       } catch (err) {
         console.error("TTS error:", err);
         return res.status(500).json({ error: "TTS synthesis failed", details: err.message });

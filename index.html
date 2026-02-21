@@ -504,8 +504,8 @@ let ttsPausedAtMs = 0;
 let ttsAudioCache = new Map();
 
 const VOICE_NAMES = {
-  female: { 1: "en-US-Neural2-F", 2: "en-US-Neural2-F", 3: "en-US-Neural2-C" },
-  male:   { 1: "en-US-Neural2-D", 2: "en-US-Neural2-D", 3: "en-US-Neural2-A" },
+  female: { 1: "en-US-Wavenet-F", 2: "en-US-Wavenet-F", 3: "en-US-Wavenet-C" },
+  male:   { 1: "en-US-Wavenet-D", 2: "en-US-Wavenet-D", 3: "en-US-Wavenet-A" },
 };
 
 function stopRAF() {
@@ -524,14 +524,32 @@ function resetTTSButtons() {
 function startHighlightLoop() {
   stopRAF();
   let lastActiveIdx = -1;
+
+  // Check if Cloud Function timings are real or all zeros (broken)
+  const timingsAreReal = ttsWordTimings.length > 1 &&
+    ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
+
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
     const nowMs = ttsAudio.currentTime * 1000;
+    const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
-    for (let i = 0; i < ttsWordTimings.length; i++) {
-      if (ttsWordTimings[i].startMs <= nowMs) activeIdx = i;
-      else break;
+
+    if (timingsAreReal && ttsWordTimings.length > 0) {
+      // Use real timings from Cloud Function
+      for (let i = 0; i < ttsWordTimings.length; i++) {
+        if (ttsWordTimings[i].startMs <= nowMs) activeIdx = i;
+        else break;
+      }
+    } else {
+      // Estimate: divide audio evenly across words
+      const wordsCount = S.wordEls.length;
+      activeIdx = Math.min(
+        Math.floor((nowMs / totalMs) * wordsCount),
+        wordsCount - 1
+      );
     }
+
     if (activeIdx >= 0 && activeIdx !== lastActiveIdx) {
       lastActiveIdx = activeIdx;
       S.wordEls.forEach(w => w.classList.remove('highlight'));
@@ -585,9 +603,6 @@ async function playSpeech(startFromMs) {
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
     ttsWordTimings = data.wordTimings || [];
-    console.log('TTS timings count:', ttsWordTimings.length, 'Word els count:', S.wordEls.length);
-    console.log('First 3 timings:', JSON.stringify(ttsWordTimings.slice(0,3)));
-    console.log('Last 3 timings:', JSON.stringify(ttsWordTimings.slice(-3)));
     const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
     audio.playbackRate = S.speed;
     ttsAudio = audio;
