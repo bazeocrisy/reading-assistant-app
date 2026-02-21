@@ -4,12 +4,6 @@ const logger = require("firebase-functions/logger");
 
 const anthropicKey = defineSecret("ANTHROPIC_API_KEY");
 
-const gradePrompts = {
-  "1st": "Use very simple words a 6-7 year old knows. Write in short but natural sentences that flow together smoothly into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists.",
-  "2nd": "Use simple but varied vocabulary for a 7-8 year old. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Tell a real story or share interesting facts in a narrative way. Do NOT use bullet points or lists.",
-  "3rd": "Use grade-appropriate vocabulary for an 8-9 year old. Write in natural paragraphs with varied sentence structure. Include interesting details, descriptive language, and a clear point or message. Do NOT use bullet points or lists."
-};
-
 exports.generateStory = onRequest(
   {secrets: [anthropicKey], cors: true},
   async (req, res) => {
@@ -17,8 +11,11 @@ exports.generateStory = onRequest(
       return res.status(405).send("Method Not Allowed");
     }
 
-    const {grade, topic, wordCount} = req.body;
-    const gradeStyle = gradePrompts[grade] || gradePrompts["2nd"];
+    const {grade, topic, wordCount, instructions} = req.body;
+
+    // Use instructions from frontend if provided (handles Pre-K, K, and all grades)
+    // Fall back to a generic prompt only if nothing is sent
+    const storyInstructions = instructions || `Write a story appropriate for ${grade} grade about ${topic} that is approximately ${wordCount} words long. Write in flowing paragraphs. Do not use bullet points or lists. Do not include a title.`;
 
     try {
       const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -30,16 +27,10 @@ exports.generateStory = onRequest(
         },
         body: JSON.stringify({
           model: "claude-haiku-4-5-20251001",
-          max_tokens: 1024,
+          max_tokens: 2048,
           messages: [{
             role: "user",
-            content: `Write a reading passage about ${topic} that is approximately ${wordCount} words long.
-
-${gradeStyle}
-
-Write in flowing paragraphs like a real children's book or magazine article. End with exactly one question that starts with "Think about it:" on its own line.
-
-Write the passage text only. No title. No headers. No bullet points. No numbered lists. Just natural paragraphs.`,
+            content: storyInstructions,
           }],
         }),
       });

@@ -488,14 +488,31 @@ async function generateAIStory(grade, category, wordTarget) {
   const gradeNames = { "prek": "Pre-K", "k": "Kindergarten", "1": "1st", "2": "2nd", "3": "3rd" };
 
   const gradeInstructions = {
-    "prek": `Use only simple 3-4 word sentences. Use CVC words (cat, dog, run, big, hat, sit). Use high-frequency sight words only (the, is, a, I, my, see, like, can, we, it, go, at, in). No multi-syllable words at all. Use repetitive sentence patterns to build familiarity (e.g. "I see a cat. I see a dog. I see a fish."). No compound or complex sentences. Very short story.`,
-    "k": `Use simple sentences of 5-7 words. Use common CVC and CVCe words (like, make, home, came, ride). Use Dolch pre-primer and primer sight words. Short paragraphs of 2-3 sentences. Minimal multi-syllable words. Some repetitive patterns but with more variety than Pre-K. Keep it warm and simple.`,
-    "1": `Use very simple words a 6-7 year old knows. Write in short but natural sentences that flow together smoothly into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists.`,
-    "2": `Use simple but varied vocabulary for a 7-8 year old. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Tell a real story or share interesting facts in a narrative way. Do NOT use bullet points or lists.`,
-    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write in natural paragraphs with varied sentence structure. Include interesting details, descriptive language, and a clear point or message. Do NOT use bullet points or lists.`
+    "prek": `You are writing for a 3-4 year old child who is just learning to read. STRICT RULES:
+- Every sentence must be 3-4 words MAXIMUM. Example: "I see a dog." "The cat is big." "We can run fast."
+- Use ONLY these types of words: cat, dog, big, run, sit, hat, red, the, is, a, I, my, see, like, can, we, it, go, at, in, up, on, fun, sun, hop, top, hot, pot, bed, red, said, has, his, her, they, are
+- NO word longer than one syllable except: animal names, color words
+- Use the SAME sentence pattern repeated with different words (e.g. "I see a cat. I see a dog. I see a bird.")
+- NO commas, NO complex ideas, NO emotions like "frustrated" or "curious"
+- End with: "Think about it: What do you see?"
+Write the story now. ${wordTarget} words total.`,
+    "k": `You are writing for a 5-6 year old kindergartner just beginning to read. STRICT RULES:
+- Sentences must be 5-7 words maximum. Example: "The dog ran to the house." "She liked to play with blocks."
+- Use only simple, common words a kindergartner knows: home, play, run, jump, happy, sad, big, little, mom, dad, friend, school, food, water, help, love
+- NO words longer than 2 syllables
+- Short paragraphs of 2-3 sentences only
+- Some repetition is good: "He liked to run. He liked to jump. He liked to play."
+- End with a simple question: "Think about it: What do you like to do?"
+Write the story now. ${wordTarget} words total.`,
+    "1": `Use very simple words a 6-7 year old knows. Write in short but natural sentences that flow together smoothly into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
+    "2": `Use simple but varied vocabulary for a 7-8 year old. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Tell a real story or share interesting facts in a narrative way. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
+    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write in natural paragraphs with varied sentence structure. Include interesting details, descriptive language, and a clear point or message. Do NOT use bullet points or lists. End with one "Think about it:" question.`
   };
 
   const instructions = gradeInstructions[grade] || gradeInstructions["1"];
+  const fullPrompt = (grade === 'prek' || grade === 'k')
+    ? `Write a story about ${category}.\n\n${instructions}`
+    : `Write a story about ${category} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`;
 
   const response = await fetch(CF_STORY, {
     method: "POST", headers: { "Content-Type": "application/json" },
@@ -503,7 +520,7 @@ async function generateAIStory(grade, category, wordTarget) {
       grade: gradeNames[grade] || grade,
       topic: category,
       wordCount: wordTarget,
-      instructions: `Write a story that is approximately ${wordTarget} words long. Do NOT include a title, heading, label, or any text before the story. Start the story immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`
+      instructions: fullPrompt
     })
   });
   if (!response.ok) throw new Error("Cloud function error: " + response.status);
