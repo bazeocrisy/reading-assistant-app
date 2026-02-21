@@ -796,6 +796,10 @@ function renderStory(title, body) {
     .replace(/#+\s*/g, '')
     .replace(/\*\*(.*?)\*\*/g, '$1')
     .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
+    .replace(/^[^\n]*\n/, (line) => {
+      // Remove the first line if it contains no sentence-ending punctuation (it's a title)
+      return /[.!?,]/.test(line) ? line : '';
+    })
     .trim();
 
   // Split into paragraphs first, then words within each paragraph
@@ -901,8 +905,9 @@ function markWordStuck() {
   stuckTimer = setTimeout(() => teacherSayWord(currentWordIdx), 5000);
 }
 
-function teacherSayWord(idx) {
-  const word = normalizeWord(S.wordEls[idx]?.textContent || '');
+async function teacherSayWord(idx) {
+  const word = S.wordEls[idx]?.textContent?.trim() || '';
+  if (!word) { advanceWord(); return; }
   if (S.wordEls[idx]) {
     S.wordEls.forEach(w => w.classList.remove('highlight'));
     S.wordEls[idx].classList.add('highlight');
@@ -910,6 +915,30 @@ function teacherSayWord(idx) {
     S.wordEls[idx].style.color = '#ffffff';
     S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+  try {
+    const voiceName = VOICE_NAMES[S.voiceGender]?.[parseInt(S.grade)] || 'en-US-Neural2-F';
+    const response = await fetch(CF_TTS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: word, grade: parseInt(S.grade) || 1, voiceName })
+    });
+    const data = await response.json();
+    if (data.audioBase64) {
+      const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+      audio.playbackRate = 0.85;
+      audio.onended = () => {
+        if (S.wordEls[idx]) {
+          S.wordEls[idx].classList.remove('highlight');
+          S.wordEls[idx].style.background = '';
+          S.wordEls[idx].style.color = '';
+        }
+        advanceWord();
+      };
+      audio.play();
+      return;
+    }
+  } catch(e) {}
+  // Fallback to browser voice if Cloud TTS fails
   const utt = new SpeechSynthesisUtterance(word);
   utt.rate = 0.8; utt.pitch = 1.1;
   utt.onend = () => {
