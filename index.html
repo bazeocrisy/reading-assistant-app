@@ -370,8 +370,11 @@ footer strong { color: #4D96FF; }
         <button class="btn-main btn-gray" id="btn-stop-tts" disabled>⏹ Stop</button>
       </div>
 
-      <div class="listening-badge" id="listening-badge"><div class="mic-pulse"></div>Listening... Read out loud!</div>
-      <div class="processing-badge" id="processing-badge"><div class="spin-circle" style="width:20px;height:20px;border-width:3px;margin:0;"></div>&nbsp;Checking your reading...</div>
+      <div style="margin-top:10px;text-align:center;font-size:0.8rem;color:#aaa;font-weight:700;">
+        💡 Double-click any word to hear it said
+      </div>
+
+      <div class="listening-badge" id="listening-badge"><div class="mic-pulse"></div>Your turn! Read out loud!</div>
       <button class="btn-main btn-coral" id="btn-record" style="margin-top:14px;">🎤 My Turn! Read Aloud</button>
       <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← Pick New Topic</button>
     </div>
@@ -701,6 +704,16 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
   S.unsubscribers.push(unsub);
 });
 
+// ── Clean AI story text once at load time ─────────────────
+function cleanStoryText(text) {
+  return text
+    .replace(/#+\s*/g, '')                          // remove all # characters
+    .replace(/\*\*(.*?)\*\*/g, '$1')                // strip bold markers
+    .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
+    .replace(/^[^\n]*\n/, line => /[.!?,]/.test(line) ? line : '') // remove title line
+    .trim();
+}
+
 // ── Load story ────────────────────────────────────────────
 async function loadStory() {
   show('screen-loading');
@@ -709,7 +722,7 @@ async function loadStory() {
     loadingMsg.textContent = '✨ Writing your story with AI...';
     const aiText = await generateAIStory(S.grade, S.category, S.wordTarget);
     S.storyTitle = `✨ ${S.category.charAt(0).toUpperCase() + S.category.slice(1)} Story`;
-    S.story = aiText;
+    S.story = cleanStoryText(aiText);
     S.isAIStory = true;
   } catch (err) {
     console.warn('AI generation failed, using fallback:', err);
@@ -791,19 +804,9 @@ function renderStory(title, body) {
   if (!S.isAIStory) titleEl.textContent = title;
   const container = document.getElementById('story-text');
   container.innerHTML = ''; S.wordEls = [];
-  // Strip markdown headers, titles, bold labels from AI output
-  const cleanBody = body
-    .replace(/#+\s*/g, '')
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
-    .replace(/^[^\n]*\n/, (line) => {
-      // Remove the first line if it contains no sentence-ending punctuation (it's a title)
-      return /[.!?,]/.test(line) ? line : '';
-    })
-    .trim();
 
-  // Split into paragraphs first, then words within each paragraph
-  const paragraphs = cleanBody.split(/\n\s*\n/);
+  // Split into paragraphs, then words within each paragraph
+  const paragraphs = body.split(/\n\s*\n/);
   paragraphs.forEach((para, pIdx) => {
     para.trim().split(/(\s+)/).forEach(chunk => {
       if (/\S/.test(chunk)) {
@@ -811,16 +814,11 @@ function renderStory(title, body) {
         span.className = 'word'; span.textContent = chunk;
         span.addEventListener('dblclick', () => {
           const idx = S.wordEls.indexOf(span);
-          if (idx >= 0 && idx === currentWordIdx && recActive) {
-            clearTimeout(stuckTimer);
-            stuckTimer = null;
-            teacherSayWord(idx);
-          }
+          if (idx >= 0) { teacherSayWord(idx); }
         });
         container.appendChild(span); S.wordEls.push(span);
       } else { container.appendChild(document.createTextNode(chunk)); }
     });
-    // Add paragraph break between paragraphs
     if (pIdx < paragraphs.length - 1) {
       container.appendChild(document.createElement('br'));
       container.appendChild(document.createElement('br'));
