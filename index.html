@@ -552,7 +552,7 @@ function startHighlightLoop() {
   stopRAF();
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
-    const nowMs = ttsAudio.currentTime * 1000;
+    const nowMs = (ttsAudio.currentTime * 1000) * S.speed;
 
     // Find the last word whose startMs <= nowMs
     let activeIdx = -1;
