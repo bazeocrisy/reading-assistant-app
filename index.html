@@ -230,6 +230,9 @@ body.bedtime .voice-btn { background: #252540; border-color: #3a3a5c; color: #d0
 body.bedtime .voice-btn.sel-voice { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
 body.bedtime .progress-wrap, body.bedtime .vs-bar-wrap { background: #3a3a5c; }
 body.bedtime .or-divider::before, body.bedtime .or-divider::after { background: #3a3a5c; }
+footer { text-align: center; padding: 20px; font-size: 0.78rem; color: var(--muted); font-weight: 700; }
+footer strong { color: var(--purple-deep); }
+.foot-sub { font-size: 0.72rem; opacity: 0.7; }
 body.bedtime footer { color: #6060a0; }
 body.bedtime footer strong { color: #9070c0; }
 body.bedtime .bg .blob { opacity: 0.03; }
@@ -333,7 +336,6 @@ header { position: relative; }
         <button class="opt-btn" data-words="200">200</button>
         <button class="opt-btn" data-words="300">300</button>
         <button class="opt-btn" data-words="500">500</button>
-        <button class="opt-btn" data-words="1000">1000</button>
       </div>
       <div class="section-label">Pick a topic:</div>
       <div class="categories">
@@ -892,7 +894,7 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   const voiceName = VOICE_NAMES[voiceGender]?.[gradeKey] || "en-US-Wavenet-F";
   // Map grade string to numeric for Cloud Function speaking rate
   const gradeNum = grade === 'prek' ? 0 : grade === 'k' ? 0 : parseInt(grade) || 1;
-  const cacheKey = `${voiceName}:${text.substring(0, 80)}`;
+  const cacheKey = `${voiceName}:${storyHash(text)}`;
   if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
   const response = await fetch(CF_TTS, {
     method: 'POST',
@@ -909,6 +911,15 @@ async function fetchTTSAudio(text, grade, voiceGender) {
 
 async function playSpeech(startFromMs) {
   if (!S.story) return;
+  // Change 7: Offline check
+  if (!navigator.onLine) {
+    const t = document.getElementById('word-toast');
+    t.textContent = '📡 No internet — read along on your own!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+    resetTTSButtons();
+    return;
+  }
   ttsState = 'loading';
   document.getElementById('btn-play').textContent = '⏳ Loading...';
   document.getElementById('btn-play').disabled = true;
@@ -1040,10 +1051,14 @@ async function loadStory() {
   show('screen-loading');
   const loadingMsg = document.getElementById('loading-msg');
   try {
-    loadingMsg.textContent = S.wordTarget >= 1000
-      ? '📖 Writing your epic story... (this one takes a moment!)'
-      : '✨ Writing your story with AI...';
-    const aiText = await generateAIStory(S.grade, S.category, S.wordTarget);
+    loadingMsg.textContent = '✨ Writing your story with AI...';
+    const aiTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 15000)
+    );
+    const aiText = await Promise.race([
+      generateAIStory(S.grade, S.category, S.wordTarget),
+      aiTimeout
+    ]);
     const TOPIC_NAMES = { animals:"Animals", space:"Space", dinosaurs:"Dinosaurs", ocean:"Ocean", superheroes:"Superheroes", magic:"Magic", sports:"Sports", cooking:"Cooking", friends:"Friends", confidence:"Self-Confidence", blackhistory:"Black History Heroes", helpers:"Community Helpers", nature:"Nature & Weather", emotions:"Feelings & Emotions" };
     S.storyTitle = `✨ ${TOPIC_NAMES[S.category] || S.category} Story`;
     S.story = cleanStoryText(aiText);
@@ -1152,7 +1167,12 @@ function renderStory(title, body) {
 }
 
 // ── Double-click word helper ──────────────────────────────
+let lastWordTapTime = 0;
+
 async function teacherSayWord(idx) {
+  const now = Date.now();
+  if (now - lastWordTapTime < 1500) return;
+  lastWordTapTime = now;
   const word = S.wordEls[idx]?.textContent?.trim() || '';
   if (!word) return;
   // Save to word bank
@@ -1202,6 +1222,10 @@ document.getElementById('btn-cancel-host').addEventListener('click', async () =>
   cleanupRoom(); show('screen-pick');
 });
 document.getElementById('btn-new').addEventListener('click', () => {
+  const count = getCurrentReadCount();
+  if (count > 0 && count < 3) {
+    if (!confirm(`You're on Read #${count}! Leave this story?`)) return;
+  }
   stopTTS(); cleanupRoom();
   clearTimeout(S._finishedBtnTimer);
   document.getElementById('btn-finished-reading').style.display = 'none';
@@ -1551,6 +1575,13 @@ document.getElementById('btn-reset-data').addEventListener('click', () => {
   localStorage.removeItem(LS_KEY);
   openParentDashboard();
   alert('All data has been reset.');
+});
+// Change 7: Offline detection banner
+window.addEventListener('offline', () => {
+  const t = document.getElementById('word-toast');
+  t.textContent = '📡 No internet — stories still work offline!';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
 });
 
 </script>
