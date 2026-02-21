@@ -884,8 +884,10 @@ function markWordStuck() {
 function teacherSayWord(idx) {
   const word = normalizeWord(S.wordEls[idx]?.textContent || '');
   if (S.wordEls[idx]) {
+    S.wordEls[idx].classList.add('highlight');
     S.wordEls[idx].style.background = '#A259FF';
     S.wordEls[idx].style.color = '#ffffff';
+    S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   const utt = new SpeechSynthesisUtterance(word);
   utt.rate = 0.8; utt.pitch = 1.1;
