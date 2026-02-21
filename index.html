@@ -756,15 +756,6 @@ function setupReadScreen() {
     document.getElementById('their-progress-bar').style.width = '0%';
     document.getElementById('my-pct').textContent = '0%';
     document.getElementById('their-pct').textContent = '0%';
-    const oppRole = S.myRole === 'host' ? 'guest' : 'host';
-    const unsub = onValue(ref(db, `rooms/${S.roomCode}/${oppRole}`), snap => {
-      const d = snap.val(); if (!d) return;
-      const pct = Math.round(d.progress || 0);
-      document.getElementById('their-progress-bar').style.width = pct + '%';
-      document.getElementById('their-pct').textContent = pct + '%';
-      if (d.done && d.wpm != null) receiveTheirResult(d.wpm);
-    });
-    S.unsubscribers.push(unsub);
   }
 }
 
