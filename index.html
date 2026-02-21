@@ -256,6 +256,8 @@ footer .foot-sub { color: var(--purple-light); font-style: italic; margin-top: 3
       <div class="card-title">Build your story! 🌟</div>
       <div class="section-label">Your grade:</div>
       <div class="option-row" id="grade-row">
+        <button class="opt-btn" data-grade="prek">Pre-K</button>
+        <button class="opt-btn" data-grade="k">K</button>
         <button class="opt-btn sel-grade" data-grade="1">1st</button>
         <button class="opt-btn" data-grade="2">2nd</button>
         <button class="opt-btn" data-grade="3">3rd</button>
@@ -268,6 +270,7 @@ footer .foot-sub { color: var(--purple-light); font-style: italic; margin-top: 3
         <button class="opt-btn" data-words="200">200</button>
         <button class="opt-btn" data-words="300">300</button>
         <button class="opt-btn" data-words="500">500</button>
+        <button class="opt-btn" data-words="1000">1000</button>
       </div>
       <div class="section-label">Pick a topic:</div>
       <div class="categories">
@@ -456,7 +459,7 @@ footer .foot-sub { color: var(--purple-light); font-style: italic; margin-top: 3
 </div>
 
 <footer>
-  <strong>ReadUp!</strong> &nbsp;|&nbsp; A Transforming Youth, Inc. Program &nbsp;|&nbsp; Grades 1–3<br>
+  <strong>ReadUp!</strong> &nbsp;|&nbsp; A Transforming Youth, Inc. Program &nbsp;|&nbsp; Pre-K – 3rd Grade<br>
   <span class="foot-sub">✨ Inspired by Kamryn &amp; Christopher II ✨</span>
 </footer>
 
@@ -482,14 +485,25 @@ const CF_STT   = `${CF_BASE}/transcribeSpeech`;
 
 // ── AI Story Generation ───────────────────────────────────
 async function generateAIStory(grade, category, wordTarget) {
-  const gradeNames = { "1": "1st", "2": "2nd", "3": "3rd" };
+  const gradeNames = { "prek": "Pre-K", "k": "Kindergarten", "1": "1st", "2": "2nd", "3": "3rd" };
+
+  const gradeInstructions = {
+    "prek": `Use only simple 3-4 word sentences. Use CVC words (cat, dog, run, big, hat, sit). Use high-frequency sight words only (the, is, a, I, my, see, like, can, we, it, go, at, in). No multi-syllable words at all. Use repetitive sentence patterns to build familiarity (e.g. "I see a cat. I see a dog. I see a fish."). No compound or complex sentences. Very short story.`,
+    "k": `Use simple sentences of 5-7 words. Use common CVC and CVCe words (like, make, home, came, ride). Use Dolch pre-primer and primer sight words. Short paragraphs of 2-3 sentences. Minimal multi-syllable words. Some repetitive patterns but with more variety than Pre-K. Keep it warm and simple.`,
+    "1": `Use very simple words a 6-7 year old knows. Write in short but natural sentences that flow together smoothly into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists.`,
+    "2": `Use simple but varied vocabulary for a 7-8 year old. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Tell a real story or share interesting facts in a narrative way. Do NOT use bullet points or lists.`,
+    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write in natural paragraphs with varied sentence structure. Include interesting details, descriptive language, and a clear point or message. Do NOT use bullet points or lists.`
+  };
+
+  const instructions = gradeInstructions[grade] || gradeInstructions["1"];
+
   const response = await fetch(CF_STORY, {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       grade: gradeNames[grade] || grade,
       topic: category,
       wordCount: wordTarget,
-      instructions: `Write a story that is exactly ${wordTarget} words long. Do NOT include a title, heading, label, or any text before the story. Start the story immediately with the first word. Use natural paragraph breaks every 3-5 sentences to break up the story. Do not use markdown formatting.`
+      instructions: `Write a story that is approximately ${wordTarget} words long. Do NOT include a title, heading, label, or any text before the story. Start the story immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`
     })
   });
   if (!response.ok) throw new Error("Cloud function error: " + response.status);
@@ -575,8 +589,8 @@ let ttsPausedAtMs = 0;
 let ttsAudioCache = new Map();
 
 const VOICE_NAMES = {
-  female: { 1: "en-US-Wavenet-F", 2: "en-US-Wavenet-F", 3: "en-US-Wavenet-C" },
-  male:   { 1: "en-US-Wavenet-D", 2: "en-US-Wavenet-D", 3: "en-US-Wavenet-A" },
+  female: { prek: "en-US-Wavenet-F", k: "en-US-Wavenet-F", 1: "en-US-Wavenet-F", 2: "en-US-Wavenet-F", 3: "en-US-Wavenet-C" },
+  male:   { prek: "en-US-Wavenet-D", k: "en-US-Wavenet-D", 1: "en-US-Wavenet-D", 2: "en-US-Wavenet-D", 3: "en-US-Wavenet-A" },
 };
 
 function stopRAF() {
@@ -649,13 +663,16 @@ function stopTTS() {
 }
 
 async function fetchTTSAudio(text, grade, voiceGender) {
-  const voiceName = VOICE_NAMES[voiceGender]?.[parseInt(grade)] || "en-US-Neural2-F";
+  const gradeKey = (grade === 'prek' || grade === 'k') ? grade : parseInt(grade);
+  const voiceName = VOICE_NAMES[voiceGender]?.[gradeKey] || "en-US-Wavenet-F";
+  // Map grade string to numeric for Cloud Function speaking rate
+  const gradeNum = grade === 'prek' ? 0 : grade === 'k' ? 0 : parseInt(grade) || 1;
   const cacheKey = `${voiceName}:${text.substring(0, 80)}`;
   if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
   const response = await fetch(CF_TTS, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, grade: parseInt(grade) || 2, voiceName })
+    body: JSON.stringify({ text, grade: gradeNum, voiceName })
   });
   if (!response.ok) throw new Error('TTS failed: ' + response.status);
   const data = await response.json();
@@ -730,9 +747,19 @@ document.getElementById('btn-pause').addEventListener('click', () => {
 document.getElementById('btn-stop-tts').addEventListener('click', stopTTS);
 
 // ── Pickers ───────────────────────────────────────────────
+const GRADE_DEFAULTS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
+
 document.querySelectorAll('#grade-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('#grade-row .opt-btn').forEach(b => b.classList.remove('sel-grade'));
-  btn.classList.add('sel-grade'); S.grade = btn.dataset.grade;
+  btn.classList.add('sel-grade');
+  S.grade = btn.dataset.grade;
+  // Auto-select default word count for this grade
+  const defaultWords = GRADE_DEFAULTS[S.grade] || 100;
+  S.wordTarget = defaultWords;
+  document.querySelectorAll('#words-row .opt-btn').forEach(b => {
+    b.classList.remove('sel-words');
+    if (parseInt(b.dataset.words) === defaultWords) b.classList.add('sel-words');
+  });
 }));
 document.querySelectorAll('#words-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('#words-row .opt-btn').forEach(b => b.classList.remove('sel-words'));
@@ -786,7 +813,9 @@ async function loadStory() {
   show('screen-loading');
   const loadingMsg = document.getElementById('loading-msg');
   try {
-    loadingMsg.textContent = '✨ Writing your story with AI...';
+    loadingMsg.textContent = S.wordTarget >= 1000
+      ? '📖 Writing your epic story... (this one takes a moment!)'
+      : '✨ Writing your story with AI...';
     const aiText = await generateAIStory(S.grade, S.category, S.wordTarget);
     S.storyTitle = `✨ ${S.category.charAt(0).toUpperCase() + S.category.slice(1)} Story`;
     S.story = cleanStoryText(aiText);

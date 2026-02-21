@@ -40,7 +40,8 @@ exports.synthesizeSpeech = onRequest(
         // Force Wavenet if a Neural2 voice was passed in — Neural2 won't return timepoints
         const finalVoice = resolvedVoice.replace("Neural2", "Wavenet");
 
-        const speakingRate = grade === 1 ? 0.85 : grade === 2 ? 0.9 : 1.0;
+        // Speaking rate by grade: 0=Pre-K/K (slowest), 1=1st, 2=2nd, 3=3rd
+        const speakingRate = grade === 0 ? 0.75 : grade === 1 ? 0.85 : grade === 2 ? 0.9 : 1.0;
 
         const [response] = await ttsClient.synthesizeSpeech({
           input: { ssml },
