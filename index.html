@@ -507,10 +507,22 @@ header { position: relative; }
 
       <div class="listening-badge" id="listening-badge" style="display:none;"></div>
       <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← Pick New Topic</button>
+      <!-- Bug 5: Silent reading completion button, appears after 10 seconds -->
+      <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;">✅ I Finished Reading!</button>
     </div>
   </div>
 
-  <!-- SCREEN: Race results - now just shows "finished reading together" -->
+  <!-- SCREEN: Solo complete (reread tracker) -->
+  <div class="screen" id="screen-solo-complete">
+    <div class="card" style="text-align:center;">
+      <div class="card-title" id="solo-complete-title">⭐ Great Reading!</div>
+      <div class="encouragement" id="solo-complete-msg" style="margin-bottom:16px;"></div>
+      <button class="btn-main btn-green" id="btn-solo-retry" style="font-size:1.1rem;">▶ Read Again</button>
+      <button class="btn-main btn-outline" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Race results -->
   <div class="screen" id="screen-race-results">
     <div class="card">
       <div class="card-title" style="text-align:center;" id="race-result-title">Great Reading! 🎉</div>
@@ -740,14 +752,17 @@ const STORIES = {
   emotions:{1:[{words:50,title:"All Feelings Are Okay",body:"Sometimes Jaylen feels mad. Sometimes he feels sad. Sometimes he feels scared or worried. His grandma says every feeling has a name and every feeling is okay. Mad means something feels unfair. Sad means you lost something you loved. Scared means your body is trying to keep you safe. Feelings are not problems to fix. They are messages to listen to. Think about it: What feeling do you have trouble talking about?"},{words:100,title:"The Worry Jar",body:"Sofia had so many worries that they kept her awake at night. She worried about tests. She worried about her dad's new job. She worried about her best friend moving away. Her mom gave her a small glass jar and some slips of paper. Every night before bed Sofia wrote each worry on a slip and put it in the jar. Then she closed the lid. Mom said the worries are real but they do not have to live in your head all night. They can wait in the jar until morning. Some mornings Sofia opened the jar and the worries seemed smaller somehow. Think about it: What do you do with your worries before you go to sleep?"}],2:[{words:100,title:"Reading the Room",body:"Emotional intelligence is a phrase that means being aware of your own feelings and understanding the feelings of people around you. Researchers have found that people with high emotional intelligence tend to have stronger friendships, do better in school, and handle stressful situations more effectively. The ability to read a room, to notice when someone is upset before they say anything, is a skill that can be practiced. It starts with paying attention. What is the person's face doing? How are they holding their body? Has their voice changed? These details tell a story. People who are truly good listeners know that much of what someone says has nothing to do with the actual words. Think about it: Think of someone you know well. How can you usually tell how they are feeling without asking?"}],3:[{words:150,title:"The Science of Empathy",body:"For a long time scientists believed that emotions were separate from thinking, that the rational brain and the emotional brain worked independently. Brain imaging technology has shown us this is completely wrong. Emotions and reasoning are deeply connected. When people suffer damage to the parts of the brain that process emotion they actually make worse decisions, not better ones. Empathy, the ability to feel what another person feels, activates the same regions of the brain that fire when we experience something ourselves. In a literal neurological sense, when you feel bad for someone who is hurting, your brain is partially experiencing their pain. This is why stories are so powerful. Reading about a character going through something hard builds the same neural pathways as experiencing it ourselves. Think about it: How does knowing that empathy is a brain function rather than a personality trait change how you think about it?"}]}
 
 };
+// Bug 1 fix: friends button maps to friendship fallback stories
+STORIES.friends = STORIES.friendship;
 
 // ── Helpers ───────────────────────────────────────────────
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+// Bug 6 fix: robust fallback chain handles missing grade levels
 function getStory(cat, grade, wordTarget) {
-  const pool = STORIES[cat]?.[grade] || STORIES[cat]?.['2'] || STORIES['animals']['1'];
+  const pool = STORIES[cat]?.[grade] || STORIES[cat]?.['2'] || STORIES[cat]?.['1'] || STORIES['animals']['1'];
   let best = pool[0];
   pool.forEach(s => { if (Math.abs(s.words - wordTarget) < Math.abs(best.words - wordTarget)) best = s; });
   return best;
@@ -1085,6 +1100,15 @@ function setupReadScreen() {
   updateReadBadge();
   document.getElementById('vs-progress').style.display = S.isRace ? 'block' : 'none';
   document.getElementById('solo-progress-wrap').style.display = S.isRace ? 'none' : 'block';
+  // Bug 5: Show "I Finished Reading" button after 10 seconds for silent readers
+  const finishedBtn = document.getElementById('btn-finished-reading');
+  finishedBtn.style.display = 'none';
+  if (!S.isRace) {
+    clearTimeout(S._finishedBtnTimer);
+    S._finishedBtnTimer = setTimeout(() => {
+      finishedBtn.style.display = 'block';
+    }, 10000);
+  }
   if (S.isRace) {
     document.getElementById('my-progress-bar').style.width = '0%';
     document.getElementById('their-progress-bar').style.width = '0%';
@@ -1149,10 +1173,12 @@ async function teacherSayWord(idx) {
     }
   };
   try {
-    const voiceName = VOICE_NAMES[S.voiceGender]?.[parseInt(S.grade)] || 'en-US-Neural2-F';
+    const gradeKey = (S.grade === 'prek' || S.grade === 'k') ? S.grade : parseInt(S.grade);
+    const voiceName = VOICE_NAMES[S.voiceGender]?.[gradeKey] || 'en-US-Wavenet-F';
+    const gradeNum = (S.grade === 'prek' || S.grade === 'k') ? 0 : parseInt(S.grade) || 1;
     const response = await fetch(CF_TTS, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: word, grade: parseInt(S.grade) || 1, voiceName })
+      body: JSON.stringify({ text: word, grade: gradeNum, voiceName })
     });
     const data = await response.json();
     if (data.audioBase64) {
@@ -1176,6 +1202,20 @@ document.getElementById('btn-cancel-host').addEventListener('click', async () =>
   cleanupRoom(); show('screen-pick');
 });
 document.getElementById('btn-new').addEventListener('click', () => {
+  stopTTS(); cleanupRoom();
+  clearTimeout(S._finishedBtnTimer);
+  document.getElementById('btn-finished-reading').style.display = 'none';
+  show('screen-pick');
+});
+document.getElementById('btn-finished-reading').addEventListener('click', () => {
+  document.getElementById('btn-finished-reading').style.display = 'none';
+  clearTimeout(S._finishedBtnTimer);
+  recordReadComplete();
+});
+document.getElementById('btn-solo-retry').addEventListener('click', () => {
+  setupReadScreen(); show('screen-read');
+});
+document.getElementById('btn-solo-new').addEventListener('click', () => {
   stopTTS(); cleanupRoom(); show('screen-pick');
 });
 document.getElementById('btn-race-retry').addEventListener('click', () => {
@@ -1299,32 +1339,29 @@ function updateReadBadge() {
 
 // Show completion / encouragement for rereading
 function showReadComplete(readCount) {
-  const msg = document.getElementById('race-msg');
-  const retryBtn = document.getElementById('btn-race-retry');
-  const newBtn = document.getElementById('btn-race-new');
+  const title = document.getElementById('solo-complete-title');
+  const msg = document.getElementById('solo-complete-msg');
+  const retryBtn = document.getElementById('btn-solo-retry');
+  const newBtn = document.getElementById('btn-solo-new');
   if (readCount >= 3) {
-    msg.innerHTML = `⭐ Superstar Reader! You read this story ${readCount} times!`;
+    title.textContent = '⭐ Superstar Reader!';
+    msg.innerHTML = `You read this story ${readCount} times! You're amazing!`;
     retryBtn.textContent = '🔄 Read Again';
-    retryBtn.style.opacity = '0.6';
-    retryBtn.style.fontSize = '0.95rem';
+    retryBtn.className = 'btn-main btn-outline';
     newBtn.className = 'btn-main btn-green';
-    newBtn.textContent = '📚 New Story';
     newBtn.style.marginTop = '0';
     retryBtn.style.marginTop = '10px';
-    newBtn.before(retryBtn); // New story first when 3+ reads
   } else {
     const next = readCount + 1;
-    msg.innerHTML = `✅ Read #${readCount} done!<br><span style="font-size:0.9rem;opacity:0.8;">Great readers read 3 times! Ready for read #${next}?</span>`;
+    title.textContent = `✅ Read #${readCount} Complete!`;
+    msg.innerHTML = `Great readers read stories 3 times!<br><span style="font-size:0.9rem;opacity:0.8;">Ready for read #${next}?</span>`;
     retryBtn.textContent = `▶ Read #${next} — Let's Go!`;
     retryBtn.className = 'btn-main btn-green';
-    retryBtn.style.opacity = '1';
-    retryBtn.style.fontSize = '1.1rem';
     retryBtn.style.marginTop = '0';
-    newBtn.style.marginTop = '10px';
     newBtn.className = 'btn-main btn-outline';
-    retryBtn.before(newBtn.nextSibling || newBtn); // Retry is primary
+    newBtn.style.marginTop = '10px';
   }
-  show('screen-race-results');
+  show('screen-solo-complete');
 }
 
 // ── Word Bank ─────────────────────────────────────────────
@@ -1360,7 +1397,7 @@ function applyBedtime(on) {
     const slider = document.getElementById('speed-slider');
     if (slider && parseFloat(slider.value) > 0.8) {
       slider.value = 0.8;
-      S.playbackRate = 0.8;
+      S.speed = 0.8;
       document.getElementById('speed-display').textContent = '0.8×';
     }
   }
