@@ -542,16 +542,18 @@ function resetTTSButtons() {
 
 function startHighlightLoop() {
   stopRAF();
+  let lastActiveIdx = -1;
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
-    const nowMs = (ttsAudio.currentTime * 1000) * S.speed;
+    const nowMs = ttsAudio.currentTime * 1000;
     let activeIdx = -1;
     for (let i = 0; i < ttsWordTimings.length; i++) {
       if (ttsWordTimings[i].startMs <= nowMs) activeIdx = i;
       else break;
     }
-    if (activeIdx >= 0) {
-      S.wordEls.forEach((w) => w.classList.remove('highlight'));
+    if (activeIdx >= 0 && activeIdx !== lastActiveIdx) {
+      lastActiveIdx = activeIdx;
+      S.wordEls.forEach(w => w.classList.remove('highlight'));
       if (S.wordEls[activeIdx]) {
         S.wordEls[activeIdx].classList.add('highlight');
         S.wordEls[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -791,9 +793,8 @@ function renderStory(title, body) {
   container.innerHTML = ''; S.wordEls = [];
   // Strip markdown headers, titles, bold labels from AI output
   const cleanBody = body
-    .replace(/^#+\s*.+\n*/m, '')          // remove markdown headers
-    .replace(/^\*\*.*?\*\*\s*\n*/m, '')   // remove bold titles
-    .replace(/^[A-Z][^.!?]*(?:\n|$)/, '')  // remove plain title-case first line with no punctuation
+    .replace(/#+\s*/g, '')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
     .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
     .trim();
 
