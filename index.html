@@ -953,7 +953,10 @@ async function playSpeech(startFromMs) {
   } catch (err) {
     console.error('TTS error:', err);
     resetTTSButtons();
-    alert('Could not load audio. Please check your internet connection and try again.');
+    const t = document.getElementById('word-toast');
+    t.textContent = '⚠️ Audio unavailable — try again';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 }
 
