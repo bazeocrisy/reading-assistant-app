@@ -987,4 +987,1491 @@ document.getElementById('btn-race-new').addEventListener('click', async () => {
 });
 </script>
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadUp! — Transforming Youth Inc.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@400;500;600;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #9B30FF;
+    --purple-deep: #6B2D8B;
+    --purple-dark: #4A1A6B;
+    --purple-light: #C9A0DC;
+    --purple-soft: #F3EAFC;
+    --grey-light: #B0B0B0;
+    --grey-mid: #808080;
+    --bg: #FDFBFF;
+    --card: #FFFFFF;
+    --section: #F7F3FB;
+    --ink: #2A2035;
+    --body: #4A4255;
+    --muted: #8E849A;
+    --border: #E8E0F0;
+    --gold: #FFD93D;
+    --green: #6BCB77;
+    --coral: #FF6B6B;
+    --ocean: #4D96FF;
+    --shadow: 0 4px 24px rgba(74,26,107,0.1);
+    --r: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: #EFEAF5; min-height: 100vh; overflow-x: hidden; }
+
+.bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.blob { position: absolute; border-radius: 50%; opacity: 0.06; filter: blur(60px); animation: drift 12s ease-in-out infinite alternate; }
+.blob1 { width: 400px; height: 400px; background: var(--purple); top: -100px; left: -100px; }
+.blob2 { width: 300px; height: 300px; background: var(--gold); top: 60%; right: -80px; animation-delay: -4s; }
+.blob3 { width: 350px; height: 350px; background: var(--green); bottom: -80px; left: 30%; animation-delay: -8s; }
+@keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.08); } }
+
+.app { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; }
+
+header { text-align: center; padding: 24px 0 16px; }
+
+/* Bar chart logo mark */
+.logo-mark { display: flex; align-items: flex-end; justify-content: center; gap: 3px; margin-bottom: 8px; }
+.bar { border-radius: 4px; }
+.bar1 { width: 10px; height: 20px; background: var(--grey-light); }
+.bar2 { width: 10px; height: 34px; background: var(--grey-mid); }
+.bar3 { width: 10px; height: 50px; background: linear-gradient(to top, var(--purple-deep), var(--purple)); position: relative; }
+.bar3::before { content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 9px; height: 9px; background: linear-gradient(to top, var(--purple-deep), var(--purple)); border-radius: 50%; }
+
+.logo { font-family: 'Fredoka', sans-serif; font-size: 2.6rem; font-weight: 700; color: var(--purple-dark); line-height: 1.1; animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+.logo span { color: var(--purple); }
+.tagline { font-family: 'Fredoka', sans-serif; font-size: 1rem; color: var(--purple-deep); font-weight: 600; margin-top: 4px; font-style: italic; }
+.nonprofit-badge { display: inline-block; margin-top: 8px; padding: 4px 14px; background: var(--purple-soft); border: 1.5px solid var(--border); border-radius: 20px; font-family: 'Oswald', sans-serif; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: var(--purple-deep); font-weight: 500; }
+.dedication { display: block; margin-top: 6px; font-size: 0.8rem; font-weight: 800; color: var(--purple); font-style: italic; }
+@keyframes popIn { from { opacity:0; transform: scale(0.5); } to { opacity:1; transform: scale(1); } }
+
+.screen { display: none; animation: fadeUp 0.4s ease both; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+.card { background: var(--card); border-radius: 24px; box-shadow: var(--shadow); padding: 28px; margin-top: 20px; border: 1px solid var(--border); }
+.card-title { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); margin-bottom: 18px; }
+.section-label { font-weight: 800; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+.option-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.opt-btn {
+  flex: 1; min-width: 48px; padding: 10px 6px;
+  border: 2.5px solid var(--border); border-radius: 14px;
+  background: var(--card); font-family: 'Nunito'; font-weight: 800;
+  font-size: 0.88rem; cursor: pointer; transition: all 0.2s;
+  color: var(--body); text-align: center;
+}
+.opt-btn:hover { border-color: var(--purple-light); background: var(--purple-soft); }
+.opt-btn.sel-grade { border-color: var(--green); background: #EFFFF4; color: #1B7A3E; }
+.opt-btn.sel-words { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); }
+
+/* Topic buttons with SVG icons */
+.categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.cat-btn {
+  background: var(--section); border: 2.5px solid transparent;
+  border-radius: var(--r); padding: 14px 6px 10px;
+  cursor: pointer; transition: all 0.25s;
+  text-align: center; font-family: 'Nunito';
+  font-weight: 800; font-size: 0.82rem; color: var(--muted);
+}
+.cat-btn svg { width: 38px; height: 38px; display: block; margin: 0 auto 6px; }
+.cat-btn:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(155,48,255,0.15); }
+.cat-btn.selected { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(155,48,255,0.15); }
+/* Keep emoji class for backwards compat but hide it */
+.cat-btn .emoji { display: none; }
+
+.btn-main {
+  display: block; width: 100%; margin-top: 16px; padding: 16px;
+  border-radius: var(--r); border: none;
+  background: linear-gradient(135deg, var(--purple), var(--purple-deep));
+  color: #ffffff; font-family: 'Fredoka', sans-serif;
+  font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(155,48,255,0.3);
+  -webkit-appearance: none;
+}
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(155,48,255,0.4); }
+.btn-main:active { transform: translateY(0); }
+.btn-main:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-green { background: linear-gradient(135deg, #6BCB77, #1BA053) !important; box-shadow: 0 4px 18px rgba(107,203,119,0.35) !important; color: #ffffff !important; }
+.btn-coral { background: linear-gradient(135deg, #FF6B6B, #FF9A3C) !important; box-shadow: 0 4px 18px rgba(255,107,107,0.35) !important; color: #ffffff !important; }
+.btn-purple { background: linear-gradient(135deg, #A259FF, #FF6FD8) !important; box-shadow: 0 4px 18px rgba(162,89,255,0.3) !important; color: #ffffff !important; }
+.btn-yellow { background: linear-gradient(135deg, #FFD93D, #FFA500) !important; box-shadow: 0 4px 18px rgba(255,165,0,0.3) !important; color: var(--ink) !important; }
+.btn-gray { background: linear-gradient(135deg, #aaa, #888) !important; box-shadow: 0 3px 12px rgba(0,0,0,0.15) !important; color: #ffffff !important; }
+.btn-outline {
+  background: var(--card) !important; color: var(--purple) !important;
+  border: 2.5px solid var(--purple) !important; box-shadow: none !important; font-size: 1rem;
+}
+.btn-outline:hover { background: var(--purple-soft) !important; transform: translateY(-2px); }
+
+.or-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; }
+.or-divider::before, .or-divider::after { content:''; flex:1; height:2px; background: var(--border); border-radius:2px; }
+.or-divider span { font-weight: 800; color: #ccc; font-size: 0.85rem; }
+
+#story-text { font-size: 1.4rem; line-height: 2.2rem; color: var(--ink); font-weight: 700; }
+.word { display: inline-block; padding: 3px 5px; border-radius: 7px; transition: background 0.05s, transform 0.05s, color 0.05s; cursor: default; }
+.word.highlight { background: var(--gold) !important; color: var(--ink) !important; transform: scale(1.15) !important; box-shadow: 0 2px 8px rgba(255,180,0,0.5); }
+.word.done { color: var(--green); }
+
+/* ── Voice selector ── */
+.voice-row { display: flex; gap: 10px; margin: 14px 0 4px; align-items: center; }
+.voice-label { font-weight: 800; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+.voice-btn {
+  flex: 1; padding: 9px 6px; border-radius: 12px;
+  border: 2.5px solid var(--border); background: var(--card);
+  font-family: 'Nunito'; font-weight: 800; font-size: 0.9rem;
+  color: var(--body); cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.voice-btn:hover { border-color: var(--purple-light); }
+.voice-btn.sel-voice { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); }
+
+/* ── Speed slider ── */
+.speed-slider-row { margin: 16px 0 4px; }
+.speed-slider-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.speed-slider-label { font-weight: 800; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+.speed-value-badge { background: var(--purple-soft); border: 2px solid var(--purple); border-radius: 10px; padding: 2px 10px; font-family: 'Fredoka'; font-size: 1rem; color: var(--purple); }
+input[type=range].speed-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 10px; border-radius: 10px;
+  background: linear-gradient(90deg, var(--purple) 0%, var(--green) 100%);
+  outline: none; cursor: pointer;
+}
+input[type=range].speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #ffffff; border: 4px solid var(--purple);
+  box-shadow: 0 2px 8px rgba(155,48,255,0.3);
+  cursor: pointer; transition: border-color 0.2s;
+}
+input[type=range].speed-slider::-webkit-slider-thumb:hover { border-color: var(--purple-deep); }
+.speed-emoji-row { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; color: #bbb; margin-top: 4px; padding: 0 2px; }
+
+/* ── TTS controls ── */
+.tts-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; }
+.tts-controls .btn-main { margin-top: 0; font-size: 1rem; padding: 14px 8px; }
+
+.listening-badge { display: none; align-items: center; gap: 8px; background: #FFF0F0; border: 2px solid var(--coral); border-radius: 14px; padding: 10px 16px; margin-top: 14px; font-weight: 800; color: var(--coral); }
+.listening-badge.active { display: flex; }
+.mic-pulse { width: 14px; height: 14px; border-radius: 50%; background: var(--coral); animation: pulse 0.9s ease infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.4);opacity:0.5;} }
+
+.processing-badge { display: none; align-items: center; gap: 8px; background: var(--purple-soft); border: 2px solid var(--purple); border-radius: 14px; padding: 10px 16px; margin-top: 14px; font-weight: 800; color: var(--purple); }
+.processing-badge.active { display: flex; }
+
+.room-code-display { background: linear-gradient(135deg, var(--purple-soft), #EEF5FF); border-radius: 20px; padding: 22px; text-align: center; margin: 14px 0; }
+.room-code-number { font-family: 'Fredoka'; font-size: 4rem; color: var(--purple); letter-spacing: 12px; line-height: 1; }
+.room-code-label { font-weight: 800; color: var(--muted); font-size: 0.82rem; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+.code-input { width: 100%; padding: 16px; border: 2.5px solid var(--border); border-radius: 16px; font-family: 'Fredoka'; font-size: 2rem; text-align: center; letter-spacing: 8px; color: var(--ink); outline: none; transition: border 0.2s; margin: 14px 0 4px; }
+.code-input:focus { border-color: var(--purple); }
+
+.player-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+.player-slot { border: 2.5px solid var(--border); border-radius: 18px; padding: 18px; text-align: center; transition: all 0.3s; }
+.player-slot.joined { border-color: var(--green); background: #EFFFF4; }
+.player-slot.me { border-color: var(--purple); background: var(--purple-soft); }
+.slot-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+.slot-name { font-family: 'Fredoka'; font-size: 1rem; color: var(--ink); }
+.slot-status { font-size: 0.76rem; font-weight: 800; color: var(--muted); margin-top: 4px; }
+.player-slot.joined .slot-status, .player-slot.me .slot-status { color: var(--green); }
+
+.waiting-dots span { animation: blink 1.2s ease infinite; display: inline-block; }
+.waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+.waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
+
+.countdown-wrap { text-align: center; padding: 50px 0; }
+.countdown-number { font-family: 'Fredoka'; font-size: 8rem; color: var(--purple); line-height: 1; animation: countPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+.countdown-go { font-family: 'Fredoka'; font-size: 5rem; color: var(--green); animation: countPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes countPop { from { opacity:0; transform:scale(0.3); } to { opacity:1; transform:scale(1); } }
+
+.encouragement { background: var(--purple-soft); border-radius: 16px; padding: 14px 18px; font-weight: 700; color: var(--ink); text-align: center; font-size: 1rem; margin-bottom: 16px; }
+
+.progress-wrap { background: var(--border); border-radius: 20px; height: 12px; margin: 14px 0; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.15s; width: 0%; }
+.vs-progress { margin: 12px 0; }
+.vs-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.vs-name { font-weight: 800; font-size: 0.82rem; width: 52px; flex-shrink: 0; }
+.vs-bar-wrap { flex: 1; background: var(--border); border-radius: 20px; height: 10px; overflow: hidden; }
+.vs-bar { height: 100%; border-radius: 20px; transition: width 0.4s; width: 0%; }
+.vs-bar.me-bar { background: linear-gradient(90deg, var(--purple), var(--purple-deep)); }
+.vs-bar.them-bar { background: linear-gradient(90deg, var(--coral), #FF9A3C); }
+.vs-pct { font-weight: 800; font-size: 0.8rem; width: 36px; text-align: right; color: var(--muted); flex-shrink: 0; }
+
+.spinner { text-align: center; padding: 40px; }
+.spin-circle { width: 52px; height: 52px; border-radius: 50%; border: 6px solid var(--border); border-top-color: var(--purple); animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-label { font-family: 'Fredoka'; font-size: 1.2rem; color: var(--purple); }
+.ai-badge { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--purple-deep)); color: white; font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+
+.hint-tip { text-align: center; font-size: 0.75rem; color: var(--muted); font-weight: 700; margin: 10px 0; padding: 8px 12px; background: var(--section); border-radius: 12px; }
+
+/* ── Bedtime Mode ── */
+body.bedtime { background: #1a1a2e; color: #F0EBE0; }
+body.bedtime .card { background: #252540; border-color: #3a3a5c; }
+body.bedtime .card-title, body.bedtime #story-text { color: #F0EBE0; }
+body.bedtime .opt-btn { background: #252540; border-color: #3a3a5c; color: #d0c8e8; }
+body.bedtime .section-label { color: #9090b0; }
+body.bedtime .opt-btn.sel-grade { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
+body.bedtime .opt-btn.sel-words { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+body.bedtime .cat-btn { background: #2a2a48; border-color: transparent; color: #9090b0; }
+body.bedtime .cat-btn.selected { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+body.bedtime .voice-btn { background: #252540; border-color: #3a3a5c; color: #d0c8e8; }
+body.bedtime .voice-btn.sel-voice { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+body.bedtime .progress-wrap, body.bedtime .vs-bar-wrap { background: #3a3a5c; }
+body.bedtime .or-divider::before, body.bedtime .or-divider::after { background: #3a3a5c; }
+body.bedtime footer { color: #6060a0; }
+body.bedtime footer strong { color: #9070c0; }
+body.bedtime .bg .blob { opacity: 0.03; }
+body.bedtime .hint-tip { background: #2a2a48; color: #8080a8; }
+body.bedtime .encouragement { background: #2a2a48; color: #d0c8e8; }
+
+.bedtime-toggle { position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; border-radius: 10px; transition: background 0.2s; }
+.bedtime-toggle:hover { background: rgba(155,48,255,0.1); }
+header { position: relative; }
+
+/* ── Reread badge ── */
+.reread-badge { display: inline-block; background: var(--gold); color: var(--ink); font-size: 0.68rem; font-weight: 900; padding: 3px 10px; border-radius: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: 0.5px; }
+
+/* ── Word saved toast ── */
+.word-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+.word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Parent mode button in footer ── */
+.parent-btn { background: none; border: none; color: var(--muted); font-size: 0.72rem; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 8px; margin-top: 8px; opacity: 0.6; transition: opacity 0.2s; }
+.parent-btn:hover { opacity: 1; }
+
+/* ── Parent PIN screen ── */
+.pin-display { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
+.pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--purple); background: transparent; transition: background 0.15s; }
+.pin-dot.filled { background: var(--purple); }
+.pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
+.pin-key { padding: 16px; border: 2.5px solid var(--border); border-radius: 16px; background: var(--card); font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.15s; color: var(--ink); }
+.pin-key:hover { border-color: var(--purple); background: var(--purple-soft); }
+.pin-key.del { font-size: 1.1rem; }
+.pin-error { color: var(--coral); font-weight: 800; text-align: center; font-size: 0.9rem; min-height: 1.2em; margin-top: 8px; }
+
+/* ── Parent Dashboard ── */
+.dash-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.dash-stat { background: var(--section); border-radius: 16px; padding: 14px; text-align: center; }
+.dash-stat-num { font-family: 'Fredoka', sans-serif; font-size: 2rem; color: var(--purple); line-height: 1; }
+.dash-stat-label { font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.topic-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.topic-bar-name { font-size: 0.8rem; font-weight: 800; color: var(--body); width: 80px; flex-shrink: 0; text-transform: capitalize; }
+.topic-bar-wrap { flex: 1; background: var(--border); border-radius: 20px; height: 10px; overflow: hidden; }
+.topic-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--purple), var(--purple-light)); transition: width 0.4s; }
+.topic-bar-count { font-size: 0.75rem; font-weight: 800; color: var(--muted); width: 20px; text-align: right; flex-shrink: 0; }
+.word-bank-list { max-height: 200px; overflow-y: auto; }
+.word-bank-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 10px; margin-bottom: 4px; background: var(--section); }
+.word-bank-word { font-weight: 800; color: var(--ink); font-size: 0.95rem; }
+.word-bank-count { font-size: 0.75rem; font-weight: 700; color: var(--muted); }
+.word-bank-flag { font-size: 0.7rem; background: var(--coral); color: #fff; padding: 2px 7px; border-radius: 10px; font-weight: 800; }
+.dash-section-title { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--ink); margin: 16px 0 10px; }
+.btn-danger { background: linear-gradient(135deg, var(--coral), #ff4444) !important; box-shadow: 0 4px 14px rgba(255,107,107,0.3) !important; color: #fff !important; }
+.change-pin-row { display: flex; gap: 8px; margin-top: 8px; }
+.change-pin-row input { flex: 1; padding: 10px 14px; border: 2.5px solid var(--border); border-radius: 12px; font-family: 'Fredoka', sans-serif; font-size: 1.2rem; text-align: center; letter-spacing: 6px; outline: none; }
+.change-pin-row input:focus { border-color: var(--purple); }
+
+@media (max-width: 480px) {
+  .logo { font-size: 2.2rem; }
+  .categories { grid-template-columns: repeat(2, 1fr); }
+  #story-text { font-size: 1.15rem; line-height: 1.95rem; }
+  .card { padding: 20px 14px; }
+  .countdown-number { font-size: 6rem; }
+  .tts-controls { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div class="app">
+  <header>
+    <div class="logo-mark">
+      <div class="bar bar1"></div>
+      <div class="bar bar2"></div>
+      <div class="bar bar3"></div>
+    </div>
+    <div class="logo">Read<span>Up!</span></div>
+    <button class="bedtime-toggle" id="btn-bedtime" title="Bedtime Mode">🌙</button>
+    <div class="tagline">Reading is a superpower.</div>
+    <div class="nonprofit-badge">A Transforming Youth, Inc. Program</div>
+    <span class="dedication">✨ Inspired by Kamryn &amp; Christopher II ✨</span>
+  </header>
+
+  <!-- SCREEN: Pick -->
+  <div class="screen active" id="screen-pick">
+    <div class="card">
+      <div class="card-title">Build your story! 🌟</div>
+      <div class="section-label">Your grade:</div>
+      <div class="option-row" id="grade-row">
+        <button class="opt-btn" data-grade="prek">Pre-K</button>
+        <button class="opt-btn" data-grade="k">K</button>
+        <button class="opt-btn sel-grade" data-grade="1">1st</button>
+        <button class="opt-btn" data-grade="2">2nd</button>
+        <button class="opt-btn" data-grade="3">3rd</button>
+      </div>
+      <div class="section-label">Story length (words):</div>
+      <div class="option-row" id="words-row">
+        <button class="opt-btn" data-words="50">50</button>
+        <button class="opt-btn sel-words" data-words="100">100</button>
+        <button class="opt-btn" data-words="150">150</button>
+        <button class="opt-btn" data-words="200">200</button>
+        <button class="opt-btn" data-words="300">300</button>
+        <button class="opt-btn" data-words="500">500</button>
+        <button class="opt-btn" data-words="1000">1000</button>
+      </div>
+      <div class="section-label">Pick a topic:</div>
+      <div class="categories">
+        <button class="cat-btn selected" data-cat="animals">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" fill="#C9A0DC" opacity="0.3"/><path d="M12 12c-2-4-6-3-6 0s3 4 5 3" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M28 12c2-4 6-3 6 0s-3 4-5 3" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><ellipse cx="20" cy="20" rx="9" ry="8" fill="#9B30FF"/><circle cx="16.5" cy="18" r="1.5" fill="#fff"/><circle cx="23.5" cy="18" r="1.5" fill="#fff"/><ellipse cx="20" cy="22" rx="2.5" ry="1.5" fill="#6B2D8B"/><path d="M15 26c0 3 2 6 5 6s5-3 5-6" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          Animals
+        </button>
+        <button class="cat-btn" data-cat="space">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#4A1A6B" opacity="0.15"/><path d="M20 6L22 14H28L23 19L25 27L20 22L15 27L17 19L12 14H18L20 6Z" fill="#9B30FF" stroke="#6B2D8B" stroke-width="1"/><circle cx="10" cy="10" r="1.5" fill="#C9A0DC"/><circle cx="32" cy="12" r="1" fill="#C9A0DC"/><circle cx="8" cy="30" r="1" fill="#C9A0DC"/><circle cx="33" cy="28" r="1.5" fill="#C9A0DC"/></svg>
+          Space
+        </button>
+        <button class="cat-btn" data-cat="dinosaurs">
+          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="14" ry="10" fill="#C9A0DC" opacity="0.2"/><path d="M10 28c0-8 4-16 12-16 6 0 10 5 10 12" stroke="#6B2D8B" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="27" cy="16" r="2" fill="#9B30FF"/><circle cx="27" cy="16" r="0.8" fill="#fff"/><path d="M30 14c2-2 4-1 3 1" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round"/><path d="M10 28l-2 4M14 30l-1 4M28 28l1 4M24 30l1 4" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M8 22l-3-1M8 18l-3 0M8 25l-4 0" stroke="#9B30FF" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Dinosaurs
+        </button>
+        <button class="cat-btn" data-cat="ocean">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M4 22c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#C9A0DC" stroke-width="1.5" opacity="0.4"/><path d="M4 28c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#C9A0DC" stroke-width="1.5" opacity="0.25"/><path d="M20 10c-6 0-10 5-10 10 0 3 2 6 5 7l5-2 5 2c3-1 5-4 5-7 0-5-4-10-10-10z" fill="#9B30FF" opacity="0.85"/><circle cx="16" cy="17" r="1.5" fill="#fff"/><circle cx="24" cy="17" r="1.5" fill="#fff"/><path d="M30 16c3-5 6-2 4 1" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          Ocean
+        </button>
+        <button class="cat-btn" data-cat="superheroes">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#9B30FF"/><circle cx="20" cy="12" r="3.5" fill="#4A1A6B"/><path d="M14 20h12l2 14H12l2-14z" fill="#6B2D8B"/><path d="M20 20v14" stroke="#9B30FF" stroke-width="2"/><path d="M16 20l-6 8" stroke="#C9A0DC" stroke-width="2.5" stroke-linecap="round"/><path d="M24 20l6 8" stroke="#C9A0DC" stroke-width="2.5" stroke-linecap="round"/><polygon points="20,3 21.5,6.5 25,6.5 22.2,8.8 23.2,12.3 20,10 16.8,12.3 17.8,8.8 15,6.5 18.5,6.5" fill="#FFD93D" opacity="0.8"/></svg>
+          Heroes
+        </button>
+        <button class="cat-btn" data-cat="magic">
+          <svg viewBox="0 0 40 40" fill="none"><line x1="8" y1="34" x2="32" y2="8" stroke="#6B2D8B" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="8" r="3" fill="#9B30FF"/><circle cx="32" cy="8" r="1.5" fill="#FFD93D"/><circle cx="14" cy="12" r="1.5" fill="#C9A0DC"/><circle cx="22" cy="8" r="1" fill="#C9A0DC"/><circle cx="28" cy="18" r="1" fill="#C9A0DC"/><path d="M24 14l2-3M26 16l3-1M25 12l3 1" stroke="#C9A0DC" stroke-width="1" stroke-linecap="round"/></svg>
+          Magic
+        </button>
+        <button class="cat-btn" data-cat="sports">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#9B30FF" opacity="0.15"/><circle cx="20" cy="20" r="10" fill="#9B30FF" stroke="#6B2D8B" stroke-width="1.5"/><path d="M10 20h20M20 10v20" stroke="#6B2D8B" stroke-width="1.2" opacity="0.5"/><path d="M13 12c2 2 5 3 7 3M27 28c-2-2-5-3-7-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>
+          Sports
+        </button>
+        <button class="cat-btn" data-cat="cooking">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M10 18h20v4c0 6-4 10-10 10s-10-4-10-10v-4z" fill="#9B30FF" opacity="0.85"/><rect x="8" y="16" width="24" height="4" rx="2" fill="#6B2D8B"/><path d="M14 16v-4c0-2 1-4 3-4" stroke="#C9A0DC" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M20 16v-5c0-2 1-3 2-3" stroke="#C9A0DC" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M26 16v-3c0-2-1-3-2-3" stroke="#C9A0DC" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="24" r="1.5" fill="#fff" opacity="0.5"/><circle cx="22" cy="26" r="1" fill="#fff" opacity="0.5"/></svg>
+          Cooking
+        </button>
+        <button class="cat-btn" data-cat="friends">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="14" cy="14" r="5" fill="#9B30FF"/><circle cx="14" cy="14" r="2.5" fill="#4A1A6B"/><path d="M8 26c0-4 3-7 6-7s6 3 6 7" fill="#6B2D8B" opacity="0.7"/><circle cx="26" cy="14" r="5" fill="#C9A0DC"/><circle cx="26" cy="14" r="2.5" fill="#6B2D8B"/><path d="M20 26c0-4 3-7 6-7s6 3 6 7" fill="#9B30FF" opacity="0.5"/><circle cx="20" cy="32" r="1" fill="#FFD93D"/></svg>
+          Friends
+        </button>
+        <button class="cat-btn" data-cat="confidence">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#C9A0DC" opacity="0.2"/><path d="M20 8l2.5 7.5H30l-6.5 4.5 2.5 7.5L20 23l-6 4.5 2.5-7.5L10 15.5h7.5L20 8z" fill="#9B30FF" stroke="#6B2D8B" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#FFD93D"/></svg>
+          Confidence
+        </button>
+        <button class="cat-btn" data-cat="blackhistory">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#4A1A6B" opacity="0.15"/><path d="M20 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8z" fill="#9B30FF" opacity="0.85"/><path d="M15 20l3 3 7-7" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Black History
+        </button>
+        <button class="cat-btn" data-cat="helpers">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="6" rx="2" fill="#9B30FF"/><rect x="8" y="14" width="24" height="18" rx="3" fill="#6B2D8B" opacity="0.85"/><rect x="17" y="18" width="6" height="10" rx="1" fill="#FFD93D"/><rect x="13" y="22" width="14" height="3" rx="1" fill="#FFD93D"/><circle cx="30" cy="10" r="4" fill="#C9A0DC"/><path d="M28 10h4M30 8v4" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Helpers
+        </button>
+        <button class="cat-btn" data-cat="nature">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#FFD93D" opacity="0.9"/><path d="M8 28c2-8 5-12 12-12s10 4 12 12" fill="#6BCB77" opacity="0.8"/><path d="M20 16v12" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M14 32h12" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="16" r="3" fill="#9B30FF" opacity="0.4"/><circle cx="32" cy="20" r="2" fill="#9B30FF" opacity="0.3"/></svg>
+          Nature
+        </button>
+        <button class="cat-btn" data-cat="emotions">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#C9A0DC" opacity="0.25"/><circle cx="20" cy="20" r="10" fill="#9B30FF" opacity="0.85"/><circle cx="16" cy="17" r="1.8" fill="#fff"/><circle cx="24" cy="17" r="1.8" fill="#fff"/><path d="M14 24c1.5 2.5 10.5 2.5 12 0" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="28" cy="10" r="2" fill="#FFD93D"/><path d="M26 8l3-2M30 10l2-1" stroke="#FFD93D" stroke-width="1" stroke-linecap="round"/></svg>
+          Emotions
+        </button>
+      </div>
+      <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
+      <div class="or-divider"><span>or</span></div>
+      <button class="btn-main btn-purple" id="btn-race-start">🏁 Race a Friend</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Loading -->
+  <div class="screen" id="screen-loading">
+    <div class="card">
+      <div class="spinner"><div class="spin-circle"></div><div class="spin-label" id="loading-msg">Getting your story ready...</div></div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Join -->
+  <div class="screen" id="screen-join">
+    <div class="card">
+      <div class="card-title">Join the Race! 🏁</div>
+      <p style="color:#555;font-weight:700;margin-bottom:4px;">Type your friend's room code:</p>
+      <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric">
+      <div id="join-error" style="background:#FFF0F0;border:2px solid #FF6B6B;border-radius:14px;padding:12px 16px;color:#FF6B6B;font-weight:700;margin-top:10px;display:none;"></div>
+      <button class="btn-main btn-green" id="btn-join-room">Join Room →</button>
+      <button class="btn-main btn-outline" id="btn-back-join" style="margin-top:10px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Waiting host -->
+  <div class="screen" id="screen-waiting-host">
+    <div class="card">
+      <div class="card-title">Waiting for your friend <span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <p style="color:#555;font-weight:700;margin-bottom:6px;">Share this code:</p>
+      <div class="room-code-display">
+        <div class="room-code-number" id="display-room-code">----</div>
+        <div class="room-code-label">Room Code</div>
+      </div>
+      <div class="player-slots">
+        <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Ready</div></div>
+        <div class="player-slot" id="slot-guest"><span class="slot-icon">👤</span><div class="slot-name">Friend</div><div class="slot-status">Waiting...</div></div>
+      </div>
+      <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:10px;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Waiting guest -->
+  <div class="screen" id="screen-waiting-guest">
+    <div class="card">
+      <div class="card-title">You're in! Get ready... 🎉</div>
+      <div class="player-slots">
+        <div class="player-slot joined"><span class="slot-icon">🧑</span><div class="slot-name">Host</div><div class="slot-status">✓ Ready</div></div>
+        <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Joined!</div></div>
+      </div>
+      <p style="text-align:center;color:#aaa;font-weight:700;margin-top:10px;">Starting soon...</p>
+    </div>
+  </div>
+
+  <!-- SCREEN: Countdown -->
+  <div class="screen" id="screen-countdown">
+    <div class="card"><div class="countdown-wrap"><div id="countdown-display" class="countdown-number">3</div></div></div>
+  </div>
+
+  <!-- SCREEN: Read -->
+  <div class="screen" id="screen-read">
+    <div class="card">
+      <div class="card-title" id="story-title">Your Story</div>
+
+      <div class="vs-progress" id="vs-progress" style="display:none;">
+        <div class="vs-row">
+          <div class="vs-name" style="color:#4D96FF;">You</div>
+          <div class="vs-bar-wrap"><div class="vs-bar me-bar" id="my-progress-bar"></div></div>
+          <div class="vs-pct" id="my-pct">0%</div>
+        </div>
+        <div class="vs-row">
+          <div class="vs-name" style="color:#FF6B6B;">Friend</div>
+          <div class="vs-bar-wrap"><div class="vs-bar them-bar" id="their-progress-bar"></div></div>
+          <div class="vs-pct" id="their-pct">0%</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap" id="solo-progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+      <div id="story-text"></div>
+
+      <!-- Voice selector -->
+      <div class="voice-row">
+        <span class="voice-label">Voice:</span>
+        <button class="voice-btn sel-voice" data-voice="female">👩 Female</button>
+        <button class="voice-btn" data-voice="male">👨 Male</button>
+      </div>
+
+      <!-- Speed slider -->
+      <div class="speed-slider-row">
+        <div class="speed-slider-label-row">
+          <span class="speed-slider-label">⚡ Speed</span>
+          <span class="speed-value-badge" id="speed-display">1.0×</span>
+        </div>
+        <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0">
+        <div class="speed-emoji-row">
+          <span>🐢 0.5×</span>
+          <span>🚶 1.0×</span>
+          <span>🚀 2.0×</span>
+        </div>
+      </div>
+
+      <!-- TTS controls -->
+      <div class="tts-controls">
+        <button class="btn-main btn-green" id="btn-play">▶ Play</button>
+        <button class="btn-main btn-yellow" id="btn-pause" disabled>⏸ Pause</button>
+        <button class="btn-main btn-gray" id="btn-stop-tts" disabled>⏹ Stop</button>
+      </div>
+
+      <div class="hint-tip">💡 Double-tap any word to hear it spoken</div>
+
+      <div class="listening-badge" id="listening-badge" style="display:none;"></div>
+      <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← Pick New Topic</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Race results - now just shows "finished reading together" -->
+  <div class="screen" id="screen-race-results">
+    <div class="card">
+      <div class="card-title" style="text-align:center;" id="race-result-title">Great Reading! 🎉</div>
+      <div class="encouragement" id="race-msg">You both read the whole story!</div>
+      <button class="btn-main btn-green" id="btn-race-retry">🔄 Read Again</button>
+      <button class="btn-main" id="btn-race-new" style="margin-top:10px;">📚 New Story</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>ReadUp!</strong> &nbsp;|&nbsp; A Transforming Youth, Inc. Program &nbsp;|&nbsp; Pre-K – 3rd Grade<br>
+  <span class="foot-sub">✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
+  <button class="parent-btn" id="btn-open-parent">👤 Parent</button>
+</footer>
+
+<!-- Word saved toast -->
+<div class="word-toast" id="word-toast">💾 Word saved!</div>
+
+<!-- SCREEN: Parent PIN -->
+<div class="screen" id="screen-pin" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:380px;padding:20px;">
+    <div class="card">
+      <div class="card-title" style="text-align:center;">👤 Parent Access</div>
+      <p style="text-align:center;color:var(--muted);font-weight:700;margin-bottom:16px;">Enter your 4-digit PIN</p>
+      <div class="pin-display">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+      </div>
+      <div class="pin-error" id="pin-error"></div>
+      <div class="pin-keypad" style="margin-top:16px;">
+        <button class="pin-key" data-k="1">1</button>
+        <button class="pin-key" data-k="2">2</button>
+        <button class="pin-key" data-k="3">3</button>
+        <button class="pin-key" data-k="4">4</button>
+        <button class="pin-key" data-k="5">5</button>
+        <button class="pin-key" data-k="6">6</button>
+        <button class="pin-key" data-k="7">7</button>
+        <button class="pin-key" data-k="8">8</button>
+        <button class="pin-key" data-k="9">9</button>
+        <button class="pin-key del" data-k="clear">✕</button>
+        <button class="pin-key" data-k="0">0</button>
+        <button class="pin-key del" data-k="del">⌫</button>
+      </div>
+      <button class="btn-main btn-outline" id="btn-pin-cancel" style="margin-top:14px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: Parent Dashboard -->
+<div class="screen" id="screen-parent" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;">
+  <div class="app">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;">
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);">👤 Parent Dashboard</div>
+      <button class="btn-main btn-outline" id="btn-parent-done" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
+    </div>
+
+    <!-- This Week -->
+    <div class="card">
+      <div class="dash-section-title">📅 This Week</div>
+      <div class="dash-stat-grid">
+        <div class="dash-stat"><div class="dash-stat-num" id="week-stories">0</div><div class="dash-stat-label">Stories</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="week-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="week-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="week-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+      </div>
+    </div>
+
+    <!-- All Time -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">🏆 All Time</div>
+      <div class="dash-stat-grid">
+        <div class="dash-stat"><div class="dash-stat-num" id="all-stories">0</div><div class="dash-stat-label">Stories</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="all-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="all-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="all-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+      </div>
+      <div style="text-align:center;font-size:0.78rem;color:var(--muted);font-weight:700;margin-top:4px;" id="first-used-label"></div>
+    </div>
+
+    <!-- Favorite Topics -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">❤️ Favorite Topics</div>
+      <div id="topic-bars"></div>
+    </div>
+
+    <!-- Word Bank -->
+    <div class="card" style="margin-top:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="dash-section-title" style="margin:0;">📖 Word Bank</div>
+        <button class="btn-main btn-outline" id="btn-clear-words" style="width:auto;margin-top:0;padding:6px 14px;font-size:0.8rem;">Clear</button>
+      </div>
+      <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">Words your child needed help with. 🔴 = needs more practice.</p>
+      <div class="word-bank-list" id="word-bank-display"></div>
+    </div>
+
+    <!-- Settings -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">⚙️ Settings</div>
+      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:8px;">Change PIN:</p>
+      <div class="change-pin-row">
+        <input type="password" id="new-pin-input" maxlength="4" placeholder="New PIN" inputmode="numeric">
+        <button class="btn-main btn-green" id="btn-save-pin" style="width:auto;margin-top:0;padding:10px 18px;font-size:0.9rem;">Save</button>
+      </div>
+      <div id="pin-save-msg" style="font-size:0.82rem;color:var(--green);font-weight:800;min-height:1.2em;margin-top:6px;"></div>
+      <button class="btn-main btn-danger" id="btn-reset-data" style="margin-top:16px;">🗑️ Reset All Data</button>
+    </div>
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyCIiKxtE5YV8GV0Fk3HEAO46rEGKEuFfFc",
+  authDomain: "readup-transforming-youth.firebaseapp.com",
+  databaseURL: "https://readup-transforming-youth-default-rtdb.firebaseio.com",
+  projectId: "readup-transforming-youth",
+  storageBucket: "readup-transforming-youth.firebasestorage.app",
+  messagingSenderId: "394068331923",
+  appId: "1:394068331923:web:d00704316cf6ba4b002c66"
+});
+const db = getDatabase(firebaseApp);
+
+const CF_BASE = "https://us-central1-readup-transforming-youth.cloudfunctions.net";
+const CF_STORY = `${CF_BASE}/generateStory`;
+const CF_TTS   = `${CF_BASE}/synthesizeSpeech`;
+const CF_STT   = `${CF_BASE}/transcribeSpeech`;
+
+// ── AI Story Generation ───────────────────────────────────
+async function generateAIStory(grade, category, wordTarget) {
+  const gradeNames = { "prek": "Pre-K", "k": "Kindergarten", "1": "1st", "2": "2nd", "3": "3rd" };
+
+  const gradeInstructions = {
+    "prek": `You are writing for a 3-4 year old child who is just learning to read. STRICT RULES:
+- Every sentence must be 3-4 words MAXIMUM. Example: "I see a dog." "The cat is big." "We can run fast."
+- Use ONLY these types of words: cat, dog, big, run, sit, hat, red, the, is, a, I, my, see, like, can, we, it, go, at, in, up, on, fun, sun, hop, top, hot, pot, bed, red, said, has, his, her, they, are
+- NO word longer than one syllable except: animal names, color words
+- Use the SAME sentence pattern repeated with different words (e.g. "I see a cat. I see a dog. I see a bird.")
+- NO commas, NO complex ideas, NO emotions like "frustrated" or "curious"
+- End with: "Think about it: What do you see?"
+Write the story now. ${wordTarget} words total.`,
+    "k": `You are writing for a 5-6 year old kindergartner just beginning to read. STRICT RULES:
+- Sentences must be 5-7 words maximum. Example: "The dog ran to the house." "She liked to play with blocks."
+- Use only simple, common words a kindergartner knows: home, play, run, jump, happy, sad, big, little, mom, dad, friend, school, food, water, help, love
+- NO words longer than 2 syllables
+- Short paragraphs of 2-3 sentences only
+- Some repetition is good: "He liked to run. He liked to jump. He liked to play."
+- End with a simple question: "Think about it: What do you like to do?"
+Write the story now. ${wordTarget} words total.`,
+    "1": `Use very simple words a 6-7 year old knows. Write in short but natural sentences that flow together smoothly into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
+    "2": `Use simple but varied vocabulary for a 7-8 year old. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Tell a real story or share interesting facts in a narrative way. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
+    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write in natural paragraphs with varied sentence structure. Include interesting details, descriptive language, and a clear point or message. Do NOT use bullet points or lists. End with one "Think about it:" question.`
+  };
+
+  const instructions = gradeInstructions[grade] || gradeInstructions["1"];
+  const fullPrompt = (grade === 'prek' || grade === 'k')
+    ? `Write a story about ${category}.\n\n${instructions}`
+    : `Write a story about ${category} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`;
+
+  const response = await fetch(CF_STORY, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      grade: gradeNames[grade] || grade,
+      topic: category,
+      wordCount: wordTarget,
+      instructions: fullPrompt
+    })
+  });
+  if (!response.ok) throw new Error("Cloud function error: " + response.status);
+  const data = await response.json();
+  if (!data.story) throw new Error("No story in response");
+  return data.story;
+}
+
+// ── Fallback stories ──────────────────────────────────────
+const STORIES = {
+  animals:{1:[{words:50,title:"Max the Dog",body:"Max is a big brown dog. He loves to run and jump. Every day Max plays in the yard. He barks at birds and chases cats. Max has a red ball. It is his best toy. At night Max sleeps by the door. He is a good dog. Think about it: What is your favorite animal?"},{words:100,title:"The Little Cat",body:"Luna is a small gray cat. She lives in a big yellow house. Every morning Luna wakes up and stretches her legs. She walks to her bowl and eats her food. Then she sits by the window. Luna loves to watch the birds outside. She makes a funny sound when she sees them. In the afternoon Luna takes a long nap on the soft couch. She curls up into a ball and purrs. At night she sleeps with her family. They love her very much. Luna is a happy cat. Think about it: What do you think Luna dreams about?"}],2:[{words:100,title:"Ella the Elephant",body:"Ella was the youngest elephant in the herd. She had giant ears that flopped when she walked. The other elephants said her ears were too big, but Ella did not mind. One hot afternoon the herd got lost in the tall grass. Ella lifted her huge ears and listened carefully. She heard the river far away. She led everyone straight to the cool water. The herd splashed and played until sunset. From that day on, everyone agreed that Ella's ears were the best ears in the whole savanna. Think about it: How can something you feel different about become your greatest strength?"}],3:[{words:150,title:"Ocean Giants",body:"Blue whales are the largest animals ever known to have lived on Earth. A single blue whale can grow longer than three school buses lined up end to end. Their hearts are so large a small child could crawl through the arteries. Yet despite their enormous size, blue whales eat some of the tiniest creatures in the ocean. They feed almost entirely on krill, small shrimp-like animals no bigger than your finger. A blue whale must eat up to four tons of krill every single day just to survive. Blue whales were once nearly hunted to extinction, but international protection has helped their numbers slowly recover. Think about it: What does the blue whale teach us about how big and small things depend on each other?"}]},
+  space:{1:[{words:50,title:"A Trip to the Moon",body:"Sam wants to go to the moon. The moon is very far away. You need a big rocket to get there. The rocket goes up, up, up into the dark sky. The moon has no air and no trees. It is cold and gray. But the view of Earth is amazing from up there. Think about it: Would you want to visit the moon?"}],2:[{words:100,title:"Mars, Our Red Neighbor",body:"Mars is the fourth planet from the sun and our closest planetary neighbor. It looks red because its soil is full of iron oxide, which is basically rust. Mars has the tallest volcano in our entire solar system called Olympus Mons. It is three times the height of Mount Everest. Scientists have sent robotic rovers to explore Mars. These rovers drive slowly across the rocky surface, taking photos and testing soil. They have found signs that water once flowed on Mars billions of years ago. Think about it: What would be the hardest part about living on Mars?"}],3:[{words:150,title:"Black Holes",body:"A black hole is one of the strangest objects in the universe. It forms when a massive star runs out of fuel and collapses under its own gravity. The collapse creates a point of such extreme density that nothing, not even light, can escape its gravitational pull. In 2019, a global team of astronomers captured the first actual image of a black hole. It required linking radio telescopes across multiple continents to create a lens the size of Earth. The image showed a glowing ring of superheated gas surrounding a dark center. Think about it: Why do you think capturing an image of something invisible required such a massive worldwide effort?"}]},
+  dinosaurs:{1:[{words:50,title:"Big Rex",body:"Rex is a big dinosaur. He has sharp teeth and tiny arms. Rex walks on two strong legs. He roars very loud. All the other dinosaurs run away. Rex is the king of the land. At night Rex looks at the stars. He wonders what they are. Rex is big but he can dream small dreams. Think about it: What would you do if you met a T-Rex?"},{words:100,title:"Dino Friends",body:"Tara the triceratops had three horns on her head. Bron the brontosaurus had a very long neck. They were best friends even though they looked very different. Every day they ate plants by the river. Tara used her horns to break tough branches. Bron used her long neck to reach the tallest leaves. They always shared their food. One afternoon a loud roar shook the ground. A big meat eater was coming their way. Tara lowered her horns and stomped her feet. The big dinosaur ran away. Think about it: How did Tara and Bron help each other?"}],2:[{words:100,title:"The Last Egg",body:"Deep in a muddy nest, one egg remained long after the others had hatched. The mother had stopped coming back. The sun warmed the egg each day until finally a crack appeared. A small raptor pushed its way out into a noisy world. Everything was enormous and strange. The little raptor was alone but not afraid. It had hatched with sharp instincts. By nightfall it had found water and shelter under a fallen tree. Scientists who study dinosaur fossils believe many young dinosaurs hatched this way, surviving on instinct from their very first breath. Think about it: What instincts do you think humans are born with?"}],3:[{words:150,title:"The Day the Sky Went Dark",body:"Sixty-six million years ago, a rock from space about six miles wide slammed into what is now Mexico. The impact released more energy than every nuclear weapon on Earth combined. The explosion sent billions of tons of dust and ash into the atmosphere. Within weeks the sky went dark across the entire planet. Without sunlight, temperatures plummeted and plants began to die. About three quarters of all species on Earth went extinct. But small mammals survived in burrows underground. From those survivors, all the mammals alive today eventually evolved. The extinction was an ending, but it was also a beginning. Think about it: How does this story change the way you think about disasters?"}]},
+  ocean:{1:[{words:50,title:"Under the Sea",body:"The ocean is very deep and blue. Many fish live there. Some fish are big. Some fish are tiny. Coral looks like a rainbow under the water. Sea turtles swim slowly past. A dolphin jumps high into the air. The ocean is full of life. We must keep it clean. Think about it: What ocean animal would you like to swim with?"}],2:[{words:100,title:"The Deep Dark Zone",body:"Most of the ocean is completely dark. Sunlight only reaches the top few hundred feet of water. Below that is absolute darkness for miles. Scientists used to think nothing could live there. They were very wrong. Strange glowing creatures drift through the deep ocean. The anglerfish has a built-in light on its head to lure prey. Tube worms grow near volcanic vents on the ocean floor, surviving without any sunlight at all. We have explored less than twenty percent of the deep ocean. Think about it: Why do you think we know so little about the deep ocean?"}],3:[{words:150,title:"Coral Reefs in Danger",body:"Coral reefs cover less than one percent of the ocean floor, yet they support about twenty-five percent of all marine species. They are among the most biodiverse ecosystems on Earth. But coral reefs around the world are in serious trouble. Rising ocean temperatures cause bleaching, where corals expel the algae that give them color and nutrition. Without those algae, corals turn white and can die within weeks. Some researchers are now experimenting with growing heat-resistant coral in labs and replanting them on damaged reefs. Once a reef ecosystem collapses, recovery takes decades if it happens at all. Think about it: What do you think individuals can do to help protect coral reefs, even from far away?"}]},
+  superheroes:{1:[{words:50,title:"Zoom the Superhero",body:"Zoom can fly very fast. He wears a blue cape. When someone needs help Zoom zooms to the rescue. He helps cats stuck in trees. He helps people cross the street. Zoom is kind to everyone. He says being a hero means helping others. You do not need powers to be a hero. Think about it: How can you be a hero today?"},{words:100,title:"Maya Saves the Day",body:"Maya had a special power. She could talk to animals. One afternoon a little dog got lost in the park. It was whimpering under a bush. Maya crouched down and spoke softly. The dog told her he had followed a butterfly and got confused. Maya asked a sparrow to fly ahead and find the dog's house. Then she followed the sparrow with the dog trotting beside her. Three blocks away a girl was crying on her porch. The dog barked and ran to her. Maya smiled all the way home. Think about it: If you could talk to any animal what would you ask it?"}],2:[{words:100,title:"The Hero Without Powers",body:"Everyone at River City Elementary knew about the superhero league. Marcus could not fly or bend steel or move at super speed. But Marcus noticed things others missed. He noticed when someone was sitting alone at lunch. He noticed when the new kid looked confused in the hallway. He noticed when the quiet girl in math class got the right answer but was too shy to raise her hand. Marcus told her she was right. She started raising her hand after that. By the end of the year Marcus had the most friends of anyone. Think about it: What superpower does Marcus actually have?"}],3:[{words:150,title:"The Weight of the Mask",body:"Priya had been able to generate force fields since she was nine years old. She had trained for years and genuinely wanted to help people. But nobody warned her about the interviews. After her first public rescue, reporters crowded around asking questions. Priya had only thought about the people trapped on the bridge. That night she realized that being a hero in public was completely different from the private moment of helping someone. One felt like herself. The other felt like a performance. She decided she would keep her mask on, not to hide, but to protect the quiet version of herself that actually cared. Think about it: Why might it be important to protect your private self even when you do something publicly?"}]},
+  magic:{1:[{words:50,title:"The Magic Door",body:"There was a little door in the back of the garden. No one had opened it in years. One day Lily found the key. She turned it slowly. The door opened to a land of flying horses and talking trees. A tiny dragon sat on a mushroom. It smiled at her. Lily smiled back. She knew she had found something wonderful. Think about it: What would be behind your magic door?"},{words:100,title:"Pip the Small Wizard",body:"Pip wanted to be a wizard more than anything. But his spells never worked right. His fire spell made snow. His flying spell made worms float. The other students laughed but Pip kept trying. One day a storm trapped everyone in the castle. All the big wizards tried to clear it but could not. Pip raised his wand and thought of warmth. Out came a giant rainbow that reached across the sky. The clouds parted and sunshine poured in. Sometimes the wrong spell is exactly the right one. Think about it: Why might making mistakes be part of learning?"}],2:[{words:100,title:"The Girl Who Collected Wishes",body:"Every time someone in the village made a wish and forgot about it, the wish floated away as a tiny glowing seed. Most people never noticed. But Rosa could see them. She had been collecting wishes in a glass jar since she was small. One winter the river froze and the village ran out of food. Rosa opened her jar and let all the wishes go at once. They rose in a swirling cloud of light. By morning the snow had melted from the southern fields and early vegetables had pushed through the soil. Think about it: What wish would you put in Rosa's jar?"}],3:[{words:150,title:"The Last Cartographer",body:"In a kingdom where magic had faded, one old woman still made maps that worked. Not road maps, but maps of people. She could trace the invisible lines that connected a person to their fears, their hopes, and the places that had shaped them. She only drew maps for those who truly wanted to understand themselves. Her last visitor was a young girl who had lost her voice in an accident and could no longer tell her own story. The cartographer spent three days mapping her. When she unrolled the finished parchment, the girl stared at it for a long time. Then she picked up a pen and began to write. Think about it: What would your personal map show about who you are?"}]},
+  sports:{1:[{words:50,title:"The Big Game",body:"Today is the big soccer game. Mia is nervous. Her legs feel like jelly. Coach says just do your best. In the second half Mia gets the ball. She runs fast. She kicks hard. Goal! Her team cheers. Mia laughs. Nerves are gone now. She just loves to play. Think about it: How do you feel before something important?"},{words:100,title:"Learning to Swim",body:"Jordan did not like putting his face in the water. Every swim lesson he stood at the edge of the pool and watched the other kids. His teacher Miss Rosa never pushed him. She just showed him again and again. One day Jordan held his nose and went under for one second. Then two. Then five. By the end of summer he could swim across the whole pool. He looked at the pool that had scared him so much. It looked smaller now. Not because it had changed but because he had. Think about it: What is something that felt scary until you tried it?"}],2:[{words:100,title:"The Fastest Kid",body:"Everyone said Leo was the fastest kid at Riverside Elementary. He had never lost a race. On field day he lined up for the fifty meter sprint with total confidence. But when he crossed the line he heard cheering that was not for him. A new girl named Amara had crossed a full second ahead. Leo walked over and held out his hand. That was fast, he said. She grinned. Want to train together? Leo said yes immediately. Think about it: How did losing change Leo's life for the better?"}],3:[{words:150,title:"The Mental Game",body:"Elite athletes often say that ninety percent of their sport is mental. Physical talent reaches a ceiling. At the highest levels of competition, almost everyone is physically capable. The athletes who win consistently manage pressure better and recover from mistakes faster. Visualization is one of the most powerful tools athletes use. Before a competition, many close their eyes and mentally rehearse every moment. Research shows this actually activates the same neural pathways as physically practicing the skill. Basketball players who only visualized free throws for a month improved almost as much as those who physically practiced every day. Think about it: How could you use visualization in your own life outside of sports?"}]},
+  cooking:{1:[{words:50,title:"Making Pancakes",body:"Sam helps mom make pancakes. First they mix the batter. It is lumpy and white. Then mom pours it on the hot pan. It sizzles and bubbles. When the bubbles pop it is time to flip. Sam wants to try. He flips it perfectly. The pancake is round and golden. They put butter and syrup on top. It is the best breakfast ever. Think about it: What is your favorite food to make?"},{words:100,title:"Grandma's Secret Recipe",body:"Every Sunday Grandma made her special tomato soup. The whole house smelled amazing. One day she let Nora help. First they cut the tomatoes into small pieces. Then they cooked onions in butter until they were soft and golden. They added the tomatoes and a cup of broth and let it simmer slowly. When the soup was done she let Nora taste it. It was the most delicious thing Nora had ever eaten. Grandma smiled. Now you know the secret, she said. The secret is time and love. Think about it: What recipe would you want to pass down someday?"}],2:[{words:100,title:"The Science of Bread",body:"Baking bread seems like cooking but it is really more like science. When you mix flour, water, and yeast together, something invisible begins to happen. Yeast is a tiny living organism. It eats the sugars in the flour and releases carbon dioxide gas. That gas gets trapped in the sticky dough, forming thousands of tiny bubbles. As the dough sits in a warm place, the yeast keeps eating and the bubbles multiply. The dough rises and nearly doubles in size. When you put it in the hot oven, the heat kills the yeast and bakes the bubbles into the bread's soft spongy structure. Think about it: What other foods do you think involve living organisms?"}],3:[{words:150,title:"Food as Culture",body:"Every culture on Earth has developed its own cuisine, and those foods carry more history than most people realize. Spices that seem ordinary today were once so rare and valuable they launched wars and funded empires. Chili peppers originated in the Americas and only reached Asia and Europe after 1492, yet today they are central to the cuisines of India, Thailand, and China. Tomatoes, also native to the Americas, became the foundation of Italian cooking within two hundred years of arriving in Europe. Food travels with people and adapts to new environments. When you eat a dish from another culture, you are tasting centuries of human movement, trade, and creativity. Think about it: What does your favorite food tell you about where it came from?"}]},
+  friendship:{1:[{words:50,title:"My Best Friend",body:"My best friend is named Jay. We like the same things. We both love dogs and pizza. Jay makes me laugh every day. When I am sad Jay sits with me. When Jay is scared I hold his hand. That is what friends do. Friends make every day better. I am glad Jay is my friend. Think about it: What makes someone a good friend?"},{words:100,title:"The New Kid",body:"On Monday a new girl came to class. Her name was Zoe. She sat alone at lunch with her tray and looked at the table. Everyone else was already talking with their friends. Kira noticed. She picked up her lunch and walked over. Can I sit here? she asked. Zoe looked up surprised. Yes please, she said quietly. They talked the whole lunch. Zoe was funny and liked the same books as Kira. By Friday they were walking to school together every morning. Think about it: Have you ever been the new kid or sat with someone who was?"}],2:[{words:100,title:"The Argument",body:"Diego and Sam had been best friends since kindergarten. But in fourth grade they had their first real fight. It started over something small and grew into something bigger until they stopped talking completely. For two weeks they sat on opposite sides of the classroom. One afternoon it rained and they both took shelter in the same doorway. They stood there awkwardly. Then Diego laughed a little. Sam laughed too. By the time the rain stopped they had been talking for twenty minutes. Some friendships are strong enough to survive the silences. Think about it: What do you think made it easier for them to make up?"}],3:[{words:150,title:"The Loyalty Question",body:"There is an old idea that loyalty means always defending your friend no matter what. But some of the most important thinkers in history have argued the opposite. True loyalty means telling your friend the truth even when it is uncomfortable. It means caring more about who they become than about keeping things easy between you. The friendships that last decades are rarely the ones built on constant agreement. They are built on trust that runs deep enough to survive honest conversations. People who have friends willing to challenge them tend to make better decisions over time. There is a difference between a friend who makes you feel good and a friend who helps you be good. Think about it: Can you think of a time when a friend told you something hard to hear that turned out to be important?"}]},
+  confidence:{1:[{words:50,title:"I Can Do It",body:"Mia was scared to read out loud. Her hands shook. Her voice was small. Her teacher smiled and said try. Mia took a breath. She read one word. Then two. Then the whole sentence. The class clapped. Mia smiled so big. She did not think she could. But she did. That feeling inside was called confidence. Think about it: What is something you were scared to try but did anyway?"},{words:100,title:"The Spelling Bee",body:"Jordan had practiced every night for two weeks. On the morning of the spelling bee his stomach felt like it was full of jumping frogs. He almost told his mom he was sick. But he went anyway. When his turn came his knees felt weak. He closed his eyes and thought of all those nights practicing at the kitchen table. He took one slow breath. Then he spelled the word perfectly. It did not matter that he did not win the whole competition. What mattered was that he showed up and tried his very best. Think about it: What do you do when you feel nervous about something important?"}],2:[{words:100,title:"The Mirror Talk",body:"Coach Rivera taught her team something unusual before every game. She made them stand in front of a mirror and say three things they were good at out loud. At first the kids laughed and felt embarrassed. But Coach Rivera said confidence is a skill you practice, not something you are born with. After a month the team noticed something. They were not just saying the words anymore. They actually believed them. Their grades improved too. Scientists who study the brain have found that what we say to ourselves every day actually shapes how we see the world. Think about it: What three things would you say to yourself in the mirror?"}],3:[{words:150,title:"The Voice Inside",body:"Every person carries two voices inside their head. One voice says you are not good enough, you will fail, people will laugh. The other voice says you have done hard things before, you are prepared, you can handle whatever happens. Psychologists call the first voice the inner critic and the second the inner coach. Most people let the inner critic run the show without even realizing it. The good news is that the inner coach can be trained. Athletes, performers, and leaders across history have used this deliberately. They wrote down their fears, examined whether those fears were based on facts, and replaced them with more accurate and helpful thoughts. The skill is not pretending the fear does not exist. It is learning to take action anyway. Think about it: Which voice do you listen to most, and what would happen if you practiced listening to the other one?"}]},
+  blackhistory:{1:[{words:50,title:"Rosa Would Not Move",body:"Rosa Parks was tired after a long day of work. She sat on the bus. A man told her to give up her seat. Rosa said no. That one word changed history. People stopped riding the buses to protest. They walked for over a year. Their courage helped change unfair laws. Rosa was brave even when it was hard. Think about it: Have you ever stood up for something you knew was right?"},{words:100,title:"Mae Jemison Reached the Stars",body:"Mae Jemison loved science and dance from the time she was small. Her teachers did not always believe a Black girl from Chicago could become an astronaut. But Mae never stopped studying and never stopped dreaming. She became a doctor first. Then she applied to NASA. On September 12th 1992 Mae Jemison became the first African American woman to travel to space. She carried a photo of Bessie Coleman, the first Black female pilot, with her into orbit. Mae later said that the stars belong to everyone who dares to look up. Think about it: What dream are you working toward even when others doubt you?"}],2:[{words:100,title:"The Boy Who Changed Lighting",body:"Lewis Latimer was born to parents who had escaped slavery. He taught himself engineering by reading books at night after long days of work. When Alexander Graham Bell needed drawings for the telephone patent, Latimer did them. Then he turned his attention to the electric light bulb. At the time bulbs burned out within days. Latimer invented a carbon filament that made bulbs last much longer and cost far less. His invention made electric light available to ordinary families for the first time. His name is rarely in textbooks, but his work lights up every room you have ever sat in. Think about it: Why do you think some inventors become famous while others are forgotten?"}],3:[{words:150,title:"The Blood Bank and the Man Who Built It",body:"During World War II soldiers were dying not from bullets but from blood loss, because there was no organized system to store and deliver blood. Dr. Charles Drew, a Black surgeon from Washington D.C., solved this problem. He developed the techniques for separating and preserving blood plasma that made blood banking possible. His system saved tens of thousands of lives. The painful irony is that the American Red Cross, using his own methods, initially refused to accept blood donations from Black Americans. Dr. Drew protested loudly and publicly. He continued his medical work and his advocacy until his death in 1950. Today his methods remain the foundation of every blood bank in the world. Think about it: What does Dr. Drew's story teach us about the relationship between injustice and the people who work to overcome it?"}]},
+  helpers:{1:[{words:50,title:"Firefighters Are Heroes",body:"Sam hears the fire truck go by. The siren is very loud. Firefighters wear big heavy coats and helmets. They carry hoses full of water. When there is a fire they run toward it not away. That takes a lot of courage. Firefighters also help when cars crash or people get hurt. They work all day and all night to keep us safe. Think about it: What would you say to a firefighter if you met one?"},{words:100,title:"Dr. Chen Saves the Day",body:"Every morning Dr. Chen put on her white coat and walked into the children's hospital. She saw kids who were scared and parents who were worried. Dr. Chen always started by listening. She asked questions, looked at charts, and thought carefully before she spoke. One afternoon a boy named Marco came in with a very high fever. Dr. Chen ran tests quickly and found an infection that needed medicine right away. By the next morning Marco was sitting up and asking for orange juice. Dr. Chen smiled. Helping people feel better was the best part of her whole day. Think about it: Have you ever had someone help you feel better when you were sick?"}],2:[{words:100,title:"The Teacher Who Never Gave Up",body:"Mr. Osei taught third grade for twenty-two years. His classroom walls were covered in student drawings and poems and science projects. Every year he got a new group of kids who were all different. Some learned fast. Some needed more time. Some came to school hungry or sad. Mr. Osei kept folders on every student so he could remember exactly what each one needed. He stayed late on Tuesdays to help anyone who wanted extra practice. Three of his former students later became teachers themselves. They all said the same thing. Mr. Osei made them feel like they mattered. Think about it: What has a teacher done that made a difference for you?"}],3:[{words:150,title:"The 911 Dispatcher Nobody Sees",body:"When someone calls 911 they usually think about the police car or ambulance arriving. Almost nobody thinks about the dispatcher who answered the phone. Dispatchers work in windowless rooms staring at screens, managing multiple emergencies at once while staying calm enough to guide frightened people through the worst moments of their lives. They tell parents how to do CPR on their children while paramedics are on the way. They talk people through fires and keep witnesses calm at accident scenes. The average dispatcher handles hundreds of calls each shift. They receive no medals and rarely appear in news stories. But emergency workers say that a skilled dispatcher often determines whether someone lives or dies before help ever arrives. Think about it: What does this tell us about the kinds of work our society tends to value and celebrate?"}]},
+  nature:{1:[{words:50,title:"The Thunderstorm",body:"Dark clouds rolled in fast. The wind bent the trees. Then came the thunder, so loud it shook the windows. Lightning flashed across the sky. The rain came down in thick heavy sheets. Then slowly it stopped. The sun came back out. A rainbow stretched over the whole neighborhood. After every storm comes something beautiful. Think about it: How do you feel during a big storm?"},{words:100,title:"How Seeds Travel",body:"A dandelion puff floats on the wind. A coconut falls in the ocean and floats to a faraway beach. A berry gets eaten by a bird and dropped miles away. Seeds are travelers. They have been moving across the Earth for millions of years without maps or plans. Some seeds have tiny hooks that grab onto animal fur. Others spin like helicopters as they fall. Some need to pass through an animal's stomach before they can sprout. Every plant you have ever seen began as a seed that found its way to exactly the right spot. Think about it: How do you think seeds knew how to do all of this before anyone taught them?"}],2:[{words:100,title:"The Water Cycle Never Stops",body:"The same water that dinosaurs drank still exists on Earth today. Water never disappears. It only changes form. When the sun heats a lake, water turns into invisible vapor and floats into the sky. High up where the air is cold it condenses into clouds. When clouds collect enough droplets it rains or snows. The water runs into rivers and soaks into the ground and eventually finds its way back to the ocean or a lake. Then the whole cycle begins again. Scientists estimate that every glass of water you drink contains molecules that have been part of this cycle for over four billion years. Think about it: What does it mean that we share our water with every living thing that has ever existed?"}],3:[{words:150,title:"Why Forests Make Rain",body:"Most people know that rain waters forests. Fewer people know that forests also make rain. Trees pull water from deep in the soil through their roots and release it through their leaves as vapor in a process called transpiration. The Amazon rainforest releases so much moisture this way that it creates what scientists call flying rivers. These invisible rivers of water vapor move through the atmosphere for thousands of miles and eventually fall as rain over farmland across South America. When large sections of the Amazon are cut down, rainfall patterns change across the entire continent. Crops fail in places that have never been touched by a chainsaw. This is how connected ecosystems are. A tree falling in Brazil can affect a farm in Argentina. Think about it: What does this teach us about the idea that what we do in one place does not affect anywhere else?"}]},
+  emotions:{1:[{words:50,title:"All Feelings Are Okay",body:"Sometimes Jaylen feels mad. Sometimes he feels sad. Sometimes he feels scared or worried. His grandma says every feeling has a name and every feeling is okay. Mad means something feels unfair. Sad means you lost something you loved. Scared means your body is trying to keep you safe. Feelings are not problems to fix. They are messages to listen to. Think about it: What feeling do you have trouble talking about?"},{words:100,title:"The Worry Jar",body:"Sofia had so many worries that they kept her awake at night. She worried about tests. She worried about her dad's new job. She worried about her best friend moving away. Her mom gave her a small glass jar and some slips of paper. Every night before bed Sofia wrote each worry on a slip and put it in the jar. Then she closed the lid. Mom said the worries are real but they do not have to live in your head all night. They can wait in the jar until morning. Some mornings Sofia opened the jar and the worries seemed smaller somehow. Think about it: What do you do with your worries before you go to sleep?"}],2:[{words:100,title:"Reading the Room",body:"Emotional intelligence is a phrase that means being aware of your own feelings and understanding the feelings of people around you. Researchers have found that people with high emotional intelligence tend to have stronger friendships, do better in school, and handle stressful situations more effectively. The ability to read a room, to notice when someone is upset before they say anything, is a skill that can be practiced. It starts with paying attention. What is the person's face doing? How are they holding their body? Has their voice changed? These details tell a story. People who are truly good listeners know that much of what someone says has nothing to do with the actual words. Think about it: Think of someone you know well. How can you usually tell how they are feeling without asking?"}],3:[{words:150,title:"The Science of Empathy",body:"For a long time scientists believed that emotions were separate from thinking, that the rational brain and the emotional brain worked independently. Brain imaging technology has shown us this is completely wrong. Emotions and reasoning are deeply connected. When people suffer damage to the parts of the brain that process emotion they actually make worse decisions, not better ones. Empathy, the ability to feel what another person feels, activates the same regions of the brain that fire when we experience something ourselves. In a literal neurological sense, when you feel bad for someone who is hurting, your brain is partially experiencing their pain. This is why stories are so powerful. Reading about a character going through something hard builds the same neural pathways as experiencing it ourselves. Think about it: How does knowing that empathy is a brain function rather than a personality trait change how you think about it?"}]}
+
+};
+
+// ── Helpers ───────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function getStory(cat, grade, wordTarget) {
+  const pool = STORIES[cat]?.[grade] || STORIES[cat]?.['2'] || STORIES['animals']['1'];
+  let best = pool[0];
+  pool.forEach(s => { if (Math.abs(s.words - wordTarget) < Math.abs(best.words - wordTarget)) best = s; });
+  return best;
+}
+
+// ── State ─────────────────────────────────────────────────
+const S = {
+  grade: "1", wordTarget: 100, category: "animals",
+  story: "", storyTitle: "",
+  wordEls: [], recordStart: null,
+  isRace: false, myRole: null,
+  roomCode: null, roomRef: null, unsubscribers: [],
+  voiceGender: "female",
+  speed: 1.0,
+  isAIStory: false,
+};
+
+function cleanupRoom() {
+  S.unsubscribers.forEach(fn => { try { fn(); } catch(e) {} });
+  S.unsubscribers = []; S.roomRef = null; S.roomCode = null; S.myRole = null; S.isRace = false;
+}
+
+// ── Voice selector ────────────────────────────────────────
+document.querySelectorAll('.voice-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('sel-voice'));
+  btn.classList.add('sel-voice');
+  S.voiceGender = btn.dataset.voice;
+  if (ttsState === 'playing' || ttsState === 'paused') stopTTS();
+  ttsAudioCache.clear();
+}));
+
+// ── Speed slider ──────────────────────────────────────────
+const speedSlider = document.getElementById('speed-slider');
+const speedDisplay = document.getElementById('speed-display');
+speedSlider.addEventListener('input', () => {
+  S.speed = parseFloat(speedSlider.value);
+  speedDisplay.textContent = S.speed.toFixed(1) + '×';
+  if (ttsState === 'playing' && ttsAudio) {
+    ttsAudio.playbackRate = S.speed;
+  }
+});
+
+// ── Google Cloud TTS ──────────────────────────────────────
+let ttsAudio = null;
+let ttsWordTimings = [];
+let ttsRafId = null;
+let ttsState = 'idle';
+let ttsPausedAtMs = 0;
+let ttsAudioCache = new Map();
+
+const VOICE_NAMES = {
+  female: { prek: "en-US-Wavenet-F", k: "en-US-Wavenet-F", 1: "en-US-Wavenet-F", 2: "en-US-Wavenet-F", 3: "en-US-Wavenet-C" },
+  male:   { prek: "en-US-Wavenet-D", k: "en-US-Wavenet-D", 1: "en-US-Wavenet-D", 2: "en-US-Wavenet-D", 3: "en-US-Wavenet-A" },
+};
+
+function stopRAF() {
+  if (ttsRafId) { cancelAnimationFrame(ttsRafId); ttsRafId = null; }
+}
+
+function resetTTSButtons() {
+  document.getElementById('btn-play').textContent = '▶ Play';
+  document.getElementById('btn-play').disabled = false;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-pause').textContent = '⏸ Pause';
+  document.getElementById('btn-stop-tts').disabled = false;
+  ttsState = 'idle';
+}
+
+function startHighlightLoop() {
+  stopRAF();
+  let lastActiveIdx = -1;
+
+  // Check if Cloud Function timings are real or all zeros (broken)
+  const timingsAreReal = ttsWordTimings.length > 1 &&
+    ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
+
+  function loop() {
+    if (!ttsAudio || ttsState !== 'playing') return;
+    const nowMs = ttsAudio.currentTime * 1000;
+    const totalMs = (ttsAudio.duration || 1) * 1000;
+    let activeIdx = -1;
+
+    if (timingsAreReal && ttsWordTimings.length > 0) {
+      // Use real timings from Cloud Function
+      for (let i = 0; i < ttsWordTimings.length; i++) {
+        if (ttsWordTimings[i].startMs <= nowMs) activeIdx = i;
+        else break;
+      }
+    } else {
+      // Estimate: divide audio evenly across words
+      const wordsCount = S.wordEls.length;
+      activeIdx = Math.min(
+        Math.floor((nowMs / totalMs) * wordsCount),
+        wordsCount - 1
+      );
+    }
+
+    if (activeIdx >= 0 && activeIdx !== lastActiveIdx) {
+      lastActiveIdx = activeIdx;
+      S.wordEls.forEach(w => w.classList.remove('highlight'));
+      if (S.wordEls[activeIdx]) {
+        S.wordEls[activeIdx].classList.add('highlight');
+        S.wordEls[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      const pct = Math.round((activeIdx + 1) / S.wordEls.length * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      if (S.isRace) {
+        document.getElementById('my-progress-bar').style.width = pct + '%';
+        document.getElementById('my-pct').textContent = pct + '%';
+      }
+    }
+    ttsRafId = requestAnimationFrame(loop);
+  }
+  ttsRafId = requestAnimationFrame(loop);
+}
+
+function stopTTS() {
+  stopRAF();
+  if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
+  S.wordEls.forEach(w => w.classList.remove('highlight'));
+  resetTTSButtons();
+  ttsPausedAtMs = 0;
+}
+
+async function fetchTTSAudio(text, grade, voiceGender) {
+  const gradeKey = (grade === 'prek' || grade === 'k') ? grade : parseInt(grade);
+  const voiceName = VOICE_NAMES[voiceGender]?.[gradeKey] || "en-US-Wavenet-F";
+  // Map grade string to numeric for Cloud Function speaking rate
+  const gradeNum = grade === 'prek' ? 0 : grade === 'k' ? 0 : parseInt(grade) || 1;
+  const cacheKey = `${voiceName}:${text.substring(0, 80)}`;
+  if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
+  const response = await fetch(CF_TTS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, grade: gradeNum, voiceName })
+  });
+  if (!response.ok) throw new Error('TTS failed: ' + response.status);
+  const data = await response.json();
+  if (!data.audioBase64) throw new Error('No audio returned');
+  ttsAudioCache.set(cacheKey, data);
+  if (ttsAudioCache.size > 10) ttsAudioCache.delete(ttsAudioCache.keys().next().value);
+  return data;
+}
+
+async function playSpeech(startFromMs) {
+  if (!S.story) return;
+  ttsState = 'loading';
+  document.getElementById('btn-play').textContent = '⏳ Loading...';
+  document.getElementById('btn-play').disabled = true;
+  document.getElementById('btn-pause').disabled = true;
+  try {
+    const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
+    ttsWordTimings = data.wordTimings || [];
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+    audio.playbackRate = S.speed;
+    ttsAudio = audio;
+    audio.addEventListener('canplaythrough', () => {
+      if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
+      audio.play();
+      ttsState = 'playing';
+      document.getElementById('btn-play').textContent = '▶ Playing...';
+      document.getElementById('btn-play').disabled = true;
+      document.getElementById('btn-pause').disabled = false;
+      document.getElementById('btn-stop-tts').disabled = false;
+      startHighlightLoop();
+    }, { once: true });
+    audio.addEventListener('ended', () => {
+      stopRAF();
+      S.wordEls.forEach(w => w.classList.remove('highlight'));
+      document.getElementById('progress-bar').style.width = '100%';
+      resetTTSButtons();
+      ttsPausedAtMs = 0;
+      // Record completed read (only for solo, not race)
+      if (!S.isRace) recordReadComplete();
+    });
+    audio.addEventListener('error', () => { stopRAF(); resetTTSButtons(); });
+  } catch (err) {
+    console.error('TTS error:', err);
+    resetTTSButtons();
+    alert('Could not load audio. Please check your internet connection and try again.');
+  }
+}
+
+document.getElementById('btn-play').addEventListener('click', () => {
+  if (ttsState === 'idle') {
+    S.wordEls.forEach(w => { w.className = 'word'; });
+    document.getElementById('progress-bar').style.width = '0%';
+    ttsPausedAtMs = 0;
+    playSpeech(0);
+  } else if (ttsState === 'paused') {
+    playSpeech(ttsPausedAtMs);
+  }
+});
+
+document.getElementById('btn-pause').addEventListener('click', () => {
+  if (ttsState === 'playing' && ttsAudio) {
+    ttsPausedAtMs = ttsAudio.currentTime * 1000;
+    ttsAudio.pause();
+    stopRAF();
+    ttsState = 'paused';
+    document.getElementById('btn-pause').textContent = '▶ Resume';
+    document.getElementById('btn-play').disabled = false;
+    document.getElementById('btn-play').textContent = '▶ Resume';
+  } else if (ttsState === 'paused') {
+    playSpeech(ttsPausedAtMs);
+  }
+});
+
+document.getElementById('btn-stop-tts').addEventListener('click', stopTTS);
+
+// ── Pickers ───────────────────────────────────────────────
+const GRADE_DEFAULTS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
+
+document.querySelectorAll('#grade-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('#grade-row .opt-btn').forEach(b => b.classList.remove('sel-grade'));
+  btn.classList.add('sel-grade');
+  S.grade = btn.dataset.grade;
+  // Auto-select default word count for this grade
+  const defaultWords = GRADE_DEFAULTS[S.grade] || 100;
+  S.wordTarget = defaultWords;
+  document.querySelectorAll('#words-row .opt-btn').forEach(b => {
+    b.classList.remove('sel-words');
+    if (parseInt(b.dataset.words) === defaultWords) b.classList.add('sel-words');
+  });
+}));
+document.querySelectorAll('#words-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('#words-row .opt-btn').forEach(b => b.classList.remove('sel-words'));
+  btn.classList.add('sel-words'); S.wordTarget = parseInt(btn.dataset.words);
+}));
+document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected'); S.category = btn.dataset.cat;
+}));
+
+// ── Solo / Race entry ─────────────────────────────────────
+document.getElementById('btn-generate').addEventListener('click', () => { S.isRace = false; S.myRole = null; loadStory(); });
+document.getElementById('btn-race-start').onclick = () => {
+  const choice = confirm("Are you creating a room?\n\nOK = CREATE a room\nCancel = JOIN a friend's room");
+  if (choice) { S.isRace = true; S.myRole = 'host'; loadStory(); }
+  else { show('screen-join'); }
+};
+document.getElementById('btn-back-join').addEventListener('click', () => show('screen-pick'));
+
+document.getElementById('btn-join-room').addEventListener('click', async () => {
+  const code = document.getElementById('join-code-input').value.trim();
+  const err = document.getElementById('join-error');
+  err.style.display = 'none';
+  if (code.length !== 4) { err.textContent = "Please enter a 4-digit code."; err.style.display = 'block'; return; }
+  const snap = await get(ref(db, `rooms/${code}`));
+  if (!snap.exists()) { err.textContent = "Room not found. Check the code!"; err.style.display = 'block'; return; }
+  const room = snap.val();
+  S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
+  S.story = room.story; S.storyTitle = room.title; S.grade = room.grade; S.wordTarget = room.wordTarget;
+  S.myRole = 'guest'; S.isRace = true;
+  await update(S.roomRef, { guestJoined: true });
+  show('screen-waiting-guest');
+  const unsub = onValue(ref(db, `rooms/${code}/status`), snap => {
+    if (snap.val() === 'countdown') { unsub(); startCountdown(); }
+  });
+  S.unsubscribers.push(unsub);
+});
+
+// ── Clean AI story text once at load time ─────────────────
+function cleanStoryText(text) {
+  return text
+    .replace(/#+\s*/g, '')                          // remove all # characters
+    .replace(/\*\*(.*?)\*\*/g, '$1')                // strip bold markers
+    .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
+    .replace(/^[^\n]*\n/, line => /[.!?,]/.test(line) ? line : '') // remove title line
+    .trim();
+}
+
+// ── Load story ────────────────────────────────────────────
+async function loadStory() {
+  show('screen-loading');
+  const loadingMsg = document.getElementById('loading-msg');
+  try {
+    loadingMsg.textContent = S.wordTarget >= 1000
+      ? '📖 Writing your epic story... (this one takes a moment!)'
+      : '✨ Writing your story with AI...';
+    const aiText = await generateAIStory(S.grade, S.category, S.wordTarget);
+    S.storyTitle = `✨ ${S.category.charAt(0).toUpperCase() + S.category.slice(1)} Story`;
+    S.story = cleanStoryText(aiText);
+    S.isAIStory = true;
+    recordStoryStart();
+  } catch (err) {
+    console.warn('AI generation failed, using fallback:', err);
+    loadingMsg.textContent = 'Getting your story ready...';
+    const s = getStory(S.category, S.grade, S.wordTarget);
+    S.storyTitle = s.title; S.story = s.body; S.isAIStory = false;
+    recordStoryStart();
+  }
+  if (S.myRole === 'host') createRoom();
+  else { setupReadScreen(); show('screen-read'); }
+}
+
+async function createRoom() {
+  const code = String(Math.floor(1000 + Math.random() * 9000));
+  S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
+  await set(S.roomRef, { story: S.story, title: S.storyTitle, grade: S.grade, wordTarget: S.wordTarget, status: 'waiting', host: { progress: 0, wpm: 0, done: false }, guest: { progress: 0, wpm: 0, done: false }, createdAt: Date.now() });
+  document.getElementById('display-room-code').textContent = code;
+  show('screen-waiting-host');
+  const unsub = onValue(S.roomRef, snap => {
+    const room = snap.val(); if (!room) return;
+    if (room.guestJoined) {
+      document.getElementById('slot-guest').classList.add('joined');
+      document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Friend';
+      document.getElementById('slot-guest').querySelector('.slot-status').textContent = '✓ Joined!';
+      unsub(); setTimeout(() => startCountdown(), 1000);
+    }
+  });
+  S.unsubscribers.push(unsub);
+  setTimeout(() => { try { remove(S.roomRef); } catch(e) {} }, 600000);
+}
+
+async function startCountdown() {
+  if (S.myRole === 'host') await update(S.roomRef, { status: 'countdown' });
+  show('screen-countdown');
+  const el = document.getElementById('countdown-display');
+  const steps = ['3','2','1','GO!']; let i = 0;
+  const tick = () => {
+    el.textContent = steps[i];
+    el.className = steps[i] === 'GO!' ? 'countdown-go' : 'countdown-number';
+    el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+    i++;
+    if (i < steps.length) setTimeout(tick, 900);
+    else setTimeout(() => { setupReadScreen(); show('screen-read'); }, 400);
+  };
+  tick();
+}
+
+function setupReadScreen() {
+  renderStory(S.storyTitle, S.story);
+  updateReadBadge();
+  document.getElementById('vs-progress').style.display = S.isRace ? 'block' : 'none';
+  document.getElementById('solo-progress-wrap').style.display = S.isRace ? 'none' : 'block';
+  if (S.isRace) {
+    document.getElementById('my-progress-bar').style.width = '0%';
+    document.getElementById('their-progress-bar').style.width = '0%';
+    document.getElementById('my-pct').textContent = '0%';
+    document.getElementById('their-pct').textContent = '0%';
+  }
+}
+
+function renderStory(title, body) {
+  const titleEl = document.getElementById('story-title');
+  titleEl.innerHTML = S.isAIStory ? title + ' <span class="ai-badge">✨ AI</span>' : '';
+  if (!S.isAIStory) titleEl.textContent = title;
+  const container = document.getElementById('story-text');
+  container.innerHTML = ''; S.wordEls = [];
+
+  // Split into paragraphs, then words within each paragraph
+  const paragraphs = body.split(/\n\s*\n/);
+  paragraphs.forEach((para, pIdx) => {
+    para.trim().split(/(\s+)/).forEach(chunk => {
+      if (/\S/.test(chunk)) {
+        const span = document.createElement('span');
+        span.className = 'word'; span.textContent = chunk;
+        span.addEventListener('dblclick', () => {
+          const idx = S.wordEls.indexOf(span);
+          if (idx >= 0) teacherSayWord(idx);
+        });
+        container.appendChild(span); S.wordEls.push(span);
+      } else { container.appendChild(document.createTextNode(chunk)); }
+    });
+    if (pIdx < paragraphs.length - 1) {
+      container.appendChild(document.createElement('br'));
+      container.appendChild(document.createElement('br'));
+    }
+  });
+  document.getElementById('progress-bar').style.width = '0%';
+  S.wordEls.forEach(w => { w.style.color = ''; w.style.background = ''; });
+  stopRAF();
+  if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
+  resetTTSButtons();
+  ttsWordTimings = []; ttsPausedAtMs = 0;
+}
+
+// ── Double-click word helper ──────────────────────────────
+async function teacherSayWord(idx) {
+  const word = S.wordEls[idx]?.textContent?.trim() || '';
+  if (!word) return;
+  // Save to word bank
+  saveWordToBank(word);
+  // Highlight purple while speaking
+  S.wordEls.forEach(w => { w.classList.remove('highlight'); });
+  if (S.wordEls[idx]) {
+    S.wordEls[idx].classList.add('highlight');
+    S.wordEls[idx].style.background = '#A259FF';
+    S.wordEls[idx].style.color = '#ffffff';
+    S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  const clearHighlight = () => {
+    if (S.wordEls[idx]) {
+      S.wordEls[idx].classList.remove('highlight');
+      S.wordEls[idx].style.background = '';
+      S.wordEls[idx].style.color = '';
+    }
+  };
+  try {
+    const voiceName = VOICE_NAMES[S.voiceGender]?.[parseInt(S.grade)] || 'en-US-Neural2-F';
+    const response = await fetch(CF_TTS, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: word, grade: parseInt(S.grade) || 1, voiceName })
+    });
+    const data = await response.json();
+    if (data.audioBase64) {
+      const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+      audio.playbackRate = 0.85;
+      audio.onended = clearHighlight;
+      audio.play();
+      return;
+    }
+  } catch(e) {}
+  // Fallback browser voice
+  const utt = new SpeechSynthesisUtterance(word);
+  utt.rate = 0.8; utt.pitch = 1.1;
+  utt.onend = clearHighlight;
+  window.speechSynthesis.speak(utt);
+}
+
+// ── Nav ───────────────────────────────────────────────────
+document.getElementById('btn-cancel-host').addEventListener('click', async () => {
+  if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
+  cleanupRoom(); show('screen-pick');
+});
+document.getElementById('btn-new').addEventListener('click', () => {
+  stopTTS(); cleanupRoom(); show('screen-pick');
+});
+document.getElementById('btn-race-retry').addEventListener('click', () => {
+  setupReadScreen(); show('screen-read');
+});
+document.getElementById('btn-race-new').addEventListener('click', async () => {
+  stopTTS();
+  if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
+  cleanupRoom(); show('screen-pick');
+});
+
+// ═══════════════════════════════════════════════════════════
+// ── localStorage Engine ──────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+const LS_KEY = 'readup_data';
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY)) || {};
+  } catch(e) { return {}; }
+}
+
+function saveData(d) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(d)); } catch(e) {}
+}
+
+function getData() {
+  const d = loadData();
+  if (!d.pin) d.pin = '1234';
+  if (!d.bedtimeMode) d.bedtimeMode = false;
+  if (!d.stories) d.stories = [];
+  if (!d.wordBank) d.wordBank = [];
+  if (!d.weeklyLog) d.weeklyLog = [];
+  return d;
+}
+
+// Simple hash for story text
+function storyHash(text) {
+  let h = 0;
+  for (let i = 0; i < Math.min(text.length, 200); i++) {
+    h = ((h << 5) - h) + text.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h).toString(36);
+}
+
+// WPM estimates by grade for reading time calc
+const GRADE_WPM = { prek: 20, k: 30, '1': 60, '2': 80, '3': 100 };
+
+// Today's date string
+function today() { return new Date().toISOString().slice(0, 10); }
+
+// Get or create today's weekly log entry
+function getTodayLog(d) {
+  let entry = d.weeklyLog.find(e => e.date === today());
+  if (!entry) {
+    entry = { date: today(), storiesStarted: 0, totalReads: 0, minutesEstimated: 0 };
+    d.weeklyLog.push(entry);
+    // Cap at 90 days
+    if (d.weeklyLog.length > 90) d.weeklyLog.splice(0, d.weeklyLog.length - 90);
+  }
+  return entry;
+}
+
+// Record a story start
+function recordStoryStart() {
+  const d = getData();
+  const hash = storyHash(S.story);
+  const now = new Date().toISOString();
+  let entry = d.stories.find(s => s.hash === hash);
+  if (!entry) {
+    entry = { hash, topic: S.category, grade: S.grade, wordCount: S.wordTarget, readCount: 0, firstRead: now, lastRead: now };
+    d.stories.push(entry);
+    // Cap at 50
+    if (d.stories.length > 50) d.stories.splice(0, d.stories.length - 50);
+    // Log as new story started
+    getTodayLog(d).storiesStarted++;
+  }
+  saveData(d);
+  return entry;
+}
+
+// Record a completed read (called when TTS finishes or hits 100%)
+function recordReadComplete() {
+  const d = getData();
+  const hash = storyHash(S.story);
+  let entry = d.stories.find(s => s.hash === hash);
+  if (!entry) { recordStoryStart(); return recordReadComplete(); }
+  entry.readCount++;
+  entry.lastRead = new Date().toISOString();
+  const log = getTodayLog(d);
+  log.totalReads++;
+  const wpm = GRADE_WPM[S.grade] || 60;
+  const mins = Math.round((S.wordTarget / wpm) * 10) / 10;
+  log.minutesEstimated = Math.round((log.minutesEstimated + mins) * 10) / 10;
+  saveData(d);
+  updateReadBadge();
+  showReadComplete(entry.readCount);
+}
+
+// Get current read count for active story
+function getCurrentReadCount() {
+  const d = getData();
+  const hash = storyHash(S.story || '');
+  return (d.stories.find(s => s.hash === hash) || {}).readCount || 0;
+}
+
+// Update the "Read #N" badge on story title
+function updateReadBadge() {
+  const count = getCurrentReadCount();
+  const existing = document.getElementById('reread-badge');
+  if (existing) existing.remove();
+  if (count > 0) {
+    const badge = document.createElement('span');
+    badge.id = 'reread-badge';
+    badge.className = 'reread-badge';
+    badge.textContent = `Read #${count}`;
+    document.getElementById('story-title').appendChild(badge);
+  }
+}
+
+// Show completion / encouragement for rereading
+function showReadComplete(readCount) {
+  const msg = document.getElementById('race-msg');
+  const retryBtn = document.getElementById('btn-race-retry');
+  const newBtn = document.getElementById('btn-race-new');
+  if (readCount >= 3) {
+    msg.innerHTML = `⭐ Superstar Reader! You read this story ${readCount} times!`;
+    retryBtn.textContent = '🔄 Read Again';
+    retryBtn.style.opacity = '0.6';
+    retryBtn.style.fontSize = '0.95rem';
+    newBtn.className = 'btn-main btn-green';
+    newBtn.textContent = '📚 New Story';
+    newBtn.style.marginTop = '0';
+    retryBtn.style.marginTop = '10px';
+    newBtn.before(retryBtn); // New story first when 3+ reads
+  } else {
+    const next = readCount + 1;
+    msg.innerHTML = `✅ Read #${readCount} done!<br><span style="font-size:0.9rem;opacity:0.8;">Great readers read 3 times! Ready for read #${next}?</span>`;
+    retryBtn.textContent = `▶ Read #${next} — Let's Go!`;
+    retryBtn.className = 'btn-main btn-green';
+    retryBtn.style.opacity = '1';
+    retryBtn.style.fontSize = '1.1rem';
+    retryBtn.style.marginTop = '0';
+    newBtn.style.marginTop = '10px';
+    newBtn.className = 'btn-main btn-outline';
+    retryBtn.before(newBtn.nextSibling || newBtn); // Retry is primary
+  }
+  show('screen-race-done');
+}
+
+// ── Word Bank ─────────────────────────────────────────────
+function saveWordToBank(word) {
+  if (!word || word.length < 2) return;
+  const clean = word.toLowerCase().replace(/[^a-z']/g, '');
+  if (!clean) return;
+  const d = getData();
+  const existing = d.wordBank.find(w => w.word === clean);
+  if (existing) {
+    existing.count++;
+    existing.lastSeen = new Date().toISOString();
+  } else {
+    d.wordBank.push({ word: clean, count: 1, lastSeen: new Date().toISOString() });
+    if (d.wordBank.length > 200) d.wordBank.splice(0, d.wordBank.length - 200);
+  }
+  saveData(d);
+  showWordToast(clean);
+}
+
+function showWordToast(word) {
+  const t = document.getElementById('word-toast');
+  t.textContent = `💾 "${word}" saved!`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+// ── Bedtime Mode ──────────────────────────────────────────
+function applyBedtime(on) {
+  document.body.classList.toggle('bedtime', on);
+  document.getElementById('btn-bedtime').textContent = on ? '☀️' : '🌙';
+  if (on) {
+    const slider = document.getElementById('speed-slider');
+    if (slider && parseFloat(slider.value) > 0.8) {
+      slider.value = 0.8;
+      S.playbackRate = 0.8;
+      document.getElementById('speed-display').textContent = '0.8×';
+    }
+  }
+}
+
+document.getElementById('btn-bedtime').addEventListener('click', () => {
+  const d = getData();
+  d.bedtimeMode = !d.bedtimeMode;
+  saveData(d);
+  applyBedtime(d.bedtimeMode);
+});
+
+// Init bedtime on load
+(function initBedtime() {
+  const d = getData();
+  if (d.bedtimeMode) applyBedtime(true);
+})();
+
+// ── Parent PIN ────────────────────────────────────────────
+let pinBuffer = '';
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+document.getElementById('btn-open-parent').addEventListener('click', () => {
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('screen-pin').style.display = 'flex';
+});
+
+document.querySelectorAll('.pin-key').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const k = btn.dataset.k;
+    if (k === 'clear') { pinBuffer = ''; }
+    else if (k === 'del') { pinBuffer = pinBuffer.slice(0, -1); }
+    else if (pinBuffer.length < 4) { pinBuffer += k; }
+    updatePinDots();
+    if (pinBuffer.length === 4) {
+      const d = getData();
+      if (pinBuffer === (d.pin || '1234')) {
+        document.getElementById('screen-pin').style.display = 'none';
+        pinBuffer = '';
+        openParentDashboard();
+      } else {
+        document.getElementById('pin-error').textContent = 'Incorrect PIN. Try again.';
+        pinBuffer = '';
+        updatePinDots();
+      }
+    }
+  });
+});
+
+document.getElementById('btn-pin-cancel').addEventListener('click', () => {
+  document.getElementById('screen-pin').style.display = 'none';
+  pinBuffer = '';
+});
+
+// ── Parent Dashboard ──────────────────────────────────────
+function openParentDashboard() {
+  const d = getData();
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay()); // Sunday
+  weekStart.setHours(0, 0, 0, 0);
+
+  // This week stats
+  const weekLogs = d.weeklyLog.filter(e => new Date(e.date) >= weekStart);
+  const wkStories = weekLogs.reduce((a, e) => a + (e.storiesStarted || 0), 0);
+  const wkReads = weekLogs.reduce((a, e) => a + (e.totalReads || 0), 0);
+  const wkMins = weekLogs.reduce((a, e) => a + (e.minutesEstimated || 0), 0);
+  const wkRereads = d.stories.filter(s => {
+    const lastRead = new Date(s.lastRead);
+    return lastRead >= weekStart && s.readCount >= 3;
+  }).length;
+
+  document.getElementById('week-stories').textContent = wkStories;
+  document.getElementById('week-reads').textContent = wkReads;
+  document.getElementById('week-mins').textContent = Math.round(wkMins);
+  document.getElementById('week-rereads').textContent = wkRereads;
+
+  // All time stats
+  const allReads = d.weeklyLog.reduce((a, e) => a + (e.totalReads || 0), 0);
+  const allMins = d.weeklyLog.reduce((a, e) => a + (e.minutesEstimated || 0), 0);
+  const allRereads = d.stories.filter(s => s.readCount >= 3).length;
+  const firstDate = d.weeklyLog.length ? d.weeklyLog[0].date : null;
+
+  document.getElementById('all-stories').textContent = d.stories.length;
+  document.getElementById('all-reads').textContent = allReads;
+  document.getElementById('all-mins').textContent = Math.round(allMins);
+  document.getElementById('all-rereads').textContent = allRereads;
+  document.getElementById('first-used-label').textContent = firstDate ? `Using ReadUp! since ${firstDate}` : '';
+
+  // Favorite topics bar chart
+  const topicCounts = {};
+  d.stories.forEach(s => { topicCounts[s.topic] = (topicCounts[s.topic] || 0) + s.readCount; });
+  const sortedTopics = Object.entries(topicCounts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const maxCount = sortedTopics[0]?.[1] || 1;
+  const topicBarsEl = document.getElementById('topic-bars');
+  topicBarsEl.innerHTML = sortedTopics.length ? sortedTopics.map(([topic, count]) => `
+    <div class="topic-bar-row">
+      <div class="topic-bar-name">${topic}</div>
+      <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${Math.round(count/maxCount*100)}%"></div></div>
+      <div class="topic-bar-count">${count}</div>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No stories yet!</p>';
+
+  // Word bank
+  const wordBankEl = document.getElementById('word-bank-display');
+  const sorted = [...d.wordBank].sort((a,b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+  wordBankEl.innerHTML = sorted.length ? sorted.map(w => `
+    <div class="word-bank-item">
+      <span class="word-bank-word">${w.word}</span>
+      <span style="display:flex;gap:6px;align-items:center;">
+        ${w.count >= 3 ? '<span class="word-bank-flag">needs practice</span>' : ''}
+        <span class="word-bank-count">×${w.count}</span>
+      </span>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No words saved yet!</p>';
+
+  document.getElementById('screen-parent').style.display = 'block';
+}
+
+document.getElementById('btn-parent-done').addEventListener('click', () => {
+  document.getElementById('screen-parent').style.display = 'none';
+});
+
+document.getElementById('btn-clear-words').addEventListener('click', () => {
+  if (!confirm('Clear all saved words?')) return;
+  const d = getData(); d.wordBank = []; saveData(d);
+  openParentDashboard();
+});
+
+document.getElementById('btn-save-pin').addEventListener('click', () => {
+  const input = document.getElementById('new-pin-input').value.trim();
+  if (!/^\d{4}$/.test(input)) {
+    document.getElementById('pin-save-msg').textContent = 'PIN must be exactly 4 digits.';
+    document.getElementById('pin-save-msg').style.color = 'var(--coral)';
+    return;
+  }
+  const d = getData(); d.pin = input; saveData(d);
+  document.getElementById('new-pin-input').value = '';
+  document.getElementById('pin-save-msg').textContent = '✓ PIN saved!';
+  document.getElementById('pin-save-msg').style.color = 'var(--green)';
+  setTimeout(() => { document.getElementById('pin-save-msg').textContent = ''; }, 2000);
+});
+
+document.getElementById('btn-reset-data').addEventListener('click', () => {
+  if (!confirm('Reset ALL ReadUp! data? This cannot be undone.')) return;
+  localStorage.removeItem(LS_KEY);
+  openParentDashboard();
+  alert('All data has been reset.');
+});
+
+</script>
+</body>
 </html>
