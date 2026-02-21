@@ -807,7 +807,8 @@ function renderStory(title, body) {
   if (!S.isAIStory) titleEl.textContent = title;
   const container = document.getElementById('story-text');
   container.innerHTML = ''; S.wordEls = [];
-  body.split(/(\s+)/).forEach(chunk => {
+  const cleanBody = body.replace(/^#+\s*/gm, '').trim();
+cleanBody.split(/(\s+)/).forEach(chunk => {
     if (/\S/.test(chunk)) {
       const span = document.createElement('span');
       span.className = 'word'; span.textContent = chunk;
@@ -917,7 +918,6 @@ function advanceWord() {
   }
 }
 
-document.getElementById('btn-record').addEventListener('click', startReading);
 
 async function startReading() {
   if (recActive) return;
