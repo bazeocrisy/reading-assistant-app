@@ -374,39 +374,17 @@ footer strong { color: #4D96FF; }
         💡 Double-click any word to hear it said
       </div>
 
-      <div class="listening-badge" id="listening-badge"><div class="mic-pulse"></div>Your turn! Read out loud!</div>
-      <button class="btn-main btn-coral" id="btn-record" style="margin-top:14px;">🎤 My Turn! Read Aloud</button>
+      <div class="listening-badge" id="listening-badge" style="display:none;"></div>
       <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← Pick New Topic</button>
     </div>
   </div>
 
-  <!-- SCREEN: Solo results -->
-  <div class="screen" id="screen-solo-results">
-    <div class="card">
-      <div class="card-title" style="text-align:center;">You did it! 🎉</div>
-      <div class="stars" id="solo-stars">⭐⭐⭐</div>
-      <div class="wpm-block">
-        <span class="wpm-number" id="solo-wpm">--</span>
-        <div class="wpm-unit">words per minute</div>
-        <div class="wpm-context" id="solo-context"></div>
-      </div>
-      <div class="encouragement" id="solo-msg"></div>
-      <button class="btn-main btn-green" id="btn-solo-retry">🔄 Read It Again</button>
-      <button class="btn-main" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
-    </div>
-  </div>
-
-  <!-- SCREEN: Race results -->
+  <!-- SCREEN: Race results - now just shows "finished reading together" -->
   <div class="screen" id="screen-race-results">
     <div class="card">
-      <div class="card-title" style="text-align:center;" id="race-result-title">Race Over!</div>
-      <div class="results-vs">
-        <div class="result-player" id="rp-left"><div class="result-player-name">You</div><div class="result-player-wpm" id="rp-left-wpm">--</div><div class="result-player-unit">wpm</div></div>
-        <div class="vs-divider">VS</div>
-        <div class="result-player" id="rp-right"><div class="result-player-name">Friend</div><div class="result-player-wpm" id="rp-right-wpm">--</div><div class="result-player-unit">wpm</div></div>
-      </div>
-      <div class="encouragement" id="race-msg"></div>
-      <button class="btn-main btn-green" id="btn-race-retry">🔄 Race Again</button>
+      <div class="card-title" style="text-align:center;" id="race-result-title">Great Reading! 🎉</div>
+      <div class="encouragement" id="race-msg">You both read the whole story!</div>
+      <button class="btn-main btn-green" id="btn-race-retry">🔄 Read Again</button>
       <button class="btn-main" id="btn-race-new" style="margin-top:10px;">📚 New Story</button>
     </div>
   </div>
@@ -764,7 +742,7 @@ async function startCountdown() {
     el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
     i++;
     if (i < steps.length) setTimeout(tick, 900);
-    else setTimeout(() => { setupReadScreen(); show('screen-read'); setTimeout(() => document.getElementById('btn-record').click(), 300); }, 400);
+    else setTimeout(() => { setupReadScreen(); show('screen-read'); }, 400);
   };
   tick();
 }
@@ -790,14 +768,6 @@ function setupReadScreen() {
   }
 }
 
-// ── attachRecordListener: safely wires up btn-record ─────
-function attachRecordListener() {
-  const oldBtn = document.getElementById('btn-record');
-  const newBtn = oldBtn.cloneNode(true);
-  oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-  newBtn.addEventListener('click', startReading);
-}
-
 function renderStory(title, body) {
   const titleEl = document.getElementById('story-title');
   titleEl.innerHTML = S.isAIStory ? title + ' <span class="ai-badge">✨ AI</span>' : '';
@@ -814,7 +784,7 @@ function renderStory(title, body) {
         span.className = 'word'; span.textContent = chunk;
         span.addEventListener('dblclick', () => {
           const idx = S.wordEls.indexOf(span);
-          if (idx >= 0) { teacherSayWord(idx); }
+          if (idx >= 0) teacherSayWord(idx);
         });
         container.appendChild(span); S.wordEls.push(span);
       } else { container.appendChild(document.createTextNode(chunk)); }
@@ -825,294 +795,52 @@ function renderStory(title, body) {
     }
   });
   document.getElementById('progress-bar').style.width = '0%';
-  document.getElementById('listening-badge').classList.remove('active');
-  document.getElementById('processing-badge').classList.remove('active');
   S.wordEls.forEach(w => { w.style.color = ''; w.style.background = ''; });
-  // Stop TTS cleanly WITHOUT marking words green
   stopRAF();
   if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
   resetTTSButtons();
   ttsWordTimings = []; ttsPausedAtMs = 0;
-  // Wire up the mic button fresh every time
-  attachRecordListener();
 }
 
-// ── Live reading state ────────────────────────────────────
-let mediaRecorder = null;
-let audioChunks = [];
-let recActive = false;
-let myFinalWpm = null;
-let theirFinalWpm = null;
-let currentWordIdx = 0;
-let missedWords = [];
-let stuckTimer = null;
-let liveRecognition = null;
-
-function highlightCurrentWord() {
-  S.wordEls.forEach((w, i) => {
-    w.classList.remove('highlight');
-    if (i < currentWordIdx) {
-      w.classList.add('done');
-      if (!missedWords.find(m => m.index === i)) {
-        w.style.background = '';
-        w.style.color = '';
-      }
-    }
-  });
-  if (S.wordEls[currentWordIdx]) {
-    S.wordEls[currentWordIdx].classList.add('highlight');
-    S.wordEls[currentWordIdx].style.background = '';
-    S.wordEls[currentWordIdx].style.color = '';
-    S.wordEls[currentWordIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  const pct = Math.min(100, Math.round(currentWordIdx / S.wordEls.length * 100));
-  document.getElementById('progress-bar').style.width = pct + '%';
-  if (S.isRace) {
-    document.getElementById('my-progress-bar').style.width = pct + '%';
-    document.getElementById('my-pct').textContent = pct + '%';
-    if (S.roomCode && S.myRole) {
-      update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: pct });
-    }
-  }
-}
-
-function normalizeWord(w) {
-  return w.toLowerCase().replace(/[^a-z']/g, '');
-}
-
-function levenshteinDistance(a, b) {
-  const m = a.length, n = b.length;
-  const dp = Array.from({ length: m + 1 }, (_, i) =>
-    Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
-  );
-  for (let i = 1; i <= m; i++)
-    for (let j = 1; j <= n; j++)
-      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] :
-        1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
-  return dp[m][n];
-}
-
-function markWordStuck() {
-  if (stuckTimer) return;
-  if (S.wordEls[currentWordIdx]) {
-    S.wordEls[currentWordIdx].classList.remove('highlight');
-    S.wordEls[currentWordIdx].style.background = '#FF6B6B';
-    S.wordEls[currentWordIdx].style.color = '#ffffff';
-  }
-  missedWords.push({ index: currentWordIdx, word: S.wordEls[currentWordIdx]?.textContent || '' });
-  stuckTimer = setTimeout(() => teacherSayWord(currentWordIdx), 5000);
-}
-
+// ── Double-click word helper ──────────────────────────────
 async function teacherSayWord(idx) {
   const word = S.wordEls[idx]?.textContent?.trim() || '';
-  if (!word) { advanceWord(); return; }
+  if (!word) return;
+  // Highlight purple while speaking
+  S.wordEls.forEach(w => { w.classList.remove('highlight'); });
   if (S.wordEls[idx]) {
-    S.wordEls.forEach(w => w.classList.remove('highlight'));
     S.wordEls[idx].classList.add('highlight');
     S.wordEls[idx].style.background = '#A259FF';
     S.wordEls[idx].style.color = '#ffffff';
     S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+  const clearHighlight = () => {
+    if (S.wordEls[idx]) {
+      S.wordEls[idx].classList.remove('highlight');
+      S.wordEls[idx].style.background = '';
+      S.wordEls[idx].style.color = '';
+    }
+  };
   try {
     const voiceName = VOICE_NAMES[S.voiceGender]?.[parseInt(S.grade)] || 'en-US-Neural2-F';
     const response = await fetch(CF_TTS, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: word, grade: parseInt(S.grade) || 1, voiceName })
     });
     const data = await response.json();
     if (data.audioBase64) {
       const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
       audio.playbackRate = 0.85;
-      audio.onended = () => {
-        if (S.wordEls[idx]) {
-          S.wordEls[idx].classList.remove('highlight');
-          S.wordEls[idx].style.background = '';
-          S.wordEls[idx].style.color = '';
-        }
-        advanceWord();
-      };
+      audio.onended = clearHighlight;
       audio.play();
       return;
     }
   } catch(e) {}
-  // Fallback to browser voice if Cloud TTS fails
+  // Fallback browser voice
   const utt = new SpeechSynthesisUtterance(word);
   utt.rate = 0.8; utt.pitch = 1.1;
-  utt.onend = () => {
-    if (S.wordEls[idx]) {
-      S.wordEls[idx].classList.remove('highlight');
-      S.wordEls[idx].style.background = '';
-      S.wordEls[idx].style.color = '';
-    }
-    advanceWord();
-  };
+  utt.onend = clearHighlight;
   window.speechSynthesis.speak(utt);
-}
-
-function advanceWord() {
-  clearTimeout(stuckTimer);
-  stuckTimer = null;
-  currentWordIdx++;
-  if (currentWordIdx >= S.wordEls.length) finishReading();
-  else highlightCurrentWord();
-}
-
-async function startReading() {
-  if (recActive) return;
-  stopTTS();
-  S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; });
-  document.getElementById('progress-bar').style.width = '0%';
-  if (document.getElementById('my-progress-bar')) document.getElementById('my-progress-bar').style.width = '0%';
-  if (document.getElementById('my-pct')) document.getElementById('my-pct').textContent = '0%';
-  currentWordIdx = 0;
-  missedWords = [];
-  stuckTimer = null;
-  highlightCurrentWord();
-
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert('Live reading requires Chrome. Please open this app in Chrome.');
-    return;
-  }
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000, channelCount: 1 }
-    });
-    const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4']
-      .find(t => MediaRecorder.isTypeSupported(t)) || 'audio/webm';
-    mediaRecorder = new MediaRecorder(stream, { mimeType });
-    audioChunks = [];
-    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-    mediaRecorder.onstop = () => { stream.getTracks().forEach(t => t.stop()); };
-    mediaRecorder.start(250);
-    S.recordStart = Date.now();
-    recActive = true;
-
-    liveRecognition = new SpeechRecognition();
-    liveRecognition.continuous = true;
-    liveRecognition.interimResults = true;
-    liveRecognition.lang = 'en-US';
-
-    liveRecognition.onresult = (e) => {
-      // Only look at the most recent result
-      const result = e.results[e.results.length - 1];
-      const transcript = result[0].transcript.trim();
-      const spokenWords = transcript.toLowerCase().split(/\s+/).filter(Boolean);
-
-      // Check each newly spoken word against the current expected word
-      for (const spoken of spokenWords) {
-        const normalized = normalizeWord(spoken);
-        const expected = normalizeWord(S.wordEls[currentWordIdx]?.textContent || '');
-        if (!expected) break;
-        const isMatch = normalized === expected || levenshteinDistance(normalized, expected) <= 1;
-        if (isMatch) {
-          clearTimeout(stuckTimer);
-          stuckTimer = null;
-          advanceWord();
-        }
-      }
-    };
-
-    liveRecognition.onerror = () => {};
-    liveRecognition.onend = () => {
-      if (recActive) try { liveRecognition.start(); } catch(e) {}
-    };
-    liveRecognition.start();
-
-    document.getElementById('listening-badge').classList.add('active');
-    const recordBtn = document.getElementById('btn-record');
-    recordBtn.textContent = '⏹ Done Reading';
-    recordBtn.onclick = stopReading;
-    const timeLimit = Math.max(60, S.wordTarget * 1.5) * 1000;
-    setTimeout(() => { if (recActive) stopReading(); }, timeLimit);
-
-  } catch (err) {
-    alert('Microphone not available. Please allow microphone access and try again.');
-    recActive = false;
-  }
-}
-
-function stopReading() {
-  if (!recActive) return;
-  recActive = false;
-  clearTimeout(stuckTimer);
-  stuckTimer = null;
-  try { liveRecognition?.stop(); } catch(e) {}
-  document.getElementById('listening-badge').classList.remove('active');
-  attachRecordListener();
-  if (mediaRecorder?.state !== 'inactive') mediaRecorder?.stop();
-  finishReading();
-}
-
-function finishReading() {
-  const durationMs = Date.now() - S.recordStart;
-  const wordsRead = currentWordIdx;
-  const minutesElapsed = durationMs / 60000;
-  const wpm = minutesElapsed > 0.05 ? Math.round(wordsRead / minutesElapsed) : 0;
-
-  S.wordEls.forEach((w, i) => {
-    if (i < currentWordIdx && !missedWords.find(m => m.index === i)) {
-      w.classList.add('done');
-      w.style.background = '';
-    }
-  });
-  missedWords.forEach(({ index }) => {
-    if (S.wordEls[index]) {
-      S.wordEls[index].classList.remove('done');
-      S.wordEls[index].style.background = '#FF6B6B';
-      S.wordEls[index].style.color = '#ffffff';
-    }
-  });
-
-  document.getElementById('progress-bar').style.width =
-    Math.round(wordsRead / S.wordEls.length * 100) + '%';
-
-  if (S.isRace) {
-    update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: 100, wpm, done: true });
-    myFinalWpm = wpm;
-    tryShowRaceResults();
-  } else {
-    showSoloResults(wpm);
-  }
-}
-
-// ── Results ───────────────────────────────────────────────
-function receiveTheirResult(wpm) { theirFinalWpm = wpm; tryShowRaceResults(); }
-function tryShowRaceResults() {
-  if (myFinalWpm === null || theirFinalWpm === null) return;
-  const me = myFinalWpm, them = theirFinalWpm;
-  myFinalWpm = null; theirFinalWpm = null;
-  let title, msg, lc, rc;
-  if (me > them) { title = '🏆 You Win!'; msg = `You read ${me-them} wpm faster! Amazing!`; lc = 'winner'; rc = 'loser'; }
-  else if (them > me) { title = 'Good Race! 💪'; msg = `Your friend was ${them-me} wpm faster. Keep practicing!`; lc = 'loser'; rc = 'winner'; }
-  else { title = "🤝 It's a Tie!"; msg = "Same speed! Race again to break it!"; lc = 'tie'; rc = 'tie'; }
-  document.getElementById('race-result-title').textContent = title;
-  document.getElementById('rp-left-wpm').textContent = me;
-  document.getElementById('rp-right-wpm').textContent = them;
-  document.getElementById('rp-left').className = `result-player ${lc}`;
-  document.getElementById('rp-right').className = `result-player ${rc}`;
-  document.getElementById('race-msg').textContent = msg;
-  show('screen-race-results');
-}
-
-function showSoloResults(wpm) {
-  const benchmarks = {"1":60,"2":90,"3":110};
-  const gradeNames = {"1":"1st","2":"2nd","3":"3rd"};
-  const target = benchmarks[S.grade];
-  const ratio = wpm / target;
-  let stars, msg;
-  if (wpm < 10) { stars = '⭐'; msg = "Good try! Listen again then give it another shot!"; }
-  else if (ratio < 0.6) { stars = '⭐⭐'; msg = "Nice job! Every practice makes you faster. Try again!"; }
-  else if (ratio < 0.85) { stars = '⭐⭐⭐'; msg = "Great reading! You're building strong skills!"; }
-  else if (ratio < 1.1) { stars = '🌟🌟🌟'; msg = "Amazing! You're right on track for your grade!"; }
-  else { stars = '🏆🌟🌟🌟'; msg = "WOW — you're a reading superstar! Way above grade level!"; }
-  document.getElementById('solo-stars').textContent = stars;
-  document.getElementById('solo-wpm').textContent = wpm > 0 ? wpm : '?';
-  document.getElementById('solo-context').textContent = `${gradeNames[S.grade]} grade goal: ${target} words per minute`;
-  document.getElementById('solo-msg').textContent = msg;
-  show('screen-solo-results');
 }
 
 // ── Nav ───────────────────────────────────────────────────
@@ -1121,28 +849,13 @@ document.getElementById('btn-cancel-host').addEventListener('click', async () =>
   cleanupRoom(); show('screen-pick');
 });
 document.getElementById('btn-new').addEventListener('click', () => {
-  stopTTS(); recActive = false; cleanupRoom(); show('screen-pick');
-});
-document.getElementById('btn-solo-retry').addEventListener('click', () => {
-  S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; });
-  document.getElementById('progress-bar').style.width = '0%';
-  recActive = false;
-  currentWordIdx = 0;
-  missedWords = [];
-  stopTTS();
-  attachRecordListener();
-  show('screen-read');
-});
-document.getElementById('btn-solo-new').addEventListener('click', () => {
-  stopTTS(); recActive = false; show('screen-pick');
+  stopTTS(); cleanupRoom(); show('screen-pick');
 });
 document.getElementById('btn-race-retry').addEventListener('click', () => {
-  myFinalWpm = null; theirFinalWpm = null;
   setupReadScreen(); show('screen-read');
-  setTimeout(() => document.getElementById('btn-record').click(), 300);
 });
 document.getElementById('btn-race-new').addEventListener('click', async () => {
-  stopTTS(); recActive = false;
+  stopTTS();
   if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
   cleanupRoom(); show('screen-pick');
 });
