@@ -406,9 +406,24 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
       </div>
       <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
       <div class="or-divider"><span>or</span></div>
-      <button class="btn-main btn-purple" id="btn-race-start">🏁 Race a Friend</button>
+      <button class="btn-main btn-purple" id="btn-together-start">📖 Read Together</button>
     </div>
   </div>
+
+<!-- SCREEN: Read Together choice modal -->
+<div id="screen-together-choice" style="display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:400px;padding:20px;">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">📖 Read Together</div>
+      <p style="color:var(--muted);font-weight:700;margin-bottom:16px;">Read with someone — anywhere!</p>
+      <button class="btn-main btn-green" id="btn-create-room" style="font-size:1.1rem;">🏠 Create a Room</button>
+      <p style="color:var(--muted);font-weight:700;font-size:0.8rem;margin:8px 0;">You pick the story. Share the code with your reading partner.</p>
+      <button class="btn-main btn-purple" id="btn-join-room-choice" style="margin-top:10px;font-size:1.1rem;">🔗 Join a Room</button>
+      <p style="color:var(--muted);font-weight:700;font-size:0.8rem;margin:8px 0;">Your partner already has a room? Enter their code.</p>
+      <button class="btn-main btn-outline" id="btn-together-cancel" style="margin-top:14px;">← Back</button>
+    </div>
+  </div>
+</div>
 
   <!-- SCREEN: Loading -->
   <div class="screen" id="screen-loading">
@@ -420,8 +435,8 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
   <!-- SCREEN: Join -->
   <div class="screen" id="screen-join">
     <div class="card">
-      <div class="card-title">Join the Race! 🏁</div>
-      <p style="color:#555;font-weight:700;margin-bottom:4px;">Type your friend's room code:</p>
+      <div class="card-title">Join a Reading Room! 📖</div>
+      <p style="color:#555;font-weight:700;margin-bottom:4px;">Enter your partner's room code:</p>
       <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric">
       <div id="join-error" style="background:#FFF0F0;border:2px solid #FF6B6B;border-radius:14px;padding:12px 16px;color:#FF6B6B;font-weight:700;margin-top:10px;display:none;"></div>
       <button class="btn-main btn-green" id="btn-join-room">Join Room →</button>
@@ -432,15 +447,15 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
   <!-- SCREEN: Waiting host -->
   <div class="screen" id="screen-waiting-host">
     <div class="card">
-      <div class="card-title">Waiting for your friend <span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></div>
-      <p style="color:#555;font-weight:700;margin-bottom:6px;">Share this code:</p>
+      <div class="card-title">Waiting for your reading partner <span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <p style="color:#555;font-weight:700;margin-bottom:6px;">Share this code with your reading partner:</p>
       <div class="room-code-display">
         <div class="room-code-number" id="display-room-code">----</div>
         <div class="room-code-label">Room Code</div>
       </div>
       <div class="player-slots">
         <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Ready</div></div>
-        <div class="player-slot" id="slot-guest"><span class="slot-icon">👤</span><div class="slot-name">Friend</div><div class="slot-status">Waiting...</div></div>
+        <div class="player-slot" id="slot-guest"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">Waiting...</div></div>
       </div>
       <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:10px;">Cancel</button>
     </div>
@@ -449,9 +464,9 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
   <!-- SCREEN: Waiting guest -->
   <div class="screen" id="screen-waiting-guest">
     <div class="card">
-      <div class="card-title">You're in! Get ready... 🎉</div>
+      <div class="card-title">You're in! Get ready to read together... 📖</div>
       <div class="player-slots">
-        <div class="player-slot joined"><span class="slot-icon">🧑</span><div class="slot-name">Host</div><div class="slot-status">✓ Ready</div></div>
+        <div class="player-slot joined"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">✓ Ready</div></div>
         <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Joined!</div></div>
       </div>
       <p style="text-align:center;color:#aaa;font-weight:700;margin-top:10px;">Starting soon...</p>
@@ -468,17 +483,12 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
     <div class="card">
       <div class="card-title" id="story-title">Your Story</div>
 
-      <div class="vs-progress" id="vs-progress" style="display:none;">
-        <div class="vs-row">
-          <div class="vs-name" style="color:#4D96FF;">You</div>
-          <div class="vs-bar-wrap"><div class="vs-bar me-bar" id="my-progress-bar"></div></div>
-          <div class="vs-pct" id="my-pct">0%</div>
+      <div id="together-progress" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-weight:800;font-size:0.78rem;color:var(--purple);">📖 Reading Together</span>
+          <span style="font-weight:800;font-size:0.78rem;color:var(--muted);margin-left:auto;" id="together-pct">0%</span>
         </div>
-        <div class="vs-row">
-          <div class="vs-name" style="color:#FF6B6B;">Friend</div>
-          <div class="vs-bar-wrap"><div class="vs-bar them-bar" id="their-progress-bar"></div></div>
-          <div class="vs-pct" id="their-pct">0%</div>
-        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="together-bar"></div></div>
       </div>
 
       <div class="progress-wrap" id="solo-progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
@@ -536,11 +546,11 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
 
   <!-- SCREEN: Race results -->
   <div class="screen" id="screen-race-results">
-    <div class="card">
-      <div class="card-title" style="text-align:center;" id="race-result-title">Great Reading! 🎉</div>
-      <div class="encouragement" id="race-msg">You both read the whole story!</div>
-      <button class="btn-main btn-green" id="btn-race-retry">🔄 Read Again</button>
-      <button class="btn-main" id="btn-race-new" style="margin-top:10px;">📚 New Story</button>
+    <div class="card" style="text-align:center;">
+      <div class="card-title" id="race-result-title">📖 Great Reading Together!</div>
+      <div class="encouragement" id="race-msg">You read the whole story as a team!</div>
+      <button class="btn-main btn-green" id="btn-race-retry">▶ Read Again Together</button>
+      <button class="btn-main btn-outline" id="btn-race-new" style="margin-top:10px;">📚 New Story</button>
     </div>
   </div>
 </div>
@@ -891,8 +901,8 @@ function startHighlightLoop() {
       const pct = Math.round((activeIdx + 1) / S.wordEls.length * 100);
       document.getElementById('progress-bar').style.width = pct + '%';
       if (S.isRace) {
-        document.getElementById('my-progress-bar').style.width = pct + '%';
-        document.getElementById('my-pct').textContent = pct + '%';
+        document.getElementById('together-bar').style.width = pct + '%';
+        document.getElementById('together-pct').textContent = pct + '%';
       }
     }
     ttsRafId = requestAnimationFrame(loop);
@@ -965,8 +975,8 @@ async function playSpeech(startFromMs) {
       document.getElementById('progress-bar').style.width = '100%';
       resetTTSButtons();
       ttsPausedAtMs = 0;
-      // Record completed read (only for solo, not race)
-      if (!S.isRace) recordReadComplete();
+      recordReadComplete();
+      if (S.isRace) broadcastPlayback('finished', 0);
     });
     audio.addEventListener('error', () => { stopRAF(); resetTTSButtons(); });
   } catch (err) {
@@ -985,8 +995,10 @@ document.getElementById('btn-play').addEventListener('click', () => {
     document.getElementById('progress-bar').style.width = '0%';
     ttsPausedAtMs = 0;
     playSpeech(0);
+    if (S.isRace) broadcastPlayback('play', 0);
   } else if (ttsState === 'paused') {
     playSpeech(ttsPausedAtMs);
+    if (S.isRace) broadcastPlayback('play', ttsPausedAtMs);
   }
 });
 
@@ -999,12 +1011,17 @@ document.getElementById('btn-pause').addEventListener('click', () => {
     document.getElementById('btn-pause').textContent = '▶ Resume';
     document.getElementById('btn-play').disabled = false;
     document.getElementById('btn-play').textContent = '▶ Resume';
+    if (S.isRace) broadcastPlayback('pause', ttsPausedAtMs);
   } else if (ttsState === 'paused') {
     playSpeech(ttsPausedAtMs);
+    if (S.isRace) broadcastPlayback('play', ttsPausedAtMs);
   }
 });
 
-document.getElementById('btn-stop-tts').addEventListener('click', stopTTS);
+document.getElementById('btn-stop-tts').addEventListener('click', () => {
+  stopTTS();
+  if (S.isRace) broadcastPlayback('stop', 0);
+});
 
 // ── Pickers ───────────────────────────────────────────────
 const GRADE_DEFAULTS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
@@ -1030,14 +1047,70 @@ document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click
   btn.classList.add('selected'); S.category = btn.dataset.cat;
 }));
 
-// ── Solo / Race entry ─────────────────────────────────────
+// ── Solo / Read Together entry ────────────────────────────
 document.getElementById('btn-generate').addEventListener('click', () => { S.isRace = false; S.myRole = null; loadStory(); });
-document.getElementById('btn-race-start').onclick = () => {
-  const choice = confirm("Are you creating a room?\n\nOK = CREATE a room\nCancel = JOIN a friend's room");
-  if (choice) { S.isRace = true; S.myRole = 'host'; loadStory(); }
-  else { show('screen-join'); }
-};
+
+// Read Together modal
+document.getElementById('btn-together-start').addEventListener('click', () => {
+  document.getElementById('screen-together-choice').style.display = 'flex';
+});
+document.getElementById('btn-create-room').addEventListener('click', () => {
+  document.getElementById('screen-together-choice').style.display = 'none';
+  S.isRace = true; S.myRole = 'host'; loadStory();
+});
+document.getElementById('btn-join-room-choice').addEventListener('click', () => {
+  document.getElementById('screen-together-choice').style.display = 'none';
+  show('screen-join');
+});
+document.getElementById('btn-together-cancel').addEventListener('click', () => {
+  document.getElementById('screen-together-choice').style.display = 'none';
+});
+
 document.getElementById('btn-back-join').addEventListener('click', () => show('screen-pick'));
+
+// ── Firebase playback sync ────────────────────────────────
+function broadcastPlayback(action, positionMs) {
+  if (!S.roomRef || !S.isRace) return;
+  const key = S.myRole === 'host' ? 'hostCmd' : 'guestCmd';
+  update(S.roomRef, { [key]: { action, positionMs: positionMs || 0, ts: Date.now() } });
+}
+
+function listenForPartnerPlayback() {
+  const partnerKey = S.myRole === 'host' ? 'guestCmd' : 'hostCmd';
+  let lastTs = 0;
+  const unsub = onValue(ref(db, `rooms/${S.roomCode}/${partnerKey}`), snap => {
+    const cmd = snap.val();
+    if (!cmd || cmd.ts <= lastTs) return;
+    lastTs = cmd.ts;
+    if (cmd.action === 'play') {
+      if (ttsState === 'idle' || ttsState === 'paused') {
+        S.wordEls.forEach(w => { w.className = 'word'; });
+        document.getElementById('progress-bar').style.width = '0%';
+        playSpeech(cmd.positionMs || 0);
+      }
+    } else if (cmd.action === 'pause') {
+      if (ttsState === 'playing' && ttsAudio) {
+        ttsPausedAtMs = ttsAudio.currentTime * 1000;
+        ttsAudio.pause();
+        stopRAF();
+        ttsState = 'paused';
+        document.getElementById('btn-pause').textContent = '▶ Resume';
+        document.getElementById('btn-play').disabled = false;
+        document.getElementById('btn-play').textContent = '▶ Resume';
+      }
+    } else if (cmd.action === 'stop') {
+      stopTTS();
+    } else if (cmd.action === 'finished') {
+      stopRAF();
+      S.wordEls.forEach(w => w.classList.remove('highlight'));
+      document.getElementById('progress-bar').style.width = '100%';
+      resetTTSButtons();
+      ttsPausedAtMs = 0;
+      recordReadComplete();
+    }
+  });
+  S.unsubscribers.push(unsub);
+}
 
 document.getElementById('btn-join-room').addEventListener('click', async () => {
   const code = document.getElementById('join-code-input').value.trim();
@@ -1107,7 +1180,7 @@ async function createRoom() {
     const room = snap.val(); if (!room) return;
     if (room.guestJoined) {
       document.getElementById('slot-guest').classList.add('joined');
-      document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Friend';
+      document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Partner';
       document.getElementById('slot-guest').querySelector('.slot-status').textContent = '✓ Joined!';
       unsub(); setTimeout(() => startCountdown(), 1000);
     }
@@ -1135,9 +1208,9 @@ async function startCountdown() {
 function setupReadScreen() {
   renderStory(S.storyTitle, S.story);
   updateReadBadge();
-  document.getElementById('vs-progress').style.display = S.isRace ? 'block' : 'none';
+  document.getElementById('together-progress').style.display = S.isRace ? 'block' : 'none';
   document.getElementById('solo-progress-wrap').style.display = S.isRace ? 'none' : 'block';
-  // Bug 5: Show "I Finished Reading" button after 10 seconds for silent readers
+  // Show "I Finished Reading" button after 10 seconds for silent readers
   const finishedBtn = document.getElementById('btn-finished-reading');
   finishedBtn.style.display = 'none';
   if (!S.isRace) {
@@ -1147,12 +1220,11 @@ function setupReadScreen() {
     }, 10000);
   }
   if (S.isRace) {
-    document.getElementById('my-progress-bar').style.width = '0%';
-    document.getElementById('their-progress-bar').style.width = '0%';
-    document.getElementById('my-pct').textContent = '0%';
-    document.getElementById('their-pct').textContent = '0%';
+    document.getElementById('together-bar').style.width = '0%';
+    document.getElementById('together-pct').textContent = '0%';
+    listenForPartnerPlayback();
   }
-  // Fix 3: Preload TTS audio in background so Play is instant
+  // Preload TTS audio in background so Play is instant
   if (!S.isRace && navigator.onLine && S.story) {
     fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
   }
