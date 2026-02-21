@@ -648,32 +648,64 @@ const CF_STT   = `${CF_BASE}/transcribeSpeech`;
 async function generateAIStory(grade, category, wordTarget) {
   const gradeNames = { "prek": "Pre-K", "k": "Kindergarten", "1": "1st", "2": "2nd", "3": "3rd" };
 
+  // Friendly topic names for titles and prompts
+  const topicNames = {
+    animals: "Animals", space: "Space", dinosaurs: "Dinosaurs", ocean: "Ocean",
+    superheroes: "Superheroes", magic: "Magic", sports: "Sports", cooking: "Cooking",
+    friends: "Friends", confidence: "Self-Confidence", blackhistory: "Black History Heroes",
+    helpers: "Community Helpers", nature: "Nature & Weather", emotions: "Feelings & Emotions"
+  };
+  const topicLabel = topicNames[category] || category;
+
+  // Topic-specific anchor for Pre-K/K so the AI doesn't drift
+  const topicAnchors = {
+    animals: "Use animals like a dog, cat, bird, or fish as the main characters.",
+    space: "Use the sun, moon, and stars as the main focus.",
+    dinosaurs: "Use a big friendly dinosaur as the main character.",
+    ocean: "Use a fish, wave, or crab as the main focus.",
+    superheroes: "Use a kind hero who helps people as the main character.",
+    magic: "Use a magic wand or a star that grants wishes.",
+    sports: "Use running, jumping, or throwing a ball as the main activity.",
+    cooking: "Use making food like soup or a sandwich as the main activity.",
+    friends: "Use two children who play together as the main characters.",
+    confidence: "Use a child who tries something new and feels proud.",
+    blackhistory: "Use a brave hero named Rosa or Mae who did something great.",
+    helpers: "Use a firefighter, doctor, or teacher as the main character.",
+    nature: "Use the sun, rain, or a tree as the main focus.",
+    emotions: "Use a child who feels happy, sad, or brave."
+  };
+  const topicAnchor = topicAnchors[category] || `Write about ${topicLabel}.`;
+
   const gradeInstructions = {
-    "prek": `You are writing for a 3-4 year old child who is just learning to read. STRICT RULES:
-- Every sentence must be 3-4 words MAXIMUM. Example: "I see a dog." "The cat is big." "We can run fast."
-- Use ONLY these types of words: cat, dog, big, run, sit, hat, red, the, is, a, I, my, see, like, can, we, it, go, at, in, up, on, fun, sun, hop, top, hot, pot, bed, red, said, has, his, her, they, are
-- NO word longer than one syllable except: animal names, color words
-- Use the SAME sentence pattern repeated with different words (e.g. "I see a cat. I see a dog. I see a bird.")
-- NO commas, NO complex ideas, NO emotions like "frustrated" or "curious"
+    "prek": `You are writing for a 3-4 year old child learning to read. Topic: ${topicLabel}. ${topicAnchor}
+
+STRICT RULES:
+- Every sentence must be 3-5 words MAXIMUM
+- Use ONLY simple one-syllable words: big, run, sit, red, the, is, a, I, my, see, like, can, we, it, go, up, on, fun, hop, hot, has, his, her, they, are, said, good, love, help, kind, brave
+- Use repetitive sentence patterns: "She is brave. She is kind. She is good."
+- NO complex ideas, NO multi-syllable words except names
 - End with: "Think about it: What do you see?"
-Write the story now. ${wordTarget} words total.`,
-    "k": `You are writing for a 5-6 year old kindergartner just beginning to read. STRICT RULES:
-- Sentences must be 5-7 words maximum. Example: "The dog ran to the house." "She liked to play with blocks."
-- Use only simple, common words a kindergartner knows: home, play, run, jump, happy, sad, big, little, mom, dad, friend, school, food, water, help, love
-- NO words longer than 2 syllables
-- Short paragraphs of 2-3 sentences only
-- Some repetition is good: "He liked to run. He liked to jump. He liked to play."
-- End with a simple question: "Think about it: What do you like to do?"
-Write the story now. ${wordTarget} words total.`,
-    "1": `Use very simple words a 6-7 year old knows. Write in short but natural sentences that flow together smoothly into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
-    "2": `Use simple but varied vocabulary for a 7-8 year old. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Tell a real story or share interesting facts in a narrative way. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
-    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write in natural paragraphs with varied sentence structure. Include interesting details, descriptive language, and a clear point or message. Do NOT use bullet points or lists. End with one "Think about it:" question.`
+Write exactly ${wordTarget} words.`,
+
+    "k": `You are writing for a 5-6 year old kindergartner. Topic: ${topicLabel}. ${topicAnchor}
+
+STRICT RULES:
+- Sentences must be 5-8 words maximum
+- Use simple common words only — no words longer than 2 syllables
+- Short paragraphs of 2-3 sentences
+- Keep the topic clearly present throughout the story
+- End with a simple question: "Think about it: What would you do?"
+Write exactly ${wordTarget} words.`,
+
+    "1": `Use very simple words a 6-7 year old knows. Write about ${topicLabel}. Write in short natural sentences that flow into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
+    "2": `Use simple but varied vocabulary for a 7-8 year old. Write about ${topicLabel}. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
+    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write about ${topicLabel}. Write in natural paragraphs with varied sentence structure. Include interesting details and a clear message. Do NOT use bullet points or lists. End with one "Think about it:" question.`
   };
 
   const instructions = gradeInstructions[grade] || gradeInstructions["1"];
   const fullPrompt = (grade === 'prek' || grade === 'k')
-    ? `Write a story about ${category}.\n\n${instructions}`
-    : `Write a story about ${category} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`;
+    ? `${instructions}`
+    : `Write a story about ${topicLabel} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`;
 
   const response = await fetch(CF_STORY, {
     method: "POST", headers: { "Content-Type": "application/json" },
@@ -997,7 +1029,8 @@ async function loadStory() {
       ? '📖 Writing your epic story... (this one takes a moment!)'
       : '✨ Writing your story with AI...';
     const aiText = await generateAIStory(S.grade, S.category, S.wordTarget);
-    S.storyTitle = `✨ ${S.category.charAt(0).toUpperCase() + S.category.slice(1)} Story`;
+    const TOPIC_NAMES = { animals:"Animals", space:"Space", dinosaurs:"Dinosaurs", ocean:"Ocean", superheroes:"Superheroes", magic:"Magic", sports:"Sports", cooking:"Cooking", friends:"Friends", confidence:"Self-Confidence", blackhistory:"Black History Heroes", helpers:"Community Helpers", nature:"Nature & Weather", emotions:"Feelings & Emotions" };
+    S.storyTitle = `✨ ${TOPIC_NAMES[S.category] || S.category} Story`;
     S.story = cleanStoryText(aiText);
     S.isAIStory = true;
     recordStoryStart();
