@@ -551,10 +551,7 @@ function startHighlightLoop() {
       else break;
     }
     if (activeIdx >= 0) {
-      S.wordEls.forEach((w, i) => {
-        w.classList.remove('highlight');
-        if (i < activeIdx) w.classList.add('done');
-      });
+      S.wordEls.forEach((w) => w.classList.remove('highlight'));
       if (S.wordEls[activeIdx]) {
         S.wordEls[activeIdx].classList.add('highlight');
         S.wordEls[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -941,23 +938,23 @@ async function startReading() {
     liveRecognition.interimResults = true;
     liveRecognition.lang = 'en-US';
 
-    let lastSpokenCount = 0;
-
     liveRecognition.onresult = (e) => {
-      let fullTranscript = '';
-      for (let i = 0; i < e.results.length; i++) {
-        fullTranscript += e.results[i][0].transcript + ' ';
-      }
-      const spokenWords = fullTranscript.trim().split(/\s+/).filter(Boolean);
-      if (spokenWords.length <= lastSpokenCount) return;
-      lastSpokenCount = spokenWords.length;
-      const lastSpoken = normalizeWord(spokenWords[spokenWords.length - 1]);
-      const expectedWord = normalizeWord(S.wordEls[currentWordIdx]?.textContent || '');
-      const isMatch = lastSpoken === expectedWord || levenshteinDistance(lastSpoken, expectedWord) <= 1;
-      if (isMatch) {
-        clearTimeout(stuckTimer);
-        stuckTimer = null;
-        advanceWord();
+      // Only look at the most recent result
+      const result = e.results[e.results.length - 1];
+      const transcript = result[0].transcript.trim();
+      const spokenWords = transcript.toLowerCase().split(/\s+/).filter(Boolean);
+
+      // Check each newly spoken word against the current expected word
+      for (const spoken of spokenWords) {
+        const normalized = normalizeWord(spoken);
+        const expected = normalizeWord(S.wordEls[currentWordIdx]?.textContent || '');
+        if (!expected) break;
+        const isMatch = normalized === expected || levenshteinDistance(normalized, expected) <= 1;
+        if (isMatch) {
+          clearTimeout(stuckTimer);
+          stuckTimer = null;
+          advanceWord();
+        }
       }
     };
 
