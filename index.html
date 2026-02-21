@@ -832,33 +832,166 @@ let recActive = false;
 let myFinalWpm = null;
 let theirFinalWpm = null;
 
+// ── Live word-by-word reading tracker ────────────────────
+let currentWordIdx = 0;
+let missedWords = [];
+let stuckTimer = null;
+let liveRecognition = null;
+
+function highlightCurrentWord() {
+  S.wordEls.forEach((w, i) => {
+    w.classList.remove('highlight');
+    if (i < currentWordIdx) {
+      w.classList.add('done');
+      if (!missedWords.find(m => m.index === i)) {
+        w.style.background = '';
+        w.style.color = '';
+      }
+    }
+  });
+  if (S.wordEls[currentWordIdx]) {
+    S.wordEls[currentWordIdx].classList.add('highlight');
+    S.wordEls[currentWordIdx].style.background = '';
+    S.wordEls[currentWordIdx].style.color = '';
+    S.wordEls[currentWordIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  const pct = Math.min(100, Math.round(currentWordIdx / S.wordEls.length * 100));
+  document.getElementById('progress-bar').style.width = pct + '%';
+  if (S.isRace) {
+    document.getElementById('my-progress-bar').style.width = pct + '%';
+    document.getElementById('my-pct').textContent = pct + '%';
+    if (S.roomCode && S.myRole) {
+      update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: pct });
+    }
+  }
+}
+
+function normalizeWord(w) {
+  return w.toLowerCase().replace(/[^a-z']/g, '');
+}
+
+function levenshteinDistance(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+  );
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] :
+        1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function markWordStuck() {
+  if (stuckTimer) return; // already stuck
+  if (S.wordEls[currentWordIdx]) {
+    S.wordEls[currentWordIdx].classList.remove('highlight');
+    S.wordEls[currentWordIdx].style.background = '#FF6B6B';
+    S.wordEls[currentWordIdx].style.color = '#ffffff';
+  }
+  missedWords.push({ index: currentWordIdx, word: S.wordEls[currentWordIdx]?.textContent || '' });
+  stuckTimer = setTimeout(() => teacherSayWord(currentWordIdx), 5000);
+}
+
+function teacherSayWord(idx) {
+  const word = normalizeWord(S.wordEls[idx]?.textContent || '');
+  if (S.wordEls[idx]) {
+    S.wordEls[idx].style.background = '#A259FF';
+    S.wordEls[idx].style.color = '#ffffff';
+  }
+  const utt = new SpeechSynthesisUtterance(word);
+  utt.rate = 0.8;
+  utt.pitch = 1.1;
+  utt.onend = () => advanceWord();
+  window.speechSynthesis.speak(utt);
+}
+
+function advanceWord() {
+  clearTimeout(stuckTimer);
+  stuckTimer = null;
+  currentWordIdx++;
+  if (currentWordIdx >= S.wordEls.length) {
+    finishReading();
+  } else {
+    highlightCurrentWord();
+  }
+}
+
 document.getElementById('btn-record').addEventListener('click', startReading);
 
 async function startReading() {
   if (recActive) return;
   stopTTS();
-  S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; });
+  S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; });
   document.getElementById('progress-bar').style.width = '0%';
   document.getElementById('my-progress-bar').style.width = '0%';
   document.getElementById('my-pct').textContent = '0%';
+  currentWordIdx = 0;
+  missedWords = [];
+  stuckTimer = null;
+  highlightCurrentWord();
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Live reading requires Chrome. Please open this app in Chrome.');
+    return;
+  }
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000, channelCount: 1 }
     });
-    const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t => MediaRecorder.isTypeSupported(t)) || 'audio/webm';
+    const mimeType = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4']
+      .find(t => MediaRecorder.isTypeSupported(t)) || 'audio/webm';
     mediaRecorder = new MediaRecorder(stream, { mimeType });
     audioChunks = [];
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-    mediaRecorder.onstop = async () => { stream.getTracks().forEach(t => t.stop()); await processRecording(); };
+    mediaRecorder.onstop = () => { stream.getTracks().forEach(t => t.stop()); };
     mediaRecorder.start(250);
     S.recordStart = Date.now();
     recActive = true;
+
+    liveRecognition = new SpeechRecognition();
+    liveRecognition.continuous = true;
+    liveRecognition.interimResults = true;
+    liveRecognition.lang = 'en-US';
+
+    let lastSpokenCount = 0;
+
+    liveRecognition.onresult = (e) => {
+      let fullTranscript = '';
+      for (let i = 0; i < e.results.length; i++) {
+        fullTranscript += e.results[i][0].transcript + ' ';
+      }
+      const spokenWords = fullTranscript.trim().split(/\s+/).filter(Boolean);
+      if (spokenWords.length <= lastSpokenCount) return;
+      lastSpokenCount = spokenWords.length;
+
+      const lastSpoken = normalizeWord(spokenWords[spokenWords.length - 1]);
+      const expectedWord = normalizeWord(S.wordEls[currentWordIdx]?.textContent || '');
+      const isMatch = lastSpoken === expectedWord || levenshteinDistance(lastSpoken, expectedWord) <= 1;
+
+      if (isMatch) {
+        clearTimeout(stuckTimer);
+        stuckTimer = null;
+        advanceWord();
+      } else {
+        markWordStuck();
+      }
+    };
+
+    liveRecognition.onerror = () => {};
+    liveRecognition.onend = () => {
+      if (recActive) try { liveRecognition.start(); } catch(e) {}
+    };
+    liveRecognition.start();
+
     document.getElementById('listening-badge').classList.add('active');
     document.getElementById('btn-record').textContent = '⏹ Done Reading';
     document.getElementById('btn-record').onclick = stopReading;
-    const timeLimit = Math.max(45, S.wordTarget * 1.2) * 1000;
+    const timeLimit = Math.max(60, S.wordTarget * 1.5) * 1000;
     setTimeout(() => { if (recActive) stopReading(); }, timeLimit);
+
   } catch (err) {
     alert('Microphone not available. Please allow microphone access and try again.');
     recActive = false;
@@ -866,61 +999,48 @@ async function startReading() {
 }
 
 function stopReading() {
-  if (!recActive || !mediaRecorder) return;
+  if (!recActive) return;
   recActive = false;
+  clearTimeout(stuckTimer);
+  stuckTimer = null;
+  try { liveRecognition?.stop(); } catch(e) {}
   document.getElementById('listening-badge').classList.remove('active');
   document.getElementById('btn-record').textContent = '🎤 My Turn! Read Aloud';
   document.getElementById('btn-record').onclick = null;
   document.getElementById('btn-record').addEventListener('click', startReading, { once: true });
-  mediaRecorder.stop();
+  if (mediaRecorder?.state !== 'inactive') mediaRecorder?.stop();
+  finishReading();
 }
 
-async function processRecording() {
+function finishReading() {
   const durationMs = Date.now() - S.recordStart;
-  document.getElementById('processing-badge').classList.add('active');
-  document.getElementById('btn-record').disabled = true;
-  try {
-    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
-    const arrayBuffer = await audioBlob.arrayBuffer();
-    const uint8 = new Uint8Array(arrayBuffer);
-    let binary = '';
-    for (let i = 0; i < uint8.length; i++) binary += String.fromCharCode(uint8[i]);
-    const audioBase64 = btoa(binary);
+  const wordsRead = currentWordIdx;
+  const minutesElapsed = durationMs / 60000;
+  const wpm = minutesElapsed > 0.05 ? Math.round(wordsRead / minutesElapsed) : 0;
 
-    const response = await fetch(CF_STT, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ audioBase64, expectedText: S.story, grade: parseInt(S.grade) || 2 })
-    });
-    const data = await response.json();
-    const wordsRead = data.accuracy?.wordsRead || 0;
-    const minutesElapsed = durationMs / 60000;
-    const wpm = minutesElapsed > 0.05 ? Math.round(wordsRead / minutesElapsed) : 0;
-
-    if (data.accuracy?.wordResults) {
-      data.accuracy.wordResults.forEach((result, i) => {
-        if (S.wordEls[i]) {
-          S.wordEls[i].classList.remove('highlight');
-          if (result.status === 'correct') { S.wordEls[i].classList.add('done'); }
-          else { S.wordEls[i].style.color = '#FF6B6B'; }
-        }
-      });
+  S.wordEls.forEach((w, i) => {
+    if (i < currentWordIdx && !missedWords.find(m => m.index === i)) {
+      w.classList.add('done');
+      w.style.background = '';
     }
+  });
+  missedWords.forEach(({ index }) => {
+    if (S.wordEls[index]) {
+      S.wordEls[index].classList.remove('done');
+      S.wordEls[index].style.background = '#FF6B6B';
+      S.wordEls[index].style.color = '#ffffff';
+    }
+  });
 
-    const pct = Math.min(100, Math.round(wordsRead / S.wordEls.length * 100));
-    document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-bar').style.width =
+    Math.round(wordsRead / S.wordEls.length * 100) + '%';
 
-    if (S.isRace) {
-      update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: 100, wpm, done: true });
-      myFinalWpm = wpm; tryShowRaceResults();
-    } else { showSoloResults(wpm); }
-  } catch (err) {
-    console.error('STT error:', err);
-    const wpmFallback = Math.round((durationMs / 60000) * 80);
-    if (S.isRace) { myFinalWpm = wpmFallback; tryShowRaceResults(); }
-    else showSoloResults(wpmFallback);
-  } finally {
-    document.getElementById('processing-badge').classList.remove('active');
-    document.getElementById('btn-record').disabled = false;
+  if (S.isRace) {
+    update(ref(db, `rooms/${S.roomCode}/${S.myRole}`), { progress: 100, wpm, done: true });
+    myFinalWpm = wpm;
+    tryShowRaceResults();
+  } else {
+    showSoloResults(wpm);
   }
 }
 
@@ -964,7 +1084,7 @@ function showSoloResults(wpm) {
 // ── Nav ───────────────────────────────────────────────────
 document.getElementById('btn-cancel-host').addEventListener('click', async () => { if (S.roomRef) try { await remove(S.roomRef); } catch(e) {} cleanupRoom(); show('screen-pick'); });
 document.getElementById('btn-new').addEventListener('click', () => { stopTTS(); recActive = false; cleanupRoom(); show('screen-pick'); });
-document.getElementById('btn-solo-retry').addEventListener('click', () => { S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; }); document.getElementById('progress-bar').style.width = '0%'; document.getElementById('btn-record').textContent = '🎤 My Turn! Read Aloud'; document.getElementById('btn-record').onclick = null; document.getElementById('btn-record').disabled = false; recActive = false; stopTTS(); show('screen-read'); });
+document.getElementById('btn-solo-retry').addEventListener('click', () => { S.wordEls.forEach(w => { w.className = 'word'; w.style.color = ''; w.style.background = ''; }); document.getElementById('progress-bar').style.width = '0%'; document.getElementById('btn-record').textContent = '🎤 My Turn! Read Aloud'; document.getElementById('btn-record').onclick = null; document.getElementById('btn-record').disabled = false; recActive = false; stopTTS(); show('screen-read'); });
 document.getElementById('btn-solo-new').addEventListener('click', () => { stopTTS(); recActive = false; show('screen-pick'); });
 document.getElementById('btn-race-retry').addEventListener('click', () => { myFinalWpm = null; theirFinalWpm = null; setupReadScreen(); show('screen-read'); setTimeout(() => document.getElementById('btn-record').click(), 300); });
 document.getElementById('btn-race-new').addEventListener('click', async () => { stopTTS(); recActive = false; if (S.roomRef) try { await remove(S.roomRef); } catch(e) {} cleanupRoom(); show('screen-pick'); });
