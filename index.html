@@ -443,7 +443,7 @@ async function generateAIStory(grade, category, wordTarget) {
       grade: gradeNames[grade] || grade,
       topic: category,
       wordCount: wordTarget,
-      instructions: `Write a story that is exactly ${wordTarget} words long. Do NOT include a title, heading, label, or any text before the story. Start the story immediately with the first word. Do not use markdown formatting.`
+      instructions: `Write a story that is exactly ${wordTarget} words long. Do NOT include a title, heading, label, or any text before the story. Start the story immediately with the first word. Use natural paragraph breaks every 3-5 sentences to break up the story. Do not use markdown formatting.`
     })
   });
   if (!response.ok) throw new Error("Cloud function error: " + response.status);
@@ -791,16 +791,35 @@ function renderStory(title, body) {
   container.innerHTML = ''; S.wordEls = [];
   // Strip markdown headers, titles, bold labels from AI output
   const cleanBody = body
-    .replace(/^#+\s*/gm, '')
+    .replace(/^#+\s*.+\n*/m, '')          // remove markdown headers
+    .replace(/^\*\*.*?\*\*\s*\n*/m, '')   // remove bold titles
+    .replace(/^[A-Z][^.!?]*(?:\n|$)/, '')  // remove plain title-case first line with no punctuation
     .replace(/^(reading passage|passage|story title|title):?\s*/im, '')
-    .replace(/^\*\*.*?\*\*\s*/m, '')
     .trim();
-  cleanBody.split(/(\s+)/).forEach(chunk => {
-    if (/\S/.test(chunk)) {
-      const span = document.createElement('span');
-      span.className = 'word'; span.textContent = chunk;
-      container.appendChild(span); S.wordEls.push(span);
-    } else { container.appendChild(document.createTextNode(chunk)); }
+
+  // Split into paragraphs first, then words within each paragraph
+  const paragraphs = cleanBody.split(/\n\s*\n/);
+  paragraphs.forEach((para, pIdx) => {
+    para.trim().split(/(\s+)/).forEach(chunk => {
+      if (/\S/.test(chunk)) {
+        const span = document.createElement('span');
+        span.className = 'word'; span.textContent = chunk;
+        span.addEventListener('dblclick', () => {
+          const idx = S.wordEls.indexOf(span);
+          if (idx >= 0 && idx === currentWordIdx && recActive) {
+            clearTimeout(stuckTimer);
+            stuckTimer = null;
+            teacherSayWord(idx);
+          }
+        });
+        container.appendChild(span); S.wordEls.push(span);
+      } else { container.appendChild(document.createTextNode(chunk)); }
+    });
+    // Add paragraph break between paragraphs
+    if (pIdx < paragraphs.length - 1) {
+      container.appendChild(document.createElement('br'));
+      container.appendChild(document.createElement('br'));
+    }
   });
   document.getElementById('progress-bar').style.width = '0%';
   document.getElementById('listening-badge').classList.remove('active');
@@ -884,6 +903,7 @@ function markWordStuck() {
 function teacherSayWord(idx) {
   const word = normalizeWord(S.wordEls[idx]?.textContent || '');
   if (S.wordEls[idx]) {
+    S.wordEls.forEach(w => w.classList.remove('highlight'));
     S.wordEls[idx].classList.add('highlight');
     S.wordEls[idx].style.background = '#A259FF';
     S.wordEls[idx].style.color = '#ffffff';
@@ -891,7 +911,14 @@ function teacherSayWord(idx) {
   }
   const utt = new SpeechSynthesisUtterance(word);
   utt.rate = 0.8; utt.pitch = 1.1;
-  utt.onend = () => advanceWord();
+  utt.onend = () => {
+    if (S.wordEls[idx]) {
+      S.wordEls[idx].classList.remove('highlight');
+      S.wordEls[idx].style.background = '';
+      S.wordEls[idx].style.color = '';
+    }
+    advanceWord();
+  };
   window.speechSynthesis.speak(utt);
 }
 
