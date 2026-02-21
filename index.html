@@ -995,10 +995,10 @@ document.getElementById('btn-play').addEventListener('click', () => {
     document.getElementById('progress-bar').style.width = '0%';
     ttsPausedAtMs = 0;
     playSpeech(0);
-    if (S.isRace) broadcastPlayback('play', 0);
+    if (S.isRace) setTimeout(() => broadcastPlayback('play', 0), 500);
   } else if (ttsState === 'paused') {
     playSpeech(ttsPausedAtMs);
-    if (S.isRace) broadcastPlayback('play', ttsPausedAtMs);
+    if (S.isRace) setTimeout(() => broadcastPlayback('play', ttsPausedAtMs), 500);
   }
 });
 
@@ -1186,7 +1186,7 @@ async function createRoom() {
     }
   });
   S.unsubscribers.push(unsub);
-  setTimeout(() => { try { remove(S.roomRef); } catch(e) {} }, 600000);
+  setTimeout(() => { try { remove(S.roomRef); } catch(e) {} }, 3600000); // 60 min
 }
 
 async function startCountdown() {
@@ -1200,7 +1200,23 @@ async function startCountdown() {
     el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
     i++;
     if (i < steps.length) setTimeout(tick, 900);
-    else setTimeout(() => { setupReadScreen(); show('screen-read'); }, 400);
+    else setTimeout(async () => {
+      // Fix 1: Guest double-checks story from Firebase to ensure it matches host
+      if (S.myRole === 'guest' && S.roomCode) {
+        try {
+          const snap = await get(ref(db, `rooms/${S.roomCode}`));
+          if (snap.exists()) {
+            const room = snap.val();
+            S.story = room.story;
+            S.storyTitle = room.title;
+            S.grade = room.grade;
+            S.wordTarget = room.wordTarget;
+            S.isAIStory = true;
+          }
+        } catch(e) { console.warn('Could not refresh story:', e); }
+      }
+      setupReadScreen(); show('screen-read');
+    }, 400);
   };
   tick();
 }
@@ -1208,6 +1224,16 @@ async function startCountdown() {
 function setupReadScreen() {
   renderStory(S.storyTitle, S.story);
   updateReadBadge();
+  // Fix 4: Show connected indicator when reading together
+  const existingConnected = document.getElementById('together-connected-badge');
+  if (existingConnected) existingConnected.remove();
+  if (S.isRace) {
+    const badge = document.createElement('div');
+    badge.id = 'together-connected-badge';
+    badge.style.cssText = 'text-align:center;font-size:0.78rem;font-weight:800;color:var(--green);margin:4px 0 8px;';
+    badge.textContent = '🟢 Connected — reading together';
+    document.getElementById('story-title').after(badge);
+  }
   document.getElementById('together-progress').style.display = S.isRace ? 'block' : 'none';
   document.getElementById('solo-progress-wrap').style.display = S.isRace ? 'none' : 'block';
   // Show "I Finished Reading" button after 10 seconds for silent readers
@@ -1224,8 +1250,8 @@ function setupReadScreen() {
     document.getElementById('together-pct').textContent = '0%';
     listenForPartnerPlayback();
   }
-  // Preload TTS audio in background so Play is instant
-  if (!S.isRace && navigator.onLine && S.story) {
+  // Preload TTS audio in background so Play is instant (both solo and together)
+  if (navigator.onLine && S.story) {
     fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
   }
 }
