@@ -1073,9 +1073,6 @@ document.getElementById('btn-play').addEventListener('click', () => {
     ttsPausedAtMs = 0;
     playSpeech(0);
     if (S.isRace) setTimeout(() => broadcastPlayback('play', 0), 500);
-  } else if (ttsState === 'paused') {
-    playSpeech(ttsPausedAtMs);
-    if (S.isRace) setTimeout(() => broadcastPlayback('play', ttsPausedAtMs), 500);
   }
 });
 
@@ -1086,8 +1083,7 @@ document.getElementById('btn-pause').addEventListener('click', () => {
     stopRAF();
     ttsState = 'paused';
     document.getElementById('btn-pause').textContent = '▶ Resume';
-    document.getElementById('btn-play').disabled = false;
-    document.getElementById('btn-play').textContent = '▶ Resume';
+    document.getElementById('btn-play').disabled = true;
     if (S.isRace) broadcastPlayback('pause', ttsPausedAtMs);
   } else if (ttsState === 'paused') {
     playSpeech(ttsPausedAtMs);
@@ -1172,8 +1168,7 @@ function listenForPartnerPlayback() {
         stopRAF();
         ttsState = 'paused';
         document.getElementById('btn-pause').textContent = '▶ Resume';
-        document.getElementById('btn-play').disabled = false;
-        document.getElementById('btn-play').textContent = '▶ Resume';
+        document.getElementById('btn-play').disabled = true;
       }
     } else if (cmd.action === 'stop') {
       stopTTS();
