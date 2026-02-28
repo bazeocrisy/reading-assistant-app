@@ -1767,7 +1767,6 @@ document.getElementById('btn-generate').addEventListener('click', () => { S.isRa
 
 // ── Scan My Page ──────────────────────────────────────────
 document.getElementById('btn-scan-page').addEventListener('click', () => {
-  if (!S.grade) { alert('Please select a grade first!'); return; }
   document.getElementById('scan-file-input').click();
 });
 
@@ -2087,7 +2086,11 @@ function renderStory(title, body) {
   const wordCount = S.wordEls.length;
   const infoBar = document.getElementById('story-info-bar');
   const infoText = document.getElementById('story-info-text');
-  infoText.textContent = `📚 ${gradeLabels[S.grade] || S.grade} Level · ${wordCount} words`;
+  if (S.category === 'scanned') {
+    infoText.textContent = `📸 ${wordCount} words`;
+  } else {
+    infoText.textContent = `📚 ${gradeLabels[S.grade] || S.grade} Level · ${wordCount} words`;
+  }
   infoBar.style.display = 'block';
 
   stopRAF();
