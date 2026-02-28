@@ -53,7 +53,7 @@ body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-l
 .blob3 { width: 350px; height: 350px; background: var(--green); bottom: -80px; left: 30%; animation-delay: -8s; }
 @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.08); } }
 
-.app { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 20px 20px 60px; }
+.app { position: relative; z-index: 1; max-width: 100%; margin: 0 auto; padding: 20px 20px 60px; }
 
 header { text-align: center; padding: 24px 0 16px; }
 
@@ -313,6 +313,16 @@ body.bedtime .parent-bar-btn:hover { background: #7a4aaa; border-color: #7a4aaa;
   scrollbar-width: auto;
   scrollbar-color: var(--purple-light) var(--section);
 }
+@media (min-width: 768px) {
+  #story-scroll-container { max-height: 60vh !important; }
+  #spelling-word-list, #spell-picker-list, #wpm-story-scroll { max-height: 55vh !important; }
+  #wordbank-review-list { max-height: 60vh !important; }
+}
+@media (min-width: 1024px) {
+  #story-scroll-container { max-height: 68vh !important; }
+  #spelling-word-list, #spell-picker-list, #wpm-story-scroll { max-height: 62vh !important; }
+  #wordbank-review-list { max-height: 68vh !important; }
+}
 #story-scroll-container::-webkit-scrollbar { width: 14px; }
 #story-scroll-container::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
 #story-scroll-container::-webkit-scrollbar-thumb {
@@ -553,6 +563,48 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   .card { padding: 20px 14px; }
   .countdown-number { font-size: 6rem; }
   .tts-controls { grid-template-columns: 1fr 1fr 1fr; }
+  .app { padding: 12px 10px 40px; }
+}
+
+/* Tablet (768px - 1024px) */
+@media (min-width: 768px) {
+  .app { max-width: 90%; padding: 24px 30px 60px; }
+  .card { padding: 32px; border-radius: 28px; }
+  #story-text { font-size: 1.5rem; line-height: 2.4rem; }
+  .card-title { font-size: 1.7rem; }
+  .categories { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .spelling-word-card { padding: 16px; }
+  .spell-picker-word { padding: 14px 18px; }
+  .spell-choice-btn { font-size: 1.3rem; padding: 20px 16px; }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .app { max-width: 85%; padding: 30px 40px 60px; }
+  .card { padding: 36px 40px; }
+  #story-text { font-size: 1.6rem; line-height: 2.6rem; }
+  .card-title { font-size: 1.8rem; }
+  .logo { font-size: 3rem; }
+  .categories { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .cat-btn { padding: 18px 10px 14px; font-size: 0.9rem; }
+  .cat-btn svg { width: 46px; height: 46px; }
+  .opt-btn { padding: 12px 10px; font-size: 0.95rem; }
+  .btn-main { font-size: 1.05rem; padding: 16px; }
+  .spelling-word-card { padding: 18px 20px; }
+  .spelling-word-text { font-size: 1.4rem; }
+  .spell-picker-word { padding: 16px 20px; }
+  .spell-picker-label { font-size: 1.25rem; }
+  .spell-choice-btn { font-size: 1.4rem; padding: 22px 18px; min-height: 64px; }
+  .quiz-input { font-size: 1.8rem; padding: 18px 24px; max-width: 400px; }
+  .reading-mode-text { font-size: 1.8rem; line-height: 3rem; }
+}
+
+/* Large desktop (1440px+) */
+@media (min-width: 1440px) {
+  .app { max-width: 1200px; }
+  #story-text { font-size: 1.8rem; line-height: 2.8rem; }
+  .reading-mode-text { font-size: 2rem; line-height: 3.4rem; }
+  .card { padding: 40px 48px; }
 }
 </style>
 </head>
@@ -1477,23 +1529,50 @@ function startHighlightLoop() {
 
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
+    // currentTime is the actual position in the audio (already accounts for playbackRate)
     const nowMs = ttsAudio.currentTime * 1000;
     const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
 
     if (timingsAreReal && ttsWordTimings.length > 0) {
-      // Use real timings from Cloud Function
-      for (let i = 0; i < ttsWordTimings.length; i++) {
-        if (ttsWordTimings[i].startMs <= nowMs) activeIdx = i;
-        else break;
+      // Use real timings — binary search for better performance on long texts
+      let lo = 0, hi = ttsWordTimings.length - 1;
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        if (ttsWordTimings[mid].startMs <= nowMs) {
+          activeIdx = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      // Add a small look-ahead buffer (100ms) so highlight feels snappier
+      if (activeIdx < ttsWordTimings.length - 1 && 
+          ttsWordTimings[activeIdx + 1].startMs - nowMs < 80) {
+        activeIdx++;
       }
     } else {
-      // Estimate: divide audio evenly across words
+      // Improved estimation: weight by word length (longer words take more time)
       const wordsCount = S.wordEls.length;
-      activeIdx = Math.min(
-        Math.floor((nowMs / totalMs) * wordsCount),
-        wordsCount - 1
-      );
+      const wordLengths = S.wordEls.map(el => (el.textContent || '').replace(/[^a-zA-Z]/g, '').length || 1);
+      const totalLetters = wordLengths.reduce((a, b) => a + b, 0);
+      let cumMs = 0;
+      // Use the total audio duration to proportionally distribute
+      // We'll calculate actual timings once audio loads
+      activeIdx = -1;
+      // Store weighted positions for later use
+      if (!S._weightedTimings || S._weightedTimings.length !== wordsCount) {
+        S._weightedTimings = [];
+        let cumLetters = 0;
+        for (let i = 0; i < wordsCount; i++) {
+          S._weightedTimings.push(cumLetters / totalLetters);
+          cumLetters += wordLengths[i];
+        }
+      }
+      const pctPlayed = nowMs / totalMs;
+      for (let i = S._weightedTimings.length - 1; i >= 0; i--) {
+        if (S._weightedTimings[i] <= pctPlayed) { activeIdx = i; break; }
+      }
     }
 
     if (activeIdx >= 0 && activeIdx !== lastActiveIdx) {
@@ -1581,7 +1660,20 @@ async function playSpeech(startFromMs) {
   document.getElementById('btn-pause').disabled = true;
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
-    ttsWordTimings = data.wordTimings || [];
+
+    // Map Cloud Function timepoints to word timings
+    // timepoints come as [{markName: "word_0", timeSeconds: 0.5}, ...] from Google TTS
+    // Convert to [{startMs: 500}, ...] format for the highlight loop
+    if (data.timepoints && data.timepoints.length > 0) {
+      ttsWordTimings = data.timepoints.map(tp => ({
+        startMs: (tp.timeSeconds || tp.time_seconds || 0) * 1000
+      }));
+    } else if (data.wordTimings && data.wordTimings.length > 0) {
+      ttsWordTimings = data.wordTimings;
+    } else {
+      ttsWordTimings = [];
+    }
+    console.log(`TTS timings: ${ttsWordTimings.length} timepoints, words: ${S.wordEls.length}, real timings: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
     const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
     audio.playbackRate = S.speed;
     ttsAudio = audio;
