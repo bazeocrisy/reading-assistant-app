@@ -1465,9 +1465,7 @@ async function getWordDefinition(word, grade) {
     if (!response.ok) throw new Error('CF error');
     const data = await response.json();
     const definition = (data.story || '').trim()
-      .replace(/^"|"$/g, '')           // strip leading/trailing quotes
-      .replace(/^['"]|['"]$/g, '')     // strip single quotes too
-      .replace(new RegExp('^' + clean + '["\\'\\s]*[—–\\-:]?\\s*', 'i'), '')  // remove word echo at start
+      .replace(/^["']+|["']+$/g, '')   // strip leading/trailing quotes
       .replace(/^["']+\s*/g, '')       // clean any remaining leading quotes
       .trim();
     if (definition) {
