@@ -306,6 +306,23 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-track { background: #252
 body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #6a5a8a, #4a4a6a); border-color: #252540; }
 body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #7a6a9a; }
 
+/* ── Dictionary Popup ── */
+.dict-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.dict-popup { width: 100%; max-width: 500px; background: var(--card); border-radius: 24px 24px 0 0; padding: 24px 20px 30px; box-shadow: 0 -4px 30px rgba(74,26,107,0.2); animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.dict-word { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 4px; }
+.dict-definition { font-size: 1.1rem; font-weight: 700; color: var(--ink); text-align: center; line-height: 1.6; margin: 12px 0 18px; min-height: 2em; }
+.dict-loading { text-align: center; color: var(--muted); font-weight: 700; font-size: 0.9rem; }
+.dict-loading .spin-circle { width: 28px; height: 28px; border-width: 4px; margin: 0 auto 8px; }
+.dict-speaker-btn { display: block; margin: 0 auto 12px; padding: 10px 24px; border-radius: 14px; border: 2.5px solid var(--purple); background: var(--purple-soft); font-family: 'Nunito'; font-weight: 800; font-size: 0.95rem; color: var(--purple-deep); cursor: pointer; transition: all 0.2s; }
+.dict-speaker-btn:hover { background: var(--purple); color: #fff; }
+.dict-close-btn { display: block; width: 100%; padding: 14px; border-radius: var(--r); border: none; background: linear-gradient(135deg, var(--green), #1BA053); color: #fff; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(107,203,119,0.35); }
+body.bedtime .dict-popup { background: #252540; }
+body.bedtime .dict-word { color: #c090e0; }
+body.bedtime .dict-definition { color: #d0c8e8; }
+body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+
 @media (max-width: 480px) {
   .logo { font-size: 2.2rem; }
   .categories { grid-template-columns: repeat(2, 1fr); }
@@ -596,7 +613,7 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
         <button class="btn-main btn-gray" id="btn-stop-tts" disabled>⏹ Stop</button>
       </div>
 
-      <div class="hint-tip">💡 Double-tap any word to hear it spoken</div>
+      <div class="hint-tip">💡 Tap any word to hear it and learn what it means!</div>
 
       <!-- Story text in scrollable container — keeps auto-scroll contained -->
       <div id="story-scroll-container" style="max-height:50vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
@@ -639,6 +656,16 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
 
 <!-- Word saved toast -->
 <div class="word-toast" id="word-toast">💾 Word saved!</div>
+
+<!-- Dictionary popup -->
+<div class="dict-overlay" id="dict-overlay" style="display:none;">
+  <div class="dict-popup">
+    <div class="dict-word" id="dict-word"></div>
+    <div class="dict-definition" id="dict-definition"></div>
+    <button class="dict-speaker-btn" id="dict-hear-btn">🔊 Hear it again</button>
+    <button class="dict-close-btn" id="dict-close-btn">✅ Got it!</button>
+  </div>
+</div>
 
 <!-- SCREEN: Parent PIN -->
 <div class="screen" id="screen-pin" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
@@ -1343,9 +1370,10 @@ function renderStory(title, body) {
       if (/\S/.test(chunk)) {
         const span = document.createElement('span');
         span.className = 'word'; span.textContent = chunk;
-        span.addEventListener('dblclick', () => {
+        span.addEventListener('click', (e) => {
+          e.stopPropagation();
           const idx = S.wordEls.indexOf(span);
-          if (idx >= 0) teacherSayWord(idx);
+          if (idx >= 0 && !dictPopupOpen) showDictionaryPopup(span.textContent.trim(), idx);
         });
         container.appendChild(span); S.wordEls.push(span);
       } else { container.appendChild(document.createTextNode(chunk)); }
@@ -1368,62 +1396,191 @@ function renderStory(title, body) {
   });
 }
 
-// ── Double-click word helper ──────────────────────────────
-let lastWordTapTime = 0;
+// ── Dictionary Cache ──────────────────────────────────────
+const DICT_CACHE_KEY = 'readup_dict_cache';
 
-async function teacherSayWord(idx) {
-  const now = Date.now();
-  if (now - lastWordTapTime < 1500) return;
-  lastWordTapTime = now;
-  const word = S.wordEls[idx]?.textContent?.trim() || '';
-  if (!word) return;
-  // Save to word bank
+function getDictCache() {
+  try { return JSON.parse(localStorage.getItem(DICT_CACHE_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function saveDictCache(cache) {
+  // Cap at 500 entries
+  const keys = Object.keys(cache);
+  if (keys.length > 500) {
+    keys.slice(0, keys.length - 500).forEach(k => delete cache[k]);
+  }
+  try { localStorage.setItem(DICT_CACHE_KEY, JSON.stringify(cache)); } catch(e) {}
+}
+
+async function getWordDefinition(word, grade) {
+  const clean = word.toLowerCase().replace(/[^a-z']/g, '');
+  if (!clean) return null;
+  const cacheKey = `${clean}_${grade}`;
+  const cache = getDictCache();
+  if (cache[cacheKey]) return cache[cacheKey];
+
+  const gradeNames = { "prek": "Pre-K (age 3-4)", "k": "Kindergarten (age 5-6)", "1": "1st grade (age 6-7)", "2": "2nd grade (age 7-8)", "3": "3rd grade (age 8-9)" };
+  const gradeLabel = gradeNames[grade] || "1st grade (age 6-7)";
+
+  const prompt = `Define the word "${clean}" for a ${gradeLabel} child in ONE simple sentence. Use words they already know. Do not include the word "means" or start with "It means". Just give the definition directly. Example: for "enormous" you might say "Really, really big — bigger than a house!"`;
+
+  try {
+    const response = await fetch(CF_STORY, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        grade: gradeLabel,
+        topic: 'definition',
+        wordCount: 20,
+        instructions: prompt
+      })
+    });
+    if (!response.ok) throw new Error('CF error');
+    const data = await response.json();
+    const definition = (data.story || '').trim().replace(/^"|"$/g, '');
+    if (definition) {
+      cache[cacheKey] = definition;
+      saveDictCache(cache);
+      return definition;
+    }
+  } catch(e) {
+    console.warn('Definition fetch failed:', e);
+  }
+  return null;
+}
+
+// ── Dictionary Popup State ────────────────────────────────
+let dictPopupOpen = false;
+let teacherWasPaused = false;
+let teacherPausePosition = 0;
+let dictAudio = null;
+
+function showDictionaryPopup(word, idx) {
+  if (dictPopupOpen) return;
+  dictPopupOpen = true;
+
+  // Pause teacher if playing
+  teacherWasPaused = false;
+  if (ttsState === 'playing' && ttsAudio) {
+    teacherPausePosition = ttsAudio.currentTime * 1000;
+    ttsAudio.pause();
+    stopRAF();
+    ttsState = 'paused';
+    document.getElementById('btn-pause').textContent = '⏸ Pause';
+    document.getElementById('btn-play').disabled = true;
+    teacherWasPaused = true;
+  }
+
+  // Save word to bank
   saveWordToBank(word);
-  // Highlight purple while speaking
-  S.wordEls.forEach(w => { w.classList.remove('highlight'); });
+
+  // Show popup with loading state
+  document.getElementById('dict-word').textContent = word;
+  document.getElementById('dict-definition').innerHTML = '<div class="dict-loading"><div class="spin-circle"></div>Looking it up...</div>';
+  document.getElementById('dict-hear-btn').style.display = 'none';
+  document.getElementById('dict-overlay').style.display = 'flex';
+
+  // Highlight the tapped word
+  S.wordEls.forEach(w => w.classList.remove('highlight'));
   if (S.wordEls[idx]) {
-    S.wordEls[idx].classList.add('highlight');
     S.wordEls[idx].style.background = '#A259FF';
     S.wordEls[idx].style.color = '#ffffff';
-    const container = document.getElementById('story-scroll-container');
-    if (container) {
-      const containerRect = container.getBoundingClientRect();
-      const wordRect = S.wordEls[idx].getBoundingClientRect();
-      if (wordRect.bottom > containerRect.bottom || wordRect.top < containerRect.top) {
-        S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    }
   }
-  const clearHighlight = () => {
-    if (S.wordEls[idx]) {
-      S.wordEls[idx].classList.remove('highlight');
-      S.wordEls[idx].style.background = '';
-      S.wordEls[idx].style.color = '';
+
+  // Fetch definition
+  getWordDefinition(word, S.grade).then(definition => {
+    if (!dictPopupOpen) return; // popup was closed already
+    if (definition) {
+      document.getElementById('dict-definition').textContent = definition;
+      document.getElementById('dict-hear-btn').style.display = 'block';
+      // Auto-read word + definition
+      sayDictEntry(word, definition);
+    } else {
+      document.getElementById('dict-definition').textContent = 'Tap 🔊 to hear the word!';
+      document.getElementById('dict-hear-btn').style.display = 'block';
+      sayWordOnly(word);
     }
-  };
+  });
+}
+
+function closeDictionaryPopup() {
+  dictPopupOpen = false;
+  document.getElementById('dict-overlay').style.display = 'none';
+
+  // Stop any dictionary audio
+  if (dictAudio) { dictAudio.pause(); dictAudio = null; }
+
+  // Clear word highlight
+  S.wordEls.forEach(w => { w.style.background = ''; w.style.color = ''; w.classList.remove('highlight'); });
+
+  // Resume teacher if we paused it
+  if (teacherWasPaused && ttsState === 'paused') {
+    teacherWasPaused = false;
+    playSpeech(teacherPausePosition);
+  }
+}
+
+async function sayDictEntry(word, definition) {
+  const fullText = word + '. ' + definition;
   try {
+    const gradeNum = (S.grade === 'prek' || S.grade === 'k') ? 0 : parseInt(S.grade) || 1;
     const gradeKey = (S.grade === 'prek' || S.grade === 'k') ? S.grade : parseInt(S.grade);
     const voiceName = VOICE_NAMES[S.voiceGender]?.[gradeKey] || 'en-US-Wavenet-F';
+    const response = await fetch(CF_TTS, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: fullText, grade: gradeNum, voiceName })
+    });
+    const data = await response.json();
+    if (data.audioBase64) {
+      if (dictAudio) { dictAudio.pause(); }
+      dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+      dictAudio.playbackRate = 0.85;
+      dictAudio.play();
+      return;
+    }
+  } catch(e) {}
+  // Fallback browser voice
+  const utt = new SpeechSynthesisUtterance(fullText);
+  utt.rate = 0.8; utt.pitch = 1.1;
+  window.speechSynthesis.speak(utt);
+}
+
+async function sayWordOnly(word) {
+  try {
     const gradeNum = (S.grade === 'prek' || S.grade === 'k') ? 0 : parseInt(S.grade) || 1;
+    const gradeKey = (S.grade === 'prek' || S.grade === 'k') ? S.grade : parseInt(S.grade);
+    const voiceName = VOICE_NAMES[S.voiceGender]?.[gradeKey] || 'en-US-Wavenet-F';
     const response = await fetch(CF_TTS, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: word, grade: gradeNum, voiceName })
     });
     const data = await response.json();
     if (data.audioBase64) {
-      const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      audio.playbackRate = 0.85;
-      audio.onended = clearHighlight;
-      audio.play();
+      if (dictAudio) { dictAudio.pause(); }
+      dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+      dictAudio.playbackRate = 0.85;
+      dictAudio.play();
       return;
     }
   } catch(e) {}
-  // Fallback browser voice
   const utt = new SpeechSynthesisUtterance(word);
   utt.rate = 0.8; utt.pitch = 1.1;
-  utt.onend = clearHighlight;
   window.speechSynthesis.speak(utt);
 }
+
+// Wire up popup buttons
+document.getElementById('dict-close-btn').addEventListener('click', closeDictionaryPopup);
+document.getElementById('dict-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'dict-overlay') closeDictionaryPopup();
+});
+document.getElementById('dict-hear-btn').addEventListener('click', () => {
+  const word = document.getElementById('dict-word').textContent;
+  const def = document.getElementById('dict-definition').textContent;
+  if (def && !def.includes('Tap')) {
+    sayDictEntry(word, def);
+  } else {
+    sayWordOnly(word);
+  }
+});
 
 // ── Nav ───────────────────────────────────────────────────
 document.getElementById('btn-cancel-host').addEventListener('click', async () => {
@@ -1782,6 +1939,7 @@ document.getElementById('btn-save-pin').addEventListener('click', () => {
 document.getElementById('btn-reset-data').addEventListener('click', () => {
   if (!confirm('Reset ALL ReadUp! data? This cannot be undone.')) return;
   localStorage.removeItem(LS_KEY);
+  localStorage.removeItem(DICT_CACHE_KEY);
   openParentDashboard();
   alert('All data has been reset.');
 });
