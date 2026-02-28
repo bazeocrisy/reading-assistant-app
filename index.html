@@ -31,6 +31,21 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Nunito', sans-serif; background: #EFEAF5; min-height: 100vh; overflow-x: hidden; }
 
+/* ── Global Fat Scrollbar for all scrollable areas ── */
+.fat-scroll, #spelling-word-list, #spell-picker-list, #wordbank-review-list, #wpm-story-scroll, .word-bank-list, #spell-results-list {
+  scrollbar-width: auto;
+  scrollbar-color: var(--purple-light) var(--section);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.fat-scroll::-webkit-scrollbar, #spelling-word-list::-webkit-scrollbar, #spell-picker-list::-webkit-scrollbar, #wordbank-review-list::-webkit-scrollbar, #wpm-story-scroll::-webkit-scrollbar, .word-bank-list::-webkit-scrollbar, #spell-results-list::-webkit-scrollbar { width: 14px; }
+.fat-scroll::-webkit-scrollbar-track, #spelling-word-list::-webkit-scrollbar-track, #spell-picker-list::-webkit-scrollbar-track, #wordbank-review-list::-webkit-scrollbar-track, #wpm-story-scroll::-webkit-scrollbar-track, .word-bank-list::-webkit-scrollbar-track, #spell-results-list::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
+.fat-scroll::-webkit-scrollbar-thumb, #spelling-word-list::-webkit-scrollbar-thumb, #spell-picker-list::-webkit-scrollbar-thumb, #wordbank-review-list::-webkit-scrollbar-thumb, #wpm-story-scroll::-webkit-scrollbar-thumb, .word-bank-list::-webkit-scrollbar-thumb, #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--purple), var(--purple-light)); border-radius: 10px; border: 3px solid var(--section); min-height: 40px; }
+.fat-scroll::-webkit-scrollbar-thumb:hover, #spelling-word-list::-webkit-scrollbar-thumb:hover, #spell-picker-list::-webkit-scrollbar-thumb:hover, #wordbank-review-list::-webkit-scrollbar-thumb:hover, #wpm-story-scroll::-webkit-scrollbar-thumb:hover, .word-bank-list::-webkit-scrollbar-thumb:hover, #spell-results-list::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
+body.bedtime .fat-scroll, body.bedtime #spelling-word-list, body.bedtime #spell-picker-list, body.bedtime #wordbank-review-list, body.bedtime #wpm-story-scroll, body.bedtime .word-bank-list, body.bedtime #spell-results-list { scrollbar-color: #4a4a6a #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-track, body.bedtime #spelling-word-list::-webkit-scrollbar-track, body.bedtime #spell-picker-list::-webkit-scrollbar-track, body.bedtime #wordbank-review-list::-webkit-scrollbar-track, body.bedtime #wpm-story-scroll::-webkit-scrollbar-track, body.bedtime .word-bank-list::-webkit-scrollbar-track, body.bedtime #spell-results-list::-webkit-scrollbar-track { background: #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb, body.bedtime #wpm-story-scroll::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #6a5a8a, #4a4a6a); border-color: #252540; }
+
 .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .blob { position: absolute; border-radius: 50%; opacity: 0.06; filter: blur(60px); animation: drift 12s ease-in-out infinite alternate; }
 .blob1 { width: 400px; height: 400px; background: var(--purple); top: -100px; left: -100px; }
@@ -802,7 +817,7 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       <div class="card-title">📖 Word Bank</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:4px;">Tap any word to hear it and its meaning!</p>
       <div class="encouragement" id="wordbank-count-msg" style="margin-bottom:12px;"></div>
-      <div id="wordbank-review-list" style="max-height:50vh;overflow-y:auto;"></div>
+      <div id="wordbank-review-list" style="max-height:50vh;overflow-y:auto;overscroll-behavior:contain;"></div>
       <div id="wordbank-empty" style="display:none;text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">🌟</div>
         <p style="font-weight:800;color:var(--muted);font-size:1rem;">No words yet!</p>
@@ -824,7 +839,7 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
         <div><span class="spelling-count-num" id="spelling-word-count">0</span></div>
         <div class="spelling-count-label">spelling words loaded</div>
       </div>
-      <div id="spelling-word-list"></div>
+      <div id="spelling-word-list" style="max-height:50vh;overflow-y:auto;overscroll-behavior:contain;"></div>
       <div id="spelling-empty" style="display:none;">
         <div class="spelling-upload-area">
           <div class="spelling-upload-icon">📸</div>
@@ -889,7 +904,7 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
         <div class="spell-practice-score-label">words correct</div>
         <div class="spell-practice-stars" id="spell-results-stars"></div>
       </div>
-      <div class="spell-result-list" id="spell-results-list"></div>
+      <div class="spell-result-list" id="spell-results-list" style="max-height:40vh;overflow-y:auto;overscroll-behavior:contain;"></div>
       <button class="btn-main btn-purple" id="btn-spell-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Practice Missed Words</button>
       <button class="btn-main btn-green" id="btn-spell-retry-all" style="font-size:1rem;margin-top:10px;">🎯 Practice Again</button>
       <button class="btn-main btn-outline" id="btn-spell-results-done" style="margin-top:10px;font-size:0.9rem;">← Back to Words</button>
@@ -2455,15 +2470,9 @@ function triggerSpellingUpload() {
 }
 
 document.getElementById('btn-spelling-start').addEventListener('click', () => {
-  // Check if there's an existing list first
-  const d = getData();
-  if (d.spellingLists && d.spellingLists.length > 0) {
-    currentSpellingList = d.spellingLists[d.spellingLists.length - 1];
-    renderSpellingWords(currentSpellingList);
-  } else {
-    showSpellingEmpty();
-  }
-  show('screen-spelling');
+  if (!S.grade) { alert('Please select a grade first!'); return; }
+  // Always trigger fresh upload
+  document.getElementById('spelling-file-input').click();
 });
 
 document.getElementById('btn-spelling-upload-empty').addEventListener('click', triggerSpellingUpload);
