@@ -306,6 +306,17 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-track { background: #252
 body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #6a5a8a, #4a4a6a); border-color: #252540; }
 body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #7a6a9a; }
 
+/* ── Word Bank Review Screen ── */
+.wb-review-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; margin-bottom: 8px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; }
+.wb-review-item:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(155,48,255,0.12); }
+.wb-review-item:active { transform: translateY(0); }
+.wb-review-word { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--purple); }
+.wb-review-hint { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+.wb-review-tap { font-size: 0.72rem; font-weight: 800; color: var(--purple-light); }
+body.bedtime .wb-review-item { background: #2a2a48; }
+body.bedtime .wb-review-word { color: #c090e0; }
+body.bedtime .wb-review-hint { color: #8080a8; }
+
 /* ── Dictionary Popup ── */
 .dict-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -632,7 +643,24 @@ body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; col
       <div class="card-title" id="solo-complete-title">⭐ Great Reading!</div>
       <div class="encouragement" id="solo-complete-msg" style="margin-bottom:16px;"></div>
       <button class="btn-main btn-green" id="btn-solo-retry" style="font-size:1.1rem;">▶ Read Again</button>
+      <button class="btn-main btn-purple" id="btn-solo-wordbank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
       <button class="btn-main btn-outline" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Word Bank Review -->
+  <div class="screen" id="screen-wordbank">
+    <div class="card">
+      <div class="card-title">📖 Word Bank</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:4px;">Tap any word to hear it and its meaning!</p>
+      <div class="encouragement" id="wordbank-count-msg" style="margin-bottom:12px;"></div>
+      <div id="wordbank-review-list" style="max-height:50vh;overflow-y:auto;"></div>
+      <div id="wordbank-empty" style="display:none;text-align:center;padding:30px 0;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🌟</div>
+        <p style="font-weight:800;color:var(--muted);font-size:1rem;">No words yet!</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap words while reading to add them here.</p>
+      </div>
+      <button class="btn-main btn-green" id="btn-wordbank-done" style="margin-top:16px;font-size:1.1rem;">✅ Done Reviewing</button>
     </div>
   </div>
 
@@ -1470,8 +1498,8 @@ function showDictionaryPopup(word, idx) {
     teacherWasPaused = true;
   }
 
-  // Save word to bank
-  saveWordToBank(word);
+  // Save word to bank (only if tapped from story, not word bank review)
+  if (idx >= 0) saveWordToBank(word);
 
   // Show popup with loading state
   document.getElementById('dict-word').textContent = word;
@@ -1479,9 +1507,9 @@ function showDictionaryPopup(word, idx) {
   document.getElementById('dict-hear-btn').style.display = 'none';
   document.getElementById('dict-overlay').style.display = 'flex';
 
-  // Highlight the tapped word
+  // Highlight the tapped word (only if in story, not word bank)
   S.wordEls.forEach(w => w.classList.remove('highlight'));
-  if (S.wordEls[idx]) {
+  if (idx >= 0 && S.wordEls[idx]) {
     S.wordEls[idx].style.background = '#A259FF';
     S.wordEls[idx].style.color = '#ffffff';
   }
@@ -1608,6 +1636,52 @@ document.getElementById('btn-solo-retry').addEventListener('click', () => {
 document.getElementById('btn-solo-new').addEventListener('click', () => {
   stopTTS(); cleanupRoom(); show('screen-pick');
 });
+document.getElementById('btn-solo-wordbank').addEventListener('click', () => {
+  openWordBankReview();
+});
+document.getElementById('btn-wordbank-done').addEventListener('click', () => {
+  show('screen-solo-complete');
+});
+
+// ── Word Bank Review Screen Logic ─────────────────────────
+function openWordBankReview() {
+  const d = getData();
+  const listEl = document.getElementById('wordbank-review-list');
+  const emptyEl = document.getElementById('wordbank-empty');
+  const countEl = document.getElementById('wordbank-count-msg');
+  listEl.innerHTML = '';
+
+  // Get words sorted by most recently seen
+  const words = [...d.wordBank].sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+
+  if (words.length === 0) {
+    emptyEl.style.display = 'block';
+    listEl.style.display = 'none';
+    countEl.textContent = '';
+  } else {
+    emptyEl.style.display = 'none';
+    listEl.style.display = 'block';
+    countEl.textContent = `You have ${words.length} word${words.length === 1 ? '' : 's'} to practice!`;
+
+    words.forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'wb-review-item';
+      item.innerHTML = `
+        <div>
+          <div class="wb-review-word">${w.word}</div>
+          <div class="wb-review-hint">Looked up ${w.count} time${w.count === 1 ? '' : 's'}</div>
+        </div>
+        <div class="wb-review-tap">tap to hear 🔊</div>
+      `;
+      item.addEventListener('click', () => {
+        showDictionaryPopup(w.word, -1);
+      });
+      listEl.appendChild(item);
+    });
+  }
+  show('screen-wordbank');
+}
+
 document.getElementById('btn-race-retry').addEventListener('click', () => {
   setupReadScreen(); show('screen-read');
 });
