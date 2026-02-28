@@ -1043,6 +1043,7 @@ async function playSpeech(startFromMs) {
       document.getElementById('btn-play').textContent = '▶ Playing...';
       document.getElementById('btn-play').disabled = true;
       document.getElementById('btn-pause').disabled = false;
+      document.getElementById('btn-pause').textContent = '⏸ Pause';
       document.getElementById('btn-stop-tts').disabled = false;
       startHighlightLoop();
     }, { once: true });
