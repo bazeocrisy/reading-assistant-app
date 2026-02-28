@@ -931,7 +931,23 @@ async function generateAIStory(grade, category, wordTarget) {
     cooking: "Use making food like soup or a sandwich as the main activity.",
     friends: "Use two children who play together as the main characters.",
     confidence: "Use a child who tries something new and feels proud.",
-    blackhistory: "Use a brave hero named Rosa or Mae who did something great.",
+    blackhistory: (() => {
+      const heroes = [
+        { name: "Ruby Bridges", deed: "was the first Black child to go to an all-white school and was very brave" },
+        { name: "Rosa Parks", deed: "said no when told to give up her seat on the bus and stood up for what was right" },
+        { name: "Mae Jemison", deed: "became the first Black woman to travel to space" },
+        { name: "Jackie Robinson", deed: "was the first Black player in Major League Baseball and never gave up" },
+        { name: "Harriet Tubman", deed: "helped hundreds of people find freedom and was very courageous" },
+        { name: "Martin Luther King Jr.", deed: "taught people to be kind and fair to everyone and had a big dream" },
+        { name: "Katherine Johnson", deed: "was so good at math that she helped send astronauts to space" },
+        { name: "George Washington Carver", deed: "was a scientist who discovered amazing things you can make from peanuts" },
+        { name: "Bessie Coleman", deed: "was the first Black woman to earn a pilot's license and fly airplanes" },
+        { name: "Barack Obama", deed: "became the first Black president of the United States" },
+        { name: "Malcolm X", deed: "was a powerful speaker who fought for fairness and equal rights for Black people" }
+      ];
+      const hero = heroes[Math.floor(Math.random() * heroes.length)];
+      return `Write about a real Black history hero named ${hero.name} who ${hero.deed}. Use their real name.`;
+    })(),
     helpers: "Use a firefighter, doctor, or teacher as the main character.",
     nature: "Use the sun, rain, or a tree as the main focus.",
     emotions: "Use a child who feels happy, sad, or brave.",
