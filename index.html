@@ -846,9 +846,11 @@ async function generateAIStory(grade, category, wordTarget) {
 
 STRICT RULES:
 - Every sentence must be 3-5 words MAXIMUM
-- Use ONLY simple one-syllable words: big, run, sit, red, the, is, a, I, my, see, like, can, we, it, go, up, on, fun, hop, hot, has, his, her, they, are, said, good, love, help, kind, brave
-- Use repetitive sentence patterns: "She is brave. She is kind. She is good."
-- NO complex ideas, NO multi-syllable words except names
+- Use ONLY CVC words (consonant-vowel-consonant) and basic sight words: cat, dog, big, run, sit, red, hot, fun, hop, the, is, a, I, my, to, we, see, go, up, in, on, can, and, it
+- Single syllable words ONLY — no exceptions except character names
+- Use repetitive sentence patterns: "I see a cat. I see a dog. I see a fish."
+- NO blends, NO digraphs (no sh, ch, th words), NO long vowel words
+- Dolch Pre-Primer words are okay: a, I, the, is, it, my, to, we, see, go, up, in, on, can, and, run, big, red, one, two
 - End with: "Think about it: What do you see?"
 Write exactly ${wordTarget} words.`,
 
@@ -856,15 +858,59 @@ Write exactly ${wordTarget} words.`,
 
 STRICT RULES:
 - Sentences must be 5-8 words maximum
-- Use simple common words only — no words longer than 2 syllables
+- CVC words are the base, plus beginning consonant blends allowed (stop, flag, trip)
+- Digraphs allowed: sh, ch, th (she, the, that, fish, shop)
+- Short vowel words dominate — limit long vowel words
+- Two-syllable words allowed but keep them simple: happy, funny, little, into, upon
+- NO words longer than 2 syllables
+- Use Dolch Primer sight words: he, she, was, with, said, have, like, this, will, what, come, look, make, play
 - Short paragraphs of 2-3 sentences
 - Keep the topic clearly present throughout the story
-- End with a simple question: "Think about it: What would you do?"
+- End with: "Think about it: What would you do?"
 Write exactly ${wordTarget} words.`,
 
-    "1": `Use very simple words a 6-7 year old knows. Write about ${topicLabel}. Write in short natural sentences that flow into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
-    "2": `Use simple but varied vocabulary for a 7-8 year old. Write about ${topicLabel}. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
-    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write about ${topicLabel}. Write in natural paragraphs with varied sentence structure. Include interesting details and a clear message. Do NOT use bullet points or lists. End with one "Think about it:" question.`
+    "1": `You are writing for a 6-7 year old in 1st grade. Topic: ${topicLabel}.
+
+PHONICS RULES:
+- Long vowel patterns allowed: silent-e words (make, ride, home, cake), vowel teams (rain, boat, eat, day)
+- All consonant blends allowed: bl, cr, st, gr, fl, sp, tr, etc.
+- R-controlled vowels allowed: car, her, bird, for, turn
+- Common word families: -ight (night, light), -ound (found, round), -ake (make, lake)
+- Two-syllable words common, three-syllable words rare
+- Simple contractions allowed: don't, can't, it's, I'm
+- Sentences 8-12 words, flowing into paragraphs of 3-4 sentences
+- Tell a simple story with a clear beginning, middle, and end
+- Make it warm, fun, and easy to follow
+- Do NOT use bullet points, lists, or markdown formatting
+- End with one "Think about it:" question.`,
+
+    "2": `You are writing for a 7-8 year old in 2nd grade. Topic: ${topicLabel}.
+
+PHONICS & VOCABULARY RULES:
+- Multi-syllable words welcome (3 syllables okay): beautiful, adventure, important, wonderful
+- Prefixes and suffixes encouraged: un-, re-, -ing, -ed, -ly, -ful, -ness
+- Silent letter words allowed: know, write, climb, knight
+- Irregular spellings allowed: through, thought, enough, friend
+- Include dialogue between characters using quotation marks
+- Varied sentence length (6-15 words) with descriptive language
+- Include feelings and emotions in the characters
+- Write in flowing paragraphs with sentences of different lengths
+- Do NOT use bullet points, lists, or markdown formatting
+- End with one "Think about it:" question.`,
+
+    "3": `You are writing for an 8-9 year old in 3rd grade. Topic: ${topicLabel}.
+
+PHONICS & VOCABULARY RULES:
+- Complex multi-syllable words encouraged: mysterious, extraordinary, investigate, experiment
+- Latin/Greek roots welcome: tele-, auto-, micro-, -ology, -tion, -sion
+- Figurative language encouraged: use similes ("fast as a cheetah") and simple metaphors
+- Context clues — introduce one or two challenging words and let the sentence explain their meaning
+- Complex sentences with conjunctions: although, however, because, meanwhile, eventually
+- Paragraphs should have clear topic sentences and supporting details
+- Introduce some academic vocabulary naturally in the story
+- Varied sentence structure mixing short punchy sentences with longer descriptive ones
+- Do NOT use bullet points, lists, or markdown formatting
+- End with one "Think about it:" question.`
   };
 
   const instructions = gradeInstructions[grade] || gradeInstructions["1"];
