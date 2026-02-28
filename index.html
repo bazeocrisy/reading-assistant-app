@@ -632,6 +632,9 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   .spell-choice-btn { font-size: 1.4rem; padding: 22px 18px; min-height: 64px; }
   .quiz-input { font-size: 1.8rem; padding: 18px 24px; max-width: 400px; }
   .reading-mode-text { font-size: 1.8rem; line-height: 3rem; }
+  /* Bottom action cards in a row */
+  #screen-pick .home-actions-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  #screen-pick .home-actions-row .card { margin-top: 0; }
 }
 
 /* Large desktop (1440px+) */
@@ -728,8 +731,9 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
 
   <!-- SCREEN: Pick -->
   <div class="screen active" id="screen-pick">
+    <!-- Section 1: Story Builder -->
     <div class="card">
-      <div class="card-title">Build your story! 🌟</div>
+      <div class="card-title">✨ Build Your Story!</div>
       <div class="section-label">Your grade:</div>
       <div class="option-row" id="grade-row">
         <button class="opt-btn" data-grade="prek">Pre-K</button>
@@ -827,14 +831,32 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         </button>
       </div>
       <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
-      <div class="or-divider"><span>or</span></div>
-      <button class="btn-main btn-coral" id="btn-scan-page" style="font-size:1rem;">📸 Upload My Reading Passage</button>
-      <input type="file" id="scan-file-input" accept="image/*" style="display:none;">
-      <div class="or-divider"><span>or</span></div>
-      <button class="btn-main btn-purple" id="btn-together-start">📖 Read Together</button>
-      <div class="or-divider"><span>or</span></div>
-      <button class="btn-main" id="btn-spelling-start" style="font-size:1rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);box-shadow:0 4px 14px rgba(255,107,107,0.35);">📝 Upload My Spelling Words</button>
-      <input type="file" id="spelling-file-input" accept="image/*" style="display:none;">
+    </div>
+
+    <!-- Section 2-4: Action Cards -->
+    <div class="home-actions-row">
+      <!-- My Own Reading -->
+      <div class="card">
+        <div class="card-title" style="font-size:1.2rem;">📸 My Own Reading</div>
+        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Have a book page or worksheet? Snap a photo and read along!</p>
+        <button class="btn-main btn-coral" id="btn-scan-page" style="font-size:0.95rem;margin-top:0;">📸 Upload Passage</button>
+        <input type="file" id="scan-file-input" accept="image/*" style="display:none;">
+      </div>
+
+      <!-- Read Together -->
+      <div class="card">
+        <div class="card-title" style="font-size:1.2rem;">📖 Read Together</div>
+        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Read with a friend or parent — even from different devices!</p>
+        <button class="btn-main btn-purple" id="btn-together-start" style="font-size:0.95rem;margin-top:0;">📖 Start Together</button>
+      </div>
+
+      <!-- Spelling Words -->
+      <div class="card">
+        <div class="card-title" style="font-size:1.2rem;">📝 Spelling Words</div>
+        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Upload your list. Study, practice, and take a quiz!</p>
+        <button class="btn-main" id="btn-spelling-start" style="font-size:0.95rem;margin-top:0;background:linear-gradient(135deg, #FF8C42, #FF6B6B);box-shadow:0 4px 14px rgba(255,107,107,0.35);">📝 Upload Words</button>
+        <input type="file" id="spelling-file-input" accept="image/*" style="display:none;">
+      </div>
     </div>
   </div>
 
