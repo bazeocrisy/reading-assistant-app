@@ -53,7 +53,7 @@ body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-l
 .blob3 { width: 350px; height: 350px; background: var(--green); bottom: -80px; left: 30%; animation-delay: -8s; }
 @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.08); } }
 
-.app { position: relative; z-index: 1; max-width: 100%; margin: 0 auto; padding: 20px 20px 60px; }
+.app { position: relative; z-index: 1; max-width: 100%; margin: 0 auto; padding: 20px 20px 80px; }
 
 header { text-align: center; padding: 24px 0 16px; }
 
@@ -246,7 +246,7 @@ body.bedtime .voice-btn { background: #252540; border-color: #3a3a5c; color: #d0
 body.bedtime .voice-btn.sel-voice { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
 body.bedtime .progress-wrap, body.bedtime .vs-bar-wrap { background: #3a3a5c; }
 body.bedtime .or-divider::before, body.bedtime .or-divider::after { background: #3a3a5c; }
-footer { text-align: center; padding: 20px 20px 60px; font-size: 0.78rem; color: var(--muted); font-weight: 700; }
+footer { display: none; }
 footer strong { color: var(--purple-deep); }
 .foot-sub { font-size: 0.72rem; opacity: 0.7; }
 body.bedtime footer { color: #6060a0; }
@@ -1085,10 +1085,7 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   <!-- SCREEN: Spelling Practice (Both Modes) -->
   <div class="screen" id="screen-spell-practice">
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div class="card-title" id="spell-practice-title" style="margin-bottom:0;">🎯 Practice Mode</div>
-        <button class="btn-main btn-outline" id="btn-practice-quit" style="width:auto;margin:0;padding:6px 14px;font-size:0.8rem;">✕ Quit</button>
-      </div>
+      <div class="card-title" id="spell-practice-title">🎯 Practice Mode</div>
       <div style="text-align:center;">
         <div class="spell-round-label round-mc" id="spell-round-label">ROUND 1: MULTIPLE CHOICE</div>
       </div>
@@ -1111,6 +1108,7 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         </div>
       </div>
       <div class="spell-practice-feedback" id="spell-practice-feedback"></div>
+      <button class="btn-main btn-coral" id="btn-practice-quit" style="margin-top:18px;font-size:1rem;">← Quit Practice</button>
     </div>
   </div>
 
@@ -1143,10 +1141,7 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   <!-- SCREEN: Quiz (Full Spelling Test) -->
   <div class="screen" id="screen-quiz">
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div class="card-title" style="margin-bottom:0;">📝 Spelling Quiz</div>
-        <button class="btn-main btn-outline" id="btn-quiz-quit" style="width:auto;margin:0;padding:6px 14px;font-size:0.8rem;">✕ Quit</button>
-      </div>
+      <div class="card-title">📝 Spelling Quiz</div>
       <div class="spell-practice-progress">
         <div class="spell-practice-label" id="quiz-progress-label">1 / 5</div>
         <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="quiz-progress-bar" style="width:0%"></div></div>
@@ -1164,6 +1159,7 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <button class="btn-main btn-outline" id="btn-quiz-replay" style="font-size:0.95rem;width:auto;padding:14px 24px;">🔊 Repeat</button>
       </div>
       <div class="spell-practice-feedback" id="quiz-feedback"></div>
+      <button class="btn-main btn-coral" id="btn-quiz-quit" style="margin-top:18px;font-size:1rem;">← Quit Quiz</button>
     </div>
   </div>
 
