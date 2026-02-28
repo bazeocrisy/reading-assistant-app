@@ -53,7 +53,7 @@ body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-l
 .blob3 { width: 350px; height: 350px; background: var(--green); bottom: -80px; left: 30%; animation-delay: -8s; }
 @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.08); } }
 
-.app { position: relative; z-index: 1; max-width: 100%; margin: 0 auto; padding: 20px 20px 80px; }
+.app { position: relative; z-index: 1; max-width: 100%; margin: 0 auto; padding: 20px 20px 65px; }
 
 header { text-align: center; padding: 24px 0 16px; }
 
@@ -267,8 +267,8 @@ header { position: relative; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── Fixed parent bar at bottom ── */
-.parent-bar { position: fixed; bottom: 8px; left: 12px; right: 12px; width: auto; z-index: 100; display: flex; justify-content: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.97); border: 1.5px solid var(--border); border-radius: 18px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 20px rgba(0,0,0,0.08); }
-.parent-bar-btn { background: var(--purple-soft); border: 2px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 800; padding: 10px 22px; border-radius: 14px; cursor: pointer; transition: all 0.2s; }
+.parent-bar { position: fixed; bottom: 4px; left: 8px; right: 8px; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; background: rgba(255,255,255,0.97); border: 1.5px solid var(--border); border-radius: 14px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
+.parent-bar-btn { background: var(--purple-soft); border: 2px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
 body.bedtime .parent-bar-btn { background: #2a1a4a; border-color: #3a3a5c; color: #c090e0; }
@@ -397,8 +397,8 @@ body.bedtime .wb-review-hint { color: #8080a8; }
 .spelling-word-def { font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-top: 4px; line-height: 1.35; }
 .spelling-word-tap { font-size: 0.72rem; font-weight: 800; color: var(--purple-light); flex-shrink: 0; }
 .spelling-red-badge { display: inline-block; background: var(--coral); color: #fff; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 8px; margin-left: 8px; vertical-align: middle; }
-.spelling-actions { display: flex; gap: 10px; margin-top: 18px; }
-.spelling-actions .btn-main { flex: 1; }
+.spelling-actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+.spelling-actions .btn-main { flex: 1; min-width: calc(33% - 8px); }
 .spelling-upload-area { text-align: center; padding: 40px 20px; }
 .spelling-upload-icon { font-size: 4rem; margin-bottom: 12px; }
 .spelling-upload-text { font-weight: 800; color: var(--ink); font-size: 1.05rem; margin-bottom: 6px; }
@@ -1069,11 +1069,11 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <p style="font-weight:700;color:var(--muted);font-size:0.82rem;margin-top:6px;">This takes just a moment ✨</p>
       </div>
       <div class="spelling-actions" id="spelling-actions" style="display:none;">
-        <button class="btn-main" id="btn-spelling-new" style="font-size:0.78rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 New</button>
-        <button class="btn-main btn-outline" id="btn-spelling-study" style="font-size:0.78rem;">📖 Study</button>
-        <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.78rem;">🎯 Practice</button>
-        <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.78rem;">📝 Quiz</button>
-        <button class="btn-main btn-green" id="btn-spelling-done" style="font-size:0.78rem;">✅ Done</button>
+        <button class="btn-main" id="btn-spelling-new" style="font-size:0.9rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 New</button>
+        <button class="btn-main btn-outline" id="btn-spelling-study" style="font-size:0.9rem;">📖 Study</button>
+        <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.9rem;">🎯 Practice</button>
+        <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.9rem;">📝 Quiz</button>
+        <button class="btn-main btn-green" id="btn-spelling-done" style="font-size:0.9rem;">✅ Done</button>
       </div>
     </div>
   </div>
