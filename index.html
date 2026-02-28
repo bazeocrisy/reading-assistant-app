@@ -554,6 +554,9 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       </div>
       <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
       <div class="or-divider"><span>or</span></div>
+      <button class="btn-main btn-coral" id="btn-scan-page" style="font-size:1rem;">📸 Scan My Page</button>
+      <input type="file" id="scan-file-input" accept="image/*" capture="environment" style="display:none;">
+      <div class="or-divider"><span>or</span></div>
       <button class="btn-main btn-purple" id="btn-together-start">📖 Read Together</button>
     </div>
   </div>
@@ -903,6 +906,7 @@ const CF_BASE = "https://us-central1-readup-transforming-youth.cloudfunctions.ne
 const CF_STORY = `${CF_BASE}/generateStory`;
 const CF_TTS   = `${CF_BASE}/synthesizeSpeech`;
 const CF_STT   = `${CF_BASE}/transcribeSpeech`;
+const CF_OCR   = `${CF_BASE}/extractText`;
 
 // ── AI Story Generation ───────────────────────────────────
 async function generateAIStory(grade, category, wordTarget) {
@@ -1296,6 +1300,69 @@ document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click
 
 // ── Solo / Read Together entry ────────────────────────────
 document.getElementById('btn-generate').addEventListener('click', () => { S.isRace = false; S.myRole = null; loadStory(); });
+
+// ── Scan My Page ──────────────────────────────────────────
+document.getElementById('btn-scan-page').addEventListener('click', () => {
+  if (!S.grade) { alert('Please select a grade first!'); return; }
+  document.getElementById('scan-file-input').click();
+});
+
+document.getElementById('scan-file-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  // Show loading screen
+  S.isRace = false; S.myRole = null; S.isAIStory = false;
+  show('screen-read');
+  const titleEl = document.getElementById('story-title');
+  titleEl.textContent = '📸 Scanning Your Page...';
+  const container = document.getElementById('story-text');
+  container.innerHTML = '<div style="text-align:center;padding:40px 0;"><div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div><p style="font-weight:800;color:var(--muted);font-size:1rem;">Reading the text from your photo...</p></div>';
+
+  try {
+    // Convert image to base64
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const mediaType = file.type || 'image/jpeg';
+
+    // Send to Cloud Function
+    const response = await fetch(CF_OCR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType })
+    });
+
+    if (!response.ok) throw new Error('Scan failed');
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found');
+
+    // Use extracted text as the story
+    S.story = data.text.trim();
+    S.storyTitle = '📸 My Page';
+    S.category = 'scanned';
+    S.wordTarget = S.story.split(/\s+/).length;
+    S.isAIStory = false;
+
+    // Record in localStorage
+    recordStoryStart();
+
+    // Render the story
+    renderStory(S.storyTitle, S.story);
+    setupReadScreen();
+
+  } catch (err) {
+    console.error('Scan error:', err);
+    container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="font-weight:800;color:#e74c3c;font-size:1.1rem;">😕 Couldn\'t read that photo</p><p style="font-weight:700;color:var(--muted);font-size:0.9rem;margin-top:8px;">Try again with a clearer photo of the text.</p></div>';
+    titleEl.textContent = '📸 Scan My Page';
+    setTimeout(() => show('screen-pick'), 3000);
+  }
+});
 
 // Read Together modal
 document.getElementById('btn-together-start').addEventListener('click', () => {
