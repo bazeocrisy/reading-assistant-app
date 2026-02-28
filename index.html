@@ -1464,10 +1464,14 @@ async function getWordDefinition(word, grade) {
     });
     if (!response.ok) throw new Error('CF error');
     const data = await response.json();
-    const definition = (data.story || '').trim()
+    const rawDef = (data.story || '').trim()
       .replace(/^["']+|["']+$/g, '')   // strip leading/trailing quotes
-      .replace(/^["']+\s*/g, '')       // clean any remaining leading quotes
+      .replace(/^#+\s*/g, '')          // strip markdown headers
+      .replace(/^\*\*(.*?)\*\*/g, '$1') // strip bold markers
       .trim();
+    // Remove word echo at the start (e.g. "Walked You moved..." → "You moved...")
+    const wordPattern = new RegExp('^' + clean + '[\\s:—–\\-]*', 'i');
+    const definition = rawDef.replace(wordPattern, '').replace(/^["']+\s*/g, '').trim();
     if (definition) {
       cache[cacheKey] = definition;
       saveDictCache(cache);
