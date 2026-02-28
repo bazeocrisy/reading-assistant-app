@@ -1663,15 +1663,22 @@ function openWordBankReview() {
     listEl.style.display = 'block';
     countEl.textContent = `You have ${words.length} word${words.length === 1 ? '' : 's'} to practice!`;
 
+    const dictCache = getDictCache();
     words.forEach(w => {
+      const clean = w.word.toLowerCase().replace(/[^a-z']/g, '');
+      const cacheKey = `${clean}_${S.grade}`;
+      const definition = dictCache[cacheKey] || '';
+
       const item = document.createElement('div');
       item.className = 'wb-review-item';
+      item.style.flexDirection = 'column';
+      item.style.alignItems = 'flex-start';
       item.innerHTML = `
-        <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
           <div class="wb-review-word">${w.word}</div>
-          <div class="wb-review-hint">Looked up ${w.count} time${w.count === 1 ? '' : 's'}</div>
+          <div class="wb-review-tap">tap to hear 🔊</div>
         </div>
-        <div class="wb-review-tap">tap to hear 🔊</div>
+        ${definition ? `<div style="font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;">${definition}</div>` : '<div style="font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;">Tap to look up meaning</div>'}
       `;
       item.addEventListener('click', () => {
         showDictionaryPopup(w.word, -1);
