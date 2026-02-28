@@ -338,6 +338,27 @@ body.bedtime .dict-word { color: #c090e0; }
 body.bedtime .dict-definition { color: #d0c8e8; }
 body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
 
+/* ── WPM Timer ── */
+.wpm-timer-bar { text-align: center; margin-bottom: 14px; }
+.wpm-timer-display { font-family: 'Fredoka', sans-serif; font-size: 2.5rem; color: var(--purple); line-height: 1; }
+.wpm-timer-label { font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.wpm-result-big { font-family: 'Fredoka', sans-serif; font-size: 5rem; color: var(--purple); line-height: 1; margin: 10px 0; }
+.wpm-result-unit { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; color: var(--purple-deep); font-weight: 600; }
+.wpm-benchmark { background: var(--section); border-radius: 16px; padding: 14px; margin: 14px 0; text-align: center; }
+.wpm-benchmark-label { font-size: 0.82rem; font-weight: 800; color: var(--muted); }
+.wpm-benchmark-range { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--ink); margin-top: 4px; }
+.wpm-history { margin: 14px 0; }
+.wpm-history-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.wpm-history-read { font-weight: 800; font-size: 0.82rem; color: var(--muted); width: 60px; flex-shrink: 0; }
+.wpm-history-bar-wrap { flex: 1; background: var(--border); border-radius: 20px; height: 12px; overflow: hidden; }
+.wpm-history-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.6s; }
+.wpm-history-num { font-family: 'Fredoka', sans-serif; font-size: 1rem; color: var(--ink); width: 50px; text-align: right; flex-shrink: 0; }
+.wpm-improvement { display: inline-block; background: #EFFFF4; border: 2px solid var(--green); border-radius: 12px; padding: 6px 14px; font-weight: 800; font-size: 0.9rem; color: #1B7A3E; margin-top: 8px; }
+body.bedtime .wpm-benchmark { background: #2a2a48; }
+body.bedtime .wpm-benchmark-range { color: #d0c8e8; }
+body.bedtime .wpm-history-bar-wrap { background: #3a3a5c; }
+body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
+
 @media (max-width: 480px) {
   .logo { font-size: 2.2rem; }
   .categories { grid-template-columns: repeat(2, 1fr); }
@@ -667,6 +688,7 @@ body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; col
       <div class="card-title" id="solo-complete-title">⭐ Great Reading!</div>
       <div class="encouragement" id="solo-complete-msg" style="margin-bottom:16px;"></div>
       <button class="btn-main btn-green" id="btn-solo-retry" style="font-size:1.1rem;">▶ Read Again</button>
+      <button class="btn-main btn-coral" id="btn-solo-wpm" style="margin-top:10px;font-size:1.1rem;">🎤 Read It Myself!</button>
       <button class="btn-main btn-purple" id="btn-solo-wordbank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
       <button class="btn-main btn-outline" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
     </div>
@@ -685,6 +707,40 @@ body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; col
         <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap words while reading to add them here.</p>
       </div>
       <button class="btn-main btn-green" id="btn-wordbank-done" style="margin-top:16px;font-size:1.1rem;">✅ Done Reviewing</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: WPM Timer (Read It Myself) -->
+  <div class="screen" id="screen-wpm-read">
+    <div class="card">
+      <div class="card-title">🎤 Read It Myself!</div>
+      <div class="wpm-timer-bar">
+        <div class="wpm-timer-display" id="wpm-timer">0:00</div>
+        <div class="wpm-timer-label">⏱ Reading Timer</div>
+      </div>
+      <div class="encouragement" id="wpm-read-tip">Read the story out loud. Tap "I'm Done!" when you finish.</div>
+      <div id="wpm-story-scroll" style="max-height:45vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
+        <div id="wpm-story-text" style="font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;"></div>
+      </div>
+      <button class="btn-main btn-green" id="btn-wpm-done" style="font-size:1.2rem;">✅ I'm Done!</button>
+      <button class="btn-main btn-outline" id="btn-wpm-cancel" style="margin-top:10px;">← Go Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: WPM Results -->
+  <div class="screen" id="screen-wpm-results">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">🏆 Your Reading Speed!</div>
+      <div class="wpm-result-big" id="wpm-result-number">0</div>
+      <div class="wpm-result-unit">Words Per Minute</div>
+      <div id="wpm-improvement-badge"></div>
+      <div class="wpm-benchmark" id="wpm-benchmark-box">
+        <div class="wpm-benchmark-label" id="wpm-benchmark-label">1st Grade Goal</div>
+        <div class="wpm-benchmark-range" id="wpm-benchmark-range">53 – 111 WPM</div>
+      </div>
+      <div class="wpm-history" id="wpm-history-section"></div>
+      <button class="btn-main btn-coral" id="btn-wpm-retry" style="font-size:1.1rem;">🎤 Beat My Score!</button>
+      <button class="btn-main btn-green" id="btn-wpm-back-complete" style="margin-top:10px;font-size:1.1rem;">✅ Done</button>
     </div>
   </div>
 
@@ -790,6 +846,12 @@ body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; col
     <div class="card" style="margin-top:14px;">
       <div class="dash-section-title">❤️ Favorite Topics</div>
       <div id="topic-bars"></div>
+    </div>
+
+    <!-- Reading Speed (WPM) -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">⚡ Reading Speed</div>
+      <div id="dash-wpm-content"></div>
     </div>
 
     <!-- Word Bank -->
@@ -1731,6 +1793,168 @@ function openWordBankReview() {
   show('screen-wordbank');
 }
 
+// ── WPM Timer (Read It Myself) ────────────────────────────
+const WPM_BENCHMARKS = {
+  prek: { label: 'Pre-K Goal', min: 10, max: 30 },
+  k:    { label: 'Kindergarten Goal', min: 20, max: 50 },
+  '1':  { label: '1st Grade Goal', min: 53, max: 111 },
+  '2':  { label: '2nd Grade Goal', min: 89, max: 142 },
+  '3':  { label: '3rd Grade Goal', min: 107, max: 162 },
+};
+
+let wpmTimerInterval = null;
+let wpmStartTime = null;
+
+function formatTimer(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function startWPMRead() {
+  // Render story text (plain, no highlights)
+  const container = document.getElementById('wpm-story-text');
+  container.innerHTML = '';
+  const paragraphs = S.story.split(/\n\s*\n/);
+  paragraphs.forEach((para, pIdx) => {
+    const span = document.createElement('span');
+    span.style.cssText = 'font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;';
+    span.textContent = para.trim();
+    container.appendChild(span);
+    if (pIdx < paragraphs.length - 1) {
+      container.appendChild(document.createElement('br'));
+      container.appendChild(document.createElement('br'));
+    }
+  });
+
+  // Reset timer
+  document.getElementById('wpm-timer').textContent = '0:00';
+  document.getElementById('wpm-read-tip').textContent = 'Read the story out loud. Tap "I\'m Done!" when you finish.';
+
+  // Show countdown first
+  show('screen-countdown');
+  const el = document.getElementById('countdown-display');
+  const steps = ['3','2','1','READ!']; let i = 0;
+  const tick = () => {
+    el.textContent = steps[i];
+    el.className = steps[i] === 'READ!' ? 'countdown-go' : 'countdown-number';
+    el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+    i++;
+    if (i < steps.length) setTimeout(tick, 900);
+    else setTimeout(() => {
+      show('screen-wpm-read');
+      // Start timer
+      wpmStartTime = Date.now();
+      if (wpmTimerInterval) clearInterval(wpmTimerInterval);
+      wpmTimerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - wpmStartTime) / 1000);
+        document.getElementById('wpm-timer').textContent = formatTimer(elapsed);
+      }, 1000);
+    }, 400);
+  };
+  tick();
+}
+
+function finishWPMRead() {
+  // Stop timer
+  if (wpmTimerInterval) { clearInterval(wpmTimerInterval); wpmTimerInterval = null; }
+  const elapsedMs = Date.now() - wpmStartTime;
+  const elapsedSec = elapsedMs / 1000;
+
+  // Count words in story
+  const wordCount = S.story.trim().split(/\s+/).length;
+
+  // Calculate WPM
+  const wpm = Math.round((wordCount / elapsedSec) * 60);
+
+  // Save WPM to localStorage
+  saveWPMScore(wpm, elapsedSec);
+
+  // Show results
+  showWPMResults(wpm);
+}
+
+function saveWPMScore(wpm, seconds) {
+  const d = getData();
+  const hash = storyHash(S.story);
+  let entry = d.stories.find(s => s.hash === hash);
+  if (!entry) return;
+  if (!entry.wpmScores) entry.wpmScores = [];
+  entry.wpmScores.push({ wpm, seconds: Math.round(seconds), date: new Date().toISOString() });
+  // Keep last 10 scores per story
+  if (entry.wpmScores.length > 10) entry.wpmScores = entry.wpmScores.slice(-10);
+  saveData(d);
+}
+
+function getWPMScores() {
+  const d = getData();
+  const hash = storyHash(S.story || '');
+  const entry = d.stories.find(s => s.hash === hash);
+  return entry?.wpmScores || [];
+}
+
+function showWPMResults(wpm) {
+  // Big number
+  document.getElementById('wpm-result-number').textContent = wpm;
+
+  // Benchmark
+  const bench = WPM_BENCHMARKS[S.grade] || WPM_BENCHMARKS['1'];
+  document.getElementById('wpm-benchmark-label').textContent = bench.label;
+  document.getElementById('wpm-benchmark-range').textContent = `${bench.min} – ${bench.max} WPM`;
+
+  // Improvement badge
+  const scores = getWPMScores();
+  const badgeEl = document.getElementById('wpm-improvement-badge');
+  badgeEl.innerHTML = '';
+  if (scores.length >= 2) {
+    const prev = scores[scores.length - 2].wpm;
+    const diff = wpm - prev;
+    if (diff > 0) {
+      badgeEl.innerHTML = `<div class="wpm-improvement">⬆️ +${diff} WPM from last read!</div>`;
+    } else if (diff === 0) {
+      badgeEl.innerHTML = `<div class="wpm-improvement" style="background:var(--purple-soft);border-color:var(--purple);color:var(--purple-deep);">Same speed — nice consistency!</div>`;
+    }
+  }
+
+  // History bars
+  const historyEl = document.getElementById('wpm-history-section');
+  historyEl.innerHTML = '';
+  if (scores.length > 1) {
+    const maxWpm = Math.max(...scores.map(s => s.wpm), bench.max);
+    scores.forEach((s, i) => {
+      const pct = Math.round((s.wpm / maxWpm) * 100);
+      const row = document.createElement('div');
+      row.className = 'wpm-history-row';
+      row.innerHTML = `
+        <div class="wpm-history-read">Read #${i + 1}</div>
+        <div class="wpm-history-bar-wrap"><div class="wpm-history-bar" style="width:${pct}%"></div></div>
+        <div class="wpm-history-num">${s.wpm}</div>
+      `;
+      historyEl.appendChild(row);
+    });
+  }
+
+  show('screen-wpm-results');
+}
+
+// WPM button handlers
+document.getElementById('btn-solo-wpm').addEventListener('click', () => {
+  startWPMRead();
+});
+document.getElementById('btn-wpm-done').addEventListener('click', () => {
+  finishWPMRead();
+});
+document.getElementById('btn-wpm-cancel').addEventListener('click', () => {
+  if (wpmTimerInterval) { clearInterval(wpmTimerInterval); wpmTimerInterval = null; }
+  show('screen-solo-complete');
+});
+document.getElementById('btn-wpm-retry').addEventListener('click', () => {
+  startWPMRead();
+});
+document.getElementById('btn-wpm-back-complete').addEventListener('click', () => {
+  show('screen-solo-complete');
+});
+
 document.getElementById('btn-race-retry').addEventListener('click', () => {
   setupReadScreen(); show('screen-read');
 });
@@ -2019,6 +2243,30 @@ function openParentDashboard() {
       <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${Math.round(count/maxCount*100)}%"></div></div>
       <div class="topic-bar-count">${count}</div>
     </div>`).join('') : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No stories yet!</p>';
+
+  // Reading Speed (WPM)
+  const wpmEl = document.getElementById('dash-wpm-content');
+  const allWpmScores = [];
+  d.stories.forEach(s => {
+    if (s.wpmScores && s.wpmScores.length > 0) {
+      s.wpmScores.forEach(w => allWpmScores.push({ ...w, topic: s.topic, grade: s.grade }));
+    }
+  });
+  if (allWpmScores.length === 0) {
+    wpmEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No reading speed data yet. Use "🎤 Read It Myself" after a story!</p>';
+  } else {
+    const latestWpm = allWpmScores[allWpmScores.length - 1].wpm;
+    const bestWpm = Math.max(...allWpmScores.map(s => s.wpm));
+    const avgWpm = Math.round(allWpmScores.reduce((a, s) => a + s.wpm, 0) / allWpmScores.length);
+    wpmEl.innerHTML = `
+      <div class="dash-stat-grid">
+        <div class="dash-stat"><div class="dash-stat-num">${latestWpm}</div><div class="dash-stat-label">Latest WPM</div></div>
+        <div class="dash-stat"><div class="dash-stat-num">${bestWpm}</div><div class="dash-stat-label">Best WPM</div></div>
+        <div class="dash-stat"><div class="dash-stat-num">${avgWpm}</div><div class="dash-stat-label">Average WPM</div></div>
+        <div class="dash-stat"><div class="dash-stat-num">${allWpmScores.length}</div><div class="dash-stat-label">Total Reads</div></div>
+      </div>
+    `;
+  }
 
   // Word bank
   const wordBankEl = document.getElementById('word-bank-display');
