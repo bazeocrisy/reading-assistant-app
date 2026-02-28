@@ -428,6 +428,31 @@ body.bedtime .spell-practice-bar-wrap { background: #3a3a5c; }
 body.bedtime .spell-result-item.got-right { background: #1a3a2a; color: #8adca0; }
 body.bedtime .spell-result-item.got-wrong { background: #3a1a1a; color: #e8a0a0; }
 
+/* ── Spelling Fill-in-the-Blank ── */
+.spell-fill-container { text-align: center; margin: 16px 0; }
+.spell-fill-display { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: 4px; margin-bottom: 16px; min-height: 2.5rem; }
+.spell-fill-display .given { color: var(--purple); }
+.spell-fill-display .blank { color: var(--border); }
+.spell-fill-display .typed { color: var(--green); }
+.spell-fill-display .wrong-char { color: var(--coral); }
+.spell-fill-input { font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 700; text-align: center; padding: 14px 20px; border: 3px solid var(--border); border-radius: 16px; background: var(--section); color: var(--ink); width: 100%; max-width: 300px; outline: none; transition: border-color 0.2s; }
+.spell-fill-input:focus { border-color: var(--purple); }
+.spell-fill-input.correct { border-color: var(--green); background: #EFFFF4; color: #1B7A3E; }
+.spell-fill-input.wrong { border-color: var(--coral); background: #FFF0F0; color: #e74c3c; }
+.spell-fill-submit { margin-top: 12px; }
+.spell-round-label { display: inline-block; padding: 4px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.spell-round-label.round-mc { background: var(--purple-soft); color: var(--purple-deep); }
+.spell-round-label.round-fill { background: #FFF4E6; color: #C47000; }
+body.bedtime .spell-fill-display .given { color: #c090e0; }
+body.bedtime .spell-fill-display .blank { color: #3a3a5c; }
+body.bedtime .spell-fill-display .typed { color: #8adca0; }
+body.bedtime .spell-fill-input { background: #2a2a48; border-color: #3a3a5c; color: #d0c8e8; }
+body.bedtime .spell-fill-input:focus { border-color: #7a4aaa; }
+body.bedtime .spell-fill-input.correct { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
+body.bedtime .spell-fill-input.wrong { background: #3a1a1a; border-color: #8a4a4a; color: #e8a0a0; }
+body.bedtime .spell-round-label.round-mc { background: #2a1a4a; color: #c090e0; }
+body.bedtime .spell-round-label.round-fill { background: #3a2a1a; color: #e0b060; }
+
 /* ── Dictionary Popup ── */
 .dict-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -878,19 +903,31 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
     </div>
   </div>
 
-  <!-- SCREEN: Spelling Practice (Multiple Choice) -->
+  <!-- SCREEN: Spelling Practice (Both Modes) -->
   <div class="screen" id="screen-spell-practice">
     <div class="card">
       <div class="card-title" id="spell-practice-title">🎯 Practice Mode</div>
+      <div style="text-align:center;">
+        <div class="spell-round-label round-mc" id="spell-round-label">ROUND 1: MULTIPLE CHOICE</div>
+      </div>
       <div class="spell-practice-progress">
         <div class="spell-practice-label" id="spell-practice-num">1 / 5</div>
         <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="spell-practice-bar" style="width:0%"></div></div>
       </div>
       <div class="spell-practice-prompt">
         <div class="spell-practice-hear" id="spell-practice-hear" title="Tap to hear the word">🔊</div>
-        <div class="spell-practice-hint">Tap the speaker to hear the word, then pick the right spelling!</div>
+        <div class="spell-practice-hint" id="spell-practice-hint">Tap the speaker to hear the word, then pick the right spelling!</div>
       </div>
+      <!-- Multiple choice area -->
       <div class="spell-practice-choices" id="spell-practice-choices"></div>
+      <!-- Fill-in-the-blank area -->
+      <div class="spell-fill-container" id="spell-fill-area" style="display:none;">
+        <div class="spell-fill-display" id="spell-fill-display"></div>
+        <input type="text" class="spell-fill-input" id="spell-fill-input" placeholder="Type the missing letters..." autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="spell-fill-submit">
+          <button class="btn-main btn-green" id="btn-spell-fill-check" style="font-size:1rem;width:auto;padding:12px 30px;">Check ✓</button>
+        </div>
+      </div>
       <div class="spell-practice-feedback" id="spell-practice-feedback"></div>
     </div>
   </div>
@@ -2753,50 +2790,90 @@ document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
   startSpellingPractice(spellingPickedWords.map(i => currentSpellingList.words[i]));
 });
 
-// ── Spelling Practice Engine (Multiple Choice) ──────────
+// ── Spelling Practice Engine (2 Rounds: MC + Fill) ──────
 let practiceWords = [];
 let practiceIndex = 0;
 let practiceResults = [];
 let practiceAnswered = false;
+let practiceRound = 1; // 1 = multiple choice, 2 = fill-in-the-blank
+let practiceTotalSteps = 0;
+let practiceCurrentStep = 0;
 
 function startSpellingPractice(words) {
   practiceWords = shuffleArray([...words]);
   practiceIndex = 0;
   practiceResults = [];
+  practiceRound = 1;
+  practiceCurrentStep = 0;
+  practiceTotalSteps = words.length * 2; // both rounds
   showPracticeQuestion();
   show('screen-spell-practice');
 }
 
 function showPracticeQuestion() {
+  // Check if current round is done
   if (practiceIndex >= practiceWords.length) {
-    showPracticeResults();
-    return;
+    if (practiceRound === 1) {
+      // Move to round 2: fill-in-the-blank
+      practiceRound = 2;
+      practiceIndex = 0;
+      practiceWords = shuffleArray([...practiceWords]); // reshuffle for round 2
+      showPracticeQuestion();
+      return;
+    } else {
+      // Both rounds complete
+      showPracticeResults();
+      return;
+    }
   }
 
   const word = practiceWords[practiceIndex];
   practiceAnswered = false;
+  practiceCurrentStep++;
 
-  // Update progress
-  document.getElementById('spell-practice-num').textContent = `${practiceIndex + 1} / ${practiceWords.length}`;
-  const pct = (practiceIndex / practiceWords.length) * 100;
+  // Update round label
+  const roundLabel = document.getElementById('spell-round-label');
+  if (practiceRound === 1) {
+    roundLabel.textContent = 'ROUND 1: MULTIPLE CHOICE';
+    roundLabel.className = 'spell-round-label round-mc';
+    document.getElementById('spell-practice-hint').textContent = 'Tap the speaker to hear the word, then pick the right spelling!';
+  } else {
+    roundLabel.textContent = 'ROUND 2: SPELL IT OUT';
+    roundLabel.className = 'spell-round-label round-fill';
+    document.getElementById('spell-practice-hint').textContent = 'Tap the speaker to hear the word, then type the missing letters!';
+  }
+
+  // Update progress across both rounds
+  const overallNum = practiceCurrentStep;
+  document.getElementById('spell-practice-num').textContent = `${overallNum} / ${practiceTotalSteps}`;
+  const pct = ((overallNum - 1) / practiceTotalSteps) * 100;
   document.getElementById('spell-practice-bar').style.width = pct + '%';
 
   // Clear feedback
   document.getElementById('spell-practice-feedback').innerHTML = '';
 
-  // Generate 4 choices: 1 correct + 3 distractors
-  const choices = generateChoices(word.word);
+  if (practiceRound === 1) {
+    // Multiple choice mode
+    document.getElementById('spell-practice-choices').style.display = 'grid';
+    document.getElementById('spell-fill-area').style.display = 'none';
 
-  // Render choice buttons
-  const choicesEl = document.getElementById('spell-practice-choices');
-  choicesEl.innerHTML = '';
-  choices.forEach(choice => {
-    const btn = document.createElement('button');
-    btn.className = 'spell-choice-btn';
-    btn.textContent = choice;
-    btn.addEventListener('click', () => handlePracticeAnswer(btn, choice, word));
-    choicesEl.appendChild(btn);
-  });
+    const choices = generateSmartChoices(word.word);
+    const choicesEl = document.getElementById('spell-practice-choices');
+    choicesEl.innerHTML = '';
+    choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'spell-choice-btn';
+      btn.textContent = choice;
+      btn.addEventListener('click', () => handleMCAnswer(btn, choice, word));
+      choicesEl.appendChild(btn);
+    });
+  } else {
+    // Fill-in-the-blank mode
+    document.getElementById('spell-practice-choices').style.display = 'none';
+    document.getElementById('spell-fill-area').style.display = 'block';
+
+    setupFillInBlank(word);
+  }
 
   // Auto-play the word
   setTimeout(() => sayWordForPractice(word.word), 400);
@@ -2832,100 +2909,278 @@ async function sayWordForPractice(word) {
   window.speechSynthesis.speak(utt);
 }
 
-function generateChoices(correctWord) {
-  const allWords = currentSpellingList.words.map(w => w.word);
-  const distractors = [];
+// ── Smart Distractor Generation (look-alike words) ──────
+function generateSmartChoices(correctWord) {
+  const distractors = new Set();
+  let attempts = 0;
 
-  // First try to pull distractors from the spelling list itself
-  const others = allWords.filter(w => w !== correctWord);
-  const shuffledOthers = shuffleArray([...others]);
-  distractors.push(...shuffledOthers.slice(0, 3));
-
-  // If not enough words in the list, generate misspellings
-  while (distractors.length < 3) {
-    const misspelled = generateMisspelling(correctWord);
-    if (misspelled !== correctWord && !distractors.includes(misspelled)) {
-      distractors.push(misspelled);
+  // Generate 3 unique distractors that look/sound similar
+  while (distractors.size < 3 && attempts < 30) {
+    const fake = generateSmartDistractor(correctWord);
+    if (fake !== correctWord && !distractors.has(fake)) {
+      distractors.add(fake);
     }
+    attempts++;
   }
 
-  // Combine and shuffle
-  const choices = shuffleArray([correctWord, ...distractors.slice(0, 3)]);
-  return choices;
+  // Fallback if we couldn't generate enough
+  while (distractors.size < 3) {
+    distractors.add(correctWord + ['s','ed','er','ly','ing'][distractors.size]);
+  }
+
+  return shuffleArray([correctWord, ...distractors]);
 }
 
-function generateMisspelling(word) {
+function generateSmartDistractor(word) {
   const strategies = [
-    // Swap two adjacent letters
+    // Phonetic swaps — sounds the same, spelled differently
     () => {
-      if (word.length < 3) return word + 'e';
-      const i = 1 + Math.floor(Math.random() * (word.length - 2));
+      const phonSwaps = [
+        ['ph','f'],['f','ph'],['gh','g'],['g','gh'],
+        ['tion','shun'],['shun','tion'],['sion','cion'],
+        ['ough','uff'],['uff','ough'],['ight','ite'],['ite','ight'],
+        ['ck','k'],['k','ck'],['ee','ea'],['ea','ee'],
+        ['ou','ow'],['ow','ou'],['ai','ay'],['ay','ai'],
+        ['ei','ey'],['ey','ei'],['ie','y'],['y','ie'],
+        ['er','ur'],['ur','er'],['ir','er'],['or','er'],
+        ['oo','ew'],['ew','oo'],['aw','au'],['au','aw'],
+        ['dge','ge'],['ge','dge'],['tch','ch'],['ch','tch'],
+        ['ce','se'],['se','ce'],['le','el'],['el','le'],
+        ['ble','bal'],['ple','pal'],['ful','fle'],
+        ['ous','us'],['ious','eous'],['able','ible'],
+        ['ence','ance'],['ance','ence'],['ant','ent'],['ent','ant']
+      ];
+      const shuffled = shuffleArray([...phonSwaps]);
+      for (const [from, to] of shuffled) {
+        if (word.includes(from)) {
+          return word.replace(from, to);
+        }
+      }
+      return null;
+    },
+    // Swap two adjacent letters (common typo pattern)
+    () => {
+      if (word.length < 4) return null;
+      const i = 1 + Math.floor(Math.random() * (word.length - 3));
       return word.slice(0, i) + word[i + 1] + word[i] + word.slice(i + 2);
     },
-    // Double a letter
+    // Double/undouble a consonant
     () => {
-      const i = Math.floor(Math.random() * word.length);
-      return word.slice(0, i) + word[i] + word.slice(i);
+      const consonants = 'bcdfghjklmnpqrstvwxyz';
+      for (let i = 0; i < word.length - 1; i++) {
+        if (word[i] === word[i + 1] && consonants.includes(word[i])) {
+          return word.slice(0, i) + word.slice(i + 1); // undouble
+        }
+      }
+      // Or double a consonant
+      const cIdxs = word.split('').map((c, i) => consonants.includes(c) ? i : -1).filter(i => i > 0);
+      if (cIdxs.length > 0) {
+        const idx = cIdxs[Math.floor(Math.random() * cIdxs.length)];
+        return word.slice(0, idx) + word[idx] + word.slice(idx);
+      }
+      return null;
     },
-    // Drop a letter
+    // Replace a vowel with a similar-sounding vowel
     () => {
-      if (word.length < 4) return word + 's';
-      const i = 1 + Math.floor(Math.random() * (word.length - 2));
-      return word.slice(0, i) + word.slice(i + 1);
-    },
-    // Replace a vowel
-    () => {
-      const vowels = 'aeiou';
+      const vowelSwaps = {'a':['e','u'],'e':['a','i'],'i':['e','y'],'o':['u','a'],'u':['o','a']};
       const chars = word.split('');
-      const vowelIdxs = chars.map((c, i) => vowels.includes(c) ? i : -1).filter(i => i >= 0);
-      if (vowelIdxs.length === 0) return word + 'e';
+      const vowelIdxs = chars.map((c, i) => vowelSwaps[c] ? i : -1).filter(i => i >= 0);
+      if (vowelIdxs.length === 0) return null;
       const idx = vowelIdxs[Math.floor(Math.random() * vowelIdxs.length)];
-      const otherVowels = vowels.replace(chars[idx], '');
-      chars[idx] = otherVowels[Math.floor(Math.random() * otherVowels.length)];
+      const swapOptions = vowelSwaps[chars[idx]];
+      chars[idx] = swapOptions[Math.floor(Math.random() * swapOptions.length)];
       return chars.join('');
     },
-    // Common phonetic swap: ph/f, gh/g, etc
+    // Add/remove silent e
     () => {
-      const swaps = [['ph','f'],['gh','g'],['tion','shun'],['ough','uff'],['ight','ite'],['ck','k'],['ee','ea'],['ou','ow']];
-      for (const [a, b] of swaps) {
-        if (word.includes(a)) return word.replace(a, b);
-        if (word.includes(b) && b.length < a.length) return word.replace(b, a);
+      if (word.endsWith('e') && word.length > 3) {
+        return word.slice(0, -1);
+      } else if (!word.endsWith('e') && word.length > 2) {
+        return word + 'e';
       }
-      return word + 'e';
+      return null;
+    },
+    // Similar-sounding real word endings
+    () => {
+      const endSwaps = [
+        ['er','ar'],['ar','er'],['or','er'],['er','or'],
+        ['le','al'],['al','le'],['ful','fle'],
+        ['ment','mant'],['ment','mint'],
+        ['ness','niss'],['ness','nes'],
+        ['tion','sion'],['sion','tion'],
+        ['ble','bel'],['ple','pel'],
+        ['ough','ow'],['ough','off']
+      ];
+      const shuffled = shuffleArray([...endSwaps]);
+      for (const [from, to] of shuffled) {
+        if (word.endsWith(from)) {
+          return word.slice(0, -from.length) + to;
+        }
+      }
+      return null;
     }
   ];
 
-  const strategy = strategies[Math.floor(Math.random() * strategies.length)];
-  return strategy();
+  // Try strategies in random order until one works
+  const shuffled = shuffleArray([...strategies]);
+  for (const strategy of shuffled) {
+    const result = strategy();
+    if (result && result !== word && result.length >= 2) {
+      return result;
+    }
+  }
+
+  // Ultimate fallback: swap a random middle letter
+  if (word.length >= 3) {
+    const i = 1 + Math.floor(Math.random() * (word.length - 2));
+    const chars = word.split('');
+    chars[i] = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    return chars.join('');
+  }
+  return word + 's';
 }
 
-function handlePracticeAnswer(btn, choice, word) {
+// ── Fill-in-the-Blank Logic ─────────────────────────────
+let fillWord = '';
+let fillGiven = 0;
+
+function setupFillInBlank(wordObj) {
+  fillWord = wordObj.word;
+  // Show first ~40% of letters (at least 1, at most half)
+  fillGiven = Math.max(1, Math.min(Math.ceil(fillWord.length * 0.4), Math.floor(fillWord.length / 2)));
+
+  updateFillDisplay('');
+
+  const input = document.getElementById('spell-fill-input');
+  input.value = '';
+  input.className = 'spell-fill-input';
+  input.disabled = false;
+  input.placeholder = 'Type the missing letters...';
+  input.focus();
+}
+
+function updateFillDisplay(typed) {
+  const display = document.getElementById('spell-fill-display');
+  let html = '';
+  for (let i = 0; i < fillWord.length; i++) {
+    if (i < fillGiven) {
+      html += `<span class="given">${fillWord[i]}</span>`;
+    } else {
+      const typedIdx = i - fillGiven;
+      if (typedIdx < typed.length) {
+        html += `<span class="typed">${typed[typedIdx]}</span>`;
+      } else {
+        html += `<span class="blank">_</span>`;
+      }
+    }
+  }
+  display.innerHTML = html;
+}
+
+document.getElementById('spell-fill-input').addEventListener('input', (e) => {
+  const typed = e.target.value.toLowerCase();
+  const needed = fillWord.length - fillGiven;
+  // Limit input length
+  if (typed.length > needed) {
+    e.target.value = typed.slice(0, needed);
+  }
+  updateFillDisplay(e.target.value.toLowerCase());
+});
+
+document.getElementById('spell-fill-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    checkFillAnswer();
+  }
+});
+
+document.getElementById('btn-spell-fill-check').addEventListener('click', checkFillAnswer);
+
+function checkFillAnswer() {
+  if (practiceAnswered) return;
+  practiceAnswered = true;
+
+  const input = document.getElementById('spell-fill-input');
+  const typed = input.value.toLowerCase().trim();
+  const needed = fillWord.slice(fillGiven);
+  const isCorrect = typed === needed;
+
+  input.disabled = true;
+
+  if (isCorrect) {
+    input.classList.add('correct');
+    // Show full word in green
+    const display = document.getElementById('spell-fill-display');
+    display.innerHTML = fillWord.split('').map(c => `<span class="typed">${c}</span>`).join('');
+    document.getElementById('spell-practice-feedback').innerHTML =
+      '<div class="spell-practice-feedback-msg" style="color:var(--green);">✅ Perfect spelling!</div>';
+    practiceResults.push({ word: fillWord, correct: true, round: 'fill' });
+  } else {
+    input.classList.add('wrong');
+    // Show correct answer
+    const display = document.getElementById('spell-fill-display');
+    let html = '';
+    for (let i = 0; i < fillWord.length; i++) {
+      if (i < fillGiven) {
+        html += `<span class="given">${fillWord[i]}</span>`;
+      } else {
+        const typedIdx = i - fillGiven;
+        if (typedIdx < typed.length && typed[typedIdx] === fillWord[i]) {
+          html += `<span class="typed">${fillWord[i]}</span>`;
+        } else {
+          html += `<span class="wrong-char">${fillWord[i]}</span>`;
+        }
+      }
+    }
+    display.innerHTML = html;
+    document.getElementById('spell-practice-feedback').innerHTML =
+      `<div class="spell-practice-feedback-msg" style="color:var(--coral);">The correct spelling is <strong>${fillWord}</strong></div>`;
+    practiceResults.push({ word: fillWord, correct: false, round: 'fill' });
+  }
+
+  // Save practice data
+  const d = getData();
+  const savedList = d.spellingLists.find(l => l.id === currentSpellingList.id);
+  if (savedList) {
+    const savedWord = savedList.words.find(sw => sw.word === fillWord);
+    if (savedWord) {
+      savedWord.practiced = (savedWord.practiced || 0) + 1;
+      if (isCorrect) savedWord.mastered = true;
+    }
+    saveData(d);
+  }
+
+  setTimeout(() => {
+    practiceIndex++;
+    showPracticeQuestion();
+  }, isCorrect ? 1200 : 2500);
+}
+
+// ── Multiple Choice Answer Handler ──────────────────────
+function handleMCAnswer(btn, choice, word) {
   if (practiceAnswered) return;
   practiceAnswered = true;
 
   const isCorrect = choice === word.word;
   const allBtns = document.querySelectorAll('.spell-choice-btn');
 
-  // Disable all buttons
   allBtns.forEach(b => b.disabled = true);
 
   if (isCorrect) {
     btn.classList.add('correct');
     document.getElementById('spell-practice-feedback').innerHTML =
       '<div class="spell-practice-feedback-msg" style="color:var(--green);">✅ That\'s right!</div>';
-    practiceResults.push({ word: word.word, correct: true });
+    practiceResults.push({ word: word.word, correct: true, round: 'mc' });
   } else {
     btn.classList.add('wrong');
-    // Show the correct answer
     allBtns.forEach(b => {
       if (b.textContent === word.word) b.classList.add('reveal');
     });
     document.getElementById('spell-practice-feedback').innerHTML =
       `<div class="spell-practice-feedback-msg" style="color:var(--coral);">The correct spelling is <strong>${word.word}</strong></div>`;
-    practiceResults.push({ word: word.word, correct: false });
+    practiceResults.push({ word: word.word, correct: false, round: 'mc' });
   }
 
-  // Update practice count in saved data
+  // Save practice data
   const d = getData();
   const savedList = d.spellingLists.find(l => l.id === currentSpellingList.id);
   if (savedList) {
@@ -2937,7 +3192,6 @@ function handlePracticeAnswer(btn, choice, word) {
     saveData(d);
   }
 
-  // Auto-advance after delay
   setTimeout(() => {
     practiceIndex++;
     showPracticeQuestion();
@@ -2945,6 +3199,8 @@ function handlePracticeAnswer(btn, choice, word) {
 }
 
 function showPracticeResults() {
+  const mcResults = practiceResults.filter(r => r.round === 'mc');
+  const fillResults = practiceResults.filter(r => r.round === 'fill');
   const correct = practiceResults.filter(r => r.correct).length;
   const total = practiceResults.length;
   const pct = Math.round((correct / total) * 100);
@@ -2971,14 +3227,24 @@ function showPracticeResults() {
     document.getElementById('spell-results-title').textContent = '💪 Keep Practicing!';
   }
 
-  // Result list
+  // Result list — grouped by round
   const listEl = document.getElementById('spell-results-list');
-  listEl.innerHTML = practiceResults.map(r => `
-    <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
-      <span>${r.correct ? '✅' : '❌'}</span>
-      <span>${r.word}</span>
-    </div>
-  `).join('');
+  const mcCorrect = mcResults.filter(r => r.correct).length;
+  const fillCorrect = fillResults.filter(r => r.correct).length;
+  listEl.innerHTML = `
+    <div style="font-weight:800;font-size:0.85rem;color:var(--purple-deep);margin:8px 0 4px;">Multiple Choice: ${mcCorrect}/${mcResults.length}</div>
+    ${mcResults.map(r => `
+      <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
+        <span>${r.correct ? '✅' : '❌'}</span>
+        <span>${r.word}</span>
+      </div>`).join('')}
+    <div style="font-weight:800;font-size:0.85rem;color:#C47000;margin:12px 0 4px;">Spell It Out: ${fillCorrect}/${fillResults.length}</div>
+    ${fillResults.map(r => `
+      <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
+        <span>${r.correct ? '✅' : '❌'}</span>
+        <span>${r.word}</span>
+      </div>`).join('')}
+  `;
 
   // Show retry missed button if there are wrong answers
   const missedWords = practiceResults.filter(r => !r.correct);
