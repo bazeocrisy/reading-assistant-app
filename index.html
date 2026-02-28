@@ -273,6 +273,41 @@ header { position: relative; }
 body.bedtime .parent-bar { background: rgba(26,26,46,0.95); border-color: #3a3a5c; }
 body.bedtime .parent-bar-btn { background: #2a1a4a; border-color: #3a3a5c; color: #c090e0; }
 body.bedtime .parent-bar-btn:hover { background: #7a4aaa; border-color: #7a4aaa; color: #fff; }
+#btn-go-home { transition: all 0.2s; }
+body.bedtime #btn-go-home { background: #2a6a3a; border-color: #2a6a3a; color: #d0f0d0; }
+
+/* ── Spelling Study Mode (Fullscreen) ── */
+.spell-study-overlay { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; display: none; animation: fadeIn 0.3s ease; }
+.spell-study-overlay.active { display: block; }
+.spell-study-inner { max-width: 800px; margin: 0 auto; padding: 20px 20px 80px; }
+.spell-study-title { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 8px; padding-top: 8px; }
+.spell-study-subtitle { text-align: center; color: var(--muted); font-weight: 700; font-size: 0.88rem; margin-bottom: 20px; }
+.spell-study-card { background: var(--card); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; border: 2.5px solid var(--border); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 16px; }
+.spell-study-card:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(155,48,255,0.1); }
+.spell-study-card:active { transform: scale(0.98); }
+.spell-study-card.is-red { border-left: 5px solid var(--coral); }
+.spell-study-num { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--muted); min-width: 32px; text-align: center; }
+.spell-study-word { font-family: 'Fredoka', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--purple); }
+.spell-study-syllables { font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); margin-top: 2px; }
+.spell-study-def { font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--muted); margin-top: 4px; }
+.spell-study-speaker { font-size: 1.5rem; margin-left: auto; cursor: pointer; }
+.spell-study-badge { display: inline-block; background: var(--coral); color: #fff; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 8px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.5px; }
+.spell-study-fab { position: fixed; top: 16px; left: 16px; z-index: 201; }
+.spell-study-fab button { padding: 10px 18px; border-radius: 50px; border: 2px solid var(--border); background: var(--card); color: var(--muted); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.1); transition: all 0.2s; }
+.spell-study-fab button:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+body.bedtime .spell-study-overlay { background: #1a1a2e; }
+body.bedtime .spell-study-title { color: #c090e0; }
+body.bedtime .spell-study-card { background: #252540; border-color: #3a3a5c; }
+body.bedtime .spell-study-word { color: #c090e0; }
+body.bedtime .spell-study-syllables { color: #d0c8e8; }
+body.bedtime .spell-study-def { color: #8080b0; }
+body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5c; color: #a080c0; }
+@media (min-width: 1024px) {
+  .spell-study-word { font-size: 2.2rem; }
+  .spell-study-card { padding: 24px 30px; }
+  .spell-study-syllables { font-size: 1.1rem; }
+  .spell-study-def { font-size: 1rem; }
+}
 
 /* ── Parent PIN screen ── */
 .pin-display { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
@@ -990,10 +1025,11 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <p style="font-weight:700;color:var(--muted);font-size:0.82rem;margin-top:6px;">This takes just a moment ✨</p>
       </div>
       <div class="spelling-actions" id="spelling-actions" style="display:none;">
-        <button class="btn-main" id="btn-spelling-new" style="font-size:0.85rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 New</button>
-        <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.85rem;">🎯 Practice</button>
-        <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.85rem;">📝 Quiz</button>
-        <button class="btn-main btn-green" id="btn-spelling-done" style="font-size:0.85rem;">✅ Done</button>
+        <button class="btn-main" id="btn-spelling-new" style="font-size:0.78rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 New</button>
+        <button class="btn-main btn-outline" id="btn-spelling-study" style="font-size:0.78rem;">📖 Study</button>
+        <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.78rem;">🎯 Practice</button>
+        <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.78rem;">📝 Quiz</button>
+        <button class="btn-main btn-green" id="btn-spelling-done" style="font-size:0.78rem;">✅ Done</button>
       </div>
     </div>
   </div>
@@ -1169,6 +1205,7 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
 
 <!-- Fixed bottom bar for parent access -->
 <div class="parent-bar" id="parent-bar">
+  <button class="parent-bar-btn" id="btn-go-home" style="background:var(--green);color:#fff;border-color:var(--green);">🏠 Home</button>
   <button class="parent-bar-btn" id="btn-open-parent">👤 Parent</button>
   <button class="parent-bar-btn" id="btn-show-welcome">❓ How it works</button>
 </div>
@@ -4310,6 +4347,97 @@ setInterval(() => {
     lastFloatState = '';
   }
 }, 200);
+
+// ── Home Button ──────────────────────────────────────────
+document.getElementById('btn-go-home').addEventListener('click', () => {
+  // Stop any playing TTS
+  if (ttsState === 'playing' || ttsState === 'paused') {
+    stopTTS();
+  }
+  // Close any overlays
+  closeReadingMode();
+  const spellStudy = document.getElementById('spell-study-overlay');
+  if (spellStudy) spellStudy.classList.remove('active');
+  document.body.style.overflow = '';
+  // Go home
+  show('screen-pick');
+});
+
+// ── Spelling Study Mode (Fullscreen) ─────────────────────
+const spellStudyOverlay = document.createElement('div');
+spellStudyOverlay.className = 'spell-study-overlay';
+spellStudyOverlay.id = 'spell-study-overlay';
+spellStudyOverlay.innerHTML = `
+  <div class="spell-study-fab">
+    <button id="btn-spell-study-close">✕ Exit</button>
+  </div>
+  <div class="spell-study-inner">
+    <div class="spell-study-title" id="spell-study-title">📖 Spelling Words</div>
+    <div class="spell-study-subtitle">Tap any word to hear it!</div>
+    <div id="spell-study-list"></div>
+  </div>
+`;
+document.body.appendChild(spellStudyOverlay);
+
+document.getElementById('btn-spelling-study').addEventListener('click', () => {
+  if (!currentSpellingList || !currentSpellingList.words.length) return;
+  openSpellingStudyMode();
+});
+
+function openSpellingStudyMode() {
+  const listEl = document.getElementById('spell-study-list');
+  listEl.innerHTML = '';
+
+  const title = document.getElementById('spell-study-title');
+  title.textContent = `📖 ${currentSpellingList.words.length} Spelling Words`;
+
+  const cache = getDictCache();
+
+  currentSpellingList.words.forEach((w, i) => {
+    const cacheKey = `${w.word}_${currentSpellingList.grade || '2'}`;
+    const cachedDef = cache[cacheKey];
+
+    const card = document.createElement('div');
+    card.className = 'spell-study-card' + (w.isRedWord ? ' is-red' : '');
+    card.innerHTML = `
+      <div class="spell-study-num">${i + 1}</div>
+      <div style="flex:1;">
+        <div>
+          <span class="spell-study-word">${w.word}</span>
+          ${w.isRedWord ? '<span class="spell-study-badge">Tricky</span>' : ''}
+        </div>
+        <div class="spell-study-syllables">${w.syllables || w.word}</div>
+        <div class="spell-study-def">${cachedDef || 'Tap to hear & learn'}</div>
+      </div>
+      <div class="spell-study-speaker">🔊</div>
+    `;
+
+    card.addEventListener('click', () => {
+      // Say the word
+      sayWordForPractice(w.word);
+      // Show definition popup
+      showDictionaryPopup(w.word, -1);
+    });
+
+    listEl.appendChild(card);
+  });
+
+  spellStudyOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('btn-spell-study-close').addEventListener('click', () => {
+  spellStudyOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+});
+
+// Close spelling study mode on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && spellStudyOverlay.classList.contains('active')) {
+    spellStudyOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
 
 </script>
 </body>
