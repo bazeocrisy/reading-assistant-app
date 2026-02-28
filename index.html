@@ -554,7 +554,7 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       </div>
       <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
       <div class="or-divider"><span>or</span></div>
-      <button class="btn-main btn-coral" id="btn-scan-page" style="font-size:1rem;">📸 Scan My Page</button>
+      <button class="btn-main btn-coral" id="btn-scan-page" style="font-size:1rem;">📸 Upload My Reading Passage</button>
       <input type="file" id="scan-file-input" accept="image/*" style="display:none;">
       <div class="or-divider"><span>or</span></div>
       <button class="btn-main btn-purple" id="btn-together-start">📖 Read Together</button>
@@ -1321,15 +1321,34 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
   container.innerHTML = '<div style="text-align:center;padding:40px 0;"><div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div><p style="font-weight:800;color:var(--muted);font-size:1rem;">Reading the text from your photo...</p></div>';
 
   try {
-    // Convert image to base64
+    // Convert image to base64 with compression if needed
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          // Resize if too large (max 1600px on longest side for good OCR)
+          const maxDim = 1600;
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(dataUrl.split(',')[1]);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
 
-    const mediaType = file.type || 'image/jpeg';
+    const mediaType = 'image/jpeg';
 
     // Send to Cloud Function
     const response = await fetch(CF_OCR, {
