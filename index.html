@@ -355,6 +355,64 @@ body.bedtime .spelling-count-bar { background: #2a1a4a; }
 body.bedtime .spelling-count-num { color: #c090e0; }
 body.bedtime .spelling-count-label { color: #a080c0; }
 
+/* ── Spelling Word Picker ── */
+.spell-picker-word { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; margin-bottom: 6px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; user-select: none; -webkit-user-select: none; }
+.spell-picker-word:active { transform: scale(0.98); }
+.spell-picker-word.picked { background: rgba(155,48,255,0.12); border-color: var(--purple); }
+.spell-picker-word.picked .spell-picker-check { background: var(--purple); color: #fff; }
+.spell-picker-check { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; flex-shrink: 0; transition: all 0.2s; background: var(--card); }
+.spell-picker-label { font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
+.spell-picker-bar { position: sticky; bottom: 0; background: var(--card); padding: 12px 0 4px; border-top: 1.5px solid var(--border); margin-top: 12px; text-align: center; }
+.spell-picker-count { font-size: 0.88rem; font-weight: 800; color: var(--muted); margin-bottom: 8px; }
+.spell-select-all { display: inline-block; padding: 8px 22px; border-radius: 12px; border: 2.5px solid var(--purple); background: var(--purple-soft); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--purple-deep); cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+.spell-select-all:hover { background: var(--purple); color: #fff; }
+.spell-select-all.all-selected { background: var(--purple); color: #fff; }
+body.bedtime .spell-picker-word { background: #2a2a48; }
+body.bedtime .spell-picker-word.picked { background: rgba(155,48,255,0.2); border-color: #7a4aaa; }
+body.bedtime .spell-picker-check { background: #1a1a30; border-color: #3a3a5c; }
+body.bedtime .spell-picker-word.picked .spell-picker-check { background: #7a4aaa; }
+body.bedtime .spell-picker-label { color: #d0c8e8; }
+body.bedtime .spell-picker-bar { background: #252540; border-color: #3a3a5c; }
+body.bedtime .spell-select-all { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+body.bedtime .spell-select-all.all-selected { background: #7a4aaa; color: #fff; }
+
+/* ── Spelling Practice (Multiple Choice) ── */
+.spell-practice-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.spell-practice-bar-wrap { flex: 1; background: var(--border); border-radius: 20px; height: 10px; overflow: hidden; }
+.spell-practice-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.4s ease; }
+.spell-practice-label { font-size: 0.8rem; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.spell-practice-prompt { text-align: center; margin: 20px 0; }
+.spell-practice-hear { font-size: 4rem; cursor: pointer; transition: transform 0.2s; display: inline-block; }
+.spell-practice-hear:hover { transform: scale(1.1); }
+.spell-practice-hear:active { transform: scale(0.95); }
+.spell-practice-hint { font-size: 0.88rem; font-weight: 800; color: var(--muted); margin-top: 8px; }
+.spell-practice-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+.spell-choice-btn { padding: 16px 12px; border-radius: 16px; border: 3px solid var(--border); background: var(--section); font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); cursor: pointer; transition: all 0.2s; text-align: center; min-height: 56px; display: flex; align-items: center; justify-content: center; }
+.spell-choice-btn:active { transform: scale(0.96); }
+.spell-choice-btn.correct { border-color: var(--green); background: #EFFFF4; color: #1B7A3E; animation: choicePop 0.3s ease; }
+.spell-choice-btn.wrong { border-color: var(--coral); background: #FFF0F0; color: #e74c3c; animation: choiceShake 0.4s ease; }
+.spell-choice-btn.reveal { border-color: var(--green); background: #EFFFF4; color: #1B7A3E; }
+.spell-choice-btn:disabled { cursor: default; opacity: 0.7; }
+@keyframes choicePop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes choiceShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.spell-practice-feedback { text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+.spell-practice-feedback-msg { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 700; }
+.spell-practice-result { text-align: center; padding: 20px 0; }
+.spell-practice-score { font-family: 'Fredoka', sans-serif; font-size: 4rem; color: var(--purple); line-height: 1; }
+.spell-practice-score-label { font-size: 0.9rem; font-weight: 800; color: var(--muted); margin-top: 4px; }
+.spell-practice-stars { font-size: 2rem; margin: 12px 0; }
+.spell-result-list { text-align: left; margin: 16px 0; }
+.spell-result-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; margin-bottom: 4px; font-weight: 700; font-size: 0.95rem; }
+.spell-result-item.got-right { background: #EFFFF4; color: #1B7A3E; }
+.spell-result-item.got-wrong { background: #FFF0F0; color: #e74c3c; }
+body.bedtime .spell-choice-btn { background: #2a2a48; border-color: #3a3a5c; color: #d0c8e8; }
+body.bedtime .spell-choice-btn.correct { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
+body.bedtime .spell-choice-btn.wrong { background: #3a1a1a; border-color: #8a4a4a; color: #e8a0a0; }
+body.bedtime .spell-choice-btn.reveal { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
+body.bedtime .spell-practice-bar-wrap { background: #3a3a5c; }
+body.bedtime .spell-result-item.got-right { background: #1a3a2a; color: #8adca0; }
+body.bedtime .spell-result-item.got-wrong { background: #3a1a1a; color: #e8a0a0; }
+
 /* ── Dictionary Popup ── */
 .dict-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -782,8 +840,59 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       </div>
       <div class="spelling-actions" id="spelling-actions" style="display:none;">
         <button class="btn-main" id="btn-spelling-new" style="font-size:0.95rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 New List</button>
+        <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.95rem;">🎯 Practice</button>
         <button class="btn-main btn-green" id="btn-spelling-done" style="font-size:0.95rem;">✅ Done</button>
       </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Spelling Word Picker -->
+  <div class="screen" id="screen-spell-picker">
+    <div class="card">
+      <div class="card-title">🎯 Which words do you want to practice?</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:12px;">Tap words to select them, or grab them all!</p>
+      <div style="text-align:center;margin-bottom:12px;">
+        <button class="spell-select-all" id="btn-spell-select-all">Select All</button>
+      </div>
+      <div id="spell-picker-list" style="max-height:45vh;overflow-y:auto;overscroll-behavior:contain;"></div>
+      <div class="spell-picker-bar">
+        <div class="spell-picker-count" id="spell-picker-count">0 words selected</div>
+        <button class="btn-main btn-green" id="btn-spell-picker-go" style="font-size:1.1rem;" disabled>Let's Go! 🚀</button>
+        <button class="btn-main btn-outline" id="btn-spell-picker-back" style="margin-top:8px;font-size:0.9rem;">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Spelling Practice (Multiple Choice) -->
+  <div class="screen" id="screen-spell-practice">
+    <div class="card">
+      <div class="card-title" id="spell-practice-title">🎯 Practice Mode</div>
+      <div class="spell-practice-progress">
+        <div class="spell-practice-label" id="spell-practice-num">1 / 5</div>
+        <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="spell-practice-bar" style="width:0%"></div></div>
+      </div>
+      <div class="spell-practice-prompt">
+        <div class="spell-practice-hear" id="spell-practice-hear" title="Tap to hear the word">🔊</div>
+        <div class="spell-practice-hint">Tap the speaker to hear the word, then pick the right spelling!</div>
+      </div>
+      <div class="spell-practice-choices" id="spell-practice-choices"></div>
+      <div class="spell-practice-feedback" id="spell-practice-feedback"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Spelling Practice Results -->
+  <div class="screen" id="screen-spell-results">
+    <div class="card" style="text-align:center;">
+      <div class="card-title" id="spell-results-title">🌟 Practice Complete!</div>
+      <div class="spell-practice-result">
+        <div class="spell-practice-score" id="spell-results-score">0/0</div>
+        <div class="spell-practice-score-label">words correct</div>
+        <div class="spell-practice-stars" id="spell-results-stars"></div>
+      </div>
+      <div class="spell-result-list" id="spell-results-list"></div>
+      <button class="btn-main btn-purple" id="btn-spell-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Practice Missed Words</button>
+      <button class="btn-main btn-green" id="btn-spell-retry-all" style="font-size:1rem;margin-top:10px;">🎯 Practice Again</button>
+      <button class="btn-main btn-outline" id="btn-spell-results-done" style="margin-top:10px;font-size:0.9rem;">← Back to Words</button>
     </div>
   </div>
 
@@ -2545,6 +2654,365 @@ function renderSpellingWords(list) {
       });
     }
   });
+}
+
+// ── Spelling Word Picker ─────────────────────────────────
+let spellingPickedWords = [];
+let spellingPracticeMode = 'practice'; // 'practice' or 'test' (future)
+
+document.getElementById('btn-spelling-practice').addEventListener('click', () => {
+  if (!currentSpellingList || !currentSpellingList.words.length) return;
+  spellingPracticeMode = 'practice';
+  openSpellingPicker();
+});
+
+function openSpellingPicker() {
+  spellingPickedWords = [];
+  const listEl = document.getElementById('spell-picker-list');
+  listEl.innerHTML = '';
+
+  currentSpellingList.words.forEach((w, idx) => {
+    const row = document.createElement('div');
+    row.className = 'spell-picker-word';
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <div class="spell-picker-check"></div>
+      <div class="spell-picker-label">${w.word}${w.isRedWord ? ' <span class="spelling-red-badge">TRICKY</span>' : ''}</div>
+    `;
+    row.addEventListener('click', () => {
+      row.classList.toggle('picked');
+      const check = row.querySelector('.spell-picker-check');
+      if (row.classList.contains('picked')) {
+        check.textContent = '✓';
+        if (!spellingPickedWords.includes(idx)) spellingPickedWords.push(idx);
+      } else {
+        check.textContent = '';
+        spellingPickedWords = spellingPickedWords.filter(i => i !== idx);
+      }
+      updatePickerCount();
+    });
+    listEl.appendChild(row);
+  });
+
+  updatePickerCount();
+  updateSelectAllBtn();
+  show('screen-spell-picker');
+}
+
+function updatePickerCount() {
+  const count = spellingPickedWords.length;
+  document.getElementById('spell-picker-count').textContent = `${count} word${count !== 1 ? 's' : ''} selected`;
+  document.getElementById('btn-spell-picker-go').disabled = count < 1;
+  updateSelectAllBtn();
+}
+
+function updateSelectAllBtn() {
+  const btn = document.getElementById('btn-spell-select-all');
+  const allSelected = spellingPickedWords.length === currentSpellingList.words.length;
+  btn.classList.toggle('all-selected', allSelected);
+  btn.textContent = allSelected ? '✓ All Selected' : 'Select All';
+}
+
+document.getElementById('btn-spell-select-all').addEventListener('click', () => {
+  const allSelected = spellingPickedWords.length === currentSpellingList.words.length;
+  const rows = document.querySelectorAll('#spell-picker-list .spell-picker-word');
+
+  if (allSelected) {
+    // Deselect all
+    spellingPickedWords = [];
+    rows.forEach(row => {
+      row.classList.remove('picked');
+      row.querySelector('.spell-picker-check').textContent = '';
+    });
+  } else {
+    // Select all
+    spellingPickedWords = currentSpellingList.words.map((_, i) => i);
+    rows.forEach(row => {
+      row.classList.add('picked');
+      row.querySelector('.spell-picker-check').textContent = '✓';
+    });
+  }
+  updatePickerCount();
+});
+
+document.getElementById('btn-spell-picker-back').addEventListener('click', () => {
+  show('screen-spelling');
+});
+
+document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
+  if (spellingPickedWords.length < 1) return;
+  startSpellingPractice(spellingPickedWords.map(i => currentSpellingList.words[i]));
+});
+
+// ── Spelling Practice Engine (Multiple Choice) ──────────
+let practiceWords = [];
+let practiceIndex = 0;
+let practiceResults = [];
+let practiceAnswered = false;
+
+function startSpellingPractice(words) {
+  practiceWords = shuffleArray([...words]);
+  practiceIndex = 0;
+  practiceResults = [];
+  showPracticeQuestion();
+  show('screen-spell-practice');
+}
+
+function showPracticeQuestion() {
+  if (practiceIndex >= practiceWords.length) {
+    showPracticeResults();
+    return;
+  }
+
+  const word = practiceWords[practiceIndex];
+  practiceAnswered = false;
+
+  // Update progress
+  document.getElementById('spell-practice-num').textContent = `${practiceIndex + 1} / ${practiceWords.length}`;
+  const pct = (practiceIndex / practiceWords.length) * 100;
+  document.getElementById('spell-practice-bar').style.width = pct + '%';
+
+  // Clear feedback
+  document.getElementById('spell-practice-feedback').innerHTML = '';
+
+  // Generate 4 choices: 1 correct + 3 distractors
+  const choices = generateChoices(word.word);
+
+  // Render choice buttons
+  const choicesEl = document.getElementById('spell-practice-choices');
+  choicesEl.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'spell-choice-btn';
+    btn.textContent = choice;
+    btn.addEventListener('click', () => handlePracticeAnswer(btn, choice, word));
+    choicesEl.appendChild(btn);
+  });
+
+  // Auto-play the word
+  setTimeout(() => sayWordForPractice(word.word), 400);
+}
+
+// Wire up the speaker button to replay
+document.getElementById('spell-practice-hear').addEventListener('click', () => {
+  if (practiceIndex < practiceWords.length) {
+    sayWordForPractice(practiceWords[practiceIndex].word);
+  }
+});
+
+async function sayWordForPractice(word) {
+  try {
+    const gradeNum = (S.grade === 'prek' || S.grade === 'k') ? 0 : parseInt(S.grade) || 1;
+    const gradeKey = (S.grade === 'prek' || S.grade === 'k') ? S.grade : parseInt(S.grade);
+    const voiceName = VOICE_NAMES[S.voiceGender]?.[gradeKey] || 'en-US-Wavenet-F';
+    const response = await fetch(CF_TTS, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: word, grade: gradeNum, voiceName })
+    });
+    const data = await response.json();
+    if (data.audioBase64) {
+      if (dictAudio) { dictAudio.pause(); }
+      dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+      dictAudio.playbackRate = 0.85;
+      dictAudio.play();
+      return;
+    }
+  } catch(e) {}
+  const utt = new SpeechSynthesisUtterance(word);
+  utt.rate = 0.8; utt.pitch = 1.1;
+  window.speechSynthesis.speak(utt);
+}
+
+function generateChoices(correctWord) {
+  const allWords = currentSpellingList.words.map(w => w.word);
+  const distractors = [];
+
+  // First try to pull distractors from the spelling list itself
+  const others = allWords.filter(w => w !== correctWord);
+  const shuffledOthers = shuffleArray([...others]);
+  distractors.push(...shuffledOthers.slice(0, 3));
+
+  // If not enough words in the list, generate misspellings
+  while (distractors.length < 3) {
+    const misspelled = generateMisspelling(correctWord);
+    if (misspelled !== correctWord && !distractors.includes(misspelled)) {
+      distractors.push(misspelled);
+    }
+  }
+
+  // Combine and shuffle
+  const choices = shuffleArray([correctWord, ...distractors.slice(0, 3)]);
+  return choices;
+}
+
+function generateMisspelling(word) {
+  const strategies = [
+    // Swap two adjacent letters
+    () => {
+      if (word.length < 3) return word + 'e';
+      const i = 1 + Math.floor(Math.random() * (word.length - 2));
+      return word.slice(0, i) + word[i + 1] + word[i] + word.slice(i + 2);
+    },
+    // Double a letter
+    () => {
+      const i = Math.floor(Math.random() * word.length);
+      return word.slice(0, i) + word[i] + word.slice(i);
+    },
+    // Drop a letter
+    () => {
+      if (word.length < 4) return word + 's';
+      const i = 1 + Math.floor(Math.random() * (word.length - 2));
+      return word.slice(0, i) + word.slice(i + 1);
+    },
+    // Replace a vowel
+    () => {
+      const vowels = 'aeiou';
+      const chars = word.split('');
+      const vowelIdxs = chars.map((c, i) => vowels.includes(c) ? i : -1).filter(i => i >= 0);
+      if (vowelIdxs.length === 0) return word + 'e';
+      const idx = vowelIdxs[Math.floor(Math.random() * vowelIdxs.length)];
+      const otherVowels = vowels.replace(chars[idx], '');
+      chars[idx] = otherVowels[Math.floor(Math.random() * otherVowels.length)];
+      return chars.join('');
+    },
+    // Common phonetic swap: ph/f, gh/g, etc
+    () => {
+      const swaps = [['ph','f'],['gh','g'],['tion','shun'],['ough','uff'],['ight','ite'],['ck','k'],['ee','ea'],['ou','ow']];
+      for (const [a, b] of swaps) {
+        if (word.includes(a)) return word.replace(a, b);
+        if (word.includes(b) && b.length < a.length) return word.replace(b, a);
+      }
+      return word + 'e';
+    }
+  ];
+
+  const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+  return strategy();
+}
+
+function handlePracticeAnswer(btn, choice, word) {
+  if (practiceAnswered) return;
+  practiceAnswered = true;
+
+  const isCorrect = choice === word.word;
+  const allBtns = document.querySelectorAll('.spell-choice-btn');
+
+  // Disable all buttons
+  allBtns.forEach(b => b.disabled = true);
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    document.getElementById('spell-practice-feedback').innerHTML =
+      '<div class="spell-practice-feedback-msg" style="color:var(--green);">✅ That\'s right!</div>';
+    practiceResults.push({ word: word.word, correct: true });
+  } else {
+    btn.classList.add('wrong');
+    // Show the correct answer
+    allBtns.forEach(b => {
+      if (b.textContent === word.word) b.classList.add('reveal');
+    });
+    document.getElementById('spell-practice-feedback').innerHTML =
+      `<div class="spell-practice-feedback-msg" style="color:var(--coral);">The correct spelling is <strong>${word.word}</strong></div>`;
+    practiceResults.push({ word: word.word, correct: false });
+  }
+
+  // Update practice count in saved data
+  const d = getData();
+  const savedList = d.spellingLists.find(l => l.id === currentSpellingList.id);
+  if (savedList) {
+    const savedWord = savedList.words.find(sw => sw.word === word.word);
+    if (savedWord) {
+      savedWord.practiced = (savedWord.practiced || 0) + 1;
+      if (isCorrect) savedWord.mastered = true;
+    }
+    saveData(d);
+  }
+
+  // Auto-advance after delay
+  setTimeout(() => {
+    practiceIndex++;
+    showPracticeQuestion();
+  }, isCorrect ? 1200 : 2200);
+}
+
+function showPracticeResults() {
+  const correct = practiceResults.filter(r => r.correct).length;
+  const total = practiceResults.length;
+  const pct = Math.round((correct / total) * 100);
+
+  // Score
+  document.getElementById('spell-results-score').textContent = `${correct}/${total}`;
+
+  // Stars based on percentage
+  let stars = '';
+  if (pct === 100) { stars = '⭐⭐⭐'; }
+  else if (pct >= 80) { stars = '⭐⭐'; }
+  else if (pct >= 50) { stars = '⭐'; }
+  else { stars = '💪'; }
+  document.getElementById('spell-results-stars').textContent = stars;
+
+  // Title
+  if (pct === 100) {
+    document.getElementById('spell-results-title').textContent = '🎉 Perfect Score!';
+  } else if (pct >= 80) {
+    document.getElementById('spell-results-title').textContent = '🌟 Great Job!';
+  } else if (pct >= 50) {
+    document.getElementById('spell-results-title').textContent = '👍 Good Effort!';
+  } else {
+    document.getElementById('spell-results-title').textContent = '💪 Keep Practicing!';
+  }
+
+  // Result list
+  const listEl = document.getElementById('spell-results-list');
+  listEl.innerHTML = practiceResults.map(r => `
+    <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
+      <span>${r.correct ? '✅' : '❌'}</span>
+      <span>${r.word}</span>
+    </div>
+  `).join('');
+
+  // Show retry missed button if there are wrong answers
+  const missedWords = practiceResults.filter(r => !r.correct);
+  const retryMissedBtn = document.getElementById('btn-spell-retry-missed');
+  if (missedWords.length > 0 && missedWords.length < total) {
+    retryMissedBtn.style.display = 'block';
+    retryMissedBtn.textContent = `🔄 Practice ${missedWords.length} Missed Word${missedWords.length > 1 ? 's' : ''}`;
+  } else {
+    retryMissedBtn.style.display = 'none';
+  }
+
+  // Update progress bar to 100%
+  document.getElementById('spell-practice-bar').style.width = '100%';
+
+  show('screen-spell-results');
+}
+
+// Results screen buttons
+document.getElementById('btn-spell-retry-missed').addEventListener('click', () => {
+  const missedWordNames = practiceResults.filter(r => !r.correct).map(r => r.word);
+  const missedWordObjects = currentSpellingList.words.filter(w => missedWordNames.includes(w.word));
+  startSpellingPractice(missedWordObjects);
+});
+
+document.getElementById('btn-spell-retry-all').addEventListener('click', () => {
+  // Re-practice the same selected words
+  const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
+  startSpellingPractice(selectedWords);
+});
+
+document.getElementById('btn-spell-results-done').addEventListener('click', () => {
+  show('screen-spelling');
+  // Refresh the word list to show updated practice counts
+  if (currentSpellingList) renderSpellingWords(currentSpellingList);
+});
+
+// Utility: shuffle array
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 // ── Bedtime Mode ──────────────────────────────────────────
