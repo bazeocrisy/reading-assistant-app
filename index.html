@@ -669,6 +669,10 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
         <button class="btn-main btn-gray" id="btn-stop-tts" disabled>⏹ Stop</button>
       </div>
 
+      <div id="story-info-bar" style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--muted);margin:8px 0 4px;display:none;">
+        <span id="story-info-text"></span>
+      </div>
+
       <div class="hint-tip">💡 Tap any word to hear it and learn what it means!</div>
 
       <!-- Story text in scrollable container — keeps auto-scroll contained -->
@@ -733,6 +737,7 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       <div class="card-title">🏆 Your Reading Speed!</div>
       <div class="wpm-result-big" id="wpm-result-number">0</div>
       <div class="wpm-result-unit">Words Per Minute</div>
+      <div id="wpm-read-summary" style="font-size:0.92rem;font-weight:800;color:var(--muted);margin-top:6px;"></div>
       <div id="wpm-improvement-badge"></div>
       <div class="wpm-benchmark" id="wpm-benchmark-box">
         <div class="wpm-benchmark-label" id="wpm-benchmark-label">1st Grade Goal</div>
@@ -1510,6 +1515,15 @@ function renderStory(title, body) {
   });
   document.getElementById('progress-bar').style.width = '0%';
   S.wordEls.forEach(w => { w.style.color = ''; w.style.background = ''; });
+
+  // Show story info bar
+  const gradeLabels = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade' };
+  const wordCount = S.wordEls.length;
+  const infoBar = document.getElementById('story-info-bar');
+  const infoText = document.getElementById('story-info-text');
+  infoText.textContent = `📚 ${gradeLabels[S.grade] || S.grade} Level · ${wordCount} words`;
+  infoBar.style.display = 'block';
+
   stopRAF();
   if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
   resetTTSButtons();
@@ -1868,19 +1882,19 @@ function finishWPMRead() {
   const wpm = Math.round((wordCount / elapsedSec) * 60);
 
   // Save WPM to localStorage
-  saveWPMScore(wpm, elapsedSec);
+  saveWPMScore(wpm, elapsedSec, wordCount);
 
   // Show results
-  showWPMResults(wpm);
+  showWPMResults(wpm, wordCount, elapsedSec);
 }
 
-function saveWPMScore(wpm, seconds) {
+function saveWPMScore(wpm, seconds, wordCount) {
   const d = getData();
   const hash = storyHash(S.story);
   let entry = d.stories.find(s => s.hash === hash);
   if (!entry) return;
   if (!entry.wpmScores) entry.wpmScores = [];
-  entry.wpmScores.push({ wpm, seconds: Math.round(seconds), date: new Date().toISOString() });
+  entry.wpmScores.push({ wpm, seconds: Math.round(seconds), wordCount, date: new Date().toISOString() });
   // Keep last 10 scores per story
   if (entry.wpmScores.length > 10) entry.wpmScores = entry.wpmScores.slice(-10);
   saveData(d);
@@ -1893,9 +1907,21 @@ function getWPMScores() {
   return entry?.wpmScores || [];
 }
 
-function showWPMResults(wpm) {
+function showWPMResults(wpm, wordCount, elapsedSec) {
   // Big number
   document.getElementById('wpm-result-number').textContent = wpm;
+
+  // Summary line: "You read 50 words in 40 sec" or "You read 120 words in 1 min 30 sec"
+  const totalSec = Math.round(elapsedSec);
+  let timeStr;
+  if (totalSec >= 60) {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    timeStr = secs > 0 ? `${mins} min ${secs} sec` : `${mins} min`;
+  } else {
+    timeStr = `${totalSec} sec`;
+  }
+  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in ${timeStr}`;
 
   // Benchmark
   const bench = WPM_BENCHMARKS[S.grade] || WPM_BENCHMARKS['1'];
