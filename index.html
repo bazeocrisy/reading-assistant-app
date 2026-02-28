@@ -285,13 +285,26 @@ header { position: relative; }
 .change-pin-row input { flex: 1; padding: 10px 14px; border: 2.5px solid var(--border); border-radius: 12px; font-family: 'Fredoka', sans-serif; font-size: 1.2rem; text-align: center; letter-spacing: 6px; outline: none; }
 .change-pin-row input:focus { border-color: var(--purple); }
 
-/* Fix 2: Styled scrollbar for story container */
-#story-scroll-container::-webkit-scrollbar { width: 6px; }
-#story-scroll-container::-webkit-scrollbar-track { background: transparent; }
-#story-scroll-container::-webkit-scrollbar-thumb { background: var(--purple-light); border-radius: 10px; }
-#story-scroll-container::-webkit-scrollbar-thumb:hover { background: var(--purple); }
-body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: #4a4a6a; }
-body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #6a6a8a; }
+/* Story scroll container — kid-friendly thick scrollbar + no page-scroll conflict */
+#story-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;        /* prevents page from scrolling when story is touched */
+  touch-action: pan-y;                 /* ensure vertical scroll works inside */
+  scrollbar-width: auto;
+  scrollbar-color: var(--purple-light) var(--section);
+}
+#story-scroll-container::-webkit-scrollbar { width: 14px; }
+#story-scroll-container::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
+#story-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--purple), var(--purple-light));
+  border-radius: 10px; border: 3px solid var(--section); min-height: 40px;
+}
+#story-scroll-container::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
+#story-scroll-container::-webkit-scrollbar-thumb:active { background: var(--purple-deep); }
+body.bedtime #story-scroll-container { scrollbar-color: #4a4a6a #252540; }
+body.bedtime #story-scroll-container::-webkit-scrollbar-track { background: #252540; }
+body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #6a5a8a, #4a4a6a); border-color: #252540; }
+body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #7a6a9a; }
 
 @media (max-width: 480px) {
   .logo { font-size: 2.2rem; }
@@ -586,7 +599,7 @@ body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background
       <div class="hint-tip">💡 Double-tap any word to hear it spoken</div>
 
       <!-- Story text in scrollable container — keeps auto-scroll contained -->
-      <div id="story-scroll-container" style="max-height:50vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;">
+      <div id="story-scroll-container" style="max-height:50vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
         <div id="story-text"></div>
       </div>
 
@@ -1776,6 +1789,34 @@ document.getElementById('btn-reset-data').addEventListener('click', () => {
   openParentDashboard();
   alert('All data has been reset.');
 });
+// ── Fix 3: Lock page scroll when touching inside story container ──
+(function initStoryScrollLock() {
+  const container = document.getElementById('story-scroll-container');
+  if (!container) return;
+  
+  container.addEventListener('touchstart', function(e) {
+    // Record starting scroll position so we can tell if we're at the edge
+    this._scrollTop = this.scrollTop;
+    this._scrollHeight = this.scrollHeight;
+    this._clientHeight = this.clientHeight;
+  }, { passive: true });
+
+  container.addEventListener('touchmove', function(e) {
+    const atTop = this.scrollTop <= 0;
+    const atBottom = this.scrollTop + this._clientHeight >= this._scrollHeight;
+    const scrollingUp = e.touches[0].clientY > (this._lastTouchY || 0);
+    const scrollingDown = !scrollingUp;
+    this._lastTouchY = e.touches[0].clientY;
+
+    // Only allow page scroll if story is at the very top/bottom AND user is trying to scroll past it
+    if ((atTop && scrollingUp) || (atBottom && scrollingDown)) {
+      return; // Let page scroll naturally
+    }
+    // Otherwise prevent page from scrolling — only story scrolls
+    e.stopPropagation();
+  }, { passive: true });
+})();
+
 // Change 7: Offline detection banner
 window.addEventListener('offline', () => {
   const t = document.getElementById('word-toast');
