@@ -369,6 +369,9 @@ body.bedtime .spelling-word-def { color: #8080a8; }
 body.bedtime .spelling-count-bar { background: #2a1a4a; }
 body.bedtime .spelling-count-num { color: #c090e0; }
 body.bedtime .spelling-count-label { color: #a080c0; }
+.spell-def-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+body.bedtime .spell-def-spinner { border-color: #3a3a5c; border-top-color: #7a4aaa; }
 
 /* ── Spelling Word Picker ── */
 .spell-picker-word { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; margin-bottom: 6px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; user-select: none; -webkit-user-select: none; }
@@ -2644,6 +2647,7 @@ function renderSpellingWords(list) {
   // Render word cards
   listEl.innerHTML = '';
   const dictCache = getDictCache();
+  const cardsNeedingDefs = [];
 
   list.words.forEach((w, idx) => {
     const cacheKey = `${w.word}_${S.grade}`;
@@ -2666,13 +2670,14 @@ function renderSpellingWords(list) {
           ${w.isRedWord ? '<span class="spelling-red-badge">TRICKY</span>' : ''}
         </div>
         <div class="spelling-syllables">${syllableHTML}</div>
-        ${definition ? `<div class="spelling-word-def">${definition}</div>` : '<div class="spelling-word-def" style="font-style:italic;">Tap to learn what it means!</div>'}
+        ${definition
+          ? `<div class="spelling-word-def">${definition}</div>`
+          : '<div class="spelling-word-def" style="font-style:italic;display:flex;align-items:center;gap:6px;"><span class="spell-def-spinner"></span> Loading definition...</div>'}
       </div>
       <div class="spelling-word-tap">🔊</div>
     `;
 
     card.addEventListener('click', () => {
-      // Track practice count
       w.practiced = (w.practiced || 0) + 1;
       const data = getData();
       const savedList = data.spellingLists.find(l => l.id === list.id);
@@ -2681,25 +2686,62 @@ function renderSpellingWords(list) {
         if (savedWord) savedWord.practiced = w.practiced;
         saveData(data);
       }
-      // Show dictionary popup (reuses existing infrastructure)
       showDictionaryPopup(w.word, -1);
     });
 
     listEl.appendChild(card);
 
-    // Pre-fetch definitions for all words (quietly in background)
+    // Queue cards that need definitions
     if (!definition) {
-      getWordDefinition(w.word, S.grade).then(def => {
-        if (def) {
-          const defEl = card.querySelector('.spelling-word-def');
-          if (defEl) {
-            defEl.style.fontStyle = 'normal';
-            defEl.textContent = def;
-          }
-        }
-      });
+      cardsNeedingDefs.push({ word: w.word, card });
     }
   });
+
+  // Throttled definition fetching — 3 at a time
+  fetchDefinitionsThrottled(cardsNeedingDefs);
+}
+
+async function fetchDefinitionsThrottled(queue, concurrency = 3) {
+  let idx = 0;
+
+  async function fetchNext() {
+    if (idx >= queue.length) return;
+    const current = queue[idx++];
+
+    try {
+      const def = await getWordDefinition(current.word, S.grade);
+      if (def) {
+        const defEl = current.card.querySelector('.spelling-word-def');
+        if (defEl) {
+          defEl.style.fontStyle = 'normal';
+          defEl.style.display = 'block';
+          defEl.innerHTML = def;
+        }
+      } else {
+        const defEl = current.card.querySelector('.spelling-word-def');
+        if (defEl) {
+          defEl.style.fontStyle = 'italic';
+          defEl.innerHTML = 'Tap to look up meaning';
+        }
+      }
+    } catch (e) {
+      const defEl = current.card.querySelector('.spelling-word-def');
+      if (defEl) {
+        defEl.style.fontStyle = 'italic';
+        defEl.innerHTML = 'Tap to look up meaning';
+      }
+    }
+
+    // Fetch next in queue
+    return fetchNext();
+  }
+
+  // Start `concurrency` parallel workers
+  const workers = [];
+  for (let i = 0; i < Math.min(concurrency, queue.length); i++) {
+    workers.push(fetchNext());
+  }
+  await Promise.all(workers);
 }
 
 // ── Spelling Word Picker ─────────────────────────────────
