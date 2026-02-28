@@ -2723,13 +2723,11 @@ function showWordToast(word) {
 let currentSpellingList = null;
 
 function triggerSpellingUpload() {
-  if (!S.grade) { alert('Please select a grade first!'); return; }
   document.getElementById('spelling-file-input').click();
 }
 
 document.getElementById('btn-spelling-start').addEventListener('click', () => {
-  if (!S.grade) { alert('Please select a grade first!'); return; }
-  // Always trigger fresh upload
+  // Always trigger fresh upload — no grade required
   document.getElementById('spelling-file-input').click();
 });
 
@@ -2786,7 +2784,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     const response = await fetch(CF_SPELLING, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg', grade: S.grade })
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg', grade: S.grade || '2' })
     });
 
     if (!response.ok) throw new Error('Extraction failed');
@@ -2798,7 +2796,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     const spellingList = {
       id: Date.now().toString(36),
       date: new Date().toISOString(),
-      grade: S.grade,
+      grade: S.grade || '2',
       words: data.words.map((w, i) => ({
         word: w.word.toLowerCase().trim(),
         syllables: w.syllables || w.word,
@@ -2936,7 +2934,7 @@ async function fetchDefinitionsBatch(queue) {
       const response = await fetch(CF_BATCH_DEF, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ words, grade: S.grade })
+        body: JSON.stringify({ words, grade: S.grade || '2' })
       });
 
       if (!response.ok) throw new Error('Batch define failed');
