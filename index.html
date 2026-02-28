@@ -4413,9 +4413,7 @@ function openSpellingStudyMode() {
     `;
 
     card.addEventListener('click', () => {
-      // Say the word
-      sayWordForPractice(w.word);
-      // Show definition popup
+      // Show definition popup (which auto-reads the word + definition)
       showDictionaryPopup(w.word, -1);
     });
 
