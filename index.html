@@ -1153,6 +1153,7 @@ const CF_TTS   = `${CF_BASE}/synthesizeSpeech`;
 const CF_STT   = `${CF_BASE}/transcribeSpeech`;
 const CF_OCR   = `${CF_BASE}/extractText`;
 const CF_SPELLING = `${CF_BASE}/extractSpellingWords`;
+const CF_BATCH_DEF = `${CF_BASE}/batchDefine`;
 
 // ── AI Story Generation ───────────────────────────────────
 async function generateAIStory(grade, category, wordTarget) {
@@ -2698,51 +2699,69 @@ function renderSpellingWords(list) {
     }
   });
 
-  // Throttled definition fetching — 3 at a time
-  fetchDefinitionsThrottled(cardsNeedingDefs);
+  // Batch-fetch definitions for words that don't have cached defs
+  fetchDefinitionsBatch(cardsNeedingDefs);
 }
 
-async function fetchDefinitionsThrottled(queue, concurrency = 3) {
-  let idx = 0;
+async function fetchDefinitionsBatch(queue) {
+  if (queue.length === 0) return;
 
-  async function fetchNext() {
-    if (idx >= queue.length) return;
-    const current = queue[idx++];
+  // Split into chunks of 20
+  const chunks = [];
+  for (let i = 0; i < queue.length; i += 20) {
+    chunks.push(queue.slice(i, i + 20));
+  }
 
+  // Process chunks sequentially (to avoid hammering the API)
+  for (const chunk of chunks) {
     try {
-      const def = await getWordDefinition(current.word, S.grade);
-      if (def) {
-        const defEl = current.card.querySelector('.spelling-word-def');
-        if (defEl) {
-          defEl.style.fontStyle = 'normal';
-          defEl.style.display = 'block';
-          defEl.innerHTML = def;
+      const words = chunk.map(c => c.word);
+      const response = await fetch(CF_BATCH_DEF, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ words, grade: S.grade })
+      });
+
+      if (!response.ok) throw new Error('Batch define failed');
+      const data = await response.json();
+
+      if (data.definitions) {
+        // Save to dict cache and update cards
+        const cache = getDictCache();
+        for (const item of chunk) {
+          // Try exact match or lowercase match
+          const def = data.definitions[item.word] || data.definitions[item.word.toLowerCase()];
+          if (def) {
+            const cacheKey = `${item.word}_${S.grade}`;
+            cache[cacheKey] = def;
+            const defEl = item.card.querySelector('.spelling-word-def');
+            if (defEl) {
+              defEl.style.fontStyle = 'normal';
+              defEl.style.display = 'block';
+              defEl.innerHTML = def;
+            }
+          } else {
+            const defEl = item.card.querySelector('.spelling-word-def');
+            if (defEl) {
+              defEl.style.fontStyle = 'italic';
+              defEl.innerHTML = 'Tap to look up meaning';
+            }
+          }
         }
-      } else {
-        const defEl = current.card.querySelector('.spelling-word-def');
-        if (defEl) {
+        saveDictCache(cache);
+      }
+    } catch (e) {
+      console.warn('Batch definition fetch failed:', e);
+      // Fallback: mark remaining as tap-to-look-up
+      for (const item of chunk) {
+        const defEl = item.card.querySelector('.spelling-word-def');
+        if (defEl && defEl.innerHTML.includes('Loading')) {
           defEl.style.fontStyle = 'italic';
           defEl.innerHTML = 'Tap to look up meaning';
         }
       }
-    } catch (e) {
-      const defEl = current.card.querySelector('.spelling-word-def');
-      if (defEl) {
-        defEl.style.fontStyle = 'italic';
-        defEl.innerHTML = 'Tap to look up meaning';
-      }
     }
-
-    // Fetch next in queue
-    return fetchNext();
   }
-
-  // Start `concurrency` parallel workers
-  const workers = [];
-  for (let i = 0; i < Math.min(concurrency, queue.length); i++) {
-    workers.push(fetchNext());
-  }
-  await Promise.all(workers);
 }
 
 // ── Spelling Word Picker ─────────────────────────────────

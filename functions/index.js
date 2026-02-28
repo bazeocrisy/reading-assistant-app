@@ -215,6 +215,85 @@ Important:
   }
 );
 
+// ── Batch Define Words (up to 20 at a time) ──────────────
+exports.batchDefine = onRequest(
+  {secrets: [anthropicKey], cors: true, timeoutSeconds: 120},
+  async (req, res) => {
+    if (req.method !== "POST") {
+      return res.status(405).send("Method Not Allowed");
+    }
+
+    const {words, grade} = req.body;
+    if (!words || !Array.isArray(words) || words.length === 0) {
+      return res.status(400).json({error: "No words provided"});
+    }
+
+    const gradeNames = {
+      "prek": "Pre-K (age 3-4)",
+      "k": "Kindergarten (age 5-6)",
+      "1": "1st grade (age 6-7)",
+      "2": "2nd grade (age 7-8)",
+      "3": "3rd grade (age 8-9)",
+    };
+    const gradeLabel = gradeNames[grade] || "1st grade (age 6-7)";
+
+    // Take max 25 words per call
+    const batch = words.slice(0, 25);
+
+    const prompt = `Define each of these words for a ${gradeLabel} child. Each definition should be ONE simple sentence using words they already know. Do not start with "It means". Just give the definition directly.
+
+Words: ${batch.join(", ")}
+
+Return ONLY a valid JSON object mapping each word to its definition, with no other text, no markdown, no backticks. Example:
+{"cat": "A small furry animal that says meow!", "big": "Really, really large — like a house!"}`;
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": anthropicKey.value(),
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 4000,
+          messages: [{
+            role: "user",
+            content: prompt,
+          }],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        logger.error("batchDefine API error:", data.error);
+        return res.status(500).json({error: data.error.message || "API error"});
+      }
+
+      if (!data.content || !data.content[0] || !data.content[0].text) {
+        logger.error("batchDefine unexpected response:", JSON.stringify(data));
+        return res.status(500).json({error: "Could not define words"});
+      }
+
+      let rawText = data.content[0].text.trim();
+      rawText = rawText.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+      try {
+        const definitions = JSON.parse(rawText);
+        res.json({definitions});
+      } catch (parseErr) {
+        logger.error("Failed to parse batch definitions JSON:", rawText);
+        res.json({definitions: {}, error: "Could not parse definitions"});
+      }
+    } catch (error) {
+      logger.error("Error batch defining words", error);
+      res.status(500).json({error: "Failed to define words"});
+    }
+  }
+);
+
 const { synthesizeSpeech } = require("./tts");
 exports.synthesizeSpeech = synthesizeSpeech;
 
