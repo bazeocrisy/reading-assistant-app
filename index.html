@@ -512,6 +512,31 @@ body.bedtime .wpm-benchmark-range { color: #d0c8e8; }
 body.bedtime .wpm-history-bar-wrap { background: #3a3a5c; }
 body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
 
+/* ── Reading Mode (Fullscreen) ── */
+.reading-mode-overlay { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; display: none; animation: fadeIn 0.3s ease; }
+.reading-mode-overlay.active { display: block; }
+.reading-mode-inner { max-width: 700px; margin: 0 auto; padding: 24px 24px 80px; }
+.reading-mode-close { position: fixed; top: 16px; right: 16px; z-index: 201; width: 44px; height: 44px; border-radius: 50%; border: 2.5px solid var(--border); background: var(--card); font-size: 1.2rem; font-weight: 800; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.1); transition: all 0.2s; }
+.reading-mode-close:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+.reading-mode-title { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 20px; padding-top: 8px; }
+.reading-mode-text { font-size: 1.6rem; line-height: 2.8rem; color: var(--ink); font-weight: 700; font-family: 'Nunito', sans-serif; }
+.reading-mode-text .word-span { cursor: pointer; border-radius: 4px; padding: 2px 1px; transition: background 0.15s; }
+.reading-mode-text .word-span:hover { background: var(--purple-soft); }
+.reading-mode-text .word-span.active-word { background: var(--purple-soft); color: var(--purple-deep); }
+.reading-mode-fab { position: fixed; bottom: 20px; right: 20px; z-index: 201; display: flex; gap: 10px; }
+.reading-mode-fab button { padding: 12px 18px; border-radius: 50px; border: none; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.15); transition: all 0.2s; }
+.reading-mode-fab button:hover { transform: scale(1.05); }
+.btn-rm-close { background: var(--card); color: var(--muted); border: 2px solid var(--border) !important; }
+.btn-rm-listen { background: var(--purple); color: #fff; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+body.bedtime .reading-mode-overlay { background: #1a1a2e; }
+body.bedtime .reading-mode-title { color: #c090e0; }
+body.bedtime .reading-mode-text { color: #F0EBE0; }
+body.bedtime .reading-mode-text .word-span:hover { background: #2a1a4a; }
+body.bedtime .reading-mode-text .word-span.active-word { background: #2a1a4a; color: #c090e0; }
+body.bedtime .btn-rm-close { background: #252540; border-color: #3a3a5c !important; color: #a080c0; }
+body.bedtime .btn-rm-listen { background: #7a4aaa; }
+
 @media (max-width: 480px) {
   .logo { font-size: 2.2rem; }
   .categories { grid-template-columns: repeat(2, 1fr); }
@@ -833,6 +858,10 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       </div>
 
       <div class="hint-tip">💡 Tap any word to hear it and learn what it means!</div>
+
+      <div style="text-align:right;margin-bottom:4px;">
+        <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:8px 16px;font-size:0.82rem;width:auto;display:inline-flex;align-items:center;gap:4px;">📖 Reading Mode</button>
+      </div>
 
       <!-- Story text in scrollable container — keeps auto-scroll contained -->
       <div id="story-scroll-container" style="max-height:50vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
@@ -4037,6 +4066,74 @@ document.getElementById('btn-show-welcome').addEventListener('click', () => {
   });
 
   window.scrollTo({ top: 0, behavior: 'instant' });
+});
+
+// ── Reading Mode (Fullscreen) ────────────────────────────
+const readingOverlay = document.createElement('div');
+readingOverlay.className = 'reading-mode-overlay';
+readingOverlay.id = 'reading-mode-overlay';
+readingOverlay.innerHTML = `
+  <div class="reading-mode-inner">
+    <div class="reading-mode-title" id="rm-title"></div>
+    <div class="reading-mode-text" id="rm-text"></div>
+  </div>
+  <div class="reading-mode-fab">
+    <button class="btn-rm-close" id="btn-rm-close">✕ Exit</button>
+    <button class="btn-rm-listen" id="btn-rm-listen">🔊 Listen</button>
+  </div>
+`;
+document.body.appendChild(readingOverlay);
+
+document.getElementById('btn-reading-mode').addEventListener('click', () => {
+  if (!S.story) return;
+  // Copy story title
+  document.getElementById('rm-title').textContent = document.getElementById('story-title').textContent;
+  // Copy story text with tappable words
+  const storyText = S.story;
+  const words = storyText.split(/(\s+)/);
+  const html = words.map(w => {
+    if (w.trim() === '') return w;
+    const clean = w.replace(/[^a-zA-Z'-]/g, '');
+    if (clean) {
+      return `<span class="word-span" data-word="${clean}">${w}</span>`;
+    }
+    return w;
+  }).join('');
+  document.getElementById('rm-text').innerHTML = html;
+
+  // Make words tappable for dictionary
+  document.querySelectorAll('#rm-text .word-span').forEach(span => {
+    span.addEventListener('click', () => {
+      const w = span.dataset.word;
+      showDictionaryPopup(w, -1);
+    });
+  });
+
+  readingOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+});
+
+document.getElementById('btn-rm-close').addEventListener('click', closeReadingMode);
+
+function closeReadingMode() {
+  readingOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Listen button in reading mode — triggers TTS play
+document.getElementById('btn-rm-listen').addEventListener('click', () => {
+  // Use the existing play button logic
+  const playBtn = document.getElementById('btn-play');
+  if (playBtn && !playBtn.disabled) {
+    playBtn.click();
+  }
+});
+
+// Close reading mode on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && readingOverlay.classList.contains('active')) {
+    closeReadingMode();
+  }
 });
 
 </script>
