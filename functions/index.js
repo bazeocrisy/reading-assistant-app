@@ -125,7 +125,7 @@ exports.extractText = onRequest(
 
 // ── Extract Spelling Words from Image (OCR + AI parsing) ──
 exports.extractSpellingWords = onRequest(
-  {secrets: [anthropicKey], cors: true},
+  {secrets: [anthropicKey], cors: true, timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -146,7 +146,7 @@ exports.extractSpellingWords = onRequest(
         },
         body: JSON.stringify({
           model: "claude-haiku-4-5-20251001",
-          max_tokens: 2000,
+          max_tokens: 8000,
           messages: [{
             role: "user",
             content: [
@@ -160,21 +160,23 @@ exports.extractSpellingWords = onRequest(
               },
               {
                 type: "text",
-                text: `You are looking at a child's spelling word list from school. Extract EVERY spelling word from this image.
+                text: `You are looking at a child's word list or spelling list. Extract EVERY word from this image.
 
 For each word, provide:
 1. The word exactly as spelled
 2. The syllable breakdown using dots (like "el·e·phant" or "di·graph")
-3. Whether it appears to be marked as a "red word" or irregular/tricky word (these are words that don't follow standard phonics rules)
+3. Whether it appears to be marked as a "red word" or irregular/tricky word (words that don't follow standard phonics rules)
 
 Return ONLY a valid JSON array with no other text, no markdown, no backticks. Each item should be:
 {"word": "elephant", "syllables": "el·e·phant", "isRedWord": false}
 
 Important:
-- Include ALL words, numbered or not
-- Single-syllable words just have the word itself (e.g. "graph" stays "graph")
+- Include ALL words from the list, whether numbered, in columns, or in rows
+- There may be many words (50-100+). Include every single one.
+- Single-syllable words just have the word itself (e.g. "set" stays "set")
 - Red words / sight words / tricky words should have isRedWord: true
 - Preserve the exact spelling from the image
+- Do NOT include titles, headers, or instructions — only the actual word list items
 - Return ONLY the JSON array, nothing else`,
               },
             ],
