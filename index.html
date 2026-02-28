@@ -911,7 +911,13 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
   <div class="screen" id="screen-spell-picker">
     <div class="card">
       <div class="card-title">🎯 Which words do you want to practice?</div>
-      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:12px;">Tap words to select them, or grab them all!</p>
+      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:10px;">Tap words to select them, or grab them all!</p>
+      <!-- Voice picker -->
+      <div style="text-align:center;margin-bottom:12px;">
+        <span style="font-weight:800;font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Voice: </span>
+        <button class="opt-btn spell-voice-btn" data-voice="female" id="spell-voice-female" style="padding:6px 16px;min-width:auto;font-size:0.85rem;">👩 Woman</button>
+        <button class="opt-btn spell-voice-btn" data-voice="male" id="spell-voice-male" style="padding:6px 16px;min-width:auto;font-size:0.85rem;">👨 Man</button>
+      </div>
       <div style="text-align:center;margin-bottom:12px;">
         <button class="spell-select-all" id="btn-spell-select-all">Select All</button>
       </div>
@@ -964,6 +970,7 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
       </div>
       <div class="spell-result-list" id="spell-results-list" style="max-height:40vh;overflow-y:auto;overscroll-behavior:contain;"></div>
       <button class="btn-main btn-purple" id="btn-spell-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Practice Missed Words</button>
+      <button class="btn-main btn-coral" id="btn-spell-take-quiz" style="font-size:1rem;margin-top:10px;">📝 Take Quiz Now</button>
       <button class="btn-main btn-green" id="btn-spell-retry-all" style="font-size:1rem;margin-top:10px;">🎯 Practice Again</button>
       <button class="btn-main btn-outline" id="btn-spell-results-done" style="margin-top:10px;font-size:0.9rem;">← Back to Words</button>
     </div>
@@ -2854,6 +2861,11 @@ function openSpellingPicker() {
     pickerTitle.textContent = '🎯 Which words do you want to practice?';
   }
 
+  // Highlight current voice gender
+  document.querySelectorAll('.spell-voice-btn').forEach(b => {
+    b.classList.toggle('sel-words', b.dataset.voice === S.voiceGender);
+  });
+
   currentSpellingList.words.forEach((w, idx) => {
     const row = document.createElement('div');
     row.className = 'spell-picker-word';
@@ -2920,6 +2932,20 @@ document.getElementById('btn-spell-select-all').addEventListener('click', () => 
 
 document.getElementById('btn-spell-picker-back').addEventListener('click', () => {
   show('screen-spelling');
+});
+
+// Voice gender toggle in picker
+document.querySelectorAll('.spell-voice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    S.voiceGender = btn.dataset.voice;
+    document.querySelectorAll('.spell-voice-btn').forEach(b => {
+      b.classList.toggle('sel-words', b.dataset.voice === S.voiceGender);
+    });
+    // Also update the main voice buttons if they exist
+    document.querySelectorAll('.voice-btn').forEach(b => {
+      b.classList.toggle('sel-voice', b.dataset.voice === S.voiceGender);
+    });
+  });
 });
 
 document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
@@ -3041,13 +3067,14 @@ async function sayWordForPractice(word) {
     if (data.audioBase64) {
       if (dictAudio) { dictAudio.pause(); }
       dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      dictAudio.playbackRate = 0.85;
+      dictAudio.playbackRate = 0.72;
+      dictAudio.volume = 1.0;
       dictAudio.play();
       return;
     }
   } catch(e) {}
   const utt = new SpeechSynthesisUtterance(word);
-  utt.rate = 0.8; utt.pitch = 1.1;
+  utt.rate = 0.65; utt.pitch = 1.1; utt.volume = 1.0;
   window.speechSynthesis.speak(utt);
 }
 
@@ -3420,6 +3447,12 @@ document.getElementById('btn-spell-retry-all').addEventListener('click', () => {
 document.getElementById('btn-spell-results-done').addEventListener('click', () => {
   show('screen-spelling');
   if (currentSpellingList) renderSpellingWords(currentSpellingList);
+});
+
+// Take Quiz Now — quiz the same words they just practiced
+document.getElementById('btn-spell-take-quiz').addEventListener('click', () => {
+  const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
+  startSpellingQuiz(selectedWords);
 });
 
 // ── Spelling Quiz (Full Test Mode) ──────────────────────
