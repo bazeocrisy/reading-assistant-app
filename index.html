@@ -150,6 +150,7 @@ header { text-align: center; padding: 24px 0 16px; }
 }
 .voice-btn:hover { border-color: var(--purple-light); }
 .voice-btn.sel-voice { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); }
+.spell-voice-btn.sel-voice { border-color: var(--purple) !important; background: var(--purple-soft) !important; color: var(--purple-deep) !important; }
 
 /* ── Speed slider ── */
 .speed-slider-row { margin: 16px 0 4px; }
@@ -912,14 +913,14 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
     <div class="card">
       <div class="card-title">🎯 Which words do you want to practice?</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:10px;">Tap words to select them, or grab them all!</p>
-      <!-- Voice picker -->
-      <div style="text-align:center;margin-bottom:12px;">
-        <span style="font-weight:800;font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Voice: </span>
-        <button class="opt-btn spell-voice-btn" data-voice="female" id="spell-voice-female" style="padding:6px 16px;min-width:auto;font-size:0.85rem;">👩 Woman</button>
-        <button class="opt-btn spell-voice-btn" data-voice="male" id="spell-voice-male" style="padding:6px 16px;min-width:auto;font-size:0.85rem;">👨 Man</button>
-      </div>
-      <div style="text-align:center;margin-bottom:12px;">
-        <button class="spell-select-all" id="btn-spell-select-all">Select All</button>
+      <!-- Select All (left) + Voice picker (right) on one row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <button class="spell-select-all" id="btn-spell-select-all" style="margin:0;font-size:0.8rem;padding:6px 14px;">Select All</button>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-weight:800;font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Voice:</span>
+          <button class="opt-btn spell-voice-btn" data-voice="female" id="spell-voice-female" style="padding:5px 12px;min-width:auto;font-size:0.82rem;margin:0;">👩 Woman</button>
+          <button class="opt-btn spell-voice-btn" data-voice="male" id="spell-voice-male" style="padding:5px 12px;min-width:auto;font-size:0.82rem;margin:0;">👨 Man</button>
+        </div>
       </div>
       <div id="spell-picker-list" style="max-height:45vh;overflow-y:auto;overscroll-behavior:contain;"></div>
       <div class="spell-picker-bar">
@@ -2863,7 +2864,7 @@ function openSpellingPicker() {
 
   // Highlight current voice gender
   document.querySelectorAll('.spell-voice-btn').forEach(b => {
-    b.classList.toggle('sel-words', b.dataset.voice === S.voiceGender);
+    b.classList.toggle('sel-voice', b.dataset.voice === S.voiceGender);
   });
 
   currentSpellingList.words.forEach((w, idx) => {
@@ -2936,10 +2937,11 @@ document.getElementById('btn-spell-picker-back').addEventListener('click', () =>
 
 // Voice gender toggle in picker
 document.querySelectorAll('.spell-voice-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
     S.voiceGender = btn.dataset.voice;
     document.querySelectorAll('.spell-voice-btn').forEach(b => {
-      b.classList.toggle('sel-words', b.dataset.voice === S.voiceGender);
+      b.classList.toggle('sel-voice', b.dataset.voice === S.voiceGender);
     });
     // Also update the main voice buttons if they exist
     document.querySelectorAll('.voice-btn').forEach(b => {
