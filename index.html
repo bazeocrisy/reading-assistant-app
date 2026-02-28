@@ -752,6 +752,9 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <button class="opt-btn" data-words="500">500</button>
       </div>
       <div class="section-label">Pick a topic:</div>
+      <div style="text-align:center;margin-bottom:12px;">
+        <button class="btn-main btn-yellow" id="btn-surprise-me" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:10px 24px;font-size:0.95rem;margin:0;">🎲 Surprise Me!</button>
+      </div>
       <div class="categories">
         <button class="cat-btn selected" data-cat="animals">
           <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" fill="#C9A0DC" opacity="0.3"/><path d="M12 12c-2-4-6-3-6 0s3 4 5 3" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M28 12c2-4 6-3 6 0s-3 4-5 3" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><ellipse cx="20" cy="20" rx="9" ry="8" fill="#9B30FF"/><circle cx="16.5" cy="18" r="1.5" fill="#fff"/><circle cx="23.5" cy="18" r="1.5" fill="#fff"/><ellipse cx="20" cy="22" rx="2.5" ry="1.5" fill="#6B2D8B"/><path d="M15 26c0 3 2 6 5 6s5-3 5-6" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
@@ -1082,7 +1085,10 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   <!-- SCREEN: Spelling Practice (Both Modes) -->
   <div class="screen" id="screen-spell-practice">
     <div class="card">
-      <div class="card-title" id="spell-practice-title">🎯 Practice Mode</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="card-title" id="spell-practice-title" style="margin-bottom:0;">🎯 Practice Mode</div>
+        <button class="btn-main btn-outline" id="btn-practice-quit" style="width:auto;margin:0;padding:6px 14px;font-size:0.8rem;">✕ Quit</button>
+      </div>
       <div style="text-align:center;">
         <div class="spell-round-label round-mc" id="spell-round-label">ROUND 1: MULTIPLE CHOICE</div>
       </div>
@@ -1137,7 +1143,10 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   <!-- SCREEN: Quiz (Full Spelling Test) -->
   <div class="screen" id="screen-quiz">
     <div class="card">
-      <div class="card-title">📝 Spelling Quiz</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="card-title" style="margin-bottom:0;">📝 Spelling Quiz</div>
+        <button class="btn-main btn-outline" id="btn-quiz-quit" style="width:auto;margin:0;padding:6px 14px;font-size:0.8rem;">✕ Quit</button>
+      </div>
       <div class="spell-practice-progress">
         <div class="spell-practice-label" id="quiz-progress-label">1 / 5</div>
         <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="quiz-progress-bar" style="width:0%"></div></div>
@@ -1395,6 +1404,16 @@ async function generateAIStory(grade, category, wordTarget) {
   const topicLabel = topicNames[category] || category;
 
   // Topic-specific anchor for Pre-K/K so the AI doesn't drift
+  // Random story seeds to ensure unique stories every time
+  const randomNames = ['Zara', 'Marcus', 'Lily', 'Kai', 'Nala', 'Oscar', 'Mia', 'Jax', 'Ruby', 'Leo', 'Ella', 'Finn', 'Ava', 'Miles', 'Sofia', 'Theo', 'Cora', 'Mateo', 'Ivy', 'Jasper', 'Luna', 'Ezra', 'Aria', 'Ravi', 'Amara', 'Dax', 'Nia', 'Cole'];
+  const randomSettings = ['a small town', 'a big city', 'a farm', 'a forest', 'a beach', 'a mountain', 'a school', 'a park', 'a backyard', 'a library', 'a playground', 'a neighborhood', 'a lake', 'a garden', 'a treehouse', 'a market', 'a river', 'a hilltop', 'a village', 'an island'];
+  const randomTwists = ['learns something surprising', 'makes an unexpected friend', 'discovers something hidden', 'overcomes a fear', 'helps someone in need', 'solves a tricky problem', 'goes on an adventure', 'finds something special', 'has a funny mishap', 'tries something new for the first time', 'uses teamwork', 'shows courage', 'shares something important', 'learns from a mistake'];
+
+  const randName = randomNames[Math.floor(Math.random() * randomNames.length)];
+  const randSetting = randomSettings[Math.floor(Math.random() * randomSettings.length)];
+  const randTwist = randomTwists[Math.floor(Math.random() * randomTwists.length)];
+  const storyId = Date.now().toString(36); // unique seed
+
   const topicAnchors = {
     animals: "Use animals like a dog, cat, bird, or fish as the main characters.",
     space: "Use the sun, moon, and stars as the main focus.",
@@ -1461,9 +1480,10 @@ Write exactly ${wordTarget} words.`,
   };
 
   const instructions = gradeInstructions[grade] || gradeInstructions["1"];
+  const uniqueSeed = `\n\nIMPORTANT: Make this story COMPLETELY UNIQUE. Use the name "${randName}" as the main character. Set the story in ${randSetting}. The character ${randTwist}. Story seed: ${storyId}. Do NOT reuse plots from previous stories.`;
   const fullPrompt = (grade === 'prek' || grade === 'k')
-    ? `${instructions}`
-    : `Write a story about ${topicLabel} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}`;
+    ? `${instructions}${uniqueSeed}`
+    : `Write a story about ${topicLabel} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}${uniqueSeed}`;
 
   const response = await fetch(CF_STORY, {
     method: "POST", headers: { "Content-Type": "application/json" },
@@ -1823,6 +1843,22 @@ document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click
 
 // ── Solo / Read Together entry ────────────────────────────
 document.getElementById('btn-generate').addEventListener('click', () => { S.isRace = false; S.myRole = null; loadStory(); });
+
+// Surprise Me — pick a random topic and generate
+document.getElementById('btn-surprise-me').addEventListener('click', () => {
+  const allCats = document.querySelectorAll('.cat-btn');
+  const randomCat = allCats[Math.floor(Math.random() * allCats.length)];
+  // Select it visually
+  allCats.forEach(b => b.classList.remove('selected'));
+  randomCat.classList.add('selected');
+  S.category = randomCat.dataset.cat;
+  // Quick flash animation
+  randomCat.style.transform = 'scale(1.15)';
+  setTimeout(() => { randomCat.style.transform = ''; }, 300);
+  // Generate the story
+  S.isRace = false; S.myRole = null;
+  setTimeout(() => loadStory(), 400);
+});
 
 // ── Scan My Page ──────────────────────────────────────────
 document.getElementById('btn-scan-page').addEventListener('click', () => {
@@ -2799,6 +2835,14 @@ document.getElementById('btn-spelling-new').addEventListener('click', triggerSpe
 
 document.getElementById('btn-spelling-done').addEventListener('click', () => {
   show('screen-pick');
+});
+
+// Quit buttons for practice and quiz — go back to spelling word list
+document.getElementById('btn-practice-quit').addEventListener('click', () => {
+  show('screen-spelling');
+});
+document.getElementById('btn-quiz-quit').addEventListener('click', () => {
+  show('screen-spelling');
 });
 
 document.getElementById('spelling-file-input').addEventListener('change', async (e) => {
