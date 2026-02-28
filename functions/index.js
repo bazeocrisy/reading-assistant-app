@@ -123,6 +123,96 @@ exports.extractText = onRequest(
   }
 );
 
+// ── Extract Spelling Words from Image (OCR + AI parsing) ──
+exports.extractSpellingWords = onRequest(
+  {secrets: [anthropicKey], cors: true},
+  async (req, res) => {
+    if (req.method !== "POST") {
+      return res.status(405).send("Method Not Allowed");
+    }
+
+    const {imageBase64, mediaType, grade} = req.body;
+    if (!imageBase64) {
+      return res.status(400).json({error: "No image provided"});
+    }
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": anthropicKey.value(),
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 2000,
+          messages: [{
+            role: "user",
+            content: [
+              {
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: mediaType || "image/jpeg",
+                  data: imageBase64,
+                },
+              },
+              {
+                type: "text",
+                text: `You are looking at a child's spelling word list from school. Extract EVERY spelling word from this image.
+
+For each word, provide:
+1. The word exactly as spelled
+2. The syllable breakdown using dots (like "el·e·phant" or "di·graph")
+3. Whether it appears to be marked as a "red word" or irregular/tricky word (these are words that don't follow standard phonics rules)
+
+Return ONLY a valid JSON array with no other text, no markdown, no backticks. Each item should be:
+{"word": "elephant", "syllables": "el·e·phant", "isRedWord": false}
+
+Important:
+- Include ALL words, numbered or not
+- Single-syllable words just have the word itself (e.g. "graph" stays "graph")
+- Red words / sight words / tricky words should have isRedWord: true
+- Preserve the exact spelling from the image
+- Return ONLY the JSON array, nothing else`,
+              },
+            ],
+          }],
+        }),
+      });
+
+      const data = await response.json();
+      logger.info("extractSpellingWords response type:", data.type);
+
+      if (data.error) {
+        logger.error("extractSpellingWords API error:", data.error);
+        return res.status(500).json({error: data.error.message || "API error"});
+      }
+
+      if (!data.content || !data.content[0] || !data.content[0].text) {
+        logger.error("extractSpellingWords unexpected response:", JSON.stringify(data));
+        return res.status(500).json({error: "Could not extract spelling words"});
+      }
+
+      let rawText = data.content[0].text.trim();
+      // Strip markdown code fences if present
+      rawText = rawText.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+      try {
+        const words = JSON.parse(rawText);
+        res.json({words});
+      } catch (parseErr) {
+        logger.error("Failed to parse spelling words JSON:", rawText);
+        res.json({words: [], raw: rawText, error: "Could not parse words"});
+      }
+    } catch (error) {
+      logger.error("Error extracting spelling words", error);
+      res.status(500).json({error: "Failed to extract spelling words"});
+    }
+  }
+);
+
 const { synthesizeSpeech } = require("./tts");
 exports.synthesizeSpeech = synthesizeSpeech;
 
