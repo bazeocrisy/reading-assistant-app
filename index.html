@@ -4277,17 +4277,16 @@ function closeReadingMode() {
 // Listen button in reading mode — toggles TTS play/pause
 document.getElementById('btn-rm-listen').addEventListener('click', () => {
   if (ttsState === 'playing') {
-    // Already playing, pause it
     const pauseBtn = document.getElementById('btn-pause');
     if (pauseBtn && !pauseBtn.disabled) pauseBtn.click();
     document.getElementById('btn-rm-listen').textContent = '🔊 Listen';
   } else if (ttsState === 'paused') {
-    // Resume
-    const playBtn = document.getElementById('btn-play');
-    if (playBtn) playBtn.click();
+    // Pause button toggles to resume
+    const pauseBtn = document.getElementById('btn-pause');
+    if (pauseBtn) pauseBtn.click();
     document.getElementById('btn-rm-listen').textContent = '⏸ Pause';
   } else {
-    // Not playing, start
+    // Not playing, start fresh
     const playBtn = document.getElementById('btn-play');
     if (playBtn && !playBtn.disabled) playBtn.click();
     document.getElementById('btn-rm-listen').textContent = '⏸ Pause';
@@ -4313,8 +4312,9 @@ floatTTSBtn.addEventListener('click', () => {
     const pauseBtn = document.getElementById('btn-pause');
     if (pauseBtn && !pauseBtn.disabled) pauseBtn.click();
   } else if (ttsState === 'paused') {
-    const playBtn = document.getElementById('btn-play');
-    if (playBtn) playBtn.click();
+    // Pause button toggles to resume, play button is disabled during pause
+    const pauseBtn = document.getElementById('btn-pause');
+    if (pauseBtn) pauseBtn.click();
   }
 });
 
