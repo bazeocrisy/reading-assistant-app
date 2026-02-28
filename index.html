@@ -230,7 +230,7 @@ body.bedtime .voice-btn { background: #252540; border-color: #3a3a5c; color: #d0
 body.bedtime .voice-btn.sel-voice { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
 body.bedtime .progress-wrap, body.bedtime .vs-bar-wrap { background: #3a3a5c; }
 body.bedtime .or-divider::before, body.bedtime .or-divider::after { background: #3a3a5c; }
-footer { text-align: center; padding: 20px; font-size: 0.78rem; color: var(--muted); font-weight: 700; }
+footer { text-align: center; padding: 20px 20px 60px; font-size: 0.78rem; color: var(--muted); font-weight: 700; }
 footer strong { color: var(--purple-deep); }
 .foot-sub { font-size: 0.72rem; opacity: 0.7; }
 body.bedtime footer { color: #6060a0; }
@@ -250,9 +250,13 @@ header { position: relative; }
 .word-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── Parent mode button in footer ── */
-.parent-btn { background: none; border: none; color: var(--muted); font-size: 0.72rem; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 8px; margin-top: 8px; opacity: 0.6; transition: opacity 0.2s; }
-.parent-btn:hover { opacity: 1; }
+/* ── Fixed parent bar at bottom ── */
+.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; display: flex; justify-content: center; gap: 12px; padding: 10px 16px; background: rgba(255,255,255,0.95); border-top: 1.5px solid var(--border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.parent-bar-btn { background: var(--purple-soft); border: 2px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 800; padding: 8px 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+.parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
+body.bedtime .parent-bar { background: rgba(26,26,46,0.95); border-color: #3a3a5c; }
+body.bedtime .parent-bar-btn { background: #2a1a4a; border-color: #3a3a5c; color: #c090e0; }
+body.bedtime .parent-bar-btn:hover { background: #7a4aaa; border-color: #7a4aaa; color: #fff; }
 
 /* ── Parent PIN screen ── */
 .pin-display { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
@@ -697,10 +701,14 @@ body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; col
 
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; A Transforming Youth, Inc. Program &nbsp;|&nbsp; Pre-K – 3rd Grade<br>
-  <span class="foot-sub">✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <button class="parent-btn" id="btn-open-parent">👤 Parent</button>
-  <button class="parent-btn" id="btn-show-welcome">❓ How it works</button>
+  <span class="foot-sub">✨ Inspired by Kamryn &amp; Christopher II ✨</span>
 </footer>
+
+<!-- Fixed bottom bar for parent access -->
+<div class="parent-bar" id="parent-bar">
+  <button class="parent-bar-btn" id="btn-open-parent">👤 Parent</button>
+  <button class="parent-bar-btn" id="btn-show-welcome">❓ How it works</button>
+</div>
 
 <!-- Word saved toast -->
 <div class="word-toast" id="word-toast">💾 Word saved!</div>
