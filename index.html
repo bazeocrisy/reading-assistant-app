@@ -925,7 +925,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD L</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD M</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1557,13 +1557,13 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">AI creates a 300-word passage at your grade level</p>
 
-      <!-- Scan / Upload -->
+      <!-- Upload / Photo -->
       <button class="kid-action-btn" id="btn-timed-scan" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
-        <div class="kid-action-icon">📸</div>
-        <div class="kid-action-label">Scan a Passage</div>
+        <div class="kid-action-icon">📄</div>
+        <div class="kid-action-label">Upload a Passage</div>
       </button>
       <input type="file" id="timed-scan-input" accept="image/*" style="display:none;">
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Take a photo of a reading passage or worksheet</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Upload a photo of a reading passage or worksheet</p>
 
       <!-- Paste Text -->
       <button class="kid-action-btn" id="btn-timed-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
@@ -1702,7 +1702,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD L</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD M</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4471,39 +4471,59 @@ document.getElementById('btn-timed-ai').addEventListener('click', async () => {
   show('screen-wpm-instructions');
 });
 
-// Source picker: Scan
+// Source picker: Upload
 document.getElementById('btn-timed-scan').addEventListener('click', () => {
   document.getElementById('timed-scan-input').click();
 });
 document.getElementById('timed-scan-input').addEventListener('change', async (e) => {
   const file = e.target.files[0]; if (!file) return;
+  e.target.value = '';
   show('screen-loading');
   document.getElementById('loading-msg').textContent = '📸 Reading your passage...';
   try {
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      const base64 = ev.target.result.split(',')[1];
-      const response = await fetch(CF_OCR, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64 })
-      });
-      const data = await response.json();
-      if (data.text) {
-        wpmPassage = data.text.trim();
-        updateWPMInstructionCount();
-        show('screen-wpm-instructions');
-      } else {
-        alert('Could not read the passage. Please try a clearer photo.');
-        show('screen-timed-source');
-      }
-    };
-    reader.readAsDataURL(file);
+    // Compress and convert to base64 (same as working scan)
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1600;
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(dataUrl.split(',')[1]);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const response = await fetch(CF_OCR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+    });
+    if (!response.ok) throw new Error('Scan failed');
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found');
+    
+    wpmPassage = data.text.trim();
+    updateWPMInstructionCount();
+    show('screen-wpm-instructions');
   } catch (err) {
-    console.warn('Scan failed:', err);
-    alert('Scanning failed. Please try again.');
+    console.warn('Upload failed:', err);
+    alert('Could not read the passage. Please try a clearer photo.');
     show('screen-timed-source');
   }
-  e.target.value = '';
 });
 
 // Source picker: Paste
