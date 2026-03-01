@@ -563,6 +563,9 @@ body.bedtime .dict-speaker-btn { background: #3a2a1a; border-color: #8a6a3a; col
 .wpm-timer-bar { text-align: center; margin-bottom: 14px; }
 .wpm-timer-display { font-family: 'Fredoka', sans-serif; font-size: 2.5rem; color: var(--purple); line-height: 1; }
 .wpm-timer-label { font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.wpm-word { cursor: pointer; border-radius: 4px; padding: 1px 2px; transition: background 0.15s; font-size: 1.3rem; line-height: 2.2rem; color: var(--ink); font-weight: 700; }
+.wpm-word:hover { background: var(--purple-soft); }
+.wpm-word:active { background: var(--gold); }
 .wpm-result-big { font-family: 'Fredoka', sans-serif; font-size: 5rem; color: var(--purple); line-height: 1; margin: 10px 0; }
 .wpm-result-unit { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; color: var(--purple-deep); font-weight: 600; }
 .wpm-benchmark { background: var(--section); border-radius: 16px; padding: 14px; margin: 14px 0; text-align: center; }
@@ -922,7 +925,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad — just Bookie + 4 big buttons) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD J</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD K</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1522,20 +1525,57 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
-  <!-- SCREEN: WPM Timer (Read It Myself) -->
+  <!-- SCREEN: WPM Instructions -->
+  <div class="screen" id="screen-wpm-instructions">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">⏱ Timed Reading</div>
+      <div style="margin:12px auto;width:80px;height:80px;background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:2.2rem;">⏱</span>
+      </div>
+      <div style="text-align:left;background:var(--section);border-radius:16px;padding:16px 18px;margin:14px 0;font-weight:700;font-size:0.92rem;color:var(--ink);line-height:1.6;">
+        <p style="margin:0 0 10px;font-size:1rem;"><strong>How this works:</strong></p>
+        <p style="margin:0 0 8px;">1️⃣ &nbsp;You'll get a <strong>3-2-1 countdown</strong></p>
+        <p style="margin:0 0 8px;">2️⃣ &nbsp;When it says <strong>"READ!"</strong> — start reading the story <strong>out loud</strong> as best you can</p>
+        <p style="margin:0 0 8px;">3️⃣ &nbsp;A <strong>60-second timer</strong> will count down</p>
+        <p style="margin:0 0 8px;">4️⃣ &nbsp;When time is up, <strong>tap the last word</strong> you read</p>
+        <p style="margin:0;font-size:0.82rem;color:var(--muted);">💡 This is the same way schools test reading speed!</p>
+      </div>
+      <button class="btn-main btn-green" id="btn-wpm-start" style="font-size:1.2rem;padding:16px;">I'm Ready! 🚀</button>
+      <button class="btn-main btn-outline" id="btn-wpm-instructions-back" style="margin-top:10px;">← Go Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: WPM Timer (60-second timed reading) -->
   <div class="screen" id="screen-wpm-read">
     <div class="card">
       <div class="card-title">⏱ Timed Reading</div>
       <div class="wpm-timer-bar">
-        <div class="wpm-timer-display" id="wpm-timer">0:00</div>
-        <div class="wpm-timer-label">⏱ Reading Timer</div>
+        <div class="wpm-timer-display" id="wpm-timer" style="font-size:2.8rem;">1:00</div>
+        <div class="wpm-timer-label" id="wpm-timer-label">⏱ Time Remaining</div>
       </div>
-      <div class="encouragement" id="wpm-read-tip">Read the story out loud as fast as you can. Tap "I'm Done!" when you finish.</div>
-      <div id="wpm-story-scroll" style="max-height:45vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
+      <!-- Progress ring for 60 seconds -->
+      <div style="position:relative;height:8px;background:var(--section);border-radius:8px;margin:0 0 10px;overflow:hidden;">
+        <div id="wpm-time-bar" style="height:100%;width:100%;background:linear-gradient(90deg,var(--green),#81C784);border-radius:8px;transition:width 1s linear;"></div>
+      </div>
+      <div class="encouragement" id="wpm-read-tip" style="margin-bottom:10px;">Read out loud! Keep going until time is up.</div>
+      <div id="wpm-story-scroll" style="max-height:50vh;overflow-y:auto;margin:8px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
         <div id="wpm-story-text" style="font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;"></div>
       </div>
-      <button class="btn-main btn-green" id="btn-wpm-done" style="font-size:1.2rem;">✅ I'm Done!</button>
-      <button class="btn-main btn-outline" id="btn-wpm-cancel" style="margin-top:10px;">← Go Back</button>
+      <button class="btn-main btn-outline" id="btn-wpm-cancel" style="margin-top:10px;">← Stop &amp; Go Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: WPM Tap Last Word -->
+  <div class="screen" id="screen-wpm-tap">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">⏰ Time's Up!</div>
+      <div class="encouragement" style="margin-bottom:10px;background:linear-gradient(135deg, #FFF3E8, #FFE8D5);font-size:1rem;">
+        👆 <strong>Tap the last word you read</strong>
+      </div>
+      <div id="wpm-tap-scroll" style="max-height:55vh;overflow-y:auto;margin:8px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
+        <div id="wpm-tap-text" style="font-size:1.3rem;line-height:2.2rem;color:var(--ink);font-weight:700;"></div>
+      </div>
+      <button class="btn-main btn-outline" id="btn-wpm-tap-cancel" style="margin-top:10px;">← I Don't Remember</button>
     </div>
   </div>
 
@@ -1547,12 +1587,38 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="wpm-result-unit">Words Per Minute</div>
       <div id="wpm-read-summary" style="font-size:0.92rem;font-weight:800;color:var(--muted);margin-top:6px;"></div>
       <div id="wpm-improvement-badge"></div>
-      <div class="wpm-benchmark" id="wpm-benchmark-box">
-        <div class="wpm-benchmark-label" id="wpm-benchmark-label">1st Grade Goal</div>
-        <div class="wpm-benchmark-range" id="wpm-benchmark-range">53 – 111 WPM</div>
+
+      <!-- Visual benchmark bar -->
+      <div id="wpm-visual-benchmark" style="margin:16px 0 8px;">
+        <div class="wpm-benchmark-label" id="wpm-benchmark-label" style="margin-bottom:6px;">1st Grade Goal</div>
+        <div style="position:relative;height:32px;background:var(--section);border-radius:16px;overflow:visible;margin:0 4px;">
+          <!-- Goal range shading -->
+          <div id="wpm-goal-range-bar" style="position:absolute;top:0;height:100%;background:linear-gradient(90deg, #C8E6C9, #81C784);border-radius:16px;"></div>
+          <!-- Score marker -->
+          <div id="wpm-score-marker" style="position:absolute;top:-6px;width:4px;height:44px;background:var(--purple);border-radius:4px;transition:left 0.8s cubic-bezier(0.34,1.56,0.64,1);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.7rem;font-weight:800;color:var(--muted);">
+          <span>0</span>
+          <span id="wpm-benchmark-range" style="color:var(--green);">53 – 111 WPM</span>
+          <span id="wpm-bar-max">150</span>
+        </div>
       </div>
+
+      <!-- How WPM works — collapsible -->
+      <div id="wpm-explain-toggle" style="margin:12px 0 4px;">
+        <button id="btn-wpm-explain" style="background:none;border:2px dashed var(--border);border-radius:12px;padding:8px 16px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.78rem;color:var(--muted);cursor:pointer;transition:all 0.2s;">📊 How is this calculated?</button>
+      </div>
+      <div id="wpm-explain-box" style="display:none;text-align:left;background:var(--section);border-radius:14px;padding:14px 16px;margin:8px 0;font-size:0.82rem;font-weight:700;color:var(--ink);line-height:1.5;">
+        <p style="margin:0 0 8px;"><strong>What is Words Per Minute (WPM)?</strong></p>
+        <p style="margin:0 0 8px;">WPM measures reading speed. Your child read out loud for 60 seconds, then tapped the last word they reached. The number of words read IS the WPM score.</p>
+        <p style="margin:0 0 8px;"><strong>The math:</strong> <span id="wpm-explain-math" style="color:var(--purple);">words in 60 sec = WPM</span></p>
+        <p style="margin:0 0 8px;"><strong>How schools measure this:</strong></p>
+        <p style="margin:0 0 4px;">ReadUp uses the <strong>same 60-second method</strong> as school assessments like <strong>DIBELS</strong>, <strong>AIMSweb</strong>, and <strong>AMIRA</strong>. Schools call this <strong>Oral Reading Fluency (ORF)</strong> or <strong>WCPM</strong> (Words Correct Per Minute).</p>
+        <p style="margin:0;font-size:0.75rem;color:var(--muted);font-style:italic;">Note: School assessments also subtract errors (mispronounced words). ReadUp counts total words reached — for official accuracy scoring, use your school's assessment tool.</p>
+      </div>
+
       <div class="wpm-history" id="wpm-history-section"></div>
-      <button class="btn-main btn-coral" id="btn-wpm-retry" style="font-size:1.1rem;">🎤 Beat My Score!</button>
+      <button class="btn-main btn-coral" id="btn-wpm-retry" style="font-size:1.1rem;">⏱ Beat My Score!</button>
       <button class="btn-main btn-green" id="btn-wpm-back-complete" style="margin-top:10px;font-size:1.1rem;">✅ Done</button>
     </div>
   </div>
@@ -1571,7 +1637,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD J</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD K</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4005,7 +4071,7 @@ function openWordBankReview() {
   show('screen-wordbank');
 }
 
-// ── WPM Timer (Read It Myself) ────────────────────────────
+// ── WPM Timer (60-Second Timed Reading) ──────────────────
 const WPM_BENCHMARKS = {
   prek: { label: 'Pre-K Goal', min: 10, max: 30 },
   k:    { label: 'Kindergarten Goal', min: 20, max: 50 },
@@ -4016,34 +4082,59 @@ const WPM_BENCHMARKS = {
 
 let wpmTimerInterval = null;
 let wpmStartTime = null;
+let wpmWordEls = []; // tappable word elements for "tap last word" screen
 
-function formatTimer(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function startWPMRead() {
-  // Render story text (plain, no highlights)
-  const container = document.getElementById('wpm-story-text');
+function renderWPMWords(container) {
   container.innerHTML = '';
+  wpmWordEls = [];
   const paragraphs = S.story.split(/\n\s*\n/);
   paragraphs.forEach((para, pIdx) => {
-    const span = document.createElement('span');
-    span.style.cssText = 'font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;';
-    span.textContent = para.trim();
-    container.appendChild(span);
+    const words = para.trim().split(/\s+/);
+    words.forEach((word, wIdx) => {
+      const span = document.createElement('span');
+      span.className = 'wpm-word';
+      span.textContent = word;
+      span.dataset.wordIndex = wpmWordEls.length;
+      container.appendChild(span);
+      wpmWordEls.push(span);
+      if (wIdx < words.length - 1) container.appendChild(document.createTextNode(' '));
+    });
     if (pIdx < paragraphs.length - 1) {
       container.appendChild(document.createElement('br'));
       container.appendChild(document.createElement('br'));
     }
   });
+}
 
-  // Reset timer
-  document.getElementById('wpm-timer').textContent = '0:00';
-  document.getElementById('wpm-read-tip').textContent = 'Read the story out loud as fast as you can. Tap "I\'m Done!" when you finish.';
+function startWPMRead() {
+  // Show instructions screen first
+  show('screen-wpm-instructions');
+}
 
-  // Show countdown first
+function beginWPMCountdown() {
+  // Render story text (plain, for reading screen)
+  const readContainer = document.getElementById('wpm-story-text');
+  readContainer.innerHTML = '';
+  const paragraphs = S.story.split(/\n\s*\n/);
+  paragraphs.forEach((para, pIdx) => {
+    const span = document.createElement('span');
+    span.style.cssText = 'font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;';
+    span.textContent = para.trim();
+    readContainer.appendChild(span);
+    if (pIdx < paragraphs.length - 1) {
+      readContainer.appendChild(document.createElement('br'));
+      readContainer.appendChild(document.createElement('br'));
+    }
+  });
+
+  // Reset timer display
+  document.getElementById('wpm-timer').textContent = '1:00';
+  document.getElementById('wpm-time-bar').style.width = '100%';
+  document.getElementById('wpm-read-tip').textContent = 'Read out loud! Keep going until time is up.';
+  document.getElementById('wpm-timer').style.color = 'var(--purple)';
+  document.getElementById('wpm-timer-label').textContent = '⏱ Time Remaining';
+
+  // Show countdown
   show('screen-countdown');
   const el = document.getElementById('countdown-display');
   const steps = ['3','2','1','READ!']; let i = 0;
@@ -4055,35 +4146,69 @@ function startWPMRead() {
     if (i < steps.length) setTimeout(tick, 900);
     else setTimeout(() => {
       show('screen-wpm-read');
-      // Start timer
+      // Start 60-second countdown
       wpmStartTime = Date.now();
+      const DURATION = 60;
       if (wpmTimerInterval) clearInterval(wpmTimerInterval);
       wpmTimerInterval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - wpmStartTime) / 1000);
-        document.getElementById('wpm-timer').textContent = formatTimer(elapsed);
-      }, 1000);
+        const remaining = Math.max(DURATION - elapsed, 0);
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        const timerEl = document.getElementById('wpm-timer');
+        timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        // Progress bar
+        const pct = Math.max((remaining / DURATION) * 100, 0);
+        document.getElementById('wpm-time-bar').style.width = pct + '%';
+        // Color change when low
+        if (remaining <= 10 && remaining > 0) {
+          timerEl.style.color = 'var(--coral)';
+          document.getElementById('wpm-time-bar').style.background = 'linear-gradient(90deg, #FF6B6B, #EE5A24)';
+        }
+        // Time's up!
+        if (remaining <= 0) {
+          clearInterval(wpmTimerInterval); wpmTimerInterval = null;
+          showTapLastWord();
+        }
+      }, 250);
     }, 400);
   };
   tick();
 }
 
-function finishWPMRead() {
-  // Stop timer
-  if (wpmTimerInterval) { clearInterval(wpmTimerInterval); wpmTimerInterval = null; }
-  const elapsedMs = Date.now() - wpmStartTime;
-  const elapsedSec = elapsedMs / 1000;
+function showTapLastWord() {
+  // Render tappable words
+  const tapContainer = document.getElementById('wpm-tap-text');
+  renderWPMWords(tapContainer);
 
-  // Count words in story
-  const wordCount = S.story.trim().split(/\s+/).length;
+  // Add tap handlers to each word
+  wpmWordEls.forEach(span => {
+    span.addEventListener('click', () => {
+      // Highlight selected word and all before it
+      const idx = parseInt(span.dataset.wordIndex);
+      wpmWordEls.forEach((w, i) => {
+        if (i <= idx) {
+          w.style.background = 'var(--gold)';
+          w.style.borderRadius = '4px';
+          w.style.padding = '1px 3px';
+        } else {
+          w.style.background = '';
+          w.style.padding = '';
+        }
+      });
+      // Count words read (index + 1 because 0-based)
+      const wordsRead = idx + 1;
+      // Small delay then show results
+      setTimeout(() => {
+        // WPM = words read in 60 seconds = wordsRead (it's already per minute!)
+        const wpm = wordsRead;
+        saveWPMScore(wpm, 60, wordsRead);
+        showWPMResults(wpm, wordsRead, 60);
+      }, 500);
+    });
+  });
 
-  // Calculate WPM
-  const wpm = Math.round((wordCount / elapsedSec) * 60);
-
-  // Save WPM to localStorage
-  saveWPMScore(wpm, elapsedSec, wordCount);
-
-  // Show results
-  showWPMResults(wpm, wordCount, elapsedSec);
+  show('screen-wpm-tap');
 }
 
 function saveWPMScore(wpm, seconds, wordCount) {
@@ -4093,7 +4218,6 @@ function saveWPMScore(wpm, seconds, wordCount) {
   if (!entry) return;
   if (!entry.wpmScores) entry.wpmScores = [];
   entry.wpmScores.push({ wpm, seconds: Math.round(seconds), wordCount, date: new Date().toISOString() });
-  // Keep last 10 scores per story
   if (entry.wpmScores.length > 10) entry.wpmScores = entry.wpmScores.slice(-10);
   saveData(d);
 }
@@ -4109,22 +4233,34 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
   // Big number
   document.getElementById('wpm-result-number').textContent = wpm;
 
-  // Summary line: "You read 50 words in 40 sec" or "You read 120 words in 1 min 30 sec"
-  const totalSec = Math.round(elapsedSec);
-  let timeStr;
-  if (totalSec >= 60) {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    timeStr = secs > 0 ? `${mins} min ${secs} sec` : `${mins} min`;
-  } else {
-    timeStr = `${totalSec} sec`;
-  }
-  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in ${timeStr} — that's ${wpm} words per minute pace!`;
+  // Summary line — simple for 60-second method
+  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in 60 seconds!`;
 
   // Benchmark
   const bench = WPM_BENCHMARKS[S.grade] || WPM_BENCHMARKS['1'];
   document.getElementById('wpm-benchmark-label').textContent = bench.label;
   document.getElementById('wpm-benchmark-range').textContent = `${bench.min} – ${bench.max} WPM`;
+
+  // Visual benchmark bar
+  const barMax = Math.max(bench.max * 1.3, wpm * 1.15, 50);
+  document.getElementById('wpm-bar-max').textContent = Math.round(barMax);
+  const goalLeft = (bench.min / barMax) * 100;
+  const goalWidth = ((bench.max - bench.min) / barMax) * 100;
+  document.getElementById('wpm-goal-range-bar').style.left = goalLeft + '%';
+  document.getElementById('wpm-goal-range-bar').style.width = goalWidth + '%';
+  const marker = document.getElementById('wpm-score-marker');
+  marker.style.left = '0%';
+  setTimeout(() => {
+    const scorePct = Math.min((wpm / barMax) * 100, 98);
+    marker.style.left = scorePct + '%';
+  }, 300);
+
+  // Populate explanation math
+  const explainMath = document.getElementById('wpm-explain-math');
+  if (explainMath) explainMath.textContent = `${wordCount} words in 60 seconds = ${wpm} WPM`;
+
+  // Reset explain box state
+  document.getElementById('wpm-explain-box').style.display = 'none';
 
   // Improvement badge
   const scores = getWPMScores();
@@ -4165,15 +4301,26 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
 document.getElementById('btn-solo-wpm').addEventListener('click', () => {
   startWPMRead();
 });
-document.getElementById('btn-wpm-done').addEventListener('click', () => {
-  finishWPMRead();
+document.getElementById('btn-wpm-start').addEventListener('click', () => {
+  beginWPMCountdown();
+});
+document.getElementById('btn-wpm-instructions-back').addEventListener('click', () => {
+  show('screen-solo-complete');
 });
 document.getElementById('btn-wpm-cancel').addEventListener('click', () => {
   if (wpmTimerInterval) { clearInterval(wpmTimerInterval); wpmTimerInterval = null; }
   show('screen-solo-complete');
 });
+document.getElementById('btn-wpm-tap-cancel').addEventListener('click', () => {
+  // "I don't remember" — go back to completion without saving
+  show('screen-solo-complete');
+});
 document.getElementById('btn-wpm-retry').addEventListener('click', () => {
-  startWPMRead();
+  beginWPMCountdown();
+});
+document.getElementById('btn-wpm-explain').addEventListener('click', () => {
+  const box = document.getElementById('wpm-explain-box');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
 });
 document.getElementById('btn-wpm-back-complete').addEventListener('click', () => {
   show('screen-solo-complete');
