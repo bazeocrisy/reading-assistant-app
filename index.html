@@ -3195,10 +3195,10 @@ function renderStory(title, body) {
   const wordCount = S.wordEls.length;
   const infoBar = document.getElementById('story-info-bar');
   const infoText = document.getElementById('story-info-text');
-  if (S.category === 'scanned') {
-    infoText.textContent = `📸 ${wordCount} words`;
-  } else {
+  if (S.isAIStory) {
     infoText.textContent = `📚 ${gradeLabels[S.grade] || S.grade} Level · ${wordCount} words`;
+  } else {
+    infoText.textContent = `📖 ${wordCount} words`;
   }
   infoBar.style.display = 'block';
 
