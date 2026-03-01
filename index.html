@@ -175,8 +175,7 @@ input[type=range].speed-slider::-webkit-slider-thumb:hover { border-color: var(-
 .speed-emoji-row { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; color: #bbb; margin-top: 4px; padding: 0 2px; }
 
 /* ── TTS controls ── */
-.tts-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; }
-.tts-controls .btn-main { margin-top: 0; font-size: 1rem; padding: 14px 8px; }
+/* TTS controls now in .read-play-zone */
 
 .listening-badge { display: none; align-items: center; gap: 8px; background: #FFF0F0; border: 2px solid var(--coral); border-radius: 14px; padding: 10px 16px; margin-top: 14px; font-weight: 800; color: var(--coral); }
 .listening-badge.active { display: flex; }
@@ -688,6 +687,42 @@ body.bedtime #home-stats-bar { display: none; }
   .kid-action-label { font-size: 1.2rem; }
 }
 
+/* ── Reading Screen: Big Play Zone ── */
+.read-play-zone {
+  display: flex; align-items: center; gap: 10px; margin: 12px 0 6px;
+}
+.read-big-play {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px 20px; border: none; border-radius: 24px;
+  background: linear-gradient(135deg, #5CD85A, #27AE60);
+  color: white; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden;
+  box-shadow: 0 6px 20px rgba(39,174,96,0.35);
+  -webkit-tap-highlight-color: transparent;
+}
+.read-big-play::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 45%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+  border-radius: 24px 24px 0 0; pointer-events: none;
+}
+.read-big-play:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(39,174,96,0.45); }
+.read-big-play:active { transform: scale(0.97); }
+.read-big-play:disabled { opacity: 0.5; pointer-events: none; }
+.read-play-icon { font-size: 1.4rem; }
+.read-play-label { text-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.read-play-side { display: flex; flex-direction: column; gap: 6px; }
+.read-side-btn {
+  width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 14px;
+  background: var(--card); display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; cursor: pointer; transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.read-side-btn:hover { border-color: var(--purple-light); background: var(--section); }
+.read-side-btn:active { transform: scale(0.92); }
+.read-side-btn:disabled { opacity: 0.35; pointer-events: none; }
+body.bedtime .read-big-play { background: linear-gradient(135deg, #4a8a5a, #2a6a3a); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+body.bedtime .read-side-btn { background: #252540; border-color: #3a3a5c; }
+
 /* ── Story Size Buttons ── */
 .story-size-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -1171,8 +1206,8 @@ body.bedtime #home-stats-bar { display: none; }
 
   <!-- SCREEN: Read -->
   <div class="screen" id="screen-read">
-    <div class="card">
-      <div class="card-title" id="story-title">Your Story</div>
+    <div class="card" style="padding-bottom:20px;">
+      <div class="card-title" id="story-title" style="text-align:center;font-size:1.4rem;margin-bottom:4px;">Your Story</div>
 
       <div id="together-progress" style="display:none;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
@@ -1182,54 +1217,64 @@ body.bedtime #home-stats-bar { display: none; }
         <div class="progress-wrap"><div class="progress-bar" id="together-bar"></div></div>
       </div>
 
-      <div class="progress-wrap" id="solo-progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
-
-      <!-- Voice selector -->
-      <div class="voice-row">
-        <span class="voice-label">Voice:</span>
-        <button class="voice-btn sel-voice" data-voice="female">👩 Female</button>
-        <button class="voice-btn" data-voice="male">👨 Male</button>
+      <!-- Read count + progress in one compact bar -->
+      <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+        <div id="reread-badge" style="display:none;flex-shrink:0;background:var(--gold);color:#5D4037;font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.78rem;padding:4px 12px;border-radius:20px;">📖 Read 1 of 3</div>
+        <div class="progress-wrap" id="solo-progress-wrap" style="margin:0;flex:1;"><div class="progress-bar" id="progress-bar"></div></div>
       </div>
 
-      <!-- Speed slider -->
-      <div class="speed-slider-row">
-        <div class="speed-slider-label-row">
-          <span class="speed-slider-label">⚡ Speed</span>
-          <span class="speed-value-badge" id="speed-display">0.9×</span>
-        </div>
-        <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="2.0" step="0.1" value="0.9">
-        <div class="speed-emoji-row">
-          <span>🐢 0.5×</span>
-          <span>🚶 1.0×</span>
-          <span>🚀 2.0×</span>
+      <!-- BIG play button — the main action -->
+      <div class="read-play-zone">
+        <button class="read-big-play" id="btn-play">
+          <span class="read-play-icon" id="play-icon">▶</span>
+          <span class="read-play-label" id="play-label">Listen to Story</span>
+        </button>
+        <div class="read-play-side">
+          <button class="read-side-btn" id="btn-pause" disabled title="Pause">⏸</button>
+          <button class="read-side-btn" id="btn-stop-tts" disabled title="Stop">⏹</button>
+          <button class="read-side-btn" id="btn-read-settings" title="Settings">⚙️</button>
         </div>
       </div>
 
-      <!-- TTS controls — above story so they're always reachable -->
-      <div class="tts-controls">
-        <button class="btn-main btn-green" id="btn-play">▶ Play</button>
-        <button class="btn-main btn-yellow" id="btn-pause" disabled>⏸ Pause</button>
-        <button class="btn-main btn-gray" id="btn-stop-tts" disabled>⏹ Stop</button>
+      <!-- Collapsible voice/speed settings -->
+      <div id="read-settings-drawer" style="display:none;margin-top:10px;padding:14px;background:var(--section);border-radius:16px;">
+        <div class="voice-row" style="margin:0 0 10px;">
+          <span class="voice-label">Voice:</span>
+          <button class="voice-btn sel-voice" data-voice="female">👩 Female</button>
+          <button class="voice-btn" data-voice="male">👨 Male</button>
+        </div>
+        <div class="speed-slider-row" style="margin:0;">
+          <div class="speed-slider-label-row">
+            <span class="speed-slider-label">⚡ Speed</span>
+            <span class="speed-value-badge" id="speed-display">0.9×</span>
+          </div>
+          <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="2.0" step="0.1" value="0.9">
+          <div class="speed-emoji-row">
+            <span>🐢 Slow</span>
+            <span>🚶 Normal</span>
+            <span>🚀 Fast</span>
+          </div>
+        </div>
       </div>
 
       <div id="story-info-bar" style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--muted);margin:8px 0 4px;display:none;">
         <span id="story-info-text"></span>
       </div>
 
-      <div class="hint-tip">💡 Tap any word to hear it and learn what it means!</div>
+      <div class="hint-tip" id="hint-tip-bar">💡 Tap any word to hear it and learn what it means!</div>
 
       <div style="text-align:right;margin-bottom:4px;">
         <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:8px 16px;font-size:0.82rem;width:auto;display:inline-flex;align-items:center;gap:4px;">📖 Reading Mode</button>
       </div>
 
-      <!-- Story text in scrollable container — keeps auto-scroll contained -->
-      <div id="story-scroll-container" style="max-height:50vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
+      <!-- Story text in scrollable container -->
+      <div id="story-scroll-container" style="max-height:55vh;overflow-y:auto;margin:10px 0;scroll-behavior:smooth;overscroll-behavior:contain;padding:4px 0;">
         <div id="story-text"></div>
       </div>
 
       <div class="listening-badge" id="listening-badge" style="display:none;"></div>
-      <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← Pick New Topic</button>
-      <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;">✅ I Finished Reading!</button>
+      <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← New Story</button>
+      <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;font-size:1.15rem;padding:16px;">✅ I Finished Reading!</button>
     </div>
   </div>
 
@@ -1888,12 +1933,24 @@ function stopRAF() {
 }
 
 function resetTTSButtons() {
-  document.getElementById('btn-play').textContent = '▶ Play';
-  document.getElementById('btn-play').disabled = false;
+  const playBtn = document.getElementById('btn-play');
+  const playIcon = document.getElementById('play-icon');
+  const playLabel = document.getElementById('play-label');
+  if (playIcon) playIcon.textContent = '▶';
+  if (playLabel) playLabel.textContent = 'Listen to Story';
+  playBtn.disabled = false;
   document.getElementById('btn-pause').disabled = true;
-  document.getElementById('btn-pause').textContent = '⏸ Pause';
   document.getElementById('btn-stop-tts').disabled = false;
   ttsState = 'idle';
+}
+
+// Helpers for updating play button states
+function setPlayBtn(icon, label, disabled) {
+  const pi = document.getElementById('play-icon');
+  const pl = document.getElementById('play-label');
+  if (pi) pi.textContent = icon;
+  if (pl) pl.textContent = label;
+  document.getElementById('btn-play').disabled = !!disabled;
 }
 
 function startHighlightLoop() {
@@ -2085,8 +2142,8 @@ async function playSpeech(startFromMs) {
   // so this call knows to abort after the await
   const myId = ++playSpeechId;
   ttsState = 'loading';
-  document.getElementById('btn-play').textContent = '⏳ Loading...';
-  document.getElementById('btn-play').disabled = true;
+  setPlayBtn('⏳', 'Loading...', true);
+  
   document.getElementById('btn-pause').disabled = true;
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
@@ -2166,11 +2223,11 @@ async function playSpeech(startFromMs) {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         ttsState = 'playing';
-        document.getElementById('btn-play').textContent = '▶ Playing...';
-        document.getElementById('btn-play').disabled = true;
+        setPlayBtn('▶', 'Playing...', true);
+        
         document.getElementById('btn-play').style.animation = '';
         document.getElementById('btn-pause').disabled = false;
-        document.getElementById('btn-pause').textContent = '⏸ Pause';
+        document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
         document.getElementById('btn-stop-tts').disabled = false;
         startHighlightLoop();
       }).catch(playErr => {
@@ -2210,10 +2267,10 @@ async function playSpeech(startFromMs) {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         ttsState = 'playing';
-        document.getElementById('btn-play').textContent = '▶ Playing...';
-        document.getElementById('btn-play').disabled = true;
+        setPlayBtn('▶', 'Playing...', true);
+        
         document.getElementById('btn-pause').disabled = false;
-        document.getElementById('btn-pause').textContent = '⏸ Pause';
+        document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
         document.getElementById('btn-stop-tts').disabled = false;
         startHighlightLoop();
       }).catch(playErr => {
@@ -2246,10 +2303,10 @@ async function playSpeech(startFromMs) {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         ttsState = 'playing';
-        document.getElementById('btn-play').textContent = '▶ Playing...';
-        document.getElementById('btn-play').disabled = true;
+        setPlayBtn('▶', 'Playing...', true);
+        
         document.getElementById('btn-pause').disabled = false;
-        document.getElementById('btn-pause').textContent = '⏸ Pause';
+        document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
         document.getElementById('btn-stop-tts').disabled = false;
         startHighlightLoop();
       }).catch(playErr => {
@@ -2291,6 +2348,12 @@ async function playSpeech(startFromMs) {
 document.getElementById('btn-play').addEventListener('click', () => {
   // Stop pulsing animation if it was set by partner play prompt
   document.getElementById('btn-play').style.animation = '';
+  // Fade out hint tip after first play
+  const hint = document.getElementById('hint-tip-bar');
+  if (hint && hint.style.display !== 'none') {
+    hint.style.transition = 'opacity 0.5s, max-height 0.5s';
+    hint.style.opacity = '0'; hint.style.maxHeight = '0'; hint.style.padding = '0'; hint.style.margin = '0';
+  }
   if (ttsState === 'idle') {
     S.wordEls.forEach(w => { w.className = 'word'; });
     document.getElementById('progress-bar').style.width = '0%';
@@ -2306,8 +2369,8 @@ document.getElementById('btn-pause').addEventListener('click', () => {
     ttsAudio.pause();
     stopRAF();
     ttsState = 'paused';
-    document.getElementById('btn-pause').textContent = '▶ Resume';
-    document.getElementById('btn-play').disabled = true;
+    document.getElementById('btn-pause').textContent = '▶'; document.getElementById('btn-pause').title = 'Resume';
+    
     if (S.isRace) broadcastPlayback('pause', ttsPausedAtMs);
   } else if (ttsState === 'paused') {
     playSpeech(ttsPausedAtMs);
@@ -2988,8 +3051,8 @@ function listenForPartnerPlayback() {
         ttsAudio.pause();
         stopRAF();
         ttsState = 'paused';
-        document.getElementById('btn-pause').textContent = '▶ Resume';
-        document.getElementById('btn-play').disabled = true;
+        document.getElementById('btn-pause').textContent = '▶'; document.getElementById('btn-pause').title = 'Resume';
+        
       }
     } else if (cmd.action === 'stop') {
       pendingPartnerPlay = null;
@@ -3298,6 +3361,12 @@ async function startCountdown() {
 function setupReadScreen() {
   renderStory(S.storyTitle, S.story);
   updateReadBadge();
+  // Reset hint tip visibility
+  const hint = document.getElementById('hint-tip-bar');
+  if (hint) { hint.style.opacity = '1'; hint.style.maxHeight = ''; hint.style.padding = ''; hint.style.margin = ''; hint.style.display = ''; }
+  // Close settings drawer
+  const drawer = document.getElementById('read-settings-drawer');
+  if (drawer) drawer.style.display = 'none';
   // Fix 4: Show connected indicator when reading together
   const existingConnected = document.getElementById('together-connected-badge');
   if (existingConnected) existingConnected.remove();
@@ -3592,8 +3661,8 @@ function showDictionaryPopup(word, idx) {
     ttsAudio.pause();
     stopRAF();
     ttsState = 'paused';
-    document.getElementById('btn-pause').textContent = '⏸ Pause';
-    document.getElementById('btn-play').disabled = true;
+    document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
+    
     teacherWasPaused = true;
   }
 
@@ -3714,6 +3783,12 @@ document.getElementById('btn-cancel-host').addEventListener('click', async () =>
   if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
   cleanupRoom(); show('screen-pick');
 });
+// ── Reading screen settings drawer ───────────────────────
+document.getElementById('btn-read-settings').addEventListener('click', () => {
+  const drawer = document.getElementById('read-settings-drawer');
+  drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+});
+
 document.getElementById('btn-new').addEventListener('click', () => {
   const count = getCurrentReadCount();
   if (count > 0 && count < 3) {
@@ -4069,17 +4144,33 @@ function getCurrentReadCount() {
   return (d.stories.find(s => s.hash === hash) || {}).readCount || 0;
 }
 
-// Update the "Read #N" badge on story title
+// Update the "Read #N" badge on reading screen
 function updateReadBadge() {
   const count = getCurrentReadCount();
-  const existing = document.getElementById('reread-badge');
-  if (existing) existing.remove();
+  const badge = document.getElementById('reread-badge');
+  // Update the inline badge in the reading screen play zone
+  if (badge) {
+    if (count > 0) {
+      badge.style.display = 'inline-block';
+      if (count >= 3) {
+        badge.textContent = `⭐ Read ${count}× — Superstar!`;
+        badge.style.background = 'linear-gradient(135deg, #FFD93D, #FF9F43)';
+      } else {
+        badge.textContent = `📖 Read ${count} of 3`;
+        badge.style.background = 'var(--gold)';
+      }
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+  // Also add to title for backward compat
+  const existingTitleBadge = document.querySelector('#story-title .reread-badge');
+  if (existingTitleBadge) existingTitleBadge.remove();
   if (count > 0) {
-    const badge = document.createElement('span');
-    badge.id = 'reread-badge';
-    badge.className = 'reread-badge';
-    badge.textContent = `Read #${count}`;
-    document.getElementById('story-title').appendChild(badge);
+    const span = document.createElement('span');
+    span.className = 'reread-badge';
+    span.textContent = `Read #${count}`;
+    document.getElementById('story-title').appendChild(span);
   }
 }
 
