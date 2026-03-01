@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD Y</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD Z</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1834,7 +1834,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD Y</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD Z</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3015,54 +3015,16 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
   S.isRace = false; S.myRole = null; S.isAIStory = false;
   show('screen-read');
   const titleEl = document.getElementById('story-title');
-  titleEl.textContent = '📸 Scanning Your Page...';
+  titleEl.textContent = '📄 Reading Your File...';
   const container = document.getElementById('story-text');
-  container.innerHTML = '<div style="text-align:center;padding:40px 0;"><div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div><p style="font-weight:800;color:var(--muted);font-size:1rem;">Reading the text from your photo...</p></div>';
+  container.innerHTML = '<div style="text-align:center;padding:40px 0;"><div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div><p style="font-weight:800;color:var(--muted);font-size:1rem;">Reading the text from your file...</p></div>';
 
   try {
-    // Convert image to base64 with compression if needed
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          // Resize if too large (max 1600px on longest side for good OCR)
-          const maxDim = 1600;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-            else { w = Math.round(w * maxDim / h); h = maxDim; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          resolve(dataUrl.split(',')[1]);
-        };
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
-    const mediaType = 'image/jpeg';
-
-    // Send to Cloud Function
-    const response = await fetch(CF_OCR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType })
-    });
-
-    if (!response.ok) throw new Error('Scan failed');
-    const data = await response.json();
-    if (!data.text) throw new Error('No text found');
+    const text = await processUploadedFile(file);
 
     // Use extracted text as the story
-    S.story = data.text.trim();
-    S.storyTitle = '📸 My Page';
+    S.story = text;
+    S.storyTitle = '📄 My Page';
     S.category = 'scanned';
     S.wordTarget = S.story.split(/\s+/).length;
     S.isAIStory = false;
@@ -3076,8 +3038,8 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
 
   } catch (err) {
     console.error('Scan error:', err);
-    container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="font-weight:800;color:#e74c3c;font-size:1.1rem;">😕 Couldn\'t read that photo</p><p style="font-weight:700;color:var(--muted);font-size:0.9rem;margin-top:8px;">Try again with a clearer photo of the text.</p></div>';
-    titleEl.textContent = '📸 Scan My Page';
+    container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="font-weight:800;color:#e74c3c;font-size:1.1rem;">😕 Couldn\'t read that file</p><p style="font-weight:700;color:var(--muted);font-size:0.9rem;margin-top:8px;">Try a .txt, .pdf, or image file.</p></div>';
+    titleEl.textContent = '📄 My Page';
     setTimeout(() => show('screen-own-source'), 3000);
   }
 });
@@ -3277,8 +3239,45 @@ document.getElementById('btn-use-spelling').addEventListener('click', async () =
 });
 
 // ── Image upload + OCR for Read Together content picker ───
-async function processUploadedImage(file) {
-  // Convert image to base64 with compression
+// ── Smart file processor: handles .txt, .pdf, and images ──
+async function processUploadedFile(file) {
+  const name = (file.name || '').toLowerCase();
+  const type = (file.type || '').toLowerCase();
+
+  // 1) Plain text files — read directly, no OCR needed
+  if (name.endsWith('.txt') || type === 'text/plain') {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result.trim();
+        if (!text) reject(new Error('File is empty'));
+        else resolve(text);
+      };
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  }
+
+  // 2) PDF files — send raw base64 to Cloud Function with application/pdf mediaType
+  if (name.endsWith('.pdf') || type === 'application/pdf') {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const response = await fetch(CF_OCR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'application/pdf' })
+    });
+    if (!response.ok) throw new Error('PDF scan failed: ' + response.status);
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found in PDF');
+    return data.text.trim();
+  }
+
+  // 3) Images — compress and send to OCR (existing flow)
   const base64 = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -3297,14 +3296,13 @@ async function processUploadedImage(file) {
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         resolve(dataUrl.split(',')[1]);
       };
-      img.onerror = reject;
+      img.onerror = () => reject(new Error('Could not load image. Try a .txt, .pdf, or image file.'));
       img.src = reader.result;
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 
-  // Send to Cloud Function OCR
   const response = await fetch(CF_OCR, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -3314,6 +3312,11 @@ async function processUploadedImage(file) {
   const data = await response.json();
   if (!data.text) throw new Error('No text found in image');
   return data.text.trim();
+}
+
+// Legacy wrapper for Read Together (uses same smart processor now)
+async function processUploadedImage(file) {
+  return processUploadedFile(file);
 }
 
 // Upload passage photo
@@ -4753,49 +4756,15 @@ document.getElementById('timed-scan-input').addEventListener('change', async (e)
   const file = e.target.files[0]; if (!file) return;
   e.target.value = '';
   show('screen-loading');
-  document.getElementById('loading-msg').textContent = '📸 Reading your passage...';
+  document.getElementById('loading-msg').textContent = '📄 Reading your passage...';
   try {
-    // Compress and convert to base64 (same as working scan)
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const maxDim = 1600;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-            else { w = Math.round(w * maxDim / h); h = maxDim; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          resolve(dataUrl.split(',')[1]);
-        };
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
-    const response = await fetch(CF_OCR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
-    });
-    if (!response.ok) throw new Error('Scan failed');
-    const data = await response.json();
-    if (!data.text) throw new Error('No text found');
-    
-    wpmPassage = data.text.trim();
+    const text = await processUploadedFile(file);
+    wpmPassage = text;
     updateWPMInstructionCount();
     show('screen-wpm-instructions');
   } catch (err) {
     console.warn('Upload failed:', err);
-    alert('Could not read the passage. Please try a clearer photo.');
+    alert('Could not read that file. Try a .txt, .pdf, or image file.');
     show('screen-timed-source');
   }
 });
