@@ -2918,12 +2918,15 @@ async function startCountdown() {
   show('screen-countdown');
   const el = document.getElementById('countdown-display');
 
-  // Unlock audio playback during user gesture chain (countdown triggered by tap)
+  // Unlock audio playback during user gesture chain (non-blocking to prevent countdown freeze)
   try {
     const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=');
-    await silentAudio.play();
-    silentAudio.pause();
-    togetherLog('🔓 Audio unlocked');
+    silentAudio.play().then(() => {
+      silentAudio.pause();
+      togetherLog('🔓 Audio unlocked');
+    }).catch(e => {
+      togetherLog('🔒 Audio lock: ' + e.message);
+    });
     
     // Pre-create a TTS audio element during this user gesture
     // so it inherits the gesture context for later reuse
