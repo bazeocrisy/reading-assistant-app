@@ -2539,64 +2539,127 @@ function setupReadScreen() {
     listenForRoomClose();
   }
 
-  // Preload TTS audio — disable Play until ready in Read Together mode
+  // Preload TTS audio — in Read Together, wait for BOTH devices before enabling Play
   if (navigator.onLine && S.story) {
     if (S.isRace) {
-      // In Read Together: disable Play until TTS is loaded
       const playBtn = document.getElementById('btn-play');
       playBtn.textContent = '⏳ Loading audio...';
       playBtn.disabled = true;
       togetherLog('⏳ Loading TTS audio...');
     }
+
+    let myReady = false;
+    let partnerReady = false;
+    let playEnabled = false;
+
+    function checkBothReady() {
+      if (playEnabled) return; // already enabled
+      if (!S.isRace) return;
+      if (myReady && partnerReady) {
+        playEnabled = true;
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '▶ Play';
+        playBtn.disabled = false;
+        playBtn.style.animation = 'pulse 1s ease-in-out 3';
+        togetherLog('🟢 Both ready — Play enabled!');
+        // If partner sent play while we were waiting, auto-play now
+        if (pendingPartnerPlay !== null && ttsState === 'idle') {
+          togetherLog('▶ Auto-playing queued command');
+          S.wordEls.forEach(w => { w.className = 'word'; });
+          document.getElementById('progress-bar').style.width = '0%';
+          const pos = pendingPartnerPlay;
+          pendingPartnerPlay = null;
+          playSpeech(pos);
+        }
+      } else if (myReady && !partnerReady) {
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '⏳ Waiting for partner...';
+        playBtn.disabled = true;
+        togetherLog('⏳ My audio ready, waiting for partner...');
+      }
+    }
+
+    // Listen for partner's ready signal
+    if (S.isRace && S.roomCode) {
+      const partnerReadyKey = S.myRole === 'host' ? 'guestReady' : 'hostReady';
+      const readyUnsub = onValue(ref(db, `rooms/${S.roomCode}/${partnerReadyKey}`), snap => {
+        if (snap.val() === true && !partnerReady) {
+          partnerReady = true;
+          togetherLog('✅ Partner audio ready');
+          checkBothReady();
+        }
+      });
+      S.unsubscribers.push(readyUnsub);
+    }
+
+    // 30-second timeout: enable Play anyway if partner is slow
+    if (S.isRace) {
+      setTimeout(() => {
+        if (!playEnabled) {
+          playEnabled = true;
+          const playBtn = document.getElementById('btn-play');
+          playBtn.textContent = '▶ Play';
+          playBtn.disabled = false;
+          togetherLog('⏰ 30s timeout — Play enabled');
+        }
+      }, 30000);
+    }
+
     fetchTTSAudio(S.story, S.grade, S.voiceGender).then((data) => {
       togetherLog('✅ TTS data ready');
-      // Pre-create and decode Audio element so playSpeech is instant
       if (data && data.audioBase64) {
         const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
         const audioSrc = `data:${audioMime};base64,` + data.audioBase64;
         const preAudio = new Audio(audioSrc);
         preAudio._readupSrc = audioSrc;
         preAudio.preload = 'auto';
-        // Wait for it to actually decode
         preAudio.addEventListener('canplaythrough', () => {
           ttsPreloadedAudio = preAudio;
           ttsPreloadedKey = audioSrc;
           togetherLog('✅ Audio decoded & ready');
+          // Signal my readiness to partner
+          if (S.isRace && S.roomRef) {
+            const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
+            update(S.roomRef, { [readyKey]: true });
+          }
+          myReady = true;
           if (S.isRace) {
+            checkBothReady();
+          } else {
+            // Solo mode: enable Play immediately
             const playBtn = document.getElementById('btn-play');
             playBtn.textContent = '▶ Play';
             playBtn.disabled = false;
-            playBtn.style.animation = 'pulse 1s ease-in-out 3';
-            if (S.roomRef) {
-              const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
-              update(S.roomRef, { [readyKey]: true });
-            }
-          }
-          // If partner sent play while we were decoding, play now
-          if (pendingPartnerPlay !== null && S.isRace && ttsState === 'idle') {
-            togetherLog('▶ Auto-playing queued command');
-            S.wordEls.forEach(w => { w.className = 'word'; });
-            document.getElementById('progress-bar').style.width = '0%';
-            const pos = pendingPartnerPlay;
-            pendingPartnerPlay = null;
-            playSpeech(pos);
           }
         }, { once: true });
         // Fallback if canplaythrough doesn't fire in 15s
         setTimeout(() => {
-          if (!ttsPreloadedAudio && S.isRace) {
-            togetherLog('⚠️ Audio decode slow, enabling Play anyway');
+          if (!myReady) {
+            togetherLog('⚠️ Audio decode slow, marking ready anyway');
             ttsPreloadedAudio = preAudio;
             ttsPreloadedKey = audioSrc;
-            const playBtn = document.getElementById('btn-play');
-            playBtn.textContent = '▶ Play';
-            playBtn.disabled = false;
+            if (S.isRace && S.roomRef) {
+              const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
+              update(S.roomRef, { [readyKey]: true });
+            }
+            myReady = true;
+            if (S.isRace) {
+              checkBothReady();
+            }
           }
         }, 15000);
       }
     }).catch(() => {
       togetherLog('❌ TTS load failed');
+      // Even on failure, mark ready so partner isn't stuck waiting
+      myReady = true;
+      if (S.isRace && S.roomRef) {
+        const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
+        update(S.roomRef, { [readyKey]: true });
+      }
       if (S.isRace) {
+        checkBothReady();
+      } else {
         const playBtn = document.getElementById('btn-play');
         playBtn.textContent = '▶ Play';
         playBtn.disabled = false;
