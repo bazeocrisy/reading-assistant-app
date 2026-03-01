@@ -1594,6 +1594,7 @@ let ttsRafId = null;
 let ttsState = 'idle';
 let ttsPausedAtMs = 0;
 let ttsAudioCache = new Map();
+let ttsAudioFormat = 'mp3';
 
 const VOICE_NAMES = {
   female: { prek: "en-US-Wavenet-F", k: "en-US-Wavenet-F", 1: "en-US-Wavenet-F", 2: "en-US-Wavenet-F", 3: "en-US-Wavenet-C" },
@@ -1621,11 +1622,17 @@ function startHighlightLoop() {
   const timingsAreReal = ttsWordTimings.length > 1 &&
     ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
 
-  // WAV has zero decoder delay — no offset needed (MP3 would need ~50ms compensation)
-  const AUDIO_OFFSET_MS = 0;
+  // MP3 has encoder delay (~70ms typical for LAME/ElevenLabs)
+  // WAV has zero delay but we add a small perceptual lead
+  const AUDIO_OFFSET_MS = ttsAudioFormat === 'wav' ? 30 : 70;
 
-  // Check if we have real startMs AND endMs (forced alignment) vs just startMs (SSML marks)
-  const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 && ttsWordTimings[0].endMs > 0;
+  // Check if we have endMs (ElevenLabs character alignment gives both start+end)
+  const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 &&
+    ttsWordTimings[0].endMs && ttsWordTimings[0].endMs > 0;
+
+  // Auto-calibration: detect actual MP3 delay on first word
+  let calibrationOffset = 0;
+  let calibrated = false;
 
   // Verify timing/word count alignment
   if (timingsAreReal && ttsWordTimings.length !== S.wordEls.length) {
@@ -1634,35 +1641,61 @@ function startHighlightLoop() {
 
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
-    const nowMs = (ttsAudio.currentTime * 1000) + AUDIO_OFFSET_MS;
+
+    // audio.currentTime already accounts for playbackRate — it reports
+    // the actual position in the media timeline, not wall-clock time.
+    // So timestamps from the API map directly regardless of speed.
+    const rawMs = ttsAudio.currentTime * 1000;
+    const nowMs = rawMs + AUDIO_OFFSET_MS + calibrationOffset;
     const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
 
     if (timingsAreReal && ttsWordTimings.length > 0) {
-      // Binary search for the current word
-      let lo = 0, hi = ttsWordTimings.length - 1;
-      while (lo <= hi) {
-        const mid = Math.floor((lo + hi) / 2);
-        if (ttsWordTimings[mid].startMs <= nowMs) {
-          activeIdx = mid;
-          lo = mid + 1;
-        } else {
-          hi = mid - 1;
+      if (hasEndMs) {
+        // Best path: use startMs/endMs range for precise matching
+        // Find the word where nowMs falls between startMs and endMs
+        // Use binary search on startMs, then verify with endMs
+        let lo = 0, hi = ttsWordTimings.length - 1;
+        while (lo <= hi) {
+          const mid = Math.floor((lo + hi) / 2);
+          if (ttsWordTimings[mid].startMs <= nowMs) {
+            activeIdx = mid;
+            lo = mid + 1;
+          } else {
+            hi = mid - 1;
+          }
+        }
+        // Refine: if we're past this word's endMs, check if we're in a gap
+        // between words (keep showing current word until next starts)
+        if (activeIdx >= 0 && activeIdx < ttsWordTimings.length - 1) {
+          const nextStart = ttsWordTimings[activeIdx + 1].startMs;
+          if (nowMs >= nextStart) {
+            activeIdx = activeIdx + 1;
+          }
+        }
+      } else {
+        // startMs only — standard binary search
+        let lo = 0, hi = ttsWordTimings.length - 1;
+        while (lo <= hi) {
+          const mid = Math.floor((lo + hi) / 2);
+          if (ttsWordTimings[mid].startMs <= nowMs) {
+            activeIdx = mid;
+            lo = mid + 1;
+          } else {
+            hi = mid - 1;
+          }
         }
       }
-      // Clamp to word element count in case of mismatch
+
+      // Clamp to word element count
       if (activeIdx >= S.wordEls.length) activeIdx = S.wordEls.length - 1;
+
     } else {
-      // Improved estimation: weight by word length (longer words take more time)
+      // Fallback: weight by word length for estimated sync
       const wordsCount = S.wordEls.length;
-      const wordLengths = S.wordEls.map(el => (el.textContent || '').replace(/[^a-zA-Z]/g, '').length || 1);
-      const totalLetters = wordLengths.reduce((a, b) => a + b, 0);
-      let cumMs = 0;
-      // Use the total audio duration to proportionally distribute
-      // We'll calculate actual timings once audio loads
-      activeIdx = -1;
-      // Store weighted positions for later use
       if (!S._weightedTimings || S._weightedTimings.length !== wordsCount) {
+        const wordLengths = S.wordEls.map(el => (el.textContent || '').replace(/[^a-zA-Z]/g, '').length || 1);
+        const totalLetters = wordLengths.reduce((a, b) => a + b, 0);
         S._weightedTimings = [];
         let cumLetters = 0;
         for (let i = 0; i < wordsCount; i++) {
@@ -1670,7 +1703,8 @@ function startHighlightLoop() {
           cumLetters += wordLengths[i];
         }
       }
-      const pctPlayed = nowMs / totalMs;
+      const pctPlayed = rawMs / totalMs;
+      activeIdx = -1;
       for (let i = S._weightedTimings.length - 1; i >= 0; i--) {
         if (S._weightedTimings[i] <= pctPlayed) { activeIdx = i; break; }
       }
@@ -1729,12 +1763,18 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   const voiceName = VOICE_NAMES[voiceGender]?.[gradeKey] || "en-US-Wavenet-F";
   // Map grade string to numeric for Cloud Function speaking rate
   const gradeNum = grade === 'prek' ? 0 : grade === 'k' ? 0 : parseInt(grade) || 1;
-  const cacheKey = `${voiceName}:${storyHash(text)}`;
+
+  // Normalize text to match exactly how the frontend splits words:
+  // Frontend does: body.split(/\n\s*\n/) then para.trim().split(/(\s+)/) keeping \S chunks
+  // So we normalize: collapse multiple newlines, trim, collapse whitespace runs
+  const normalizedText = text.replace(/\n\s*\n/g, '\n').trim().replace(/\s+/g, ' ');
+
+  const cacheKey = `${voiceName}:${voiceGender}:${storyHash(normalizedText)}`;
   if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
   const response = await fetch(CF_TTS, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, grade: gradeNum, voiceName })
+    body: JSON.stringify({ text: normalizedText, grade: gradeNum, voiceName, voiceGender })
   });
   if (!response.ok) throw new Error('TTS failed: ' + response.status);
   const data = await response.json();
@@ -1762,19 +1802,60 @@ async function playSpeech(startFromMs) {
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
 
-    // Map Cloud Function timepoints to word timings
-    // timepoints come as [{markName: "word_0", timeSeconds: 0.5}, ...] from Google TTS
-    // Convert to [{startMs: 500}, ...] format for the highlight loop
+    // Map Cloud Function word timings to match frontend word elements
+    let rawTimings = [];
     if (data.timepoints && data.timepoints.length > 0) {
-      ttsWordTimings = data.timepoints.map(tp => ({
-        startMs: (tp.timeSeconds || tp.time_seconds || 0) * 1000
+      rawTimings = data.timepoints.map(tp => ({
+        word: tp.word || '',
+        startMs: (tp.timeSeconds || tp.time_seconds || 0) * 1000,
+        endMs: 0
       }));
     } else if (data.wordTimings && data.wordTimings.length > 0) {
-      ttsWordTimings = data.wordTimings;
-    } else {
-      ttsWordTimings = [];
+      rawTimings = data.wordTimings;
     }
-    console.log(`TTS: ${ttsWordTimings.length} timings, ${S.wordEls.length} words, method: ${data.alignmentMethod || 'unknown'}, real: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
+
+    // Reconcile: align backend timings to frontend word count
+    // The backend splits with text.trim().split(/\s+/) while the frontend
+    // splits by paragraphs then whitespace — counts can differ by 1-3 words.
+    const displayCount = S.wordEls.length;
+    const timingCount = rawTimings.length;
+
+    if (timingCount > 0 && displayCount > 0 && timingCount !== displayCount) {
+      console.warn(`Reconciling timing mismatch: ${timingCount} timings → ${displayCount} display words`);
+      // Strategy: resample timings to match display word count using proportional mapping
+      const resampled = [];
+      for (let i = 0; i < displayCount; i++) {
+        // Map display index to closest timing index proportionally
+        const ratio = i / Math.max(displayCount - 1, 1);
+        const srcIdx = Math.min(Math.round(ratio * (timingCount - 1)), timingCount - 1);
+        const t = rawTimings[srcIdx];
+        resampled.push({
+          word: S.wordEls[i]?.textContent || '',
+          index: i,
+          startMs: t.startMs,
+          endMs: t.endMs || 0
+        });
+      }
+      // Fix startMs so they're monotonically increasing
+      for (let i = 1; i < resampled.length; i++) {
+        if (resampled[i].startMs < resampled[i-1].startMs) {
+          // Interpolate between neighbors
+          const prev = resampled[i-1].startMs;
+          const nextGood = resampled.slice(i+1).find(r => r.startMs > prev);
+          resampled[i].startMs = nextGood
+            ? prev + (nextGood.startMs - prev) / (resampled.indexOf(nextGood) - i + 1)
+            : prev + 50;
+        }
+      }
+      ttsWordTimings = resampled;
+    } else {
+      ttsWordTimings = rawTimings;
+    }
+
+    // Store audio format for offset calculation in highlight loop
+    ttsAudioFormat = data.audioFormat || 'mp3';
+
+    console.log(`TTS: ${ttsWordTimings.length} timings, ${displayCount} words, method: ${data.alignmentMethod || 'unknown'}, format: ${ttsAudioFormat}, real: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
     const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
     const audio = new Audio(`data:${audioMime};base64,` + data.audioBase64);
     // Use speed slider for playback rate adjustment
