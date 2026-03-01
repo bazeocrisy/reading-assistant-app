@@ -1009,7 +1009,8 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Joined!</div></div>
       </div>
       <p id="guest-wait-msg" style="text-align:center;color:var(--purple);font-weight:800;margin-top:14px;">⏳ Waiting for your partner to pick a story...</p>
-      <div style="text-align:center;margin-top:10px;">
+      <button id="btn-guest-ready" class="btn-main btn-green" style="display:none;font-size:1.2rem;margin-top:14px;animation:pulse 1s ease-in-out infinite;">📖 Ready! Tap to Start</button>
+      <div id="guest-spinner" style="text-align:center;margin-top:10px;">
         <div class="spinner" style="display:inline-block;"><div class="spin-circle"></div></div>
       </div>
     </div>
@@ -2768,7 +2769,7 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
       if (roomData.voiceGender) S.voiceGender = roomData.voiceGender;
       if (roomData.speed) S.speed = roomData.speed;
       const msg = document.getElementById('guest-wait-msg');
-      if (msg) msg.textContent = '🔤 Spelling words ready! Starting soon...';
+      if (msg) msg.textContent = '🔤 Spelling words ready!';
     } else if (roomData.story && !S.story && !S._contentReady) {
       S._contentReady = true;
       S._contentType = 'passage';
@@ -2779,13 +2780,29 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
       if (roomData.voiceGender) S.voiceGender = roomData.voiceGender;
       if (roomData.speed) S.speed = roomData.speed;
       const msg = document.getElementById('guest-wait-msg');
-      if (msg) msg.textContent = '📖 Story picked! Getting ready...';
+      if (msg) msg.textContent = '📖 Story picked!';
     }
 
+    // When host starts countdown, show Ready button for guest to tap
+    // (guest MUST tap to establish user gesture for iOS audio unlock)
     if (roomData.status === 'countdown' && !countdownStarted) {
-      countdownStarted = true;
-      unsub();
-      startCountdown();
+      const readyBtn = document.getElementById('btn-guest-ready');
+      const spinner = document.getElementById('guest-spinner');
+      if (readyBtn) {
+        readyBtn.style.display = 'block';
+        if (spinner) spinner.style.display = 'none';
+        // Guest taps Ready → starts countdown with user gesture context
+        readyBtn.addEventListener('click', () => {
+          countdownStarted = true;
+          unsub();
+          startCountdown();
+        }, { once: true });
+      } else {
+        // Fallback if button not found
+        countdownStarted = true;
+        unsub();
+        startCountdown();
+      }
     }
   });
   S.unsubscribers.push(unsub);
