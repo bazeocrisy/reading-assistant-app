@@ -1894,14 +1894,28 @@ async function playSpeech(startFromMs) {
     ttsAudio = audio;
     audio.addEventListener('canplaythrough', () => {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
-      audio.play();
-      ttsState = 'playing';
-      document.getElementById('btn-play').textContent = '▶ Playing...';
-      document.getElementById('btn-play').disabled = true;
-      document.getElementById('btn-pause').disabled = false;
-      document.getElementById('btn-pause').textContent = '⏸ Pause';
-      document.getElementById('btn-stop-tts').disabled = false;
-      startHighlightLoop();
+      audio.play().then(() => {
+        ttsState = 'playing';
+        document.getElementById('btn-play').textContent = '▶ Playing...';
+        document.getElementById('btn-play').disabled = true;
+        document.getElementById('btn-pause').disabled = false;
+        document.getElementById('btn-pause').textContent = '⏸ Pause';
+        document.getElementById('btn-stop-tts').disabled = false;
+        startHighlightLoop();
+      }).catch(playErr => {
+        // Browser blocked autoplay (no user gesture) — common on guest device
+        // when host triggers play remotely
+        console.warn('Autoplay blocked:', playErr.message);
+        ttsState = 'idle';
+        document.getElementById('btn-play').textContent = '▶ Tap to Play';
+        document.getElementById('btn-play').disabled = false;
+        document.getElementById('btn-pause').disabled = true;
+        // Show toast explaining
+        const t = document.getElementById('word-toast');
+        t.textContent = '👆 Tap Play to start — your partner is reading!';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+      });
     }, { once: true });
     audio.addEventListener('ended', () => {
       stopRAF();
@@ -2245,6 +2259,20 @@ async function startCountdown() {
   if (S.myRole === 'host') await update(S.roomRef, { status: 'countdown' });
   show('screen-countdown');
   const el = document.getElementById('countdown-display');
+
+  // Unlock audio playback on this device.
+  // Browsers require a user gesture to allow audio.play().
+  // The countdown is triggered by user taps, so we create and play
+  // a silent audio element here to "unlock" the audio context.
+  // This allows remote play commands from the partner to work.
+  try {
+    const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=');
+    await silentAudio.play();
+    silentAudio.pause();
+    console.log('Audio context unlocked for Read Together');
+  } catch(e) {
+    console.warn('Could not unlock audio context:', e.message);
+  }
 
   // Fix: Guest fetches story + host settings from Firebase as single source of truth
   if (S.myRole === 'guest' && S.roomCode) {
