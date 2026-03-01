@@ -1569,7 +1569,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
-  <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span>
+  <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD H</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -1797,72 +1798,85 @@ async function generateAIStory(grade, category, wordTarget) {
 Topic: ${topicLabel}. ${topicAnchor}
 
 ABSOLUTE RULES — BREAK NONE OF THESE:
-1. EVERY sentence must be exactly 2-5 words. No exceptions.
+1. EVERY sentence must be 3-6 words. No exceptions.
 2. Use ONLY these types of words:
-   - CVC words (consonant-vowel-consonant): cat, dog, big, red, hot, sit, run, hop, fun, bus, cup, sun, map, dad, mom, pet, bed, box, fox, bat, hat, mat, rat, sat, fat, pan, can, man, van, fan, ran, ten, hen, pen, den, leg, beg, pig, dig, wig, jig, log, fog, hog, jog, bug, hug, mug, rug, tug, dug, cut, nut, hut, put, got, not, lot, dot, pop, top, mop, hop, sob, cob, rob, nod, rod, cod, kit, bit, hit, fit, sit, tip, dip, rip, zip, lip, nip, fin, pin, win, din, bin, did, hid, kid, lid, rid, dim, him
-   - Common sight words: the, a, is, I, my, we, he, she, it, on, in, up, to, and, go, no, so, do, me, be, am, at, an, as, or, of, see, was, had, has, his, her, you, are, can, did, got, let, get, out, but, not, say, said, all, day, may, way, play, they, this, that, with, from, have, were, what, when, will, very, like, look, come, make, take, give, here, want
-   - Simple animal/object words: cat, dog, fish, bird, frog, bear, bee, tree, ball, star, moon, sun
-3. NEVER use: multi-syllable words (except character names), abstract concepts, complex grammar, past perfect tense, passive voice
-4. Use repetitive patterns: "The cat is big. The cat is red. The cat can run."
-5. Each paragraph should be 2-3 very short sentences.
-6. End with: "Think about it: What do you see?"
+   - CVC words (consonant-vowel-consonant) up to 4 letters: cat, dog, big, red, hot, sit, run, hop, fun, bus, cup, sun, map, dad, mom, pet, bed, box, fox, bat, hat, mat, rat, sat, pan, can, man, van, fan, ran, ten, hen, pen, pig, dig, log, fog, jog, bug, hug, mug, rug, tug, dug, cut, nut, hut, got, not, lot, dot, pop, top, mop, hop, kit, bit, hit, fit, tip, dip, rip, zip, fin, pin, win, did, hid, kid, lid, rid
+   - Sight words: the, a, is, I, my, we, he, she, it, on, in, up, to, and, go, no, so, do, me, be, at, or, of, see, was, has, his, her, you, are, can, did, got, let, get, out, but, not, say, said, all, like, look, play, they, this, that
+   - Simple nouns: cat, dog, fish, bird, bee, tree, ball, star, moon, sun, hen, pig, hat, cup, bed, box, mud, rug
+3. NO blends (st, sp, tr, cl), NO digraphs (sh, ch, th), NO silent-e words, NO vowel teams
+4. NO words longer than 4 letters except character names
+5. NEVER use: because, through, different, important, or any abstract words
+6. NO commas, colons, semicolons, or quotation marks. Only periods and question marks.
+7. Use repetitive patterns: "The cat is big. The cat is red. The cat can run."
+8. Each paragraph should be 2-3 very short sentences.
+9. End with: "Think about it: What do you see?"
 
-GOOD Pre-K sentences: "The dog can run." / "I see a big cat." / "She is kind." / "They hop and hop."
-BAD Pre-K sentences: "Jasper lives in a big city." / "Hot soup was big fear." / "He was scared of hot."
+GOOD: "The dog can run." / "I see a big cat." / "She is kind." / "They hop and hop."
+BAD: "Jasper lives in a big city." / "Hot soup was big fear." / "She discovered a hidden path."
 
-Write approximately ${wordTarget} words. Start the story immediately with no title.`,
+Write approximately ${wordTarget} words. Start immediately with no title.`,
 
-    "k": `You are writing for a KINDERGARTEN child (age 5-6) who is an EARLY READER.
+    "k": `You are writing for a KINDERGARTEN child (age 5-6) who is a BEGINNING DECODER.
 
 Topic: ${topicLabel}. ${topicAnchor}
 
 ABSOLUTE RULES:
 1. Sentences must be 4-8 words. Most should be 5-6 words.
-2. Use mostly one-syllable words. Two-syllable words are OK if common (happy, funny, little, water, mother, father, sister, brother, over, under, after, never, together, important).
-3. NEVER use words with 3+ syllables except character names.
-4. Use simple subject-verb-object patterns: "The dog ran to the park." / "She made a big cake."
-5. Short paragraphs of 2-3 sentences.
-6. Keep the topic clearly present throughout the story.
-7. End with a simple question: "Think about it: What would you do?"
+2. Use mostly CVC words and sight words. You MAY also use:
+   - Beginning blends: st, sp, sm, sn, pl, cl, fl, gr, tr (e.g. stop, plan, grab, trip)
+   - Digraphs: sh, ch, th, wh (e.g. ship, chat, this, when)
+   - Words ending in -ck (e.g. back, duck, pick)
+3. All words must be ONE syllable only. No multi-syllable words except character names.
+4. Max word length: 6 letters.
+5. NEVER use: because, through, different, information, or any abstract words.
+6. NO quotation marks, colons, or semicolons. Periods, question marks, and exclamation marks only.
+7. Use simple subject-verb patterns: "The fish can swim fast." / "She ran to the park."
+8. Short paragraphs of 2-3 sentences.
+9. End with: "Think about it: What would you do?"
 
-GOOD K sentences: "The little fish swam fast." / "They played in the big yard." / "Mom said it was time to go."
-BAD K sentences: "The community gathered together." / "She discovered an unexpected surprise."
+GOOD: "The fish swam in the pond." / "They ran and ran." / "The duck said quack!"
+BAD: "The community gathered together." / "She discovered an unexpected surprise."
 
-Write approximately ${wordTarget} words. Start the story immediately with no title.`,
+Write approximately ${wordTarget} words. Start immediately with no title.`,
 
-    "1": `You are writing for a 1ST GRADER (age 6-7). Topic: ${topicLabel}. ${topicAnchor}
+    "1": `You are writing for a 1ST GRADER (age 6-7) who is a DEVELOPING DECODER. Topic: ${topicLabel}. ${topicAnchor}
 
 RULES:
 1. Sentences should be 5-10 words. Mix short and medium sentences.
-2. Use mostly 1-2 syllable words. Occasional 3-syllable words are OK if common (adventure, together, another, everyone, beautiful).
-3. Write in short paragraphs of 2-4 sentences.
-4. Tell a simple story: clear beginning, middle, and end.
-5. Make it warm, fun, and easy to follow.
+2. Use mostly 1-syllable words. Two-syllable words are OK and expected.
+3. You may now use: silent-e words (make, bike, home, nice), vowel teams (rain, day, see, boat, snow, night), and r-controlled vowels (car, her, bird, for, turn).
+4. NEVER use words with 3+ syllables except character names and common words like "together" or "another."
+5. Max word length: 9 letters. NEVER use: information, environment, responsibility.
+6. Contractions are OK (don't, can't, it's, I'm).
+7. Write in short paragraphs of 2-4 sentences. Clear beginning, middle, and end.
+8. Make it warm, fun, and easy to follow. No bullet points or lists.
+9. End with one "Think about it:" question.
+
+Write approximately ${wordTarget} words. Start immediately with no title.`,
+
+    "2": `You are writing for a 2ND GRADER (age 7-8) at the FLUENCY stage. Topic: ${topicLabel}. ${topicAnchor}
+
+RULES:
+1. Sentences should be 6-14 words. Vary the length for rhythm.
+2. Words up to 3 syllables are fine. Use prefixes (un-, re-, dis-, pre-) and suffixes (-ing, -ed, -er, -est, -ly) naturally.
+3. You may use: because, before, could, would, should, again, many, every, their, there, where.
+4. NEVER use words with 4+ syllables. NEVER use: photosynthesis, government, civilization, or similarly complex words.
+5. Write in flowing paragraphs with description and feeling. Show, don't just tell.
 6. No bullet points or lists.
 7. End with one "Think about it:" question.
 
 Write approximately ${wordTarget} words. Start immediately with no title.`,
 
-    "2": `You are writing for a 2ND GRADER (age 7-8). Topic: ${topicLabel}. ${topicAnchor}
+    "3": `You are writing for a 3RD GRADER (age 8-9) who is an INDEPENDENT READER. Topic: ${topicLabel}. ${topicAnchor}
 
 RULES:
-1. Use simple but varied vocabulary. Most words should be 1-2 syllables.
-2. 3-syllable words are fine when natural. Avoid 4+ syllable words.
-3. Write in flowing paragraphs with sentences of different lengths.
-4. Include some description and feeling. Show, don't just tell.
-5. No bullet points or lists.
-6. End with one "Think about it:" question.
-
-Write approximately ${wordTarget} words. Start immediately with no title.`,
-
-    "3": `You are writing for a 3RD GRADER (age 8-9). Topic: ${topicLabel}. ${topicAnchor}
-
-RULES:
-1. Use grade-appropriate vocabulary. Words up to 3 syllables are fine. Minimize 4+ syllable words.
-2. Write in natural paragraphs with varied sentence structure.
-3. Include interesting details, descriptive language, and a clear message or lesson.
-4. No bullet points or lists.
-5. End with one "Think about it:" question.
+1. Sentences should be 8-18 words. Vary structure for interest.
+2. Words up to 4 syllables are fine. Use prefixes (un-, re-, dis-, pre-, mis-, non-) and suffixes (-ment, -ness, -ful, -less, -ly) naturally.
+3. You may use academic words like: compare, explain, predict, describe, solution, problem, evidence, detail.
+4. NEVER use: mitochondria, constitutional, metamorphosis, or similarly complex words.
+5. Write in natural paragraphs with varied sentence structure, interesting details, and a clear message.
+6. No bullet points or lists.
+7. End with one "Think about it:" question.
 
 Write approximately ${wordTarget} words. Start immediately with no title.`
   };
