@@ -1563,8 +1563,44 @@ const S = {
 };
 
 function cleanupRoom() {
+  // Remove room from Firebase so partner gets disconnect notification
+  if (S.roomRef && S.roomCode) {
+    try { remove(S.roomRef); } catch(e) {}
+  }
   S.unsubscribers.forEach(fn => { try { fn(); } catch(e) {} });
   S.unsubscribers = []; S.roomRef = null; S.roomCode = null; S.myRole = null; S.isRace = false;
+  pendingPartnerPlay = null;
+  // Remove connected badge if present
+  const badge = document.getElementById('together-connected-badge');
+  if (badge) badge.remove();
+}
+
+// Listen for room deletion / partner disconnect during reading
+function listenForRoomClose() {
+  if (!S.roomCode) return;
+  const unsub = onValue(ref(db, `rooms/${S.roomCode}`), snap => {
+    if (!snap.exists() && S.isRace) {
+      // Room was deleted — partner left or room expired
+      unsub();
+      stopTTS();
+      const badge = document.getElementById('together-connected-badge');
+      if (badge) {
+        badge.textContent = '🔴 Partner disconnected';
+        badge.style.color = 'var(--coral)';
+      }
+      // Show toast notification
+      const t = document.getElementById('word-toast');
+      t.textContent = '📡 Reading partner disconnected';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 4000);
+      // Clean up room state but stay on current screen
+      S.unsubscribers.forEach(fn => { try { fn(); } catch(e) {} });
+      S.unsubscribers = [];
+      S.roomRef = null; S.roomCode = null; S.isRace = false;
+      pendingPartnerPlay = null;
+    }
+  });
+  S.unsubscribers.push(unsub);
 }
 
 // ── Voice selector ────────────────────────────────────────
@@ -2051,6 +2087,10 @@ document.getElementById('btn-create-room').addEventListener('click', () => {
 });
 document.getElementById('btn-join-room-choice').addEventListener('click', () => {
   document.getElementById('screen-together-choice').style.display = 'none';
+  // Clear old room code and error from previous sessions
+  document.getElementById('join-code-input').value = '';
+  const err = document.getElementById('join-error');
+  if (err) err.style.display = 'none';
   show('screen-join');
 });
 document.getElementById('btn-together-cancel').addEventListener('click', () => {
@@ -2066,6 +2106,9 @@ function broadcastPlayback(action, positionMs) {
   update(S.roomRef, { [key]: { action, positionMs: positionMs || 0, ts: Date.now() } });
 }
 
+// Track queued partner play command
+let pendingPartnerPlay = null;
+
 function listenForPartnerPlayback() {
   const partnerKey = S.myRole === 'host' ? 'guestCmd' : 'hostCmd';
   let lastTs = 0;
@@ -2074,17 +2117,20 @@ function listenForPartnerPlayback() {
     if (!cmd || cmd.ts <= lastTs) return;
     lastTs = cmd.ts;
     if (cmd.action === 'play') {
+      if (ttsState === 'loading') {
+        // TTS is still being fetched — queue the play and it will fire when ready
+        console.log('Partner pressed play, TTS loading — queued for auto-play');
+        pendingPartnerPlay = cmd.positionMs || 0;
+        return;
+      }
       if (ttsState === 'idle' || ttsState === 'paused') {
         S.wordEls.forEach(w => { w.className = 'word'; });
         document.getElementById('progress-bar').style.width = '0%';
-        // If TTS is still loading from preload, wait for it before playing
-        if (ttsState === 'loading') {
-          console.log('Partner pressed play but TTS still loading, will auto-play when ready');
-          return;
-        }
+        pendingPartnerPlay = null;
         playSpeech(cmd.positionMs || 0);
       }
     } else if (cmd.action === 'pause') {
+      pendingPartnerPlay = null;
       if (ttsState === 'playing' && ttsAudio) {
         ttsPausedAtMs = ttsAudio.currentTime * 1000;
         ttsAudio.pause();
@@ -2094,8 +2140,10 @@ function listenForPartnerPlayback() {
         document.getElementById('btn-play').disabled = true;
       }
     } else if (cmd.action === 'stop') {
+      pendingPartnerPlay = null;
       stopTTS();
     } else if (cmd.action === 'finished') {
+      pendingPartnerPlay = null;
       stopRAF();
       S.wordEls.forEach(w => w.classList.remove('highlight'));
       document.getElementById('progress-bar').style.width = '100%';
@@ -2257,10 +2305,21 @@ function setupReadScreen() {
     document.getElementById('together-bar').style.width = '0%';
     document.getElementById('together-pct').textContent = '0%';
     listenForPartnerPlayback();
+    listenForRoomClose();
   }
   // Preload TTS audio in background so Play is instant (both solo and together)
   if (navigator.onLine && S.story) {
-    fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
+    fetchTTSAudio(S.story, S.grade, S.voiceGender).then(() => {
+      // If partner already sent a play command while we were loading, auto-play now
+      if (pendingPartnerPlay !== null && S.isRace && ttsState === 'idle') {
+        console.log('TTS ready, auto-playing queued partner command');
+        S.wordEls.forEach(w => { w.className = 'word'; });
+        document.getElementById('progress-bar').style.width = '0%';
+        const pos = pendingPartnerPlay;
+        pendingPartnerPlay = null;
+        playSpeech(pos);
+      }
+    }).catch(() => {});
   }
 }
 
