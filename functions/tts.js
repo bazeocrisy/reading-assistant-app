@@ -302,6 +302,13 @@ async function googleTTS(text, grade, voiceName) {
   const audioBase64 = wavBuffer.toString("base64");
 
   const timepoints = wavResponse.timepoints || [];
+  console.log(`Google TTS: ${words.length} words, ${timepoints.length} timepoints, voice=${finalVoice}, rate=${speakingRate}`);
+  if (timepoints.length > 0) {
+    console.log(`Google TTS first timepoint:`, JSON.stringify(timepoints[0]));
+    console.log(`Google TTS last timepoint:`, JSON.stringify(timepoints[timepoints.length - 1]));
+  } else {
+    console.log(`Google TTS: WARNING - no timepoints returned! enableTimePointing may not be working.`);
+  }
   const lastTp = timepoints[timepoints.length - 1];
   const estimatedDurationMs = lastTp ? Math.round(lastTp.timeSeconds * 1000) + 800 : words.length * 350;
   const wordTimings = buildWordTimings(words, timepoints, estimatedDurationMs);
@@ -345,8 +352,12 @@ exports.synthesizeSpeech = onRequest(
           // Resolve ElevenLabs voice ID
           const gender = voiceGender === "male" ? "male" : "female";
           const gradeKey = grade === 0 ? "preK" : grade <= 3 ? String(grade) : "default";
-          const voiceId = voiceName && voiceName.length > 10
-            ? voiceName  // If frontend sends a direct ElevenLabs voice ID
+          
+          // The frontend sends Google voice names like "en-US-Wavenet-F"
+          // Only use voiceName as ElevenLabs ID if it looks like one (no dashes, alphanumeric)
+          const isElevenLabsId = voiceName && voiceName.length > 10 && !voiceName.includes("-");
+          const voiceId = isElevenLabsId
+            ? voiceName
             : ELEVENLABS_VOICES[gender][gradeKey] || ELEVENLABS_VOICES[gender].default;
 
           console.log(`Using ElevenLabs TTS: voice=${voiceId}, gender=${gender}, grade=${grade}`);
