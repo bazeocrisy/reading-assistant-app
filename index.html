@@ -2316,43 +2316,41 @@ async function startCountdown() {
   show('screen-countdown');
   const el = document.getElementById('countdown-display');
 
-  // Unlock audio playback on this device.
-  // Browsers require a user gesture to allow audio.play().
-  // The countdown is triggered by user taps, so we create and play
-  // a silent audio element here to "unlock" the audio context.
-  // This allows remote play commands from the partner to work.
+  // Unlock audio playback (fire and forget — don't block countdown)
   try {
     const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=');
-    await silentAudio.play();
-    silentAudio.pause();
-    togetherLog('🔓 Audio unlocked');
-  } catch(e) {
-    togetherLog('🔒 Audio lock failed: ' + e.message);
-  }
+    silentAudio.play().then(() => {
+      silentAudio.pause();
+      togetherLog('🔓 Audio unlocked');
+    }).catch(e => {
+      togetherLog('🔒 Audio lock: ' + e.message);
+    });
+  } catch(e) {}
 
-  // Fix: Guest fetches story + host settings from Firebase as single source of truth
+  // Guest: fetch story + settings in background (don't block countdown)
   if (S.myRole === 'guest' && S.roomCode) {
-    try {
-      const snap = await get(ref(db, `rooms/${S.roomCode}`));
-      if (snap.exists()) {
-        const room = snap.val();
-        S.story = room.story;
-        S.storyTitle = room.title;
-        S.grade = room.grade;
-        S.wordTarget = room.wordTarget;
-        S.isAIStory = true;
-        // Use host's voice settings so both get the same TTS audio/timings
-        if (room.voiceGender) S.voiceGender = room.voiceGender;
-        if (room.speed) S.speed = room.speed;
+    (async () => {
+      try {
+        const snap = await get(ref(db, `rooms/${S.roomCode}`));
+        if (snap.exists()) {
+          const room = snap.val();
+          S.story = room.story;
+          S.storyTitle = room.title;
+          S.grade = room.grade;
+          S.wordTarget = room.wordTarget;
+          S.isAIStory = true;
+          if (room.voiceGender) S.voiceGender = room.voiceGender;
+          if (room.speed) S.speed = room.speed;
+        }
+      } catch(e) { console.warn('Could not refresh story:', e); }
+      // Preload TTS audio so it's ready when Play is hit
+      if (S.story && navigator.onLine) {
+        fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
       }
-    } catch(e) { console.warn('Could not refresh story:', e); }
-
-    // Start preloading TTS audio during countdown so it's ready when Play is hit
-    if (S.story && navigator.onLine) {
-      fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
-    }
+    })();
   }
 
+  // Start countdown immediately — never blocked by network calls
   const steps = ['3','2','1','GO!']; let i = 0;
   const tick = () => {
     el.textContent = steps[i];
