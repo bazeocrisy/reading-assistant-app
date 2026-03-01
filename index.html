@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD V</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD W</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1651,6 +1651,46 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
+  <!-- SCREEN: My Own Reading Source Picker -->
+  <div class="screen" id="screen-own-source">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">📸 My Own Reading</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Choose how to load your reading passage:</p>
+
+      <!-- Upload / Photo -->
+      <button class="kid-action-btn" id="btn-own-scan" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon">📷</div>
+        <div class="kid-action-label">Upload a Photo</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Take a photo of a book page, worksheet, or passage</p>
+
+      <!-- Paste Text -->
+      <button class="kid-action-btn" id="btn-own-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon">📋</div>
+        <div class="kid-action-label">Paste a Passage</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste text from a document, email, or website</p>
+
+      <button class="btn-main btn-outline" id="btn-own-source-back" style="margin-top:8px;">← Back Home</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: My Own Reading Paste Input -->
+  <div class="screen" id="screen-own-paste">
+    <div class="card">
+      <div class="card-title">📋 Paste Your Passage</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-bottom:8px;">Paste or type a reading passage below (up to 500 words).</p>
+      <textarea id="own-paste-textarea" style="width:100%;height:200px;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;" placeholder="Paste your reading passage here..."></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <div id="own-paste-warning" style="display:none;font-weight:700;font-size:0.78rem;color:#E17055;">⚠️ Over 500 words — text will be trimmed</div>
+        <div style="flex:1;"></div>
+        <div id="own-paste-count" style="font-size:0.78rem;font-weight:800;color:var(--muted);">0 / 500 words</div>
+      </div>
+      <button class="btn-main btn-green" id="btn-own-paste-go" style="font-size:1.1rem;margin-top:12px;">Read This Passage →</button>
+      <button class="btn-main btn-outline" id="btn-own-paste-back" style="margin-top:8px;">← Back</button>
+    </div>
+  </div>
+
   <!-- SCREEN: WPM Instructions -->
   <div class="screen" id="screen-wpm-instructions">
     <div class="card" style="text-align:center;">
@@ -1794,7 +1834,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD V</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD W</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2894,9 +2934,76 @@ document.getElementById('btn-surprise-me').addEventListener('click', () => {
   setTimeout(() => loadStory(), 400);
 });
 
-// ── Scan My Page ──────────────────────────────────────────
+// ── My Own Reading (Scan My Page) ─────────────────────────
 document.getElementById('btn-scan-page').addEventListener('click', () => {
+  show('screen-own-source');
+});
+
+// Own Reading: Source picker — Upload photo
+document.getElementById('btn-own-scan').addEventListener('click', () => {
   document.getElementById('scan-file-input').click();
+});
+
+// Own Reading: Source picker — Paste
+document.getElementById('btn-own-paste').addEventListener('click', () => {
+  document.getElementById('own-paste-textarea').value = '';
+  document.getElementById('own-paste-count').textContent = '0 / 500 words';
+  document.getElementById('own-paste-count').style.color = 'var(--muted)';
+  document.getElementById('own-paste-warning').style.display = 'none';
+  show('screen-own-paste');
+});
+
+// Own Reading: Source picker — Back
+document.getElementById('btn-own-source-back').addEventListener('click', () => {
+  show('screen-pick');
+});
+
+// Own Reading: Paste — live word count
+document.getElementById('own-paste-textarea').addEventListener('input', (e) => {
+  const text = e.target.value.trim();
+  const count = text ? text.split(/\s+/).length : 0;
+  const countEl = document.getElementById('own-paste-count');
+  const warnEl = document.getElementById('own-paste-warning');
+  countEl.textContent = `${count} / 500 words`;
+  if (count > 500) {
+    countEl.style.color = 'var(--coral)';
+    warnEl.style.display = 'block';
+  } else {
+    countEl.style.color = 'var(--muted)';
+    warnEl.style.display = 'none';
+  }
+});
+
+// Own Reading: Paste — Go button
+document.getElementById('btn-own-paste-go').addEventListener('click', () => {
+  let text = document.getElementById('own-paste-textarea').value.trim();
+  if (!text) {
+    document.getElementById('own-paste-textarea').style.borderColor = 'var(--coral)';
+    return;
+  }
+  document.getElementById('own-paste-textarea').style.borderColor = 'var(--border)';
+
+  // Trim to 500 words if over
+  const words = text.split(/\s+/);
+  if (words.length > 500) {
+    text = words.slice(0, 500).join(' ');
+  }
+
+  // Use pasted text as the story (same as scan flow)
+  S.isRace = false; S.myRole = null; S.isAIStory = false;
+  S.story = text;
+  S.storyTitle = '📋 My Passage';
+  S.category = 'pasted';
+  S.wordTarget = text.split(/\s+/).length;
+
+  recordStoryStart();
+  renderStory(S.storyTitle, S.story);
+  setupReadScreen();
+});
+
+// Own Reading: Paste — Back
+document.getElementById('btn-own-paste-back').addEventListener('click', () => {
+  show('screen-own-source');
 });
 
 document.getElementById('scan-file-input').addEventListener('change', async (e) => {
@@ -2971,7 +3078,7 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
     console.error('Scan error:', err);
     container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="font-weight:800;color:#e74c3c;font-size:1.1rem;">😕 Couldn\'t read that photo</p><p style="font-weight:700;color:var(--muted);font-size:0.9rem;margin-top:8px;">Try again with a clearer photo of the text.</p></div>';
     titleEl.textContent = '📸 Scan My Page';
-    setTimeout(() => show('screen-pick'), 3000);
+    setTimeout(() => show('screen-own-source'), 3000);
   }
 });
 
