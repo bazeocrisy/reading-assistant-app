@@ -1622,71 +1622,65 @@ function startHighlightLoop() {
   const timingsAreReal = ttsWordTimings.length > 1 &&
     ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
 
-  // MP3 has encoder delay (~70ms typical for LAME/ElevenLabs)
-  // WAV has zero delay but we add a small perceptual lead
-  const AUDIO_OFFSET_MS = ttsAudioFormat === 'wav' ? 30 : 70;
-
   // Check if we have endMs (ElevenLabs character alignment gives both start+end)
   const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 &&
     ttsWordTimings[0].endMs && ttsWordTimings[0].endMs > 0;
 
-  // Auto-calibration: detect actual MP3 delay on first word
-  let calibrationOffset = 0;
-  let calibrated = false;
+  // KEY FIX: Scale timestamps to match actual audio duration.
+  // ElevenLabs timestamps are based on the raw audio content timeline,
+  // but MP3 encoding adds padding frames that make the file longer.
+  // The browser audio.currentTime progresses across the full file duration
+  // (including padding), while timestamps only cover the speech content.
+  // Without scaling, by mid-passage currentTime is ahead of timestamps
+  // causing the highlight to lag behind the spoken word.
+  let scaledTimings = ttsWordTimings;
+
+  if (timingsAreReal && ttsWordTimings.length > 0 && ttsAudio && ttsAudio.duration) {
+    const audioDurationMs = ttsAudio.duration * 1000;
+    const lastTiming = ttsWordTimings[ttsWordTimings.length - 1];
+    const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
+
+    if (lastTimingMs > 0 && audioDurationMs > lastTimingMs * 1.01) {
+      // Audio file is longer than last timestamp — MP3 padding exists
+      // Scale all timestamps proportionally so they span the full audio duration
+      const scale = audioDurationMs / lastTimingMs;
+      scaledTimings = ttsWordTimings.map(t => ({
+        ...t,
+        startMs: Math.round(t.startMs * scale),
+        endMs: t.endMs ? Math.round(t.endMs * scale) : 0,
+      }));
+      console.log(`TTS sync: scaled timestamps x${scale.toFixed(3)} (audio=${audioDurationMs.toFixed(0)}ms, lastWord=${lastTimingMs}ms)`);
+    }
+  }
+
+  // Small perceptual lead so highlight appears just as word starts
+  const AUDIO_OFFSET_MS = 20;
 
   // Verify timing/word count alignment
-  if (timingsAreReal && ttsWordTimings.length !== S.wordEls.length) {
-    console.warn(`Timing mismatch: ${ttsWordTimings.length} timings vs ${S.wordEls.length} words`);
+  if (timingsAreReal && scaledTimings.length !== S.wordEls.length) {
+    console.warn(`Timing mismatch: ${scaledTimings.length} timings vs ${S.wordEls.length} words`);
   }
 
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
 
-    // audio.currentTime already accounts for playbackRate — it reports
-    // the actual position in the media timeline, not wall-clock time.
-    // So timestamps from the API map directly regardless of speed.
     const rawMs = ttsAudio.currentTime * 1000;
-    const nowMs = rawMs + AUDIO_OFFSET_MS + calibrationOffset;
+    const nowMs = rawMs + AUDIO_OFFSET_MS;
     const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
 
-    if (timingsAreReal && ttsWordTimings.length > 0) {
-      if (hasEndMs) {
-        // Best path: use startMs/endMs range for precise matching
-        // Find the word where nowMs falls between startMs and endMs
-        // Use binary search on startMs, then verify with endMs
-        let lo = 0, hi = ttsWordTimings.length - 1;
-        while (lo <= hi) {
-          const mid = Math.floor((lo + hi) / 2);
-          if (ttsWordTimings[mid].startMs <= nowMs) {
-            activeIdx = mid;
-            lo = mid + 1;
-          } else {
-            hi = mid - 1;
-          }
-        }
-        // Refine: if we're past this word's endMs, check if we're in a gap
-        // between words (keep showing current word until next starts)
-        if (activeIdx >= 0 && activeIdx < ttsWordTimings.length - 1) {
-          const nextStart = ttsWordTimings[activeIdx + 1].startMs;
-          if (nowMs >= nextStart) {
-            activeIdx = activeIdx + 1;
-          }
-        }
-      } else {
-        // startMs only — standard binary search
-        let lo = 0, hi = ttsWordTimings.length - 1;
-        while (lo <= hi) {
-          const mid = Math.floor((lo + hi) / 2);
-          if (ttsWordTimings[mid].startMs <= nowMs) {
-            activeIdx = mid;
-            lo = mid + 1;
-          } else {
-            hi = mid - 1;
-          }
+    if (timingsAreReal && scaledTimings.length > 0) {
+      // Binary search for the current word
+      let lo = 0, hi = scaledTimings.length - 1;
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        if (scaledTimings[mid].startMs <= nowMs) {
+          activeIdx = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
         }
       }
-
       // Clamp to word element count
       if (activeIdx >= S.wordEls.length) activeIdx = S.wordEls.length - 1;
 
@@ -1715,7 +1709,7 @@ function startHighlightLoop() {
       S.wordEls.forEach(w => w.classList.remove('highlight'));
       if (S.wordEls[activeIdx]) {
         S.wordEls[activeIdx].classList.add('highlight');
-        // Scroll within the story container only — don't yank the whole page
+        // Scroll within the story container only
         const container = document.getElementById('story-scroll-container');
         const wordEl = S.wordEls[activeIdx];
         if (container) {
@@ -1747,6 +1741,7 @@ function startHighlightLoop() {
   }
   ttsRafId = requestAnimationFrame(loop);
 }
+
 
 function stopTTS() {
   stopRAF();
