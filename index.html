@@ -1781,10 +1781,13 @@ function startHighlightLoop() {
 
 function stopTTS() {
   stopRAF();
+  // Cancel any in-flight playSpeech loading
+  playSpeechId++;
   if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
   S.wordEls.forEach(w => w.classList.remove('highlight'));
   // Clear reading mode highlights too
   document.querySelectorAll('#rm-text .word-span').forEach(w => w.classList.remove('active-word'));
+  ttsState = 'idle';
   resetTTSButtons();
   ttsPausedAtMs = 0;
 }
@@ -1815,6 +1818,9 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   return data;
 }
 
+// Cancellation token for in-flight playSpeech calls
+let playSpeechId = 0;
+
 async function playSpeech(startFromMs) {
   if (!S.story) return;
   // Change 7: Offline check
@@ -1826,12 +1832,21 @@ async function playSpeech(startFromMs) {
     resetTTSButtons();
     return;
   }
+  // Each call gets a unique ID; if stopTTS runs, it bumps the ID
+  // so this call knows to abort after the await
+  const myId = ++playSpeechId;
   ttsState = 'loading';
   document.getElementById('btn-play').textContent = '⏳ Loading...';
   document.getElementById('btn-play').disabled = true;
   document.getElementById('btn-pause').disabled = true;
   try {
     const data = await fetchTTSAudio(S.story, S.grade, S.voiceGender);
+
+    // Check if we were cancelled while loading
+    if (myId !== playSpeechId) {
+      togetherLog('🚫 playSpeech cancelled during load');
+      return;
+    }
 
     // Map Cloud Function word timings to match frontend word elements
     let rawTimings = [];
@@ -1893,6 +1908,12 @@ async function playSpeech(startFromMs) {
     audio.playbackRate = S.speed;
     ttsAudio = audio;
     audio.addEventListener('canplaythrough', () => {
+      // Check if cancelled while audio was loading
+      if (myId !== playSpeechId) {
+        togetherLog('🚫 playSpeech cancelled during audio decode');
+        audio.pause(); audio.src = '';
+        return;
+      }
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         ttsState = 'playing';
