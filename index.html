@@ -99,12 +99,51 @@ header { text-align: center; padding: 24px 0 16px; }
   background: var(--section); border: 2.5px solid transparent;
   border-radius: var(--r); padding: 14px 6px 10px;
   cursor: pointer; transition: all 0.25s;
-  text-align: center; font-family: 'Nunito';
-  font-weight: 800; font-size: 0.82rem; color: var(--muted);
+  text-align: center; font-family: 'Fredoka', sans-serif;
+  font-weight: 700; font-size: 0.85rem; color: var(--ink);
 }
-.cat-btn svg { width: 38px; height: 38px; display: block; margin: 0 auto 6px; }
-.cat-btn:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,107,53,0.15); }
-.cat-btn.selected { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,107,53,0.15); }
+.cat-btn svg { width: 42px; height: 42px; display: block; margin: 0 auto 6px; }
+.cat-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+.cat-btn.selected { border-color: var(--purple); transform: translateY(-3px); box-shadow: 0 6px 18px rgba(255,107,53,0.25); }
+/* Per-topic background tints */
+.cat-btn[data-cat="animals"] { background: #FFF3E8; }
+.cat-btn[data-cat="dinosaurs"] { background: #E8F5E9; }
+.cat-btn[data-cat="superheroes"] { background: #FFEBEE; }
+.cat-btn[data-cat="space"] { background: #E8EAF6; }
+.cat-btn[data-cat="ocean"] { background: #E3F2FD; }
+.cat-btn[data-cat="princesses"] { background: #F3E5F5; }
+.cat-btn[data-cat="trucks"] { background: #FFEBEE; }
+.cat-btn[data-cat="magic"] { background: #F3E5F5; }
+.cat-btn[data-cat="blackhistory"] { background: #EFEBE9; }
+.cat-btn[data-cat="sports"] { background: #FFF3E0; }
+.cat-btn[data-cat="cooking"] { background: #FBE9E7; }
+.cat-btn[data-cat="friends"] { background: #E3F2FD; }
+.cat-btn[data-cat="confidence"] { background: #FFFDE7; }
+.cat-btn[data-cat="helpers"] { background: #FFEBEE; }
+.cat-btn[data-cat="nature"] { background: #E8F5E9; }
+.cat-btn[data-cat="emotions"] { background: #FFFDE7; }
+.cat-btn[data-cat="robots"] { background: #ECEFF1; }
+.cat-btn[data-cat="pirates"] { background: #EFEBE9; }
+.cat-btn[data-cat="airplanes"] { background: #E3F2FD; }
+.cat-btn.selected[data-cat="animals"] { background: #FFE0C0; border-color: #FF9F43; }
+.cat-btn.selected[data-cat="dinosaurs"] { background: #C8E6C9; border-color: #4CAF50; }
+.cat-btn.selected[data-cat="superheroes"] { background: #FFCDD2; border-color: #EF5350; }
+.cat-btn.selected[data-cat="space"] { background: #C5CAE9; border-color: #5C6BC0; }
+.cat-btn.selected[data-cat="ocean"] { background: #BBDEFB; border-color: #42A5F5; }
+.cat-btn.selected[data-cat="princesses"] { background: #E1BEE7; border-color: #AB47BC; }
+.cat-btn.selected[data-cat="trucks"] { background: #FFCDD2; border-color: #F44336; }
+.cat-btn.selected[data-cat="magic"] { background: #E1BEE7; border-color: #7B1FA2; }
+.cat-btn.selected[data-cat="blackhistory"] { background: #D7CCC8; border-color: #795548; }
+.cat-btn.selected[data-cat="sports"] { background: #FFE0B2; border-color: #FF9800; }
+.cat-btn.selected[data-cat="cooking"] { background: #FFCCBC; border-color: #FF7043; }
+.cat-btn.selected[data-cat="friends"] { background: #BBDEFB; border-color: #42A5F5; }
+.cat-btn.selected[data-cat="confidence"] { background: #FFF9C4; border-color: #FFD93D; }
+.cat-btn.selected[data-cat="helpers"] { background: #FFCDD2; border-color: #EF5350; }
+.cat-btn.selected[data-cat="nature"] { background: #C8E6C9; border-color: #4CAF50; }
+.cat-btn.selected[data-cat="emotions"] { background: #FFF9C4; border-color: #FFD93D; }
+.cat-btn.selected[data-cat="robots"] { background: #CFD8DC; border-color: #78909C; }
+.cat-btn.selected[data-cat="pirates"] { background: #D7CCC8; border-color: #5D4037; }
+.cat-btn.selected[data-cat="airplanes"] { background: #BBDEFB; border-color: #42A5F5; }
 /* Keep emoji class for backwards compat but hide it */
 .cat-btn .emoji { display: none; }
 
@@ -1237,7 +1276,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <button class="voice-btn sel-voice" data-voice="female">👩 Female</button>
           <button class="voice-btn" data-voice="male">👨 Male</button>
         </div>
-        <div class="speed-slider-row" style="margin:0;">
+        <div class="speed-slider-row" style="margin:0 0 10px;">
           <div class="speed-slider-label-row">
             <span class="speed-slider-label">⚡ Speed</span>
             <span class="speed-value-badge" id="speed-display">0.9×</span>
@@ -1249,6 +1288,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
             <span>🚀 Fast</span>
           </div>
         </div>
+        <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:10px 16px;font-size:0.88rem;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">📖 Reading Mode</button>
       </div>
 
       <div id="story-info-bar" style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--muted);margin:8px 0 4px;display:none;">
@@ -1257,17 +1297,13 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
       <div class="hint-tip" id="hint-tip-bar">💡 Tap any word to hear it and learn what it means!</div>
 
-      <div style="text-align:right;margin-bottom:4px;">
-        <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:8px 16px;font-size:0.82rem;width:auto;display:inline-flex;align-items:center;gap:4px;">📖 Reading Mode</button>
-      </div>
-
       <!-- Story text flows naturally — no inner scroll container (prevents iOS double-scroll trap) -->
       <div id="story-scroll-container" style="margin:10px 0;padding:4px 0;">
         <div id="story-text"></div>
       </div>
 
       <div class="listening-badge" id="listening-badge" style="display:none;"></div>
-      <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">← New Story</button>
+      <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">🏠 Back Home</button>
       <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;font-size:1.15rem;padding:16px;">✅ I Finished Reading!</button>
     </div>
   </div>
