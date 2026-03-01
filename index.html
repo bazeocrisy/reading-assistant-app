@@ -1631,6 +1631,9 @@ let ttsState = 'idle';
 let ttsPausedAtMs = 0;
 let ttsAudioCache = new Map();
 let ttsAudioFormat = 'mp3';
+// Pre-decoded Audio element — created during preload to avoid slow iOS base64 decode
+let ttsPreloadedAudio = null;
+let ttsPreloadedKey = null;
 
 const VOICE_NAMES = {
   female: { prek: "en-US-Wavenet-F", k: "en-US-Wavenet-F", 1: "en-US-Wavenet-F", 2: "en-US-Wavenet-F", 3: "en-US-Wavenet-C" },
@@ -1906,10 +1909,54 @@ async function playSpeech(startFromMs) {
 
     console.log(`TTS: ${ttsWordTimings.length} timings, ${displayCount} words, method: ${data.alignmentMethod || 'unknown'}, format: ${ttsAudioFormat}, real: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
     const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
-
-    // Reuse existing audio element if same content (avoids iOS autoplay block on new Audio)
-    let audio;
     const audioSrc = `data:${audioMime};base64,` + data.audioBase64;
+
+    // Use preloaded & pre-decoded audio element if available (instant on iOS)
+    let audio;
+    if (ttsPreloadedAudio && ttsPreloadedKey === audioSrc) {
+      audio = ttsPreloadedAudio;
+      audio.currentTime = 0;
+      audio.playbackRate = S.speed;
+      ttsAudio = audio;
+      togetherLog('♻️ Using preloaded audio');
+      if (myId !== playSpeechId) return;
+      if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
+      audio.play().then(() => {
+        ttsState = 'playing';
+        document.getElementById('btn-play').textContent = '▶ Playing...';
+        document.getElementById('btn-play').disabled = true;
+        document.getElementById('btn-play').style.animation = '';
+        document.getElementById('btn-pause').disabled = false;
+        document.getElementById('btn-pause').textContent = '⏸ Pause';
+        document.getElementById('btn-stop-tts').disabled = false;
+        startHighlightLoop();
+      }).catch(playErr => {
+        togetherLog('🔒 Autoplay blocked: ' + playErr.message);
+        ttsState = 'idle';
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '▶ Tap to Play!';
+        playBtn.disabled = false;
+        playBtn.style.animation = 'pulse 1s ease-in-out infinite';
+        document.getElementById('btn-pause').disabled = true;
+        const t = document.getElementById('word-toast');
+        t.textContent = '👆 Your partner started — tap Play to join!';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 5000);
+      });
+      // Set up ended handler
+      audio.onended = () => {
+        stopRAF();
+        S.wordEls.forEach(w => w.classList.remove('highlight'));
+        document.getElementById('progress-bar').style.width = '100%';
+        resetTTSButtons();
+        ttsPausedAtMs = 0;
+        recordReadComplete();
+        if (S.isRace) broadcastPlayback('finished', 0);
+      };
+      return;
+    }
+
+    // Reuse existing ttsAudio if same content
     if (ttsAudio && ttsAudio._readupSrc === audioSrc) {
       audio = ttsAudio;
       audio.currentTime = 0;
@@ -2501,27 +2548,51 @@ function setupReadScreen() {
       playBtn.disabled = true;
       togetherLog('⏳ Loading TTS audio...');
     }
-    fetchTTSAudio(S.story, S.grade, S.voiceGender).then(() => {
-      togetherLog('✅ TTS audio ready');
-      if (S.isRace) {
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '▶ Play';
-        playBtn.disabled = false;
-        playBtn.style.animation = 'pulse 1s ease-in-out 3';
-        // Signal readiness to partner through Firebase
-        if (S.roomRef) {
-          const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
-          update(S.roomRef, { [readyKey]: true });
-        }
-      }
-      // If partner already sent play while we were loading, auto-play now
-      if (pendingPartnerPlay !== null && S.isRace && ttsState === 'idle') {
-        togetherLog('▶ Auto-playing queued partner command');
-        S.wordEls.forEach(w => { w.className = 'word'; });
-        document.getElementById('progress-bar').style.width = '0%';
-        const pos = pendingPartnerPlay;
-        pendingPartnerPlay = null;
-        playSpeech(pos);
+    fetchTTSAudio(S.story, S.grade, S.voiceGender).then((data) => {
+      togetherLog('✅ TTS data ready');
+      // Pre-create and decode Audio element so playSpeech is instant
+      if (data && data.audioBase64) {
+        const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
+        const audioSrc = `data:${audioMime};base64,` + data.audioBase64;
+        const preAudio = new Audio(audioSrc);
+        preAudio._readupSrc = audioSrc;
+        preAudio.preload = 'auto';
+        // Wait for it to actually decode
+        preAudio.addEventListener('canplaythrough', () => {
+          ttsPreloadedAudio = preAudio;
+          ttsPreloadedKey = audioSrc;
+          togetherLog('✅ Audio decoded & ready');
+          if (S.isRace) {
+            const playBtn = document.getElementById('btn-play');
+            playBtn.textContent = '▶ Play';
+            playBtn.disabled = false;
+            playBtn.style.animation = 'pulse 1s ease-in-out 3';
+            if (S.roomRef) {
+              const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
+              update(S.roomRef, { [readyKey]: true });
+            }
+          }
+          // If partner sent play while we were decoding, play now
+          if (pendingPartnerPlay !== null && S.isRace && ttsState === 'idle') {
+            togetherLog('▶ Auto-playing queued command');
+            S.wordEls.forEach(w => { w.className = 'word'; });
+            document.getElementById('progress-bar').style.width = '0%';
+            const pos = pendingPartnerPlay;
+            pendingPartnerPlay = null;
+            playSpeech(pos);
+          }
+        }, { once: true });
+        // Fallback if canplaythrough doesn't fire in 15s
+        setTimeout(() => {
+          if (!ttsPreloadedAudio && S.isRace) {
+            togetherLog('⚠️ Audio decode slow, enabling Play anyway');
+            ttsPreloadedAudio = preAudio;
+            ttsPreloadedKey = audioSrc;
+            const playBtn = document.getElementById('btn-play');
+            playBtn.textContent = '▶ Play';
+            playBtn.disabled = false;
+          }
+        }, 15000);
       }
     }).catch(() => {
       togetherLog('❌ TTS load failed');
