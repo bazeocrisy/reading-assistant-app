@@ -916,10 +916,10 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
     </div>
   </div>
 
-  <!-- SCREEN: Waiting host -->
+  <!-- SCREEN: Waiting host — room code + content picker -->
   <div class="screen" id="screen-waiting-host">
     <div class="card">
-      <div class="card-title">Waiting for your reading partner <span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="card-title">📖 Your Reading Room</div>
       <p style="color:#555;font-weight:700;margin-bottom:6px;">Share this code with your reading partner:</p>
       <div class="room-code-display">
         <div class="room-code-number" id="display-room-code">----</div>
@@ -929,19 +929,80 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Ready</div></div>
         <div class="player-slot" id="slot-guest"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">Waiting...</div></div>
       </div>
-      <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:10px;">Cancel</button>
+
+      <!-- Content picker -->
+      <div id="host-content-picker" style="margin-top:18px;border-top:2px solid #eee;padding-top:14px;">
+        <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:12px;font-size:1rem;">📚 Pick what to read together</div>
+
+        <!-- Option 1: AI Story -->
+        <button class="btn-main btn-green" id="btn-pick-ai" style="font-size:0.95rem;margin-bottom:8px;">✨ Pick a Topic (AI Story)</button>
+
+        <!-- Option 2: Paste a Passage -->
+        <button class="btn-main btn-purple" id="btn-pick-paste" style="font-size:0.95rem;margin-bottom:8px;">📝 Paste a Passage</button>
+
+        <!-- Option 3: Spelling Words -->
+        <button class="btn-main btn-outline" id="btn-pick-spelling" style="font-size:0.95rem;margin-bottom:8px;">🔤 Spelling Words</button>
+      </div>
+
+      <!-- AI topic picker (hidden by default) -->
+      <div id="host-ai-picker" style="display:none;margin-top:12px;border-top:2px solid #eee;padding-top:14px;">
+        <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:10px;">✨ Choose a Topic</div>
+        <div id="host-grade-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px;">
+          <button class="opt-btn host-grade" data-grade="prek" style="font-size:0.8rem;padding:6px 12px;border-radius:20px;border:2px solid #ddd;background:#fff;cursor:pointer;">Pre-K</button>
+          <button class="opt-btn host-grade" data-grade="k" style="font-size:0.8rem;padding:6px 12px;border-radius:20px;border:2px solid #ddd;background:#fff;cursor:pointer;">Kinder</button>
+          <button class="opt-btn host-grade sel-grade" data-grade="1" style="font-size:0.8rem;padding:6px 12px;border-radius:20px;border:2px solid var(--purple);background:var(--purple);color:#fff;cursor:pointer;">1st</button>
+          <button class="opt-btn host-grade" data-grade="2" style="font-size:0.8rem;padding:6px 12px;border-radius:20px;border:2px solid #ddd;background:#fff;cursor:pointer;">2nd</button>
+          <button class="opt-btn host-grade" data-grade="3" style="font-size:0.8rem;padding:6px 12px;border-radius:20px;border:2px solid #ddd;background:#fff;cursor:pointer;">3rd</button>
+        </div>
+        <div id="host-topic-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px;">
+          <button class="opt-btn host-topic sel-topic" data-topic="animals" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid var(--green);background:var(--green);color:#fff;cursor:pointer;">🐾 Animals</button>
+          <button class="opt-btn host-topic" data-topic="space" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">🚀 Space</button>
+          <button class="opt-btn host-topic" data-topic="dinosaurs" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">🦕 Dinos</button>
+          <button class="opt-btn host-topic" data-topic="ocean" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">🌊 Ocean</button>
+          <button class="opt-btn host-topic" data-topic="superheroes" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">🦸 Heroes</button>
+          <button class="opt-btn host-topic" data-topic="sports" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">⚽ Sports</button>
+          <button class="opt-btn host-topic" data-topic="magic" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">🪄 Magic</button>
+          <button class="opt-btn host-topic" data-topic="friends" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">👫 Friends</button>
+          <button class="opt-btn host-topic" data-topic="robots" style="font-size:0.75rem;padding:5px 10px;border-radius:18px;border:2px solid #ddd;background:#fff;cursor:pointer;">🤖 Robots</button>
+        </div>
+        <button class="btn-main btn-green" id="btn-generate-together" style="font-size:1rem;">✨ Generate Story!</button>
+        <button class="btn-main btn-outline" id="btn-back-to-picker" style="margin-top:6px;font-size:0.85rem;">← Back</button>
+        <div id="host-gen-status" style="display:none;text-align:center;margin-top:10px;font-weight:700;color:var(--muted);"></div>
+      </div>
+
+      <!-- Paste passage input (hidden by default) -->
+      <div id="host-paste-picker" style="display:none;margin-top:12px;border-top:2px solid #eee;padding-top:14px;">
+        <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:10px;">📝 Paste a Passage</div>
+        <textarea id="host-paste-input" rows="6" placeholder="Paste or type a reading passage here..." style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.95rem;font-family:inherit;resize:vertical;"></textarea>
+        <input id="host-paste-title" type="text" placeholder="Title (optional)" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:8px 10px;font-size:0.9rem;margin-top:6px;">
+        <button class="btn-main btn-green" id="btn-use-passage" style="font-size:1rem;margin-top:10px;">📖 Use This Passage</button>
+        <button class="btn-main btn-outline" id="btn-back-to-picker-paste" style="margin-top:6px;font-size:0.85rem;">← Back</button>
+      </div>
+
+      <!-- Spelling words input (hidden by default) -->
+      <div id="host-spelling-picker" style="display:none;margin-top:12px;border-top:2px solid #eee;padding-top:14px;">
+        <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:10px;">🔤 Spelling Words</div>
+        <textarea id="host-spelling-input" rows="4" placeholder="Type spelling words separated by commas or spaces&#10;Example: cat, dog, run, jump, happy" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.95rem;font-family:inherit;resize:vertical;"></textarea>
+        <button class="btn-main btn-green" id="btn-use-spelling" style="font-size:1rem;margin-top:10px;">🔤 Practice These Words</button>
+        <button class="btn-main btn-outline" id="btn-back-to-picker-spell" style="margin-top:6px;font-size:0.85rem;">← Back</button>
+      </div>
+
+      <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:14px;">Cancel</button>
     </div>
   </div>
 
   <!-- SCREEN: Waiting guest -->
   <div class="screen" id="screen-waiting-guest">
     <div class="card">
-      <div class="card-title">You're in! Get ready to read together... 📖</div>
+      <div class="card-title">You're in! 📖</div>
       <div class="player-slots">
-        <div class="player-slot joined"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">✓ Ready</div></div>
+        <div class="player-slot joined"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">Picking a story...</div></div>
         <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Joined!</div></div>
       </div>
-      <p style="text-align:center;color:#aaa;font-weight:700;margin-top:10px;">Starting soon...</p>
+      <p id="guest-wait-msg" style="text-align:center;color:var(--purple);font-weight:800;margin-top:14px;">⏳ Waiting for your partner to pick a story...</p>
+      <div style="text-align:center;margin-top:10px;">
+        <div class="spinner" style="display:inline-block;"><div class="spin-circle"></div></div>
+      </div>
     </div>
   </div>
 
@@ -2207,7 +2268,9 @@ document.getElementById('btn-together-start').addEventListener('click', () => {
 });
 document.getElementById('btn-create-room').addEventListener('click', () => {
   document.getElementById('screen-together-choice').style.display = 'none';
-  S.isRace = true; S.myRole = 'host'; loadStory();
+  S.isRace = true; S.myRole = 'host';
+  // Create room immediately (no story yet), then show content picker
+  createRoom();
 });
 document.getElementById('btn-join-room-choice').addEventListener('click', () => {
   document.getElementById('screen-together-choice').style.display = 'none';
@@ -2222,6 +2285,128 @@ document.getElementById('btn-together-cancel').addEventListener('click', () => {
 });
 
 document.getElementById('btn-back-join').addEventListener('click', () => show('screen-pick'));
+
+// ── Host content picker for Read Together ─────────────────
+function showHostSubPicker(which) {
+  document.getElementById('host-content-picker').style.display = 'none';
+  document.getElementById('host-ai-picker').style.display = which === 'ai' ? 'block' : 'none';
+  document.getElementById('host-paste-picker').style.display = which === 'paste' ? 'block' : 'none';
+  document.getElementById('host-spelling-picker').style.display = which === 'spelling' ? 'block' : 'none';
+}
+function showHostMainPicker() {
+  document.getElementById('host-content-picker').style.display = 'block';
+  document.getElementById('host-ai-picker').style.display = 'none';
+  document.getElementById('host-paste-picker').style.display = 'none';
+  document.getElementById('host-spelling-picker').style.display = 'none';
+}
+
+document.getElementById('btn-pick-ai').addEventListener('click', () => showHostSubPicker('ai'));
+document.getElementById('btn-pick-paste').addEventListener('click', () => showHostSubPicker('paste'));
+document.getElementById('btn-pick-spelling').addEventListener('click', () => showHostSubPicker('spelling'));
+document.getElementById('btn-back-to-picker').addEventListener('click', showHostMainPicker);
+document.getElementById('btn-back-to-picker-paste').addEventListener('click', showHostMainPicker);
+document.getElementById('btn-back-to-picker-spell').addEventListener('click', showHostMainPicker);
+
+// Grade selector in AI picker
+let hostGrade = '1';
+let hostTopic = 'animals';
+document.querySelectorAll('.host-grade').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.host-grade').forEach(b => {
+    b.style.border = '2px solid #ddd'; b.style.background = '#fff'; b.style.color = '#333';
+  });
+  btn.style.border = '2px solid var(--purple)'; btn.style.background = 'var(--purple)'; btn.style.color = '#fff';
+  hostGrade = btn.dataset.grade;
+}));
+document.querySelectorAll('.host-topic').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.host-topic').forEach(b => {
+    b.style.border = '2px solid #ddd'; b.style.background = '#fff'; b.style.color = '#333';
+  });
+  btn.style.border = '2px solid var(--green)'; btn.style.background = 'var(--green)'; btn.style.color = '#fff';
+  hostTopic = btn.dataset.topic;
+}));
+
+// Push story to Firebase and mark ready
+async function hostSetStory(title, body, grade, isAI) {
+  S.storyTitle = title;
+  S.story = body;
+  S.grade = grade;
+  S.isAIStory = isAI;
+  S.wordTarget = body.trim().split(/\s+/).length;
+  recordStoryStart();
+  // Push to Firebase so guest gets it
+  await update(S.roomRef, {
+    story: body,
+    title: title,
+    grade: grade,
+    wordTarget: S.wordTarget,
+    voiceGender: S.voiceGender,
+    speed: S.speed,
+    status: 'story-ready'
+  });
+  S._storyReady = true;
+  S._tryStartCountdown();
+}
+
+// Generate AI story button
+document.getElementById('btn-generate-together').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-generate-together');
+  const status = document.getElementById('host-gen-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating...';
+  status.style.display = 'block';
+  status.textContent = '✨ Writing a story just for you...';
+
+  const GRADE_WORD_TARGETS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
+  const wordTarget = GRADE_WORD_TARGETS[hostGrade] || 100;
+
+  try {
+    const TOPIC_NAMES = { animals:"Animals", space:"Space", dinosaurs:"Dinosaurs", ocean:"Ocean", superheroes:"Superheroes", magic:"Magic", sports:"Sports", cooking:"Cooking", friends:"Friends", confidence:"Self-Confidence", blackhistory:"Black History Heroes", helpers:"Community Helpers", nature:"Nature & Weather", emotions:"Feelings & Emotions", trucks:"Trucks & Vehicles", princesses:"Princesses & Castles", robots:"Robots", pirates:"Pirates", airplanes:"Airplanes & Flying" };
+    const aiText = await generateAIStory(hostGrade, hostTopic, wordTarget);
+    const title = `✨ ${TOPIC_NAMES[hostTopic] || hostTopic} Story`;
+    const cleanedText = cleanStoryText(aiText);
+    status.textContent = '✅ Story ready!';
+    await hostSetStory(title, cleanedText, hostGrade, true);
+    btn.textContent = '✨ Generate Story!';
+    btn.disabled = false;
+  } catch (err) {
+    console.error('AI story generation failed:', err);
+    status.textContent = '⚠️ Could not generate story. Try again.';
+    btn.textContent = '✨ Generate Story!';
+    btn.disabled = false;
+  }
+});
+
+// Paste passage button
+document.getElementById('btn-use-passage').addEventListener('click', async () => {
+  const text = document.getElementById('host-paste-input').value.trim();
+  if (!text) {
+    document.getElementById('host-paste-input').style.borderColor = '#FF6B6B';
+    return;
+  }
+  document.getElementById('host-paste-input').style.borderColor = '#ddd';
+  const title = document.getElementById('host-paste-title').value.trim() || '📝 Reading Passage';
+  // Auto-detect grade from word complexity (simple heuristic)
+  const grade = hostGrade || '1';
+  await hostSetStory(title, text, grade, false);
+});
+
+// Spelling words button
+document.getElementById('btn-use-spelling').addEventListener('click', async () => {
+  const raw = document.getElementById('host-spelling-input').value.trim();
+  if (!raw) {
+    document.getElementById('host-spelling-input').style.borderColor = '#FF6B6B';
+    return;
+  }
+  document.getElementById('host-spelling-input').style.borderColor = '#ddd';
+  // Parse words: split by commas, spaces, newlines
+  const words = raw.split(/[,\s\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+  if (words.length === 0) return;
+  // Create a simple passage using the spelling words
+  const title = '🔤 Spelling Practice';
+  const body = words.join('  ·  ');
+  const grade = hostGrade || '1';
+  await hostSetStory(title, body, grade, false);
+});
 
 // On-screen debug for Read Together (visible on mobile)
 function togetherLog(msg) {
@@ -2333,38 +2518,42 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
   if (!snap.exists()) { err.textContent = "Room not found. Check the code!"; err.style.display = 'block'; return; }
   const room = snap.val();
   S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
-  S.story = room.story; S.storyTitle = room.title; S.grade = room.grade; S.wordTarget = room.wordTarget;
-  // Pick up host's voice settings so both use the same TTS voice
+  // Pick up whatever is in the room already (story may or may not be set yet)
+  if (room.story) { S.story = room.story; S.storyTitle = room.title; S.grade = room.grade; S.wordTarget = room.wordTarget; }
   if (room.voiceGender) S.voiceGender = room.voiceGender;
   if (room.speed) S.speed = room.speed;
   S.myRole = 'guest'; S.isRace = true;
   await update(S.roomRef, { guestJoined: true });
   show('screen-waiting-guest');
   
-  // Listen for host to start countdown
+  // Listen for room status changes:
+  // 'story-ready' → host picked content, update guest wait message
+  // 'countdown' → both ready, start countdown
   let countdownStarted = false;
-  const unsub = onValue(ref(db, `rooms/${code}/status`), snap => {
-    const status = snap.val();
-    if (status === 'countdown' && !countdownStarted) {
+  const unsub = onValue(ref(db, `rooms/${code}`), snap => {
+    const roomData = snap.val();
+    if (!roomData) return;
+
+    // Pick up story as soon as host sets it
+    if (roomData.story && !S.story) {
+      S.story = roomData.story;
+      S.storyTitle = roomData.title;
+      S.grade = roomData.grade;
+      S.wordTarget = roomData.wordTarget;
+      if (roomData.voiceGender) S.voiceGender = roomData.voiceGender;
+      if (roomData.speed) S.speed = roomData.speed;
+      // Update waiting message
+      const msg = document.getElementById('guest-wait-msg');
+      if (msg) msg.textContent = '📖 Story picked! Getting ready...';
+    }
+
+    if (roomData.status === 'countdown' && !countdownStarted) {
       countdownStarted = true;
       unsub();
       startCountdown();
     }
   });
   S.unsubscribers.push(unsub);
-  
-  // Fallback: if countdown doesn't start within 30 seconds, check room status directly
-  setTimeout(async () => {
-    if (countdownStarted) return;
-    try {
-      const snap = await get(ref(db, `rooms/${code}/status`));
-      if (snap.val() === 'countdown' && !countdownStarted) {
-        countdownStarted = true;
-        unsub();
-        startCountdown();
-      }
-    } catch(e) {}
-  }, 5000);
 });
 
 // ── Clean AI story text once at load time ─────────────────
@@ -2402,27 +2591,74 @@ async function loadStory() {
     S.storyTitle = s.title; S.story = s.body; S.isAIStory = false;
     recordStoryStart();
   }
-  if (S.myRole === 'host') createRoom();
-  else { setupReadScreen(); show('screen-read'); }
+  if (S.myRole === 'host') {
+    // This shouldn't happen anymore (Read Together uses content picker), but just in case
+    createRoom();
+  } else {
+    setupReadScreen(); show('screen-read');
+  }
 }
 
 async function createRoom() {
   const code = String(Math.floor(1000 + Math.random() * 9000));
   S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
-  await set(S.roomRef, { story: S.story, title: S.storyTitle, grade: S.grade, wordTarget: S.wordTarget, voiceGender: S.voiceGender, speed: S.speed, status: 'waiting', host: { progress: 0, wpm: 0, done: false }, guest: { progress: 0, wpm: 0, done: false }, createdAt: Date.now() });
+  // Create room without story — host will pick content next
+  await set(S.roomRef, {
+    status: 'waiting',
+    voiceGender: S.voiceGender,
+    speed: S.speed,
+    host: { progress: 0, wpm: 0, done: false },
+    guest: { progress: 0, wpm: 0, done: false },
+    createdAt: Date.now()
+  });
   document.getElementById('display-room-code').textContent = code;
+  // Show content picker and room code
+  document.getElementById('host-content-picker').style.display = 'block';
+  document.getElementById('host-ai-picker').style.display = 'none';
+  document.getElementById('host-paste-picker').style.display = 'none';
+  document.getElementById('host-spelling-picker').style.display = 'none';
   show('screen-waiting-host');
-  const unsub = onValue(S.roomRef, snap => {
-    const room = snap.val(); if (!room) return;
-    if (room.guestJoined) {
+
+  // Track state: guest joined + story ready → start countdown
+  let guestJoined = false;
+  let storyReady = false;
+
+  function tryStartCountdown() {
+    if (guestJoined && storyReady) {
+      // Update guest slot
       document.getElementById('slot-guest').classList.add('joined');
       document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Partner';
       document.getElementById('slot-guest').querySelector('.slot-status').textContent = '✓ Joined!';
-      unsub(); setTimeout(() => startCountdown(), 1000);
+      setTimeout(() => startCountdown(), 1000);
+    }
+  }
+
+  // Store the tryStartCountdown trigger on S so content picker can call it
+  S._guestJoined = false;
+  S._storyReady = false;
+  S._tryStartCountdown = () => {
+    if (S._guestJoined && S._storyReady) {
+      document.getElementById('slot-guest').classList.add('joined');
+      document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Partner';
+      document.getElementById('slot-guest').querySelector('.slot-status').textContent = '✓ Joined!';
+      setTimeout(() => startCountdown(), 1000);
+    }
+  };
+
+  // Listen for guest joining
+  const unsub = onValue(S.roomRef, snap => {
+    const room = snap.val(); if (!room) return;
+    if (room.guestJoined && !S._guestJoined) {
+      S._guestJoined = true;
+      document.getElementById('slot-guest').classList.add('joined');
+      document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Partner';
+      document.getElementById('slot-guest').querySelector('.slot-status').textContent = S._storyReady ? '✓ Ready!' : '✓ Joined!';
+      unsub();
+      S._tryStartCountdown();
     }
   });
   S.unsubscribers.push(unsub);
-  setTimeout(() => { try { remove(S.roomRef); } catch(e) {} }, 3600000); // 60 min
+  setTimeout(() => { try { remove(S.roomRef); } catch(e) {} }, 3600000);
 }
 
 async function startCountdown() {
