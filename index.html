@@ -2128,8 +2128,10 @@ function togetherLog(msg) {
 
 // ── Firebase playback sync ────────────────────────────────
 function broadcastPlayback(action, positionMs) {
-  if (!S.roomRef || !S.isRace) {
-    togetherLog(`⚠️ broadcast SKIP: ref=${!!S.roomRef} race=${S.isRace}`);
+  if (!S.roomRef || !S.isRace) return;
+  // Don't re-broadcast if we're acting on a partner's command (prevents echo loop)
+  if (actingOnPartnerCmd) {
+    togetherLog(`🔇 Suppressed echo: ${action}`);
     return;
   }
   const key = S.myRole === 'host' ? 'hostCmd' : 'guestCmd';
@@ -2139,6 +2141,8 @@ function broadcastPlayback(action, positionMs) {
 
 // Track queued partner play command
 let pendingPartnerPlay = null;
+// Suppress re-broadcasting when acting on a partner's command
+let actingOnPartnerCmd = false;
 
 function listenForPartnerPlayback() {
   const partnerKey = S.myRole === 'host' ? 'guestCmd' : 'hostCmd';
@@ -2154,11 +2158,20 @@ function listenForPartnerPlayback() {
     }
     lastTs = cmd.ts;
     togetherLog(`📨 Got: ${cmd.action} (ttsState=${ttsState})`);
+
+    // Set flag so button handlers don't re-broadcast back
+    actingOnPartnerCmd = true;
+
     if (cmd.action === 'play') {
       if (ttsState === 'loading') {
         togetherLog('⏳ TTS loading — queued play');
         pendingPartnerPlay = cmd.positionMs || 0;
+        actingOnPartnerCmd = false;
         return;
+      }
+      // If already playing, stop first then restart
+      if (ttsState === 'playing') {
+        stopTTS();
       }
       if (ttsState === 'idle' || ttsState === 'paused') {
         S.wordEls.forEach(w => { w.className = 'word'; });
@@ -2190,6 +2203,9 @@ function listenForPartnerPlayback() {
       ttsPausedAtMs = 0;
       recordReadComplete();
     }
+
+    // Clear flag after a short delay (allow any sync handlers to complete)
+    setTimeout(() => { actingOnPartnerCmd = false; }, 300);
   });
   S.unsubscribers.push(unsub);
 }
