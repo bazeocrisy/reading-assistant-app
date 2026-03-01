@@ -2975,16 +2975,13 @@ async function startCountdown() {
         }
       }
       // Route to appropriate screen based on content type
-      console.log('Routing:', { contentType: S._contentType, spellingList: !!S._spellingList, currentSpellingList: !!currentSpellingList, myRole: S.myRole, story: !!S.story });
       if (S._contentType === 'spelling') {
-        // Spelling mode — show the spelling screen
         const list = S._spellingList || currentSpellingList;
         if (list) {
           currentSpellingList = list;
           renderSpellingWords(list);
           show('screen-spelling');
         } else {
-          console.warn('Spelling content type but no list found!');
           setupReadScreen(); show('screen-read');
         }
       } else {
