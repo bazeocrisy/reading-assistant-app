@@ -937,10 +937,10 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <!-- Option 1: AI Story -->
         <button class="btn-main btn-green" id="btn-pick-ai" style="font-size:0.95rem;margin-bottom:8px;">✨ Pick a Topic (AI Story)</button>
 
-        <!-- Option 2: Paste a Passage -->
-        <button class="btn-main btn-purple" id="btn-pick-paste" style="font-size:0.95rem;margin-bottom:8px;">📝 Paste a Passage</button>
+        <!-- Option 2: Upload/Paste a Passage -->
+        <button class="btn-main btn-purple" id="btn-pick-paste" style="font-size:0.95rem;margin-bottom:8px;">📸 Upload a Passage</button>
 
-        <!-- Option 3: Spelling Words -->
+        <!-- Option 3: Upload/Type Spelling Words -->
         <button class="btn-main btn-outline" id="btn-pick-spelling" style="font-size:0.95rem;margin-bottom:8px;">🔤 Spelling Words</button>
       </div>
 
@@ -970,19 +970,28 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
         <div id="host-gen-status" style="display:none;text-align:center;margin-top:10px;font-weight:700;color:var(--muted);"></div>
       </div>
 
-      <!-- Paste passage input (hidden by default) -->
+      <!-- Upload/Paste passage (hidden by default) -->
       <div id="host-paste-picker" style="display:none;margin-top:12px;border-top:2px solid #eee;padding-top:14px;">
-        <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:10px;">📝 Paste a Passage</div>
-        <textarea id="host-paste-input" rows="6" placeholder="Paste or type a reading passage here..." style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.95rem;font-family:inherit;resize:vertical;"></textarea>
-        <input id="host-paste-title" type="text" placeholder="Title (optional)" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:8px 10px;font-size:0.9rem;margin-top:6px;">
+        <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:10px;">📸 Upload a Reading Passage</div>
+        <input type="file" id="host-passage-file" accept="image/*" style="display:none;">
+        <button class="btn-main btn-purple" id="btn-upload-passage" style="font-size:1rem;margin-bottom:6px;">📷 Take Photo or Upload Image</button>
+        <div id="host-passage-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
+        <div style="text-align:center;color:#aaa;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type it in —</div>
+        <textarea id="host-paste-input" rows="4" placeholder="Paste or type a reading passage here..." style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+        <div style="text-align:right;font-size:0.75rem;color:#aaa;font-weight:700;margin-top:2px;"><span id="paste-word-count">0</span> / 500 words</div>
+        <input id="host-paste-title" type="text" placeholder="Title (optional)" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:8px 10px;font-size:0.9rem;margin-top:6px;box-sizing:border-box;">
         <button class="btn-main btn-green" id="btn-use-passage" style="font-size:1rem;margin-top:10px;">📖 Use This Passage</button>
         <button class="btn-main btn-outline" id="btn-back-to-picker-paste" style="margin-top:6px;font-size:0.85rem;">← Back</button>
       </div>
 
-      <!-- Spelling words input (hidden by default) -->
+      <!-- Upload/Type spelling words (hidden by default) -->
       <div id="host-spelling-picker" style="display:none;margin-top:12px;border-top:2px solid #eee;padding-top:14px;">
         <div style="text-align:center;font-weight:800;color:var(--purple);margin-bottom:10px;">🔤 Spelling Words</div>
-        <textarea id="host-spelling-input" rows="4" placeholder="Type spelling words separated by commas or spaces&#10;Example: cat, dog, run, jump, happy" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.95rem;font-family:inherit;resize:vertical;"></textarea>
+        <input type="file" id="host-spelling-file" accept="image/*" style="display:none;">
+        <button class="btn-main btn-purple" id="btn-upload-spelling" style="font-size:1rem;margin-bottom:6px;">📷 Take Photo or Upload Image</button>
+        <div id="host-spelling-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
+        <div style="text-align:center;color:#aaa;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type them in —</div>
+        <textarea id="host-spelling-input" rows="3" placeholder="Type spelling words separated by commas&#10;Example: cat, dog, run, jump, happy" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
         <button class="btn-main btn-green" id="btn-use-spelling" style="font-size:1rem;margin-top:10px;">🔤 Practice These Words</button>
         <button class="btn-main btn-outline" id="btn-back-to-picker-spell" style="margin-top:6px;font-size:0.85rem;">← Back</button>
       </div>
@@ -2383,11 +2392,26 @@ document.getElementById('btn-use-passage').addEventListener('click', async () =>
     document.getElementById('host-paste-input').style.borderColor = '#FF6B6B';
     return;
   }
+  // Check word limit
+  const wordCount = text.split(/\s+/).length;
+  if (wordCount > 500) {
+    document.getElementById('host-paste-input').style.borderColor = '#FF6B6B';
+    document.getElementById('paste-word-count').style.color = '#FF6B6B';
+    return;
+  }
   document.getElementById('host-paste-input').style.borderColor = '#ddd';
   const title = document.getElementById('host-paste-title').value.trim() || '📝 Reading Passage';
-  // Auto-detect grade from word complexity (simple heuristic)
   const grade = hostGrade || '1';
   await hostSetStory(title, text, grade, false);
+});
+
+// Word count for paste textarea
+document.getElementById('host-paste-input').addEventListener('input', () => {
+  const text = document.getElementById('host-paste-input').value.trim();
+  const count = text ? text.split(/\s+/).length : 0;
+  const el = document.getElementById('paste-word-count');
+  el.textContent = count;
+  el.style.color = count > 500 ? '#FF6B6B' : '#aaa';
 });
 
 // Spelling words button
@@ -2398,14 +2422,114 @@ document.getElementById('btn-use-spelling').addEventListener('click', async () =
     return;
   }
   document.getElementById('host-spelling-input').style.borderColor = '#ddd';
-  // Parse words: split by commas, spaces, newlines
   const words = raw.split(/[,\s\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
   if (words.length === 0) return;
-  // Create a simple passage using the spelling words
   const title = '🔤 Spelling Practice';
   const body = words.join('  ·  ');
   const grade = hostGrade || '1';
   await hostSetStory(title, body, grade, false);
+});
+
+// ── Image upload + OCR for Read Together content picker ───
+async function processUploadedImage(file) {
+  // Convert image to base64 with compression
+  const base64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1600;
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        resolve(dataUrl.split(',')[1]);
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  // Send to Cloud Function OCR
+  const response = await fetch(CF_OCR, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+  });
+  if (!response.ok) throw new Error('Scan failed: ' + response.status);
+  const data = await response.json();
+  if (!data.text) throw new Error('No text found in image');
+  return data.text.trim();
+}
+
+// Upload passage photo
+document.getElementById('btn-upload-passage').addEventListener('click', () => {
+  document.getElementById('host-passage-file').click();
+});
+document.getElementById('host-passage-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const status = document.getElementById('host-passage-status');
+  const btn = document.getElementById('btn-upload-passage');
+  status.style.display = 'block';
+  status.textContent = '📸 Reading text from your photo...';
+  status.style.color = 'var(--muted)';
+  btn.disabled = true;
+  try {
+    const text = await processUploadedImage(file);
+    // Put extracted text into the paste textarea
+    document.getElementById('host-paste-input').value = text;
+    // Update word count
+    const count = text.split(/\s+/).length;
+    document.getElementById('paste-word-count').textContent = count;
+    document.getElementById('paste-word-count').style.color = count > 500 ? '#FF6B6B' : '#aaa';
+    status.textContent = '✅ Text extracted! Review it below and tap "Use This Passage"';
+    status.style.color = 'var(--green)';
+  } catch (err) {
+    console.error('Passage scan error:', err);
+    status.textContent = '⚠️ Could not read that photo. Try a clearer image or type it in.';
+    status.style.color = '#FF6B6B';
+  }
+  btn.disabled = false;
+});
+
+// Upload spelling words photo
+document.getElementById('btn-upload-spelling').addEventListener('click', () => {
+  document.getElementById('host-spelling-file').click();
+});
+document.getElementById('host-spelling-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const status = document.getElementById('host-spelling-status');
+  const btn = document.getElementById('btn-upload-spelling');
+  status.style.display = 'block';
+  status.textContent = '📸 Reading spelling words from your photo...';
+  status.style.color = 'var(--muted)';
+  btn.disabled = true;
+  try {
+    const text = await processUploadedImage(file);
+    // Put extracted words into the spelling textarea
+    // Clean up: extract individual words, remove numbers/bullets
+    const words = text.replace(/[\d.)\-•·]/g, ' ').split(/[,\s\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 1 && /^[a-z]+$/i.test(w));
+    document.getElementById('host-spelling-input').value = words.join(', ');
+    status.textContent = `✅ Found ${words.length} words! Review and tap "Practice These Words"`;
+    status.style.color = 'var(--green)';
+  } catch (err) {
+    console.error('Spelling scan error:', err);
+    status.textContent = '⚠️ Could not read that photo. Try a clearer image or type them in.';
+    status.style.color = '#FF6B6B';
+  }
+  btn.disabled = false;
 });
 
 // On-screen debug for Read Together (visible on mobile)
