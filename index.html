@@ -1905,7 +1905,7 @@ async function playSpeech(startFromMs) {
       }).catch(playErr => {
         // Browser blocked autoplay (no user gesture) — common on guest device
         // when host triggers play remotely
-        console.warn('Autoplay blocked:', playErr.message);
+        togetherLog('🔒 Autoplay blocked: ' + playErr.message);
         ttsState = 'idle';
         document.getElementById('btn-play').textContent = '▶ Tap to Play';
         document.getElementById('btn-play').disabled = false;
@@ -2113,14 +2113,27 @@ document.getElementById('btn-together-cancel').addEventListener('click', () => {
 
 document.getElementById('btn-back-join').addEventListener('click', () => show('screen-pick'));
 
+// On-screen debug for Read Together (visible on mobile)
+function togetherLog(msg) {
+  console.log(msg);
+  const logEl = document.getElementById('together-debug-log');
+  if (!logEl) return;
+  const line = document.createElement('div');
+  line.textContent = new Date().toLocaleTimeString() + ' ' + msg;
+  logEl.appendChild(line);
+  // Keep last 8 lines
+  while (logEl.children.length > 8) logEl.removeChild(logEl.firstChild);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
 // ── Firebase playback sync ────────────────────────────────
 function broadcastPlayback(action, positionMs) {
   if (!S.roomRef || !S.isRace) {
-    console.log(`broadcastPlayback SKIPPED: roomRef=${!!S.roomRef}, isRace=${S.isRace}, role=${S.myRole}`);
+    togetherLog(`⚠️ broadcast SKIP: ref=${!!S.roomRef} race=${S.isRace}`);
     return;
   }
   const key = S.myRole === 'host' ? 'hostCmd' : 'guestCmd';
-  console.log(`📡 Broadcasting: ${action} on ${key} (I am ${S.myRole})`);
+  togetherLog(`📡 Sending: ${action} on ${key}`);
   update(S.roomRef, { [key]: { action, positionMs: positionMs || 0, ts: Date.now() } });
 }
 
@@ -2129,17 +2142,21 @@ let pendingPartnerPlay = null;
 
 function listenForPartnerPlayback() {
   const partnerKey = S.myRole === 'host' ? 'guestCmd' : 'hostCmd';
-  console.log(`👂 Listening for partner on: ${partnerKey} (I am ${S.myRole}, room=${S.roomCode})`);
-  let lastTs = 0;
+  togetherLog(`👂 Listening on: ${partnerKey} (I am ${S.myRole})`);
+  // Initialize to NOW so we ignore stale commands already in Firebase
+  let lastTs = Date.now();
   const unsub = onValue(ref(db, `rooms/${S.roomCode}/${partnerKey}`), snap => {
     const cmd = snap.val();
     if (!cmd) return;
-    if (cmd.ts <= lastTs) return;
+    if (cmd.ts <= lastTs) {
+      togetherLog(`⏭ Skipped old: ${cmd.action}`);
+      return;
+    }
     lastTs = cmd.ts;
-    console.log(`📨 Received partner command: ${cmd.action} (ttsState=${ttsState})`);
+    togetherLog(`📨 Got: ${cmd.action} (ttsState=${ttsState})`);
     if (cmd.action === 'play') {
       if (ttsState === 'loading') {
-        console.log('Partner pressed play, TTS loading — queued for auto-play');
+        togetherLog('⏳ TTS loading — queued play');
         pendingPartnerPlay = cmd.positionMs || 0;
         return;
       }
@@ -2148,6 +2165,8 @@ function listenForPartnerPlayback() {
         document.getElementById('progress-bar').style.width = '0%';
         pendingPartnerPlay = null;
         playSpeech(cmd.positionMs || 0);
+      } else {
+        togetherLog(`⚠️ Can't play: ttsState=${ttsState}`);
       }
     } else if (cmd.action === 'pause') {
       pendingPartnerPlay = null;
@@ -2269,9 +2288,9 @@ async function startCountdown() {
     const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=');
     await silentAudio.play();
     silentAudio.pause();
-    console.log('Audio context unlocked for Read Together');
+    togetherLog('🔓 Audio unlocked');
   } catch(e) {
-    console.warn('Could not unlock audio context:', e.message);
+    togetherLog('🔒 Audio lock failed: ' + e.message);
   }
 
   // Fix: Guest fetches story + host settings from Firebase as single source of truth
@@ -2323,6 +2342,14 @@ function setupReadScreen() {
     badge.style.cssText = 'text-align:center;font-size:0.78rem;font-weight:800;color:var(--green);margin:4px 0 8px;';
     badge.textContent = '🟢 Connected — reading together';
     document.getElementById('story-title').after(badge);
+    // Add visible debug log for mobile testing
+    let debugLog = document.getElementById('together-debug-log');
+    if (!debugLog) {
+      debugLog = document.createElement('div');
+      debugLog.id = 'together-debug-log';
+      debugLog.style.cssText = 'background:#1a1a2e;color:#0f0;font-family:monospace;font-size:0.65rem;padding:6px 8px;margin:4px 0;border-radius:6px;max-height:120px;overflow-y:auto;line-height:1.4;';
+      badge.after(debugLog);
+    }
   }
   document.getElementById('together-progress').style.display = S.isRace ? 'block' : 'none';
   document.getElementById('solo-progress-wrap').style.display = S.isRace ? 'none' : 'block';
