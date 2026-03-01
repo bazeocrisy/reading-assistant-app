@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD W</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD X</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -946,7 +946,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-icon">📸</div>
         <div class="kid-action-label">My Own Reading</div>
       </button>
-      <input type="file" id="scan-file-input" accept="image/*" style="display:none;">
+      <input type="file" id="scan-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
 
       <!-- Read Together — GREEN -->
       <button class="kid-action-btn" id="btn-together-start" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 8px 24px rgba(39,174,96,0.35);">
@@ -1659,10 +1659,10 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
       <!-- Upload / Photo -->
       <button class="kid-action-btn" id="btn-own-scan" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
-        <div class="kid-action-icon">📷</div>
-        <div class="kid-action-label">Upload a Photo</div>
+        <div class="kid-action-icon">📄</div>
+        <div class="kid-action-label">Upload a Document</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Take a photo of a book page, worksheet, or passage</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Upload a photo, screenshot, or image of a reading passage</p>
 
       <!-- Paste Text -->
       <button class="kid-action-btn" id="btn-own-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
@@ -1834,7 +1834,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD W</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD X</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
