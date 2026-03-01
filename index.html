@@ -7,29 +7,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@400;500;600;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --purple: #9B30FF;
-    --purple-deep: #6B2D8B;
-    --purple-dark: #4A1A6B;
-    --purple-light: #C9A0DC;
-    --purple-soft: #F3EAFC;
+    /* ── Kid-First Warm Palette ── */
+    --purple: #FF6B35;
+    --purple-deep: #E55D2B;
+    --purple-dark: #CC4A1A;
+    --purple-light: #FFB088;
+    --purple-soft: #FFF3E8;
     --grey-light: #B0B0B0;
     --grey-mid: #808080;
-    --bg: #FDFBFF;
+    --bg: #FFFBF2;
     --card: #FFFFFF;
-    --section: #F7F3FB;
-    --ink: #2A2035;
-    --body: #4A4255;
-    --muted: #8E849A;
-    --border: #E8E0F0;
+    --section: #FFF8EE;
+    --ink: #2C3E50;
+    --body: #4A5568;
+    --muted: #94A3B8;
+    --border: #F0E6D8;
     --gold: #FFD93D;
-    --green: #6BCB77;
+    --green: #5CD85A;
     --coral: #FF6B6B;
-    --ocean: #4D96FF;
-    --shadow: 0 4px 24px rgba(74,26,107,0.1);
-    --r: 18px;
+    --ocean: #54A0FF;
+    --shadow: 0 4px 24px rgba(255,107,53,0.08);
+    --r: 22px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Nunito', sans-serif; background: #EFEAF5; min-height: 100vh; overflow-x: hidden; }
+  body { font-family: 'Nunito', sans-serif; background: linear-gradient(175deg, #FFF8E1 0%, #FFFBF0 40%, #FFF3E0 80%, #FFF8E1 100%); min-height: 100vh; overflow-x: hidden; }
 
 /* ── Global Fat Scrollbar for all scrollable areas ── */
 .fat-scroll, #spelling-word-list, #spell-picker-list, #wordbank-review-list, #wpm-story-scroll, .word-bank-list, #spell-results-list {
@@ -42,15 +43,15 @@
 .fat-scroll::-webkit-scrollbar-track, #spelling-word-list::-webkit-scrollbar-track, #spell-picker-list::-webkit-scrollbar-track, #wordbank-review-list::-webkit-scrollbar-track, #wpm-story-scroll::-webkit-scrollbar-track, .word-bank-list::-webkit-scrollbar-track, #spell-results-list::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
 .fat-scroll::-webkit-scrollbar-thumb, #spelling-word-list::-webkit-scrollbar-thumb, #spell-picker-list::-webkit-scrollbar-thumb, #wordbank-review-list::-webkit-scrollbar-thumb, #wpm-story-scroll::-webkit-scrollbar-thumb, .word-bank-list::-webkit-scrollbar-thumb, #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--purple), var(--purple-light)); border-radius: 10px; border: 3px solid var(--section); min-height: 40px; }
 .fat-scroll::-webkit-scrollbar-thumb:hover, #spelling-word-list::-webkit-scrollbar-thumb:hover, #spell-picker-list::-webkit-scrollbar-thumb:hover, #wordbank-review-list::-webkit-scrollbar-thumb:hover, #wpm-story-scroll::-webkit-scrollbar-thumb:hover, .word-bank-list::-webkit-scrollbar-thumb:hover, #spell-results-list::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
-body.bedtime .fat-scroll, body.bedtime #spelling-word-list, body.bedtime #spell-picker-list, body.bedtime #wordbank-review-list, body.bedtime #wpm-story-scroll, body.bedtime .word-bank-list, body.bedtime #spell-results-list { scrollbar-color: #4a4a6a #252540; }
+body.bedtime .fat-scroll, body.bedtime #spelling-word-list, body.bedtime #spell-picker-list, body.bedtime #wordbank-review-list, body.bedtime #wpm-story-scroll, body.bedtime .word-bank-list, body.bedtime #spell-results-list { scrollbar-color: #4a4a3a #252540; }
 body.bedtime .fat-scroll::-webkit-scrollbar-track, body.bedtime #spelling-word-list::-webkit-scrollbar-track, body.bedtime #spell-picker-list::-webkit-scrollbar-track, body.bedtime #wordbank-review-list::-webkit-scrollbar-track, body.bedtime #wpm-story-scroll::-webkit-scrollbar-track, body.bedtime .word-bank-list::-webkit-scrollbar-track, body.bedtime #spell-results-list::-webkit-scrollbar-track { background: #252540; }
-body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb, body.bedtime #wpm-story-scroll::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #6a5a8a, #4a4a6a); border-color: #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb, body.bedtime #wpm-story-scroll::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
 
 .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .blob { position: absolute; border-radius: 50%; opacity: 0.06; filter: blur(60px); animation: drift 12s ease-in-out infinite alternate; }
-.blob1 { width: 400px; height: 400px; background: var(--purple); top: -100px; left: -100px; }
-.blob2 { width: 300px; height: 300px; background: var(--gold); top: 60%; right: -80px; animation-delay: -4s; }
-.blob3 { width: 350px; height: 350px; background: var(--green); bottom: -80px; left: 30%; animation-delay: -8s; }
+.blob1 { width: 400px; height: 400px; background: var(--gold); top: -100px; left: -100px; }
+.blob2 { width: 300px; height: 300px; background: var(--coral); top: 60%; right: -80px; animation-delay: -4s; }
+.blob3 { width: 350px; height: 350px; background: var(--ocean); bottom: -80px; left: 30%; animation-delay: -8s; }
 @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.08); } }
 
 .app { position: relative; z-index: 1; max-width: 100%; margin: 0 auto; padding: 20px 20px 65px; }
@@ -102,8 +103,8 @@ header { text-align: center; padding: 24px 0 16px; }
   font-weight: 800; font-size: 0.82rem; color: var(--muted);
 }
 .cat-btn svg { width: 38px; height: 38px; display: block; margin: 0 auto 6px; }
-.cat-btn:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(155,48,255,0.15); }
-.cat-btn.selected { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(155,48,255,0.15); }
+.cat-btn:hover { border-color: var(--purple-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,107,53,0.15); }
+.cat-btn.selected { border-color: var(--purple); background: var(--purple-soft); color: var(--purple-deep); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,107,53,0.15); }
 /* Keep emoji class for backwards compat but hide it */
 .cat-btn .emoji { display: none; }
 
@@ -113,15 +114,15 @@ header { text-align: center; padding: 24px 0 16px; }
   background: linear-gradient(135deg, var(--purple), var(--purple-deep));
   color: #ffffff; font-family: 'Fredoka', sans-serif;
   font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 4px 18px rgba(155,48,255,0.3);
+  box-shadow: 0 4px 18px rgba(255,107,53,0.3);
   -webkit-appearance: none;
 }
-.btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(155,48,255,0.4); }
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,53,0.4); }
 .btn-main:active { transform: translateY(0); }
 .btn-main:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-green { background: linear-gradient(135deg, #6BCB77, #1BA053) !important; box-shadow: 0 4px 18px rgba(107,203,119,0.35) !important; color: #ffffff !important; }
+.btn-green { background: linear-gradient(135deg, #5CD85A, #27AE60) !important; box-shadow: 0 4px 18px rgba(92,216,90,0.35) !important; color: #ffffff !important; }
 .btn-coral { background: linear-gradient(135deg, #FF6B6B, #FF9A3C) !important; box-shadow: 0 4px 18px rgba(255,107,107,0.35) !important; color: #ffffff !important; }
-.btn-purple { background: linear-gradient(135deg, #A259FF, #FF6FD8) !important; box-shadow: 0 4px 18px rgba(162,89,255,0.3) !important; color: #ffffff !important; }
+.btn-purple { background: linear-gradient(135deg, #54A0FF, #2E86DE) !important; box-shadow: 0 4px 18px rgba(84,160,255,0.3) !important; color: #ffffff !important; }
 .btn-yellow { background: linear-gradient(135deg, #FFD93D, #FFA500) !important; box-shadow: 0 4px 18px rgba(255,165,0,0.3) !important; color: var(--ink) !important; }
 .btn-gray { background: linear-gradient(135deg, #aaa, #888) !important; box-shadow: 0 3px 12px rgba(0,0,0,0.15) !important; color: #ffffff !important; }
 .btn-outline {
@@ -167,7 +168,7 @@ input[type=range].speed-slider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
   width: 28px; height: 28px; border-radius: 50%;
   background: #ffffff; border: 4px solid var(--purple);
-  box-shadow: 0 2px 8px rgba(155,48,255,0.3);
+  box-shadow: 0 2px 8px rgba(255,107,53,0.3);
   cursor: pointer; transition: border-color 0.2s;
 }
 input[type=range].speed-slider::-webkit-slider-thumb:hover { border-color: var(--purple-deep); }
@@ -230,33 +231,33 @@ input[type=range].speed-slider::-webkit-slider-thumb:hover { border-color: var(-
 .spin-label { font-family: 'Fredoka'; font-size: 1.2rem; color: var(--purple); }
 .ai-badge { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--purple-deep)); color: white; font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
 
-.hint-tip { text-align: center; font-size: 0.85rem; color: var(--purple-deep); font-weight: 800; margin: 10px 0; padding: 10px 14px; background: linear-gradient(135deg, #f3e8ff, #e8d5ff); border: 2px solid var(--purple-light); border-radius: 14px; box-shadow: 0 2px 8px rgba(74,26,107,0.1); }
+.hint-tip { text-align: center; font-size: 0.85rem; color: var(--purple-deep); font-weight: 800; margin: 10px 0; padding: 10px 14px; background: linear-gradient(135deg, #fff3e8, #ffe8d5); border: 2px solid var(--purple-light); border-radius: 14px; box-shadow: 0 2px 8px rgba(200,120,50,0.1); }
 
 /* ── Bedtime Mode ── */
 body.bedtime { background: #1a1a2e; color: #F0EBE0; }
 body.bedtime .card { background: #252540; border-color: #3a3a5c; }
 body.bedtime .card-title, body.bedtime #story-text { color: #F0EBE0; }
-body.bedtime .opt-btn { background: #252540; border-color: #3a3a5c; color: #d0c8e8; }
-body.bedtime .section-label { color: #9090b0; }
+body.bedtime .opt-btn { background: #252540; border-color: #3a3a5c; color: #e0d8c0; }
+body.bedtime .section-label { color: #a09878; }
 body.bedtime .opt-btn.sel-grade { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
-body.bedtime .opt-btn.sel-words { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
-body.bedtime .cat-btn { background: #2a2a48; border-color: transparent; color: #9090b0; }
-body.bedtime .cat-btn.selected { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
-body.bedtime .voice-btn { background: #252540; border-color: #3a3a5c; color: #d0c8e8; }
-body.bedtime .voice-btn.sel-voice { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+body.bedtime .opt-btn.sel-words { background: #3a2a1a; border-color: #8a6a3a; color: #d4a76a; }
+body.bedtime .cat-btn { background: #2a2a28; border-color: transparent; color: #a09878; }
+body.bedtime .cat-btn.selected { background: #3a2a1a; border-color: #8a6a3a; color: #d4a76a; }
+body.bedtime .voice-btn { background: #252540; border-color: #3a3a5c; color: #e0d8c0; }
+body.bedtime .voice-btn.sel-voice { background: #3a2a1a; border-color: #8a6a3a; color: #d4a76a; }
 body.bedtime .progress-wrap, body.bedtime .vs-bar-wrap { background: #3a3a5c; }
 body.bedtime .or-divider::before, body.bedtime .or-divider::after { background: #3a3a5c; }
 footer { display: none; }
 footer strong { color: var(--purple-deep); }
 .foot-sub { font-size: 0.72rem; opacity: 0.7; }
-body.bedtime footer { color: #6060a0; }
-body.bedtime footer strong { color: #9070c0; }
+body.bedtime footer { color: #807060; }
+body.bedtime footer strong { color: #b08850; }
 body.bedtime .bg .blob { opacity: 0.03; }
-body.bedtime .hint-tip { background: linear-gradient(135deg, #2a1a4a, #1e1040); color: #c090e0; border-color: #5a3a8a; }
-body.bedtime .encouragement { background: #2a2a48; color: #d0c8e8; }
+body.bedtime .hint-tip { background: linear-gradient(135deg, #3a2a1a, #2a1a0a); color: #d4a76a; border-color: #8a5a3a; }
+body.bedtime .encouragement { background: #2a2a28; color: #e0d8c0; }
 
 .bedtime-toggle { position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; border-radius: 10px; transition: background 0.2s; }
-.bedtime-toggle:hover { background: rgba(155,48,255,0.1); }
+.bedtime-toggle:hover { background: rgba(255,107,53,0.1); }
 header { position: relative; }
 
 /* ── Reread badge ── */
@@ -271,8 +272,8 @@ header { position: relative; }
 .parent-bar-btn { background: var(--purple-soft); border: 2px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
-body.bedtime .parent-bar-btn { background: #2a1a4a; border-color: #3a3a5c; color: #c090e0; }
-body.bedtime .parent-bar-btn:hover { background: #7a4aaa; border-color: #7a4aaa; color: #fff; }
+body.bedtime .parent-bar-btn { background: #3a2a1a; border-color: #3a3a5c; color: #d4a76a; }
+body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a; color: #fff; }
 #btn-go-home { transition: all 0.2s; }
 body.bedtime #btn-go-home { background: #2a6a3a; border-color: #2a6a3a; color: #d0f0d0; }
 
@@ -283,7 +284,7 @@ body.bedtime #btn-go-home { background: #2a6a3a; border-color: #2a6a3a; color: #
 .spell-study-title { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 8px; padding-top: 8px; }
 .spell-study-subtitle { text-align: center; color: var(--muted); font-weight: 700; font-size: 0.88rem; margin-bottom: 20px; }
 .spell-study-card { background: var(--card); border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; border: 2.5px solid var(--border); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 16px; }
-.spell-study-card:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(155,48,255,0.1); }
+.spell-study-card:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,107,53,0.1); }
 .spell-study-card:active { transform: scale(0.98); }
 .spell-study-card.is-red { border-left: 5px solid var(--coral); }
 .spell-study-num { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--muted); min-width: 32px; text-align: center; }
@@ -296,12 +297,12 @@ body.bedtime #btn-go-home { background: #2a6a3a; border-color: #2a6a3a; color: #
 .spell-study-fab button { padding: 10px 18px; border-radius: 50px; border: 2px solid var(--border); background: var(--card); color: var(--muted); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.1); transition: all 0.2s; }
 .spell-study-fab button:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
 body.bedtime .spell-study-overlay { background: #1a1a2e; }
-body.bedtime .spell-study-title { color: #c090e0; }
+body.bedtime .spell-study-title { color: #d4a76a; }
 body.bedtime .spell-study-card { background: #252540; border-color: #3a3a5c; }
-body.bedtime .spell-study-word { color: #c090e0; }
-body.bedtime .spell-study-syllables { color: #d0c8e8; }
-body.bedtime .spell-study-def { color: #8080b0; }
-body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5c; color: #a080c0; }
+body.bedtime .spell-study-word { color: #d4a76a; }
+body.bedtime .spell-study-syllables { color: #e0d8c0; }
+body.bedtime .spell-study-def { color: #908870; }
+body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5c; color: #b09060; }
 @media (min-width: 1024px) {
   .spell-study-word { font-size: 2.2rem; }
   .spell-study-card { padding: 24px 30px; }
@@ -366,27 +367,27 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
 }
 #story-scroll-container::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
 #story-scroll-container::-webkit-scrollbar-thumb:active { background: var(--purple-deep); }
-body.bedtime #story-scroll-container { scrollbar-color: #4a4a6a #252540; }
+body.bedtime #story-scroll-container { scrollbar-color: #4a4a3a #252540; }
 body.bedtime #story-scroll-container::-webkit-scrollbar-track { background: #252540; }
-body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #6a5a8a, #4a4a6a); border-color: #252540; }
+body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
 body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #7a6a9a; }
 
 /* ── Word Bank Review Screen ── */
 .wb-review-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; margin-bottom: 8px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; }
-.wb-review-item:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(155,48,255,0.12); }
+.wb-review-item:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.12); }
 .wb-review-item:active { transform: translateY(0); }
 .wb-review-word { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--purple); }
 .wb-review-hint { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
 .wb-review-tap { font-size: 0.72rem; font-weight: 800; color: var(--purple-light); }
-body.bedtime .wb-review-item { background: #2a2a48; }
-body.bedtime .wb-review-word { color: #c090e0; }
+body.bedtime .wb-review-item { background: #2a2a28; }
+body.bedtime .wb-review-word { color: #d4a76a; }
 body.bedtime .wb-review-hint { color: #8080a8; }
 
 /* ── Spelling Words Screen ── */
 .spelling-header { text-align: center; margin-bottom: 16px; }
 .spelling-week { font-size: 0.82rem; font-weight: 800; color: var(--muted); margin-top: 4px; }
 .spelling-word-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; margin-bottom: 10px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; position: relative; overflow: hidden; }
-.spelling-word-card:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(155,48,255,0.12); }
+.spelling-word-card:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.12); }
 .spelling-word-card:active { transform: translateY(0); }
 .spelling-word-card.red-word { border-left: 5px solid var(--coral); }
 .spelling-word-num { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--muted); min-width: 24px; text-align: center; }
@@ -407,22 +408,22 @@ body.bedtime .wb-review-hint { color: #8080a8; }
 .spelling-count-bar { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; padding: 10px; background: var(--purple-soft); border-radius: 12px; }
 .spelling-count-num { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--purple); }
 .spelling-count-label { font-size: 0.82rem; font-weight: 800; color: var(--purple-deep); }
-body.bedtime .spelling-word-card { background: #2a2a48; }
+body.bedtime .spelling-word-card { background: #2a2a28; }
 body.bedtime .spelling-word-card.red-word { border-left-color: #ff6b6b; }
-body.bedtime .spelling-word-text { color: #c090e0; }
-body.bedtime .spelling-syllables { color: #d0c8e8; }
+body.bedtime .spelling-word-text { color: #d4a76a; }
+body.bedtime .spelling-syllables { color: #e0d8c0; }
 body.bedtime .spelling-word-def { color: #8080a8; }
-body.bedtime .spelling-count-bar { background: #2a1a4a; }
-body.bedtime .spelling-count-num { color: #c090e0; }
-body.bedtime .spelling-count-label { color: #a080c0; }
+body.bedtime .spelling-count-bar { background: #3a2a1a; }
+body.bedtime .spelling-count-num { color: #d4a76a; }
+body.bedtime .spelling-count-label { color: #b09060; }
 .spell-def-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
-body.bedtime .spell-def-spinner { border-color: #3a3a5c; border-top-color: #7a4aaa; }
+body.bedtime .spell-def-spinner { border-color: #3a3a5c; border-top-color: #8a6a3a; }
 
 /* ── Spelling Word Picker ── */
 .spell-picker-word { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; margin-bottom: 6px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; user-select: none; -webkit-user-select: none; }
 .spell-picker-word:active { transform: scale(0.98); }
-.spell-picker-word.picked { background: rgba(155,48,255,0.12); border-color: var(--purple); }
+.spell-picker-word.picked { background: rgba(255,107,53,0.12); border-color: var(--purple); }
 .spell-picker-word.picked .spell-picker-check { background: var(--purple); color: #fff; }
 .spell-picker-check { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; flex-shrink: 0; transition: all 0.2s; background: var(--card); }
 .spell-picker-label { font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
@@ -431,14 +432,14 @@ body.bedtime .spell-def-spinner { border-color: #3a3a5c; border-top-color: #7a4a
 .spell-select-all { display: inline-block; padding: 8px 22px; border-radius: 12px; border: 2.5px solid var(--purple); background: var(--purple-soft); font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--purple-deep); cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
 .spell-select-all:hover { background: var(--purple); color: #fff; }
 .spell-select-all.all-selected { background: var(--purple); color: #fff; }
-body.bedtime .spell-picker-word { background: #2a2a48; }
-body.bedtime .spell-picker-word.picked { background: rgba(155,48,255,0.2); border-color: #7a4aaa; }
+body.bedtime .spell-picker-word { background: #2a2a28; }
+body.bedtime .spell-picker-word.picked { background: rgba(255,107,53,0.2); border-color: #8a6a3a; }
 body.bedtime .spell-picker-check { background: #1a1a30; border-color: #3a3a5c; }
-body.bedtime .spell-picker-word.picked .spell-picker-check { background: #7a4aaa; }
-body.bedtime .spell-picker-label { color: #d0c8e8; }
+body.bedtime .spell-picker-word.picked .spell-picker-check { background: #8a6a3a; }
+body.bedtime .spell-picker-label { color: #e0d8c0; }
 body.bedtime .spell-picker-bar { background: #252540; border-color: #3a3a5c; }
-body.bedtime .spell-select-all { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
-body.bedtime .spell-select-all.all-selected { background: #7a4aaa; color: #fff; }
+body.bedtime .spell-select-all { background: #3a2a1a; border-color: #8a6a3a; color: #d4a76a; }
+body.bedtime .spell-select-all.all-selected { background: #8a6a3a; color: #fff; }
 
 /* ── Spelling Practice (Multiple Choice) ── */
 .spell-practice-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
@@ -469,7 +470,7 @@ body.bedtime .spell-select-all.all-selected { background: #7a4aaa; color: #fff; 
 .spell-result-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; margin-bottom: 4px; font-weight: 700; font-size: 0.95rem; }
 .spell-result-item.got-right { background: #EFFFF4; color: #1B7A3E; }
 .spell-result-item.got-wrong { background: #FFF0F0; color: #e74c3c; }
-body.bedtime .spell-choice-btn { background: #2a2a48; border-color: #3a3a5c; color: #d0c8e8; }
+body.bedtime .spell-choice-btn { background: #2a2a28; border-color: #3a3a5c; color: #e0d8c0; }
 body.bedtime .spell-choice-btn.correct { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
 body.bedtime .spell-choice-btn.wrong { background: #3a1a1a; border-color: #8a4a4a; color: #e8a0a0; }
 body.bedtime .spell-choice-btn.reveal { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
@@ -492,14 +493,14 @@ body.bedtime .spell-result-item.got-wrong { background: #3a1a1a; color: #e8a0a0;
 .spell-round-label { display: inline-block; padding: 4px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .spell-round-label.round-mc { background: var(--purple-soft); color: var(--purple-deep); }
 .spell-round-label.round-fill { background: #FFF4E6; color: #C47000; }
-body.bedtime .spell-fill-display .given { color: #c090e0; }
+body.bedtime .spell-fill-display .given { color: #d4a76a; }
 body.bedtime .spell-fill-display .blank { color: #3a3a5c; }
 body.bedtime .spell-fill-display .typed { color: #8adca0; }
-body.bedtime .spell-fill-input { background: #2a2a48; border-color: #3a3a5c; color: #d0c8e8; }
-body.bedtime .spell-fill-input:focus { border-color: #7a4aaa; }
+body.bedtime .spell-fill-input { background: #2a2a28; border-color: #3a3a5c; color: #e0d8c0; }
+body.bedtime .spell-fill-input:focus { border-color: #8a6a3a; }
 body.bedtime .spell-fill-input.correct { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
 body.bedtime .spell-fill-input.wrong { background: #3a1a1a; border-color: #8a4a4a; color: #e8a0a0; }
-body.bedtime .spell-round-label.round-mc { background: #2a1a4a; color: #c090e0; }
+body.bedtime .spell-round-label.round-mc { background: #3a2a1a; color: #d4a76a; }
 body.bedtime .spell-round-label.round-fill { background: #3a2a1a; color: #e0b060; }
 
 /* ── Spelling Quiz (Full Test) ── */
@@ -513,8 +514,8 @@ body.bedtime .spell-round-label.round-fill { background: #3a2a1a; color: #e0b060
 .quiz-btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
 .quiz-countdown { font-family: 'Fredoka', sans-serif; font-size: 5rem; color: var(--purple); text-align: center; animation: quizPulse 0.6s ease; }
 @keyframes quizPulse { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
-body.bedtime .quiz-input { background: #2a2a48; border-color: #3a3a5c; color: #d0c8e8; }
-body.bedtime .quiz-input:focus { border-color: #7a4aaa; }
+body.bedtime .quiz-input { background: #2a2a28; border-color: #3a3a5c; color: #e0d8c0; }
+body.bedtime .quiz-input:focus { border-color: #8a6a3a; }
 body.bedtime .quiz-input.correct { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
 body.bedtime .quiz-input.wrong { background: #3a1a1a; border-color: #8a4a4a; color: #e8a0a0; }
 body.bedtime .quiz-correction { color: #8adca0; }
@@ -522,7 +523,7 @@ body.bedtime .quiz-correction { color: #8adca0; }
 /* ── Dictionary Popup ── */
 .dict-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; display: flex; align-items: flex-end; justify-content: center; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.dict-popup { width: 100%; max-width: 500px; background: var(--card); border-radius: 24px 24px 0 0; padding: 24px 20px 30px; box-shadow: 0 -4px 30px rgba(74,26,107,0.2); animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.dict-popup { width: 100%; max-width: 500px; background: var(--card); border-radius: 24px 24px 0 0; padding: 24px 20px 30px; box-shadow: 0 -4px 30px rgba(200,120,50,0.2); animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1); }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .dict-word { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 4px; }
 .dict-definition { font-size: 1.1rem; font-weight: 700; color: var(--ink); text-align: center; line-height: 1.6; margin: 12px 0 18px; min-height: 2em; }
@@ -532,9 +533,9 @@ body.bedtime .quiz-correction { color: #8adca0; }
 .dict-speaker-btn:hover { background: var(--purple); color: #fff; }
 .dict-close-btn { display: block; width: 100%; padding: 14px; border-radius: var(--r); border: none; background: linear-gradient(135deg, var(--green), #1BA053); color: #fff; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(107,203,119,0.35); }
 body.bedtime .dict-popup { background: #252540; }
-body.bedtime .dict-word { color: #c090e0; }
-body.bedtime .dict-definition { color: #d0c8e8; }
-body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; color: #c090e0; }
+body.bedtime .dict-word { color: #d4a76a; }
+body.bedtime .dict-definition { color: #e0d8c0; }
+body.bedtime .dict-speaker-btn { background: #3a2a1a; border-color: #8a6a3a; color: #d4a76a; }
 
 /* ── WPM Timer ── */
 .wpm-timer-bar { text-align: center; margin-bottom: 14px; }
@@ -552,8 +553,8 @@ body.bedtime .dict-speaker-btn { background: #2a1a4a; border-color: #7a4aaa; col
 .wpm-history-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.6s; }
 .wpm-history-num { font-family: 'Fredoka', sans-serif; font-size: 1rem; color: var(--ink); width: 50px; text-align: right; flex-shrink: 0; }
 .wpm-improvement { display: inline-block; background: #EFFFF4; border: 2px solid var(--green); border-radius: 12px; padding: 6px 14px; font-weight: 800; font-size: 0.9rem; color: #1B7A3E; margin-top: 8px; }
-body.bedtime .wpm-benchmark { background: #2a2a48; }
-body.bedtime .wpm-benchmark-range { color: #d0c8e8; }
+body.bedtime .wpm-benchmark { background: #2a2a28; }
+body.bedtime .wpm-benchmark-range { color: #e0d8c0; }
 body.bedtime .wpm-history-bar-wrap { background: #3a3a5c; }
 body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
 
@@ -575,15 +576,15 @@ body.bedtime .wpm-improvement { background: #1a3a2a; border-color: #4a8a5a; colo
 .btn-rm-listen { background: var(--purple); color: #fff; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 body.bedtime .reading-mode-overlay { background: #1a1a2e; }
-body.bedtime .reading-mode-title { color: #c090e0; }
+body.bedtime .reading-mode-title { color: #d4a76a; }
 body.bedtime .reading-mode-text { color: #F0EBE0; }
-body.bedtime .reading-mode-text .word-span:hover { background: #2a1a4a; }
+body.bedtime .reading-mode-text .word-span:hover { background: #3a2a1a; }
 body.bedtime .reading-mode-text .word-span.active-word { background: #B8860B; color: #F0EBE0; box-shadow: 0 2px 8px rgba(184,134,11,0.4); }
-body.bedtime .btn-rm-close { background: #252540; border-color: #3a3a5c !important; color: #a080c0; }
-body.bedtime .btn-rm-listen { background: #7a4aaa; }
+body.bedtime .btn-rm-close { background: #252540; border-color: #3a3a5c !important; color: #b09060; }
+body.bedtime .btn-rm-listen { background: #8a6a3a; }
 
 /* ── Floating Play/Pause Button (both modes) ── */
-.float-tts-btn { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 250; padding: 14px 28px; border-radius: 50px; border: none; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(155,48,255,0.35); transition: all 0.2s; display: none; }
+.float-tts-btn { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 250; padding: 14px 28px; border-radius: 50px; border: none; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(255,107,53,0.35); transition: all 0.2s; display: none; }
 .float-tts-btn:active { transform: translateX(-50%) scale(0.95); }
 .float-tts-btn.playing { background: var(--coral); color: #fff; }
 .float-tts-btn.paused { background: var(--green); color: #fff; }
@@ -644,6 +645,49 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
   .reading-mode-text { font-size: 2rem; line-height: 3.4rem; }
   .card { padding: 40px 48px; }
 }
+/* ── Kid Action Buttons ── */
+.kid-action-btn {
+  width: 100%; border: none; border-radius: 28px;
+  padding: 20px 22px; display: flex; align-items: center; gap: 16px;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+  position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent; -webkit-appearance: none;
+}
+.kid-action-btn::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 45%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent);
+  border-radius: 28px 28px 0 0; pointer-events: none;
+}
+.kid-action-btn:hover { transform: translateY(-3px) scale(1.01); }
+.kid-action-btn:active { transform: scale(0.97); }
+.kid-action-icon {
+  width: 60px; height: 60px; border-radius: 18px;
+  background: rgba(255,255,255,0.28); display: flex;
+  align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;
+}
+.kid-action-label {
+  color: white; font-family: 'Fredoka', sans-serif;
+  font-size: 1.4rem; font-weight: 700;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.12); letter-spacing: 0.5px;
+}
+body.bedtime .kid-action-btn { opacity: 0.85; }
+
+/* ── Mascot Animations ── */
+@keyframes mascotWiggle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(-2deg); }
+  75% { transform: translateY(-5px) rotate(2deg); }
+}
+body.bedtime #mascot-zone { display: none; }
+body.bedtime #home-stats-bar { display: none; }
+
+/* ── Desktop: action buttons side by side ── */
+@media (min-width: 1024px) {
+  #screen-pick .home-actions-row { flex-direction: row !important; }
+  .kid-action-btn { flex: 1; flex-direction: column; text-align: center; padding: 28px 16px; }
+  .kid-action-label { font-size: 1.2rem; }
+}
+
 </style>
 </head>
 <body>
@@ -655,16 +699,61 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
 
 <div class="app">
   <header>
-    <div class="logo-mark">
-      <div class="bar bar1"></div>
-      <div class="bar bar2"></div>
-      <div class="bar bar3"></div>
-    </div>
-    <div class="logo">Read<span>Up!</span></div>
+    <div class="logo" style="color:var(--purple);text-shadow:0 3px 0 var(--purple-deep), 0 6px 20px rgba(255,107,53,0.15);letter-spacing:2px;">ReadUp!</div>
     <button class="bedtime-toggle" id="btn-bedtime" title="Bedtime Mode">🌙</button>
-    <div class="tagline">Reading is a superpower.</div>
-    <div class="nonprofit-badge">A Transforming Youth, Inc. Program</div>
-    <span class="dedication">✨ Inspired by Kamryn &amp; Christopher II ✨</span>
+    <!-- Bookie the Book Owl mascot -->
+    <div id="mascot-zone" style="display:flex;flex-direction:column;align-items:center;margin:4px 0 0;gap:4px;">
+      <div id="bookie-speech" style="background:white;border-radius:20px;padding:10px 18px;font-size:1rem;font-weight:700;color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,0.06);text-align:center;max-width:280px;position:relative;animation:fadeUp 0.4s ease both;">
+        Ready to read? Let's go! 🚀
+        <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white;"></div>
+      </div>
+      <svg id="bookie-mascot" viewBox="0 0 120 130" width="130" height="130" style="animation:mascotWiggle 2.5s ease-in-out infinite;">
+        <ellipse cx="60" cy="124" rx="32" ry="6" fill="#E8C547" opacity="0.3"/>
+        <ellipse cx="60" cy="72" rx="38" ry="42" fill="#FF9F43"/>
+        <ellipse cx="60" cy="74" rx="33" ry="36" fill="#FECA57"/>
+        <ellipse cx="60" cy="82" rx="22" ry="20" fill="#FFF9E6"/>
+        <path d="M32 36 L24 14 L42 30Z" fill="#FF9F43"/>
+        <path d="M88 36 L96 14 L78 30Z" fill="#FF9F43"/>
+        <path d="M34 36 L28 18 L42 31Z" fill="#FECA57"/>
+        <path d="M86 36 L92 18 L78 31Z" fill="#FECA57"/>
+        <circle cx="44" cy="46" r="16" fill="white"/>
+        <circle cx="76" cy="46" r="16" fill="white"/>
+        <circle cx="46" cy="47" r="9" fill="#2C3E50"/>
+        <circle cx="74" cy="47" r="9" fill="#2C3E50"/>
+        <circle cx="48" cy="45" r="4" fill="white"/>
+        <circle cx="76" cy="45" r="4" fill="white"/>
+        <circle cx="44" cy="51" r="2" fill="white" opacity="0.5"/>
+        <circle cx="72" cy="51" r="2" fill="white" opacity="0.5"/>
+        <circle cx="44" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+        <circle cx="76" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+        <path d="M58 46 L62 46" stroke="#E55D2B" stroke-width="2.5"/>
+        <path d="M54 56 L60 66 L66 56Z" fill="#FF6B35"/>
+        <path d="M50 68 Q60 78 70 68" fill="none" stroke="#E17055" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="34" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
+        <circle cx="86" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
+        <path d="M18 65 Q10 72 16 82 Q22 78 26 70Z" fill="#FF9F43"/>
+        <path d="M102 65 Q110 72 104 82 Q98 78 94 70Z" fill="#FF9F43"/>
+        <rect x="8" y="72" width="16" height="12" rx="2" fill="#54A0FF" transform="rotate(-10 16 78)"/>
+        <rect x="8" y="72" width="8" height="12" rx="1.5" fill="#2E86DE" transform="rotate(-10 16 78)"/>
+        <line x1="16" y1="73" x2="16" y2="83" stroke="#1B6CB5" stroke-width="1" transform="rotate(-10 16 78)"/>
+        <ellipse cx="46" cy="112" rx="10" ry="5" fill="#FF6B35"/>
+        <ellipse cx="74" cy="112" rx="10" ry="5" fill="#FF6B35"/>
+        <line x1="40" y1="112" x2="40" y2="117" stroke="#E17055" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="46" y1="112" x2="46" y2="118" stroke="#E17055" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="52" y1="112" x2="52" y2="117" stroke="#E17055" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="68" y1="112" x2="68" y2="117" stroke="#E17055" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="74" y1="112" x2="74" y2="118" stroke="#E17055" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="80" y1="112" x2="80" y2="117" stroke="#E17055" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <!-- Mini stats bar -->
+    <div id="home-stats-bar" style="display:flex;justify-content:center;gap:18px;margin-top:4px;">
+      <div style="text-align:center;"><span style="font-size:1.3rem;">🔥</span><div style="font-family:'Fredoka';font-weight:700;font-size:0.95rem;color:#FF6B35;" id="home-streak">0 days</div></div>
+      <div style="width:2px;background:rgba(0,0,0,0.06);border-radius:4px;"></div>
+      <div style="text-align:center;"><span style="font-size:1.3rem;">⭐</span><div style="font-family:'Fredoka';font-weight:700;font-size:0.95rem;color:#F9A825;" id="home-stories-count">0 stories</div></div>
+      <div style="width:2px;background:rgba(0,0,0,0.06);border-radius:4px;"></div>
+      <div style="text-align:center;"><span style="font-size:1.3rem;">💪</span><div style="font-family:'Fredoka';font-weight:700;font-size:0.95rem;color:#5CD85A;" id="home-words-count">0 words</div></div>
+    </div>
   </header>
 
   <!-- SCREEN: Welcome flow (first time only) -->
@@ -776,110 +865,112 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
       </div>
       <div class="categories">
         <button class="cat-btn selected" data-cat="animals">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" fill="#C9A0DC" opacity="0.3"/><path d="M12 12c-2-4-6-3-6 0s3 4 5 3" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M28 12c2-4 6-3 6 0s-3 4-5 3" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><ellipse cx="20" cy="20" rx="9" ry="8" fill="#9B30FF"/><circle cx="16.5" cy="18" r="1.5" fill="#fff"/><circle cx="23.5" cy="18" r="1.5" fill="#fff"/><ellipse cx="20" cy="22" rx="2.5" ry="1.5" fill="#6B2D8B"/><path d="M15 26c0 3 2 6 5 6s5-3 5-6" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" fill="#FFB088" opacity="0.3"/><path d="M12 12c-2-4-6-3-6 0s3 4 5 3" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><path d="M28 12c2-4 6-3 6 0s-3 4-5 3" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><ellipse cx="20" cy="20" rx="9" ry="8" fill="#FF9F43"/><circle cx="16.5" cy="18" r="1.5" fill="#fff"/><circle cx="23.5" cy="18" r="1.5" fill="#fff"/><ellipse cx="20" cy="22" rx="2.5" ry="1.5" fill="#E55D2B"/><path d="M15 26c0 3 2 6 5 6s5-3 5-6" stroke="#E55D2B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
           Animals
         </button>
         <button class="cat-btn" data-cat="space">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#4A1A6B" opacity="0.15"/><path d="M20 6L22 14H28L23 19L25 27L20 22L15 27L17 19L12 14H18L20 6Z" fill="#9B30FF" stroke="#6B2D8B" stroke-width="1"/><circle cx="10" cy="10" r="1.5" fill="#C9A0DC"/><circle cx="32" cy="12" r="1" fill="#C9A0DC"/><circle cx="8" cy="30" r="1" fill="#C9A0DC"/><circle cx="33" cy="28" r="1.5" fill="#C9A0DC"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#CC4A1A" opacity="0.15"/><path d="M20 6L22 14H28L23 19L25 27L20 22L15 27L17 19L12 14H18L20 6Z" fill="#FF9F43" stroke="#E55D2B" stroke-width="1"/><circle cx="10" cy="10" r="1.5" fill="#FFB088"/><circle cx="32" cy="12" r="1" fill="#FFB088"/><circle cx="8" cy="30" r="1" fill="#FFB088"/><circle cx="33" cy="28" r="1.5" fill="#FFB088"/></svg>
           Space
         </button>
         <button class="cat-btn" data-cat="dinosaurs">
-          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="14" ry="10" fill="#C9A0DC" opacity="0.2"/><path d="M10 28c0-8 4-16 12-16 6 0 10 5 10 12" stroke="#6B2D8B" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="27" cy="16" r="2" fill="#9B30FF"/><circle cx="27" cy="16" r="0.8" fill="#fff"/><path d="M30 14c2-2 4-1 3 1" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round"/><path d="M10 28l-2 4M14 30l-1 4M28 28l1 4M24 30l1 4" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M8 22l-3-1M8 18l-3 0M8 25l-4 0" stroke="#9B30FF" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="14" ry="10" fill="#FFB088" opacity="0.2"/><path d="M10 28c0-8 4-16 12-16 6 0 10 5 10 12" stroke="#E55D2B" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="27" cy="16" r="2" fill="#FF9F43"/><circle cx="27" cy="16" r="0.8" fill="#fff"/><path d="M30 14c2-2 4-1 3 1" stroke="#E55D2B" stroke-width="1.5" stroke-linecap="round"/><path d="M10 28l-2 4M14 30l-1 4M28 28l1 4M24 30l1 4" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><path d="M8 22l-3-1M8 18l-3 0M8 25l-4 0" stroke="#FF9F43" stroke-width="1.5" stroke-linecap="round"/></svg>
           Dinosaurs
         </button>
         <button class="cat-btn" data-cat="ocean">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M4 22c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#C9A0DC" stroke-width="1.5" opacity="0.4"/><path d="M4 28c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#C9A0DC" stroke-width="1.5" opacity="0.25"/><path d="M20 10c-6 0-10 5-10 10 0 3 2 6 5 7l5-2 5 2c3-1 5-4 5-7 0-5-4-10-10-10z" fill="#9B30FF" opacity="0.85"/><circle cx="16" cy="17" r="1.5" fill="#fff"/><circle cx="24" cy="17" r="1.5" fill="#fff"/><path d="M30 16c3-5 6-2 4 1" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><path d="M4 22c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#FFB088" stroke-width="1.5" opacity="0.4"/><path d="M4 28c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#FFB088" stroke-width="1.5" opacity="0.25"/><path d="M20 10c-6 0-10 5-10 10 0 3 2 6 5 7l5-2 5 2c3-1 5-4 5-7 0-5-4-10-10-10z" fill="#FF9F43" opacity="0.85"/><circle cx="16" cy="17" r="1.5" fill="#fff"/><circle cx="24" cy="17" r="1.5" fill="#fff"/><path d="M30 16c3-5 6-2 4 1" stroke="#E55D2B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
           Ocean
         </button>
         <button class="cat-btn" data-cat="superheroes">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#9B30FF"/><circle cx="20" cy="12" r="3.5" fill="#4A1A6B"/><path d="M14 20h12l2 14H12l2-14z" fill="#6B2D8B"/><path d="M20 20v14" stroke="#9B30FF" stroke-width="2"/><path d="M16 20l-6 8" stroke="#C9A0DC" stroke-width="2.5" stroke-linecap="round"/><path d="M24 20l6 8" stroke="#C9A0DC" stroke-width="2.5" stroke-linecap="round"/><polygon points="20,3 21.5,6.5 25,6.5 22.2,8.8 23.2,12.3 20,10 16.8,12.3 17.8,8.8 15,6.5 18.5,6.5" fill="#FFD93D" opacity="0.8"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#FF9F43"/><circle cx="20" cy="12" r="3.5" fill="#CC4A1A"/><path d="M14 20h12l2 14H12l2-14z" fill="#E55D2B"/><path d="M20 20v14" stroke="#FF9F43" stroke-width="2"/><path d="M16 20l-6 8" stroke="#FFB088" stroke-width="2.5" stroke-linecap="round"/><path d="M24 20l6 8" stroke="#FFB088" stroke-width="2.5" stroke-linecap="round"/><polygon points="20,3 21.5,6.5 25,6.5 22.2,8.8 23.2,12.3 20,10 16.8,12.3 17.8,8.8 15,6.5 18.5,6.5" fill="#FFD93D" opacity="0.8"/></svg>
           Heroes
         </button>
         <button class="cat-btn" data-cat="magic">
-          <svg viewBox="0 0 40 40" fill="none"><line x1="8" y1="34" x2="32" y2="8" stroke="#6B2D8B" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="8" r="3" fill="#9B30FF"/><circle cx="32" cy="8" r="1.5" fill="#FFD93D"/><circle cx="14" cy="12" r="1.5" fill="#C9A0DC"/><circle cx="22" cy="8" r="1" fill="#C9A0DC"/><circle cx="28" cy="18" r="1" fill="#C9A0DC"/><path d="M24 14l2-3M26 16l3-1M25 12l3 1" stroke="#C9A0DC" stroke-width="1" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><line x1="8" y1="34" x2="32" y2="8" stroke="#E55D2B" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="8" r="3" fill="#FF9F43"/><circle cx="32" cy="8" r="1.5" fill="#FFD93D"/><circle cx="14" cy="12" r="1.5" fill="#FFB088"/><circle cx="22" cy="8" r="1" fill="#FFB088"/><circle cx="28" cy="18" r="1" fill="#FFB088"/><path d="M24 14l2-3M26 16l3-1M25 12l3 1" stroke="#FFB088" stroke-width="1" stroke-linecap="round"/></svg>
           Magic
         </button>
         <button class="cat-btn" data-cat="sports">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#9B30FF" opacity="0.15"/><circle cx="20" cy="20" r="10" fill="#9B30FF" stroke="#6B2D8B" stroke-width="1.5"/><path d="M10 20h20M20 10v20" stroke="#6B2D8B" stroke-width="1.2" opacity="0.5"/><path d="M13 12c2 2 5 3 7 3M27 28c-2-2-5-3-7-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FF9F43" opacity="0.15"/><circle cx="20" cy="20" r="10" fill="#FF9F43" stroke="#E55D2B" stroke-width="1.5"/><path d="M10 20h20M20 10v20" stroke="#E55D2B" stroke-width="1.2" opacity="0.5"/><path d="M13 12c2 2 5 3 7 3M27 28c-2-2-5-3-7-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>
           Sports
         </button>
         <button class="cat-btn" data-cat="cooking">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M10 18h20v4c0 6-4 10-10 10s-10-4-10-10v-4z" fill="#9B30FF" opacity="0.85"/><rect x="8" y="16" width="24" height="4" rx="2" fill="#6B2D8B"/><path d="M14 16v-4c0-2 1-4 3-4" stroke="#C9A0DC" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M20 16v-5c0-2 1-3 2-3" stroke="#C9A0DC" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M26 16v-3c0-2-1-3-2-3" stroke="#C9A0DC" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="24" r="1.5" fill="#fff" opacity="0.5"/><circle cx="22" cy="26" r="1" fill="#fff" opacity="0.5"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><path d="M10 18h20v4c0 6-4 10-10 10s-10-4-10-10v-4z" fill="#FF9F43" opacity="0.85"/><rect x="8" y="16" width="24" height="4" rx="2" fill="#E55D2B"/><path d="M14 16v-4c0-2 1-4 3-4" stroke="#FFB088" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M20 16v-5c0-2 1-3 2-3" stroke="#FFB088" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M26 16v-3c0-2-1-3-2-3" stroke="#FFB088" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="24" r="1.5" fill="#fff" opacity="0.5"/><circle cx="22" cy="26" r="1" fill="#fff" opacity="0.5"/></svg>
           Cooking
         </button>
         <button class="cat-btn" data-cat="friends">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="14" cy="14" r="5" fill="#9B30FF"/><circle cx="14" cy="14" r="2.5" fill="#4A1A6B"/><path d="M8 26c0-4 3-7 6-7s6 3 6 7" fill="#6B2D8B" opacity="0.7"/><circle cx="26" cy="14" r="5" fill="#C9A0DC"/><circle cx="26" cy="14" r="2.5" fill="#6B2D8B"/><path d="M20 26c0-4 3-7 6-7s6 3 6 7" fill="#9B30FF" opacity="0.5"/><circle cx="20" cy="32" r="1" fill="#FFD93D"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="14" cy="14" r="5" fill="#FF9F43"/><circle cx="14" cy="14" r="2.5" fill="#CC4A1A"/><path d="M8 26c0-4 3-7 6-7s6 3 6 7" fill="#E55D2B" opacity="0.7"/><circle cx="26" cy="14" r="5" fill="#FFB088"/><circle cx="26" cy="14" r="2.5" fill="#E55D2B"/><path d="M20 26c0-4 3-7 6-7s6 3 6 7" fill="#FF9F43" opacity="0.5"/><circle cx="20" cy="32" r="1" fill="#FFD93D"/></svg>
           Friends
         </button>
         <button class="cat-btn" data-cat="confidence">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#C9A0DC" opacity="0.2"/><path d="M20 8l2.5 7.5H30l-6.5 4.5 2.5 7.5L20 23l-6 4.5 2.5-7.5L10 15.5h7.5L20 8z" fill="#9B30FF" stroke="#6B2D8B" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#FFD93D"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#FFB088" opacity="0.2"/><path d="M20 8l2.5 7.5H30l-6.5 4.5 2.5 7.5L20 23l-6 4.5 2.5-7.5L10 15.5h7.5L20 8z" fill="#FF9F43" stroke="#E55D2B" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#FFD93D"/></svg>
           I Can Do It!
         </button>
         <button class="cat-btn" data-cat="blackhistory">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#4A1A6B" opacity="0.15"/><path d="M20 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8z" fill="#9B30FF" opacity="0.85"/><path d="M15 20l3 3 7-7" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#CC4A1A" opacity="0.15"/><path d="M20 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8z" fill="#FF9F43" opacity="0.85"/><path d="M15 20l3 3 7-7" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Black History
         </button>
         <button class="cat-btn" data-cat="helpers">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="6" rx="2" fill="#9B30FF"/><rect x="8" y="14" width="24" height="18" rx="3" fill="#6B2D8B" opacity="0.85"/><rect x="17" y="18" width="6" height="10" rx="1" fill="#FFD93D"/><rect x="13" y="22" width="14" height="3" rx="1" fill="#FFD93D"/><circle cx="30" cy="10" r="4" fill="#C9A0DC"/><path d="M28 10h4M30 8v4" stroke="#6B2D8B" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="6" rx="2" fill="#FF9F43"/><rect x="8" y="14" width="24" height="18" rx="3" fill="#E55D2B" opacity="0.85"/><rect x="17" y="18" width="6" height="10" rx="1" fill="#FFD93D"/><rect x="13" y="22" width="14" height="3" rx="1" fill="#FFD93D"/><circle cx="30" cy="10" r="4" fill="#FFB088"/><path d="M28 10h4M30 8v4" stroke="#E55D2B" stroke-width="1.5" stroke-linecap="round"/></svg>
           Helpers
         </button>
         <button class="cat-btn" data-cat="nature">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#FFD93D" opacity="0.9"/><path d="M8 28c2-8 5-12 12-12s10 4 12 12" fill="#6BCB77" opacity="0.8"/><path d="M20 16v12" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><path d="M14 32h12" stroke="#6B2D8B" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="16" r="3" fill="#9B30FF" opacity="0.4"/><circle cx="32" cy="20" r="2" fill="#9B30FF" opacity="0.3"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#FFD93D" opacity="0.9"/><path d="M8 28c2-8 5-12 12-12s10 4 12 12" fill="#6BCB77" opacity="0.8"/><path d="M20 16v12" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><path d="M14 32h12" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="16" r="3" fill="#FF9F43" opacity="0.4"/><circle cx="32" cy="20" r="2" fill="#FF9F43" opacity="0.3"/></svg>
           Outside
         </button>
         <button class="cat-btn" data-cat="emotions">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#C9A0DC" opacity="0.25"/><circle cx="20" cy="20" r="10" fill="#9B30FF" opacity="0.85"/><circle cx="16" cy="17" r="1.8" fill="#fff"/><circle cx="24" cy="17" r="1.8" fill="#fff"/><path d="M14 24c1.5 2.5 10.5 2.5 12 0" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="28" cy="10" r="2" fill="#FFD93D"/><path d="M26 8l3-2M30 10l2-1" stroke="#FFD93D" stroke-width="1" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FFB088" opacity="0.25"/><circle cx="20" cy="20" r="10" fill="#FF9F43" opacity="0.85"/><circle cx="16" cy="17" r="1.8" fill="#fff"/><circle cx="24" cy="17" r="1.8" fill="#fff"/><path d="M14 24c1.5 2.5 10.5 2.5 12 0" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="28" cy="10" r="2" fill="#FFD93D"/><path d="M26 8l3-2M30 10l2-1" stroke="#FFD93D" stroke-width="1" stroke-linecap="round"/></svg>
           Feelings
         </button>
         <button class="cat-btn" data-cat="trucks">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="4" y="16" width="22" height="12" rx="2" fill="#9B30FF"/><rect x="26" y="20" width="10" height="8" rx="2" fill="#6B2D8B"/><rect x="28" y="22" width="6" height="4" rx="1" fill="#C9A0DC" opacity="0.5"/><circle cx="11" cy="30" r="3" fill="#4A1A6B" stroke="#C9A0DC" stroke-width="1.5"/><circle cx="31" cy="30" r="3" fill="#4A1A6B" stroke="#C9A0DC" stroke-width="1.5"/><rect x="6" y="18" width="8" height="5" rx="1" fill="#FFD93D" opacity="0.6"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><rect x="4" y="16" width="22" height="12" rx="2" fill="#FF9F43"/><rect x="26" y="20" width="10" height="8" rx="2" fill="#E55D2B"/><rect x="28" y="22" width="6" height="4" rx="1" fill="#FFB088" opacity="0.5"/><circle cx="11" cy="30" r="3" fill="#CC4A1A" stroke="#FFB088" stroke-width="1.5"/><circle cx="31" cy="30" r="3" fill="#CC4A1A" stroke="#FFB088" stroke-width="1.5"/><rect x="6" y="18" width="8" height="5" rx="1" fill="#FFD93D" opacity="0.6"/></svg>
           Trucks
         </button>
         <button class="cat-btn" data-cat="princesses">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M20 6l-8 12h16L20 6z" fill="#FFD93D"/><circle cx="20" cy="6" r="2" fill="#9B30FF"/><circle cx="14" cy="14" r="1.5" fill="#9B30FF"/><circle cx="26" cy="14" r="1.5" fill="#9B30FF"/><rect x="10" y="18" width="20" height="16" rx="3" fill="#9B30FF"/><rect x="14" y="24" width="5" height="10" rx="1" fill="#6B2D8B"/><path d="M24 22v6" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/><path d="M22 25h4" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><path d="M20 6l-8 12h16L20 6z" fill="#FFD93D"/><circle cx="20" cy="6" r="2" fill="#FF9F43"/><circle cx="14" cy="14" r="1.5" fill="#FF9F43"/><circle cx="26" cy="14" r="1.5" fill="#FF9F43"/><rect x="10" y="18" width="20" height="16" rx="3" fill="#FF9F43"/><rect x="14" y="24" width="5" height="10" rx="1" fill="#E55D2B"/><path d="M24 22v6" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/><path d="M22 25h4" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/></svg>
           Princesses
         </button>
         <button class="cat-btn" data-cat="robots">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="12" y="14" width="16" height="16" rx="3" fill="#9B30FF"/><rect x="15" y="6" width="10" height="8" rx="3" fill="#6B2D8B"/><circle cx="18" cy="10" r="1.5" fill="#FFD93D"/><circle cx="22" cy="10" r="1.5" fill="#FFD93D"/><rect x="8" y="18" width="4" height="8" rx="2" fill="#C9A0DC"/><rect x="28" y="18" width="4" height="8" rx="2" fill="#C9A0DC"/><rect x="16" y="32" width="3" height="4" rx="1" fill="#6B2D8B"/><rect x="21" y="32" width="3" height="4" rx="1" fill="#6B2D8B"/><path d="M20 4v-2" stroke="#FFD93D" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="1" r="1.5" fill="#FFD93D"/><rect x="16" y="20" width="8" height="3" rx="1" fill="#C9A0DC" opacity="0.5"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><rect x="12" y="14" width="16" height="16" rx="3" fill="#FF9F43"/><rect x="15" y="6" width="10" height="8" rx="3" fill="#E55D2B"/><circle cx="18" cy="10" r="1.5" fill="#FFD93D"/><circle cx="22" cy="10" r="1.5" fill="#FFD93D"/><rect x="8" y="18" width="4" height="8" rx="2" fill="#FFB088"/><rect x="28" y="18" width="4" height="8" rx="2" fill="#FFB088"/><rect x="16" y="32" width="3" height="4" rx="1" fill="#E55D2B"/><rect x="21" y="32" width="3" height="4" rx="1" fill="#E55D2B"/><path d="M20 4v-2" stroke="#FFD93D" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="1" r="1.5" fill="#FFD93D"/><rect x="16" y="20" width="8" height="3" rx="1" fill="#FFB088" opacity="0.5"/></svg>
           Robots
         </button>
         <button class="cat-btn" data-cat="pirates">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M6 28c2-6 8-10 14-10s12 4 14 10" fill="#6B2D8B" opacity="0.3"/><path d="M8 30h24l-2 4H10l-2-4z" fill="#6B2D8B"/><path d="M20 8v20" stroke="#4A1A6B" stroke-width="2.5" stroke-linecap="round"/><path d="M20 8c6 0 10 3 10 6H20V8z" fill="#9B30FF"/><path d="M16 10l-2-3M24 10l2-3" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="22" r="4" fill="#FFD93D" opacity="0.6"/><path d="M18 21l4 2M22 21l-4 2" stroke="#4A1A6B" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><path d="M6 28c2-6 8-10 14-10s12 4 14 10" fill="#E55D2B" opacity="0.3"/><path d="M8 30h24l-2 4H10l-2-4z" fill="#E55D2B"/><path d="M20 8v20" stroke="#CC4A1A" stroke-width="2.5" stroke-linecap="round"/><path d="M20 8c6 0 10 3 10 6H20V8z" fill="#FF9F43"/><path d="M16 10l-2-3M24 10l2-3" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="22" r="4" fill="#FFD93D" opacity="0.6"/><path d="M18 21l4 2M22 21l-4 2" stroke="#CC4A1A" stroke-width="1.5" stroke-linecap="round"/></svg>
           Pirates
         </button>
         <button class="cat-btn" data-cat="airplanes">
-          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="16" ry="4" fill="#C9A0DC" opacity="0.2"/><path d="M6 20h28" stroke="#9B30FF" stroke-width="2.5" stroke-linecap="round"/><path d="M20 20l-6-8h-4l3 8-3 8h4l6-8z" fill="#9B30FF"/><path d="M20 20l8-4h4l-3 4 3 4h-4l-8-4z" fill="#6B2D8B"/><circle cx="20" cy="20" r="2" fill="#FFD93D"/><path d="M18 18l-2-6M22 18l2-6" stroke="#C9A0DC" stroke-width="1" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="16" ry="4" fill="#FFB088" opacity="0.2"/><path d="M6 20h28" stroke="#FF9F43" stroke-width="2.5" stroke-linecap="round"/><path d="M20 20l-6-8h-4l3 8-3 8h4l6-8z" fill="#FF9F43"/><path d="M20 20l8-4h4l-3 4 3 4h-4l-8-4z" fill="#E55D2B"/><circle cx="20" cy="20" r="2" fill="#FFD93D"/><path d="M18 18l-2-6M22 18l2-6" stroke="#FFB088" stroke-width="1" stroke-linecap="round"/></svg>
           Airplanes
         </button>
       </div>
       <button class="btn-main" id="btn-generate">✨ Make My Story!</button>
     </div>
 
-    <!-- Section 2-4: Action Cards -->
-    <div class="home-actions-row">
-      <!-- My Own Reading -->
-      <div class="card">
-        <div class="card-title" style="font-size:1.2rem;">📸 My Own Reading</div>
-        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Have a book page or worksheet? Snap a photo and read along!</p>
-        <button class="btn-main btn-coral" id="btn-scan-page" style="font-size:0.95rem;margin-top:0;">📸 Upload Passage</button>
-        <input type="file" id="scan-file-input" accept="image/*" style="display:none;">
-      </div>
+    <!-- Kid-Friendly Action Buttons -->
+    <div class="home-actions-row" style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+      <!-- My Own Reading — BLUE -->
+      <button class="kid-action-btn" id="btn-scan-page" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 8px 24px rgba(46,134,222,0.35);">
+        <div class="kid-action-icon">📸</div>
+        <div class="kid-action-label">My Own Reading</div>
+      </button>
+      <input type="file" id="scan-file-input" accept="image/*" style="display:none;">
 
-      <!-- Read Together -->
-      <div class="card">
-        <div class="card-title" style="font-size:1.2rem;">📖 Read Together</div>
-        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Read with a friend or parent — even from different devices!</p>
-        <button class="btn-main btn-purple" id="btn-together-start" style="font-size:0.95rem;margin-top:0;">📖 Start Together</button>
-      </div>
+      <!-- Read Together — GREEN -->
+      <button class="kid-action-btn" id="btn-together-start" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 8px 24px rgba(39,174,96,0.35);">
+        <div class="kid-action-icon">📖</div>
+        <div class="kid-action-label">Read Together</div>
+      </button>
 
-      <!-- Spelling Words -->
-      <div class="card">
-        <div class="card-title" style="font-size:1.2rem;">📝 Spelling Words</div>
-        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Upload your list. Study, practice, and take a quiz!</p>
-        <button class="btn-main" id="btn-spelling-start" style="font-size:0.95rem;margin-top:0;background:linear-gradient(135deg, #FF8C42, #FF6B6B);box-shadow:0 4px 14px rgba(255,107,107,0.35);">📝 Upload Words</button>
-        <input type="file" id="spelling-file-input" accept="image/*" style="display:none;">
-      </div>
+      <!-- Spelling Words — RED/CORAL -->
+      <button class="kid-action-btn" id="btn-spelling-start" style="background:linear-gradient(135deg, #FF6B6B, #EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
+        <div class="kid-action-icon">🔤</div>
+        <div class="kid-action-label">Spelling Words</div>
+      </button>
+      <input type="file" id="spelling-file-input" accept="image/*" style="display:none;">
     </div>
+
+    <!-- Word Bank quick access -->
+    <button class="btn-main btn-outline" id="btn-wordbank-home" style="margin-top:14px;border:3px dashed var(--gold) !important;color:var(--ink) !important;font-size:1rem;">
+      💾 My Word Bank
+    </button>
   </div>
 
 <!-- SCREEN: Read Together choice modal -->
@@ -1316,15 +1407,15 @@ body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
 </div>
 
 <footer>
-  <strong>ReadUp!</strong> &nbsp;|&nbsp; A Transforming Youth, Inc. Program &nbsp;|&nbsp; Pre-K – 3rd Grade<br>
-  <span class="foot-sub">✨ Inspired by Kamryn &amp; Christopher II ✨</span>
+  <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
+  <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <div class="parent-bar" id="parent-bar">
   <button class="parent-bar-btn" id="btn-go-home" style="background:var(--green);color:#fff;border-color:var(--green);">🏠 Home</button>
   <button class="parent-bar-btn" id="btn-open-parent">👤 Parent</button>
-  <button class="parent-bar-btn" id="btn-show-welcome">❓ How it works</button>
+  <button class="parent-bar-btn" id="btn-show-welcome">❓ Help</button>
 </div>
 
 <!-- Word saved toast -->
@@ -1632,6 +1723,45 @@ const S = {
   speed: 0.9,
   isAIStory: false,
 };
+
+// ── Bookie Mascot Speech Bubble ──────────────────────────
+const bookieGreetings = [
+  "Ready to read? Let's go! 🚀",
+  "Hey superstar! What's next? ✨",
+  "Let's learn something awesome! 🌟",
+  "Time for a reading adventure! 📚",
+  "You're getting so good at this! 💪",
+  "I missed you! Let's read! 💛",
+  "Pick one and let's have fun! 🎉",
+  "What should we read today? 📖",
+];
+function rotateBookie() {
+  const el = document.getElementById('bookie-speech');
+  if (!el || !document.getElementById('screen-pick')?.classList.contains('active')) return;
+  el.style.animation = 'none'; el.offsetHeight;
+  el.textContent = bookieGreetings[Math.floor(Math.random() * bookieGreetings.length)];
+  // Re-add the tail
+  const tail = document.createElement('div');
+  tail.style.cssText = 'position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white;';
+  el.appendChild(tail);
+  el.style.animation = 'fadeUp 0.4s ease both';
+}
+setInterval(rotateBookie, 5000);
+
+// ── Home Stats Bar (reads from localStorage) ─────────────
+function updateHomeStats() {
+  try {
+    const data = JSON.parse(localStorage.getItem('readup_dash') || '{}');
+    const allStories = data.stories ? Object.keys(data.stories).length : 0;
+    const totalReads = data.stories ? Object.values(data.stories).reduce((s,v) => s + (v.reads||0), 0) : 0;
+    const wordCount = data.wordBank ? Object.keys(data.wordBank).length : 0;
+    const el1 = document.getElementById('home-stories-count');
+    const el2 = document.getElementById('home-words-count');
+    if (el1) el1.textContent = allStories + (allStories === 1 ? ' story' : ' stories');
+    if (el2) el2.textContent = wordCount + (wordCount === 1 ? ' word' : ' words');
+  } catch(e) {}
+}
+updateHomeStats();
 
 function cleanupRoom() {
   // Remove room from Firebase so partner gets disconnect notification
