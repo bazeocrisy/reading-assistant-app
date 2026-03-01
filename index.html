@@ -923,15 +923,21 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
-  <!-- SCREEN: Pick (Kid Launchpad — just Bookie + 4 big buttons) -->
+  <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD K</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD L</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
       <button class="kid-action-btn" id="btn-go-story-builder" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 8px 24px rgba(255,107,53,0.4);">
         <div class="kid-action-icon">✨</div>
         <div class="kid-action-label">Read a Story!</div>
+      </button>
+
+      <!-- Time My Reading — PURPLE (standalone assessment) -->
+      <button class="kid-action-btn" id="btn-timed-reading-home" style="background:linear-gradient(135deg, #9B59B6, #8E44AD);box-shadow:0 8px 24px rgba(142,68,173,0.35);">
+        <div class="kid-action-icon">⏱</div>
+        <div class="kid-action-label">Time My Reading</div>
       </button>
 
       <!-- My Own Reading — BLUE -->
@@ -1525,17 +1531,76 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
+  <!-- SCREEN: Timed Reading Source Picker -->
+  <div class="screen" id="screen-timed-source">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">⏱ Time My Reading</div>
+
+      <!-- Grade selector for benchmarks -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;">
+        <span style="font-weight:800;font-size:0.85rem;color:var(--muted);">Grade:</span>
+        <div id="timed-grade-pills" style="display:flex;gap:6px;">
+          <button class="timed-grade-pill" data-grade="prek" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">Pre-K</button>
+          <button class="timed-grade-pill" data-grade="k" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">K</button>
+          <button class="timed-grade-pill sel" data-grade="1" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--purple);background:var(--purple-soft);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--purple);cursor:pointer;">1st</button>
+          <button class="timed-grade-pill" data-grade="2" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">2nd</button>
+          <button class="timed-grade-pill" data-grade="3" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">3rd</button>
+        </div>
+      </div>
+
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Choose where your reading passage comes from:</p>
+
+      <!-- AI Generated -->
+      <button class="kid-action-btn" id="btn-timed-ai" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 6px 18px rgba(255,107,53,0.3);margin-bottom:12px;">
+        <div class="kid-action-icon">✨</div>
+        <div class="kid-action-label">Make Me a Passage</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">AI creates a 300-word passage at your grade level</p>
+
+      <!-- Scan / Upload -->
+      <button class="kid-action-btn" id="btn-timed-scan" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon">📸</div>
+        <div class="kid-action-label">Scan a Passage</div>
+      </button>
+      <input type="file" id="timed-scan-input" accept="image/*" style="display:none;">
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Take a photo of a reading passage or worksheet</p>
+
+      <!-- Paste Text -->
+      <button class="kid-action-btn" id="btn-timed-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon">📋</div>
+        <div class="kid-action-label">Paste a Passage</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste text from a document, email, or website</p>
+
+      <button class="btn-main btn-outline" id="btn-timed-source-back" style="margin-top:8px;">← Back Home</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Timed Reading Paste Input -->
+  <div class="screen" id="screen-timed-paste">
+    <div class="card">
+      <div class="card-title">📋 Paste Your Passage</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-bottom:8px;">Paste or type the reading passage below. For best results, use 250+ words.</p>
+      <textarea id="timed-paste-textarea" style="width:100%;height:200px;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);" placeholder="Paste your reading passage here..."></textarea>
+      <div id="timed-paste-count" style="text-align:right;font-size:0.78rem;font-weight:800;color:var(--muted);margin-top:4px;">0 words</div>
+      <div id="timed-paste-warning" style="display:none;background:#FFF3E8;border:2px solid #FF9F43;border-radius:12px;padding:10px 14px;font-weight:700;font-size:0.82rem;color:#E17055;margin-top:8px;">⚠️ Passage is under 250 words. For accurate timing, longer passages work best.</div>
+      <button class="btn-main btn-green" id="btn-timed-paste-go" style="font-size:1.1rem;">Use This Passage →</button>
+      <button class="btn-main btn-outline" id="btn-timed-paste-back" style="margin-top:8px;">← Back</button>
+    </div>
+  </div>
+
   <!-- SCREEN: WPM Instructions -->
   <div class="screen" id="screen-wpm-instructions">
     <div class="card" style="text-align:center;">
       <div class="card-title">⏱ Timed Reading</div>
-      <div style="margin:12px auto;width:80px;height:80px;background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+      <div style="margin:12px auto;width:80px;height:80px;background:linear-gradient(135deg,#9B59B6,#8E44AD);border-radius:50%;display:flex;align-items:center;justify-content:center;">
         <span style="font-size:2.2rem;">⏱</span>
       </div>
+      <div id="wpm-passage-word-count" style="font-size:0.82rem;font-weight:800;color:var(--purple);margin:8px 0 4px;">📝 Passage: 300 words</div>
       <div style="text-align:left;background:var(--section);border-radius:16px;padding:16px 18px;margin:14px 0;font-weight:700;font-size:0.92rem;color:var(--ink);line-height:1.6;">
         <p style="margin:0 0 10px;font-size:1rem;"><strong>How this works:</strong></p>
         <p style="margin:0 0 8px;">1️⃣ &nbsp;You'll get a <strong>3-2-1 countdown</strong></p>
-        <p style="margin:0 0 8px;">2️⃣ &nbsp;When it says <strong>"READ!"</strong> — start reading the story <strong>out loud</strong> as best you can</p>
+        <p style="margin:0 0 8px;">2️⃣ &nbsp;When it says <strong>"READ!"</strong> — start reading out loud as best you can</p>
         <p style="margin:0 0 8px;">3️⃣ &nbsp;A <strong>60-second timer</strong> will count down</p>
         <p style="margin:0 0 8px;">4️⃣ &nbsp;When time is up, <strong>tap the last word</strong> you read</p>
         <p style="margin:0;font-size:0.82rem;color:var(--muted);">💡 This is the same way schools test reading speed!</p>
@@ -1637,7 +1702,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD K</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD L</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4087,7 +4152,8 @@ let wpmWordEls = []; // tappable word elements for "tap last word" screen
 function renderWPMWords(container) {
   container.innerHTML = '';
   wpmWordEls = [];
-  const paragraphs = S.story.split(/\n\s*\n/);
+  const passage = wpmPassage || S.story;
+  const paragraphs = passage.split(/\n\s*\n/);
   paragraphs.forEach((para, pIdx) => {
     const words = para.trim().split(/\s+/);
     words.forEach((word, wIdx) => {
@@ -4106,16 +4172,52 @@ function renderWPMWords(container) {
   });
 }
 
-function startWPMRead() {
-  // Show instructions screen first
-  show('screen-wpm-instructions');
+let wpmPassage = null; // dedicated passage for timed reading
+let wpmPassageWordCount = 0; // exact count from rendered words
+
+async function startWPMRead() {
+  // Check if current story is 250+ words
+  const currentWordCount = S.story.trim().split(/\s+/).length;
+
+  if (currentWordCount >= 250) {
+    wpmPassage = S.story;
+    // Show word count on instructions screen
+    updateWPMInstructionCount();
+    show('screen-wpm-instructions');
+  } else {
+    // Need a longer passage — generate one
+    show('screen-loading');
+    document.getElementById('loading-msg').textContent = '✨ Making a longer passage for your timed reading...';
+    try {
+      const aiTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 20000));
+      const aiText = await Promise.race([
+        generateAIStory(S.grade, S.category, 300),
+        aiTimeout
+      ]);
+      wpmPassage = cleanStoryText(aiText);
+    } catch (err) {
+      console.warn('Timed reading passage generation failed, using current story:', err);
+      wpmPassage = S.story;
+    }
+    updateWPMInstructionCount();
+    show('screen-wpm-instructions');
+  }
+}
+
+function updateWPMInstructionCount() {
+  // Count actual words in the passage
+  const count = wpmPassage.trim().split(/\s+/).length;
+  const countEl = document.getElementById('wpm-passage-word-count');
+  if (countEl) countEl.textContent = `📝 Passage: ${count} words`;
 }
 
 function beginWPMCountdown() {
+  const passage = wpmPassage || S.story;
+
   // Render story text (plain, for reading screen)
   const readContainer = document.getElementById('wpm-story-text');
   readContainer.innerHTML = '';
-  const paragraphs = S.story.split(/\n\s*\n/);
+  const paragraphs = passage.split(/\n\s*\n/);
   paragraphs.forEach((para, pIdx) => {
     const span = document.createElement('span');
     span.style.cssText = 'font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;';
@@ -4177,9 +4279,12 @@ function beginWPMCountdown() {
 }
 
 function showTapLastWord() {
+  const passage = wpmPassage || S.story;
   // Render tappable words
   const tapContainer = document.getElementById('wpm-tap-text');
   renderWPMWords(tapContainer);
+  // Store exact count from rendered elements
+  wpmPassageWordCount = wpmWordEls.length;
 
   // Add tap handlers to each word
   wpmWordEls.forEach(span => {
@@ -4213,6 +4318,15 @@ function showTapLastWord() {
 
 function saveWPMScore(wpm, seconds, wordCount) {
   const d = getData();
+  // In standalone mode, save to a general WPM history
+  if (wpmStandaloneMode) {
+    if (!d.wpmHistory) d.wpmHistory = [];
+    d.wpmHistory.push({ wpm, seconds: Math.round(seconds), wordCount, grade: S.grade, date: new Date().toISOString() });
+    if (d.wpmHistory.length > 50) d.wpmHistory = d.wpmHistory.slice(-50);
+    saveData(d);
+    return;
+  }
+  // Story mode — save to specific story
   const hash = storyHash(S.story);
   let entry = d.stories.find(s => s.hash === hash);
   if (!entry) return;
@@ -4224,6 +4338,9 @@ function saveWPMScore(wpm, seconds, wordCount) {
 
 function getWPMScores() {
   const d = getData();
+  if (wpmStandaloneMode) {
+    return (d.wpmHistory || []).slice(-10);
+  }
   const hash = storyHash(S.story || '');
   const entry = d.stories.find(s => s.hash === hash);
   return entry?.wpmScores || [];
@@ -4298,23 +4415,153 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
 }
 
 // WPM button handlers
+let wpmStandaloneMode = false; // true when launched from home screen
+
+// Home screen → Timed Reading source picker
+document.getElementById('btn-timed-reading-home').addEventListener('click', () => {
+  wpmStandaloneMode = true;
+  if (!S.grade) S.grade = '1';
+  // Highlight active grade pill
+  document.querySelectorAll('.timed-grade-pill').forEach(p => {
+    const isActive = p.dataset.grade === S.grade;
+    p.style.borderColor = isActive ? 'var(--purple)' : 'var(--border)';
+    p.style.background = isActive ? 'var(--purple-soft)' : 'var(--cream)';
+    p.style.color = isActive ? 'var(--purple)' : 'var(--ink)';
+  });
+  show('screen-timed-source');
+});
+
+// Grade pills on timed source screen
+document.querySelectorAll('.timed-grade-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    S.grade = pill.dataset.grade;
+    document.querySelectorAll('.timed-grade-pill').forEach(p => {
+      const isActive = p.dataset.grade === S.grade;
+      p.style.borderColor = isActive ? 'var(--purple)' : 'var(--border)';
+      p.style.background = isActive ? 'var(--purple-soft)' : 'var(--cream)';
+      p.style.color = isActive ? 'var(--purple)' : 'var(--ink)';
+    });
+  });
+});
+
+// Source picker: back
+document.getElementById('btn-timed-source-back').addEventListener('click', () => {
+  show('screen-pick');
+});
+
+// Source picker: AI passage
+document.getElementById('btn-timed-ai').addEventListener('click', async () => {
+  show('screen-loading');
+  document.getElementById('loading-msg').textContent = '✨ Creating your reading passage...';
+  try {
+    // Pick a random topic for variety
+    const topics = ['animals','space','dinosaurs','ocean','superheroes','magic','sports','cooking','friends','nature'];
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+    const aiTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 20000));
+    const aiText = await Promise.race([
+      generateAIStory(S.grade, randomTopic, 300),
+      aiTimeout
+    ]);
+    wpmPassage = cleanStoryText(aiText);
+  } catch (err) {
+    console.warn('AI passage failed:', err);
+    wpmPassage = 'The passage could not be generated. Please try again or paste your own passage.';
+  }
+  updateWPMInstructionCount();
+  show('screen-wpm-instructions');
+});
+
+// Source picker: Scan
+document.getElementById('btn-timed-scan').addEventListener('click', () => {
+  document.getElementById('timed-scan-input').click();
+});
+document.getElementById('timed-scan-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  show('screen-loading');
+  document.getElementById('loading-msg').textContent = '📸 Reading your passage...';
+  try {
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = ev.target.result.split(',')[1];
+      const response = await fetch(CF_OCR, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64 })
+      });
+      const data = await response.json();
+      if (data.text) {
+        wpmPassage = data.text.trim();
+        updateWPMInstructionCount();
+        show('screen-wpm-instructions');
+      } else {
+        alert('Could not read the passage. Please try a clearer photo.');
+        show('screen-timed-source');
+      }
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    console.warn('Scan failed:', err);
+    alert('Scanning failed. Please try again.');
+    show('screen-timed-source');
+  }
+  e.target.value = '';
+});
+
+// Source picker: Paste
+document.getElementById('btn-timed-paste').addEventListener('click', () => {
+  document.getElementById('timed-paste-textarea').value = '';
+  document.getElementById('timed-paste-count').textContent = '0 words';
+  document.getElementById('timed-paste-warning').style.display = 'none';
+  show('screen-timed-paste');
+});
+document.getElementById('timed-paste-textarea').addEventListener('input', (e) => {
+  const text = e.target.value.trim();
+  const count = text ? text.split(/\s+/).length : 0;
+  document.getElementById('timed-paste-count').textContent = `${count} word${count !== 1 ? 's' : ''}`;
+  document.getElementById('timed-paste-warning').style.display = (count > 0 && count < 250) ? 'block' : 'none';
+});
+document.getElementById('btn-timed-paste-go').addEventListener('click', () => {
+  const text = document.getElementById('timed-paste-textarea').value.trim();
+  if (!text || text.split(/\s+/).length < 10) {
+    alert('Please paste at least 10 words.');
+    return;
+  }
+  wpmPassage = text;
+  updateWPMInstructionCount();
+  show('screen-wpm-instructions');
+});
+document.getElementById('btn-timed-paste-back').addEventListener('click', () => {
+  show('screen-timed-source');
+});
+
+// From story completion screen
 document.getElementById('btn-solo-wpm').addEventListener('click', () => {
+  wpmStandaloneMode = false;
   startWPMRead();
 });
+
+// Instructions → Start countdown
 document.getElementById('btn-wpm-start').addEventListener('click', () => {
   beginWPMCountdown();
 });
 document.getElementById('btn-wpm-instructions-back').addEventListener('click', () => {
-  show('screen-solo-complete');
+  if (wpmStandaloneMode) show('screen-timed-source');
+  else show('screen-solo-complete');
 });
+
+// Timer → Cancel
 document.getElementById('btn-wpm-cancel').addEventListener('click', () => {
   if (wpmTimerInterval) { clearInterval(wpmTimerInterval); wpmTimerInterval = null; }
-  show('screen-solo-complete');
+  if (wpmStandaloneMode) show('screen-timed-source');
+  else show('screen-solo-complete');
 });
+
+// Tap screen → I don't remember
 document.getElementById('btn-wpm-tap-cancel').addEventListener('click', () => {
-  // "I don't remember" — go back to completion without saving
-  show('screen-solo-complete');
+  if (wpmStandaloneMode) show('screen-timed-source');
+  else show('screen-solo-complete');
 });
+
+// Results → Retry
 document.getElementById('btn-wpm-retry').addEventListener('click', () => {
   beginWPMCountdown();
 });
@@ -4323,7 +4570,8 @@ document.getElementById('btn-wpm-explain').addEventListener('click', () => {
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
 });
 document.getElementById('btn-wpm-back-complete').addEventListener('click', () => {
-  show('screen-solo-complete');
+  if (wpmStandaloneMode) show('screen-pick');
+  else show('screen-solo-complete');
 });
 
 document.getElementById('btn-race-retry').addEventListener('click', () => {
