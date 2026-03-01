@@ -2101,8 +2101,12 @@ document.getElementById('btn-back-join').addEventListener('click', () => show('s
 
 // ── Firebase playback sync ────────────────────────────────
 function broadcastPlayback(action, positionMs) {
-  if (!S.roomRef || !S.isRace) return;
+  if (!S.roomRef || !S.isRace) {
+    console.log(`broadcastPlayback SKIPPED: roomRef=${!!S.roomRef}, isRace=${S.isRace}, role=${S.myRole}`);
+    return;
+  }
   const key = S.myRole === 'host' ? 'hostCmd' : 'guestCmd';
+  console.log(`📡 Broadcasting: ${action} on ${key} (I am ${S.myRole})`);
   update(S.roomRef, { [key]: { action, positionMs: positionMs || 0, ts: Date.now() } });
 }
 
@@ -2111,14 +2115,16 @@ let pendingPartnerPlay = null;
 
 function listenForPartnerPlayback() {
   const partnerKey = S.myRole === 'host' ? 'guestCmd' : 'hostCmd';
+  console.log(`👂 Listening for partner on: ${partnerKey} (I am ${S.myRole}, room=${S.roomCode})`);
   let lastTs = 0;
   const unsub = onValue(ref(db, `rooms/${S.roomCode}/${partnerKey}`), snap => {
     const cmd = snap.val();
-    if (!cmd || cmd.ts <= lastTs) return;
+    if (!cmd) return;
+    if (cmd.ts <= lastTs) return;
     lastTs = cmd.ts;
+    console.log(`📨 Received partner command: ${cmd.action} (ttsState=${ttsState})`);
     if (cmd.action === 'play') {
       if (ttsState === 'loading') {
-        // TTS is still being fetched — queue the play and it will fire when ready
         console.log('Partner pressed play, TTS loading — queued for auto-play');
         pendingPartnerPlay = cmd.positionMs || 0;
         return;
