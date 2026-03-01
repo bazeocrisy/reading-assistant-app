@@ -1929,13 +1929,15 @@ async function playSpeech(startFromMs) {
       }).catch(playErr => {
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
         ttsState = 'idle';
-        document.getElementById('btn-play').textContent = '▶ Tap to Play';
-        document.getElementById('btn-play').disabled = false;
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '▶ Tap to Play!';
+        playBtn.disabled = false;
+        playBtn.style.animation = 'pulse 1s ease-in-out infinite';
         document.getElementById('btn-pause').disabled = true;
         const t = document.getElementById('word-toast');
-        t.textContent = '👆 Tap Play to start — your partner is reading!';
+        t.textContent = '👆 Your partner started — tap Play to join!';
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 4000);
+        setTimeout(() => t.classList.remove('show'), 5000);
       });
       return; // skip the new Audio path below
     }
@@ -1965,14 +1967,15 @@ async function playSpeech(startFromMs) {
         // when host triggers play remotely
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
         ttsState = 'idle';
-        document.getElementById('btn-play').textContent = '▶ Tap to Play';
-        document.getElementById('btn-play').disabled = false;
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '▶ Tap to Play!';
+        playBtn.disabled = false;
+        playBtn.style.animation = 'pulse 1s ease-in-out infinite';
         document.getElementById('btn-pause').disabled = true;
-        // Show toast explaining
         const t = document.getElementById('word-toast');
-        t.textContent = '👆 Tap Play to start — your partner is reading!';
+        t.textContent = '👆 Your partner started — tap Play to join!';
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 4000);
+        setTimeout(() => t.classList.remove('show'), 5000);
       });
     }, { once: true });
     audio.addEventListener('ended', () => {
@@ -1996,6 +1999,8 @@ async function playSpeech(startFromMs) {
 }
 
 document.getElementById('btn-play').addEventListener('click', () => {
+  // Stop pulsing animation if it was set by partner play prompt
+  document.getElementById('btn-play').style.animation = '';
   if (ttsState === 'idle') {
     S.wordEls.forEach(w => { w.className = 'word'; });
     document.getElementById('progress-bar').style.width = '0%';
@@ -2235,7 +2240,11 @@ function listenForPartnerPlayback() {
         S.wordEls.forEach(w => { w.className = 'word'; });
         document.getElementById('progress-bar').style.width = '0%';
         pendingPartnerPlay = null;
-        playSpeech(cmd.positionMs || 0);
+        
+        // Try to auto-play. If browser blocks it (iOS), prompt user to tap Play.
+        playSpeech(cmd.positionMs || 0).then(() => {
+          // Check if autoplay was blocked (playSpeech sets idle on block)
+        });
       } else {
         togetherLog(`⚠️ Can't play: ttsState=${ttsState}`);
       }
