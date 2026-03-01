@@ -33,19 +33,19 @@
   body { font-family: 'Nunito', sans-serif; background: linear-gradient(175deg, #FFF8E1 0%, #FFFBF0 40%, #FFF3E0 80%, #FFF8E1 100%); min-height: 100vh; overflow-x: hidden; }
 
 /* ── Global Fat Scrollbar for all scrollable areas ── */
-.fat-scroll, #spelling-word-list, #spell-picker-list, #wordbank-review-list, #wpm-story-scroll, .word-bank-list, #spell-results-list {
+.fat-scroll, #spelling-word-list, #spell-picker-list, #wordbank-review-list, .word-bank-list, #spell-results-list {
   scrollbar-width: auto;
   scrollbar-color: var(--purple-light) var(--section);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-.fat-scroll::-webkit-scrollbar, #spelling-word-list::-webkit-scrollbar, #spell-picker-list::-webkit-scrollbar, #wordbank-review-list::-webkit-scrollbar, #wpm-story-scroll::-webkit-scrollbar, .word-bank-list::-webkit-scrollbar, #spell-results-list::-webkit-scrollbar { width: 14px; }
-.fat-scroll::-webkit-scrollbar-track, #spelling-word-list::-webkit-scrollbar-track, #spell-picker-list::-webkit-scrollbar-track, #wordbank-review-list::-webkit-scrollbar-track, #wpm-story-scroll::-webkit-scrollbar-track, .word-bank-list::-webkit-scrollbar-track, #spell-results-list::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
-.fat-scroll::-webkit-scrollbar-thumb, #spelling-word-list::-webkit-scrollbar-thumb, #spell-picker-list::-webkit-scrollbar-thumb, #wordbank-review-list::-webkit-scrollbar-thumb, #wpm-story-scroll::-webkit-scrollbar-thumb, .word-bank-list::-webkit-scrollbar-thumb, #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--purple), var(--purple-light)); border-radius: 10px; border: 3px solid var(--section); min-height: 40px; }
-.fat-scroll::-webkit-scrollbar-thumb:hover, #spelling-word-list::-webkit-scrollbar-thumb:hover, #spell-picker-list::-webkit-scrollbar-thumb:hover, #wordbank-review-list::-webkit-scrollbar-thumb:hover, #wpm-story-scroll::-webkit-scrollbar-thumb:hover, .word-bank-list::-webkit-scrollbar-thumb:hover, #spell-results-list::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
-body.bedtime .fat-scroll, body.bedtime #spelling-word-list, body.bedtime #spell-picker-list, body.bedtime #wordbank-review-list, body.bedtime #wpm-story-scroll, body.bedtime .word-bank-list, body.bedtime #spell-results-list { scrollbar-color: #4a4a3a #252540; }
-body.bedtime .fat-scroll::-webkit-scrollbar-track, body.bedtime #spelling-word-list::-webkit-scrollbar-track, body.bedtime #spell-picker-list::-webkit-scrollbar-track, body.bedtime #wordbank-review-list::-webkit-scrollbar-track, body.bedtime #wpm-story-scroll::-webkit-scrollbar-track, body.bedtime .word-bank-list::-webkit-scrollbar-track, body.bedtime #spell-results-list::-webkit-scrollbar-track { background: #252540; }
-body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb, body.bedtime #wpm-story-scroll::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
+.fat-scroll::-webkit-scrollbar, #spelling-word-list::-webkit-scrollbar, #spell-picker-list::-webkit-scrollbar, #wordbank-review-list::-webkit-scrollbar::-webkit-scrollbar, .word-bank-list::-webkit-scrollbar, #spell-results-list::-webkit-scrollbar { width: 14px; }
+.fat-scroll::-webkit-scrollbar-track, #spelling-word-list::-webkit-scrollbar-track, #spell-picker-list::-webkit-scrollbar-track, #wordbank-review-list::-webkit-scrollbar-track::-webkit-scrollbar-track, .word-bank-list::-webkit-scrollbar-track, #spell-results-list::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
+.fat-scroll::-webkit-scrollbar-thumb, #spelling-word-list::-webkit-scrollbar-thumb, #spell-picker-list::-webkit-scrollbar-thumb, #wordbank-review-list::-webkit-scrollbar-thumb::-webkit-scrollbar-thumb, .word-bank-list::-webkit-scrollbar-thumb, #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--purple), var(--purple-light)); border-radius: 10px; border: 3px solid var(--section); min-height: 40px; }
+.fat-scroll::-webkit-scrollbar-thumb:hover, #spelling-word-list::-webkit-scrollbar-thumb:hover, #spell-picker-list::-webkit-scrollbar-thumb:hover, #wordbank-review-list::-webkit-scrollbar-thumb:hover::-webkit-scrollbar-thumb:hover, .word-bank-list::-webkit-scrollbar-thumb:hover, #spell-results-list::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
+body.bedtime .fat-scroll, body.bedtime #spelling-word-list, body.bedtime #spell-picker-list, body.bedtime #wordbank-review-list, body.bedtime .word-bank-list, body.bedtime #spell-results-list { scrollbar-color: #4a4a3a #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-track, body.bedtime #spelling-word-list::-webkit-scrollbar-track, body.bedtime #spell-picker-list::-webkit-scrollbar-track, body.bedtime #wordbank-review-list::-webkit-scrollbar-track::-webkit-scrollbar-track, body.bedtime .word-bank-list::-webkit-scrollbar-track, body.bedtime #spell-results-list::-webkit-scrollbar-track { background: #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
 
 .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .blob { position: absolute; border-radius: 50%; opacity: 0.06; filter: blur(60px); animation: drift 12s ease-in-out infinite alternate; }
@@ -386,11 +386,11 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
   /* No max-height, no overflow — natural page flow */
 }
 @media (min-width: 768px) {
-  #spelling-word-list, #spell-picker-list, #wpm-story-scroll { max-height: 55vh !important; }
+  #spelling-word-list, #spell-picker-list { max-height: 55vh !important; }
   #wordbank-review-list { max-height: 60vh !important; }
 }
 @media (min-width: 1024px) {
-  #spelling-word-list, #spell-picker-list, #wpm-story-scroll { max-height: 62vh !important; }
+  #spelling-word-list, #spell-picker-list { max-height: 62vh !important; }
   #wordbank-review-list { max-height: 68vh !important; }
 }
 /* Story container scrollbar removed — natural page scroll */
@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD U</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD V</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1794,7 +1794,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD U</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD V</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
