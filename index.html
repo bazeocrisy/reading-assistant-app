@@ -2210,10 +2210,31 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
   S.myRole = 'guest'; S.isRace = true;
   await update(S.roomRef, { guestJoined: true });
   show('screen-waiting-guest');
+  
+  // Listen for host to start countdown
+  let countdownStarted = false;
   const unsub = onValue(ref(db, `rooms/${code}/status`), snap => {
-    if (snap.val() === 'countdown') { unsub(); startCountdown(); }
+    const status = snap.val();
+    if (status === 'countdown' && !countdownStarted) {
+      countdownStarted = true;
+      unsub();
+      startCountdown();
+    }
   });
   S.unsubscribers.push(unsub);
+  
+  // Fallback: if countdown doesn't start within 30 seconds, check room status directly
+  setTimeout(async () => {
+    if (countdownStarted) return;
+    try {
+      const snap = await get(ref(db, `rooms/${code}/status`));
+      if (snap.val() === 'countdown' && !countdownStarted) {
+        countdownStarted = true;
+        unsub();
+        startCountdown();
+      }
+    } catch(e) {}
+  }, 5000);
 });
 
 // ── Clean AI story text once at load time ─────────────────
