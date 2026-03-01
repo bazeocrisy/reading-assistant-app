@@ -2491,19 +2491,46 @@ function setupReadScreen() {
     listenForPartnerPlayback();
     listenForRoomClose();
   }
-  // Preload TTS audio in background so Play is instant (both solo and together)
+
+  // Preload TTS audio — disable Play until ready in Read Together mode
   if (navigator.onLine && S.story) {
+    if (S.isRace) {
+      // In Read Together: disable Play until TTS is loaded
+      const playBtn = document.getElementById('btn-play');
+      playBtn.textContent = '⏳ Loading audio...';
+      playBtn.disabled = true;
+      togetherLog('⏳ Loading TTS audio...');
+    }
     fetchTTSAudio(S.story, S.grade, S.voiceGender).then(() => {
-      // If partner already sent a play command while we were loading, auto-play now
+      togetherLog('✅ TTS audio ready');
+      if (S.isRace) {
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '▶ Play';
+        playBtn.disabled = false;
+        playBtn.style.animation = 'pulse 1s ease-in-out 3';
+        // Signal readiness to partner through Firebase
+        if (S.roomRef) {
+          const readyKey = S.myRole === 'host' ? 'hostReady' : 'guestReady';
+          update(S.roomRef, { [readyKey]: true });
+        }
+      }
+      // If partner already sent play while we were loading, auto-play now
       if (pendingPartnerPlay !== null && S.isRace && ttsState === 'idle') {
-        console.log('TTS ready, auto-playing queued partner command');
+        togetherLog('▶ Auto-playing queued partner command');
         S.wordEls.forEach(w => { w.className = 'word'; });
         document.getElementById('progress-bar').style.width = '0%';
         const pos = pendingPartnerPlay;
         pendingPartnerPlay = null;
         playSpeech(pos);
       }
-    }).catch(() => {});
+    }).catch(() => {
+      togetherLog('❌ TTS load failed');
+      if (S.isRace) {
+        const playBtn = document.getElementById('btn-play');
+        playBtn.textContent = '▶ Play';
+        playBtn.disabled = false;
+      }
+    });
   }
 }
 
