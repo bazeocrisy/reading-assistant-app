@@ -3414,10 +3414,9 @@ function setupReadScreen() {
   const finishedBtn = document.getElementById('btn-finished-reading');
   finishedBtn.style.display = 'none';
   if (!S.isRace) {
-    clearTimeout(S._finishedBtnTimer);
-    S._finishedBtnTimer = setTimeout(() => {
-      finishedBtn.style.display = 'block';
-    }, 10000);
+    // Show immediately — button is below story text, so the kid has to scroll through
+    // the entire story to reach it (natural gate, no artificial delay needed)
+    finishedBtn.style.display = 'block';
   }
   if (S.isRace) {
     document.getElementById('together-bar').style.width = '0%';
