@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD R</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD S</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1674,21 +1674,23 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: WPM Timer (60-second timed reading) -->
   <div class="screen" id="screen-wpm-read">
-    <div class="card">
-      <div class="card-title">⏱ Timed Reading</div>
-      <div class="wpm-timer-bar">
-        <div class="wpm-timer-display" id="wpm-timer" style="font-size:2.8rem;">1:00</div>
-        <div class="wpm-timer-label" id="wpm-timer-label">⏱ Time Remaining</div>
+    <div class="card" style="position:relative;">
+      <!-- Small stop button in top-right corner -->
+      <button id="btn-wpm-cancel" style="position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:var(--cream);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;color:var(--muted);">✕</button>
+      <div style="text-align:center;">
+        <div class="wpm-timer-bar">
+          <div class="wpm-timer-display" id="wpm-timer" style="font-size:2.8rem;">1:00</div>
+          <div class="wpm-timer-label" id="wpm-timer-label">⏱ Time Remaining</div>
+        </div>
+        <!-- Progress bar for 60 seconds -->
+        <div style="position:relative;height:8px;background:var(--section);border-radius:8px;margin:0 0 6px;overflow:hidden;">
+          <div id="wpm-time-bar" style="height:100%;width:100%;background:linear-gradient(90deg,var(--green),#81C784);border-radius:8px;transition:width 1s linear;"></div>
+        </div>
+        <div class="encouragement" id="wpm-read-tip" style="margin-bottom:8px;font-size:0.85rem;">Read out loud! Keep going until time is up.</div>
       </div>
-      <!-- Progress ring for 60 seconds -->
-      <div style="position:relative;height:8px;background:var(--section);border-radius:8px;margin:0 0 10px;overflow:hidden;">
-        <div id="wpm-time-bar" style="height:100%;width:100%;background:linear-gradient(90deg,var(--green),#81C784);border-radius:8px;transition:width 1s linear;"></div>
-      </div>
-      <div class="encouragement" id="wpm-read-tip" style="margin-bottom:10px;">Read out loud! Keep going until time is up.</div>
-      <div id="wpm-story-scroll" style="margin:8px 0;">
+      <div id="wpm-story-scroll" style="margin:4px 0;">
         <div id="wpm-story-text" style="font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;"></div>
       </div>
-      <button class="btn-main btn-outline" id="btn-wpm-cancel" style="margin-top:10px;">← Stop &amp; Go Back</button>
     </div>
   </div>
 
@@ -1792,7 +1794,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD R</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD S</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
