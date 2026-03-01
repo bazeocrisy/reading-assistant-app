@@ -62,6 +62,14 @@ function buildWordTimings(words, timepoints, totalDurationMs) {
  */
 async function getAlignedTimings(audioContent, originalWords) {
   try {
+    // Build phrase hints from the original text — group consecutive words into phrases
+    // This helps STT match the exact text we're expecting
+    const phrases = [];
+    for (let i = 0; i < originalWords.length; i += 5) {
+      const chunk = originalWords.slice(i, i + 5).join(" ").replace(/[^a-zA-Z0-9' -]/g, "");
+      if (chunk.trim()) phrases.push(chunk.trim());
+    }
+
     const [sttResponse] = await sttClient.recognize({
       audio: { content: audioContent.toString("base64") },
       config: {
@@ -69,8 +77,13 @@ async function getAlignedTimings(audioContent, originalWords) {
         sampleRateHertz: 24000,
         languageCode: "en-US",
         enableWordTimeOffsets: true,
+        enableAutomaticPunctuation: true,
+        // Use both individual words AND multi-word phrases for best alignment
         speechContexts: [{
-          phrases: originalWords.slice(0, 100),
+          phrases: [
+            ...originalWords.slice(0, 50).map(w => w.replace(/[^a-zA-Z0-9'-]/g, "")),
+            ...phrases.slice(0, 50),
+          ],
           boost: 20.0,
         }],
       },
@@ -80,7 +93,8 @@ async function getAlignedTimings(audioContent, originalWords) {
       return null;
     }
 
-    // Collect all word timings from all result segments
+    // Collect ALL word timings from STT in order
+    // STT returns results per-utterance/sentence, but we flatten while keeping order
     const sttWords = [];
     for (const result of sttResponse.results) {
       const alt = result.alternatives && result.alternatives[0];
@@ -103,6 +117,8 @@ async function getAlignedTimings(audioContent, originalWords) {
 
     if (sttWords.length === 0) return null;
 
+    console.log(`STT returned ${sttWords.length} words for ${originalWords.length} original words`);
+
     // Align STT words back to original text words
     const aligned = alignWords(originalWords, sttWords);
     return aligned;
@@ -114,51 +130,118 @@ async function getAlignedTimings(audioContent, originalWords) {
 
 /**
  * Align original text words with STT-detected words.
- * Uses sequential matching with fuzzy comparison.
+ * Handles: punctuation, contractions, numbers, word merging/splitting,
+ * and uses bidirectional look-ahead to recover from mismatches.
  */
 function alignWords(originalWords, sttWords) {
   const result = [];
   let sttIdx = 0;
 
+  // Pre-clean all words once for speed
+  const cleanO = originalWords.map(w => w.replace(/[^a-zA-Z0-9'-]/g, "").toLowerCase());
+  const cleanS = sttWords.map(w => w.word.replace(/[^a-zA-Z0-9'-]/g, "").toLowerCase());
+
   for (let i = 0; i < originalWords.length; i++) {
-    const cleanOrig = originalWords[i].replace(/[^a-zA-Z0-9'-]/g, "").toLowerCase();
+    const co = cleanO[i];
 
-    if (sttIdx < sttWords.length) {
-      const cleanStt = sttWords[sttIdx].word.replace(/[^a-zA-Z0-9'-]/g, "").toLowerCase();
-
-      if (cleanOrig === cleanStt || cleanOrig.includes(cleanStt) || cleanStt.includes(cleanOrig)) {
-        result.push({
-          word: originalWords[i],
-          index: i,
-          startMs: sttWords[sttIdx].startMs,
-          endMs: sttWords[sttIdx].endMs,
-        });
-        sttIdx++;
-      } else {
-        // No match — interpolate from neighbors
-        const prevMs = result.length > 0 ? result[result.length - 1].endMs : 0;
-        const nextMs = sttIdx < sttWords.length ? sttWords[sttIdx].startMs : prevMs + 200;
-        result.push({
-          word: originalWords[i],
-          index: i,
-          startMs: prevMs,
-          endMs: nextMs,
-        });
-      }
-    } else {
-      // Ran out of STT words — interpolate remaining
-      const prevMs = result.length > 0 ? result[result.length - 1].endMs : 0;
-      const avgWordMs = prevMs > 0 && i > 0 ? prevMs / i : 300;
-      result.push({
-        word: originalWords[i],
-        index: i,
-        startMs: prevMs,
-        endMs: prevMs + avgWordMs,
-      });
+    // Skip empty (pure punctuation)
+    if (!co) {
+      const prev = result.length > 0 ? result[result.length - 1].endMs : 0;
+      result.push({ word: originalWords[i], index: i, startMs: prev, endMs: prev });
+      continue;
     }
+
+    if (sttIdx >= sttWords.length) {
+      // Out of STT words — interpolate
+      const prev = result.length > 0 ? result[result.length - 1].endMs : 0;
+      const avg = prev > 0 && i > 0 ? prev / i : 300;
+      result.push({ word: originalWords[i], index: i, startMs: prev, endMs: prev + avg });
+      continue;
+    }
+
+    // Try direct match with current STT word
+    if (wMatch(co, cleanS[sttIdx])) {
+      result.push({ word: originalWords[i], index: i, startMs: sttWords[sttIdx].startMs, endMs: sttWords[sttIdx].endMs });
+      sttIdx++;
+      continue;
+    }
+
+    // Look ahead in STT (STT inserted extra words we don't have)
+    let found = false;
+    for (let k = 1; k <= 4 && sttIdx + k < sttWords.length; k++) {
+      if (wMatch(co, cleanS[sttIdx + k])) {
+        sttIdx += k;
+        result.push({ word: originalWords[i], index: i, startMs: sttWords[sttIdx].startMs, endMs: sttWords[sttIdx].endMs });
+        sttIdx++;
+        found = true;
+        break;
+      }
+    }
+    if (found) continue;
+
+    // Check if next original word matches current STT (original word was skipped by STT)
+    if (i + 1 < originalWords.length && wMatch(cleanO[i + 1], cleanS[sttIdx])) {
+      const prev = result.length > 0 ? result[result.length - 1].endMs : 0;
+      result.push({ word: originalWords[i], index: i, startMs: prev, endMs: sttWords[sttIdx].startMs });
+      continue; // don't advance sttIdx
+    }
+
+    // Check if STT merged two original words ("ice cream" → "icecream")
+    if (i + 1 < originalWords.length && cleanO[i + 1]) {
+      const merged = co + cleanO[i + 1];
+      if (wMatch(merged, cleanS[sttIdx])) {
+        const mid = Math.round((sttWords[sttIdx].startMs + sttWords[sttIdx].endMs) / 2);
+        result.push({ word: originalWords[i], index: i, startMs: sttWords[sttIdx].startMs, endMs: mid });
+        i++;
+        result.push({ word: originalWords[i], index: i, startMs: mid, endMs: sttWords[sttIdx].endMs });
+        sttIdx++;
+        continue;
+      }
+    }
+
+    // No match — interpolate, don't advance sttIdx
+    const prev = result.length > 0 ? result[result.length - 1].endMs : 0;
+    const next = sttWords[sttIdx].startMs;
+    result.push({ word: originalWords[i], index: i, startMs: prev, endMs: Math.max(prev, next) });
   }
 
   return result;
+}
+
+/** Quick word match: exact, substring, or within edit distance */
+function wMatch(a, b) {
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.length > 2 && b.length > 2 && (a.includes(b) || b.includes(a))) return true;
+  // Skip number mismatches ("1860" vs "eighteen")
+  if (/^\d+$/.test(a) !== /^\d+$/.test(b)) return false;
+  const maxDist = Math.max(1, Math.floor(Math.max(a.length, b.length) * 0.35));
+  return levenshtein(a, b) <= maxDist;
+}
+
+/**
+ * Simple Levenshtein distance for fuzzy word matching.
+ */
+function levenshtein(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b[i - 1] === a[j - 1]) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
 }
 
 exports.synthesizeSpeech = onRequest(
@@ -215,7 +298,8 @@ exports.synthesizeSpeech = onRequest(
         if (alignedTimings && alignedTimings.length > 0) {
           wordTimings = alignedTimings;
           alignmentMethod = "forced_alignment";
-          console.log(`Forced alignment: ${alignedTimings.length} words aligned`);
+          const matched = alignedTimings.filter((t, i) => i === 0 || t.startMs !== alignedTimings[i-1].endMs).length;
+          console.log(`Forced alignment: ${alignedTimings.length} words, ${matched} matched, ${alignedTimings.length - matched} interpolated`);
         } else {
           console.log("Forced alignment failed, using SSML marks");
         }
