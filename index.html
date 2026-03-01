@@ -1792,33 +1792,101 @@ async function generateAIStory(grade, category, wordTarget) {
   const topicAnchor = topicAnchors[category] || `Write about ${topicLabel}.`;
 
   const gradeInstructions = {
-    "prek": `You are writing for a 3-4 year old child learning to read. Topic: ${topicLabel}. ${topicAnchor}
+    "prek": `You are writing for a PRE-K child (age 3-4) who is JUST LEARNING TO READ.
 
-STRICT RULES:
-- Every sentence must be 3-5 words MAXIMUM
-- Use ONLY simple one-syllable words: big, run, sit, red, the, is, a, I, my, see, like, can, we, it, go, up, on, fun, hop, hot, has, his, her, they, are, said, good, love, help, kind, brave
-- Use repetitive sentence patterns: "She is brave. She is kind. She is good."
-- NO complex ideas, NO multi-syllable words except names
-- End with: "Think about it: What do you see?"
-Write exactly ${wordTarget} words.`,
+Topic: ${topicLabel}. ${topicAnchor}
 
-    "k": `You are writing for a 5-6 year old kindergartner. Topic: ${topicLabel}. ${topicAnchor}
+ABSOLUTE RULES — BREAK NONE OF THESE:
+1. EVERY sentence must be exactly 2-5 words. No exceptions.
+2. Use ONLY these types of words:
+   - CVC words (consonant-vowel-consonant): cat, dog, big, red, hot, sit, run, hop, fun, bus, cup, sun, map, dad, mom, pet, bed, box, fox, bat, hat, mat, rat, sat, fat, pan, can, man, van, fan, ran, ten, hen, pen, den, leg, beg, pig, dig, wig, jig, log, fog, hog, jog, bug, hug, mug, rug, tug, dug, cut, nut, hut, put, got, not, lot, dot, pop, top, mop, hop, sob, cob, rob, nod, rod, cod, kit, bit, hit, fit, sit, tip, dip, rip, zip, lip, nip, fin, pin, win, din, bin, did, hid, kid, lid, rid, dim, him
+   - Common sight words: the, a, is, I, my, we, he, she, it, on, in, up, to, and, go, no, so, do, me, be, am, at, an, as, or, of, see, was, had, has, his, her, you, are, can, did, got, let, get, out, but, not, say, said, all, day, may, way, play, they, this, that, with, from, have, were, what, when, will, very, like, look, come, make, take, give, here, want
+   - Simple animal/object words: cat, dog, fish, bird, frog, bear, bee, tree, ball, star, moon, sun
+3. NEVER use: multi-syllable words (except character names), abstract concepts, complex grammar, past perfect tense, passive voice
+4. Use repetitive patterns: "The cat is big. The cat is red. The cat can run."
+5. Each paragraph should be 2-3 very short sentences.
+6. End with: "Think about it: What do you see?"
 
-STRICT RULES:
-- Sentences must be 5-8 words maximum
-- Use simple common words only — no words longer than 2 syllables
-- Short paragraphs of 2-3 sentences
-- Keep the topic clearly present throughout the story
-- End with a simple question: "Think about it: What would you do?"
-Write exactly ${wordTarget} words.`,
+GOOD Pre-K sentences: "The dog can run." / "I see a big cat." / "She is kind." / "They hop and hop."
+BAD Pre-K sentences: "Jasper lives in a big city." / "Hot soup was big fear." / "He was scared of hot."
 
-    "1": `Use very simple words a 6-7 year old knows. Write about ${topicLabel}. Write in short natural sentences that flow into paragraphs. Tell a simple story with a clear beginning, middle, and end. Make it warm, fun, and easy to follow. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
-    "2": `Use simple but varied vocabulary for a 7-8 year old. Write about ${topicLabel}. Write in flowing paragraphs with sentences of different lengths. Include some description and feeling. Do NOT use bullet points or lists. End with one "Think about it:" question.`,
-    "3": `Use grade-appropriate vocabulary for an 8-9 year old. Write about ${topicLabel}. Write in natural paragraphs with varied sentence structure. Include interesting details and a clear message. Do NOT use bullet points or lists. End with one "Think about it:" question.`
+Write approximately ${wordTarget} words. Start the story immediately with no title.`,
+
+    "k": `You are writing for a KINDERGARTEN child (age 5-6) who is an EARLY READER.
+
+Topic: ${topicLabel}. ${topicAnchor}
+
+ABSOLUTE RULES:
+1. Sentences must be 4-8 words. Most should be 5-6 words.
+2. Use mostly one-syllable words. Two-syllable words are OK if common (happy, funny, little, water, mother, father, sister, brother, over, under, after, never, together, important).
+3. NEVER use words with 3+ syllables except character names.
+4. Use simple subject-verb-object patterns: "The dog ran to the park." / "She made a big cake."
+5. Short paragraphs of 2-3 sentences.
+6. Keep the topic clearly present throughout the story.
+7. End with a simple question: "Think about it: What would you do?"
+
+GOOD K sentences: "The little fish swam fast." / "They played in the big yard." / "Mom said it was time to go."
+BAD K sentences: "The community gathered together." / "She discovered an unexpected surprise."
+
+Write approximately ${wordTarget} words. Start the story immediately with no title.`,
+
+    "1": `You are writing for a 1ST GRADER (age 6-7). Topic: ${topicLabel}. ${topicAnchor}
+
+RULES:
+1. Sentences should be 5-10 words. Mix short and medium sentences.
+2. Use mostly 1-2 syllable words. Occasional 3-syllable words are OK if common (adventure, together, another, everyone, beautiful).
+3. Write in short paragraphs of 2-4 sentences.
+4. Tell a simple story: clear beginning, middle, and end.
+5. Make it warm, fun, and easy to follow.
+6. No bullet points or lists.
+7. End with one "Think about it:" question.
+
+Write approximately ${wordTarget} words. Start immediately with no title.`,
+
+    "2": `You are writing for a 2ND GRADER (age 7-8). Topic: ${topicLabel}. ${topicAnchor}
+
+RULES:
+1. Use simple but varied vocabulary. Most words should be 1-2 syllables.
+2. 3-syllable words are fine when natural. Avoid 4+ syllable words.
+3. Write in flowing paragraphs with sentences of different lengths.
+4. Include some description and feeling. Show, don't just tell.
+5. No bullet points or lists.
+6. End with one "Think about it:" question.
+
+Write approximately ${wordTarget} words. Start immediately with no title.`,
+
+    "3": `You are writing for a 3RD GRADER (age 8-9). Topic: ${topicLabel}. ${topicAnchor}
+
+RULES:
+1. Use grade-appropriate vocabulary. Words up to 3 syllables are fine. Minimize 4+ syllable words.
+2. Write in natural paragraphs with varied sentence structure.
+3. Include interesting details, descriptive language, and a clear message or lesson.
+4. No bullet points or lists.
+5. End with one "Think about it:" question.
+
+Write approximately ${wordTarget} words. Start immediately with no title.`
   };
 
   const instructions = gradeInstructions[grade] || gradeInstructions["1"];
-  const uniqueSeed = `\n\nIMPORTANT: Make this story COMPLETELY UNIQUE. Use the name "${randName}" as the main character. Set the story in ${randSetting}. The character ${randTwist}. Story seed: ${storyId}. Do NOT reuse plots from previous stories.`;
+
+  // Grade-appropriate unique seeds
+  let uniqueSeed;
+  if (grade === 'prek') {
+    const prekSettings = ['a park', 'a pond', 'a yard', 'a bed', 'a bus', 'a farm', 'a hill', 'a den', 'a log', 'a rug'];
+    const prekTwists = ['is kind', 'is brave', 'can help', 'can run fast', 'finds a pal', 'has fun', 'is not sad', 'can hop', 'wins a hug', 'gets big'];
+    const s = prekSettings[Math.floor(Math.random() * prekSettings.length)];
+    const t = prekTwists[Math.floor(Math.random() * prekTwists.length)];
+    uniqueSeed = `\n\nUse the name "${randName}" as the main character. Set the story at ${s}. ${randName} ${t}. Story seed: ${storyId}. REMEMBER: Only 2-5 word sentences. Only simple CVC and sight words. No multi-syllable words except the name.`;
+  } else if (grade === 'k') {
+    const kSettings = ['a park', 'a pond', 'a farm', 'a school', 'a yard', 'the beach', 'a hill', 'a garden', 'a lake', 'a shop'];
+    const kTwists = ['helps a friend', 'finds something fun', 'tries something new', 'is brave', 'makes a new pal', 'has a fun day', 'works hard and wins', 'shares with others'];
+    const s = kSettings[Math.floor(Math.random() * kSettings.length)];
+    const t = kTwists[Math.floor(Math.random() * kTwists.length)];
+    uniqueSeed = `\n\nUse the name "${randName}" as the main character. Set the story at ${s}. ${randName} ${t}. Story seed: ${storyId}. REMEMBER: Keep sentences 4-8 words. No 3+ syllable words except the name.`;
+  } else {
+    uniqueSeed = `\n\nIMPORTANT: Make this story COMPLETELY UNIQUE. Use the name "${randName}" as the main character. Set the story in ${randSetting}. The character ${randTwist}. Story seed: ${storyId}. Do NOT reuse plots from previous stories.`;
+  }
+  
   const fullPrompt = (grade === 'prek' || grade === 'k')
     ? `${instructions}${uniqueSeed}`
     : `Write a story about ${topicLabel} that is approximately ${wordTarget} words long. Do NOT include a title, heading, or label before the story. Start immediately with the first word. Use natural paragraph breaks every 3-5 sentences. Do not use markdown formatting.\n\n${instructions}${uniqueSeed}`;
