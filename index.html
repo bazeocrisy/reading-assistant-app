@@ -922,7 +922,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad — just Bookie + 4 big buttons) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.55rem;font-weight:800;color:var(--border);letter-spacing:1.5px;margin-bottom:-4px;">BUILD H</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD J</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1343,7 +1343,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <div class="reread-dot" id="dot-3" style="opacity:0.25;">📖</div>
         </div>
         <button class="btn-main btn-green" id="btn-solo-retry" style="font-size:1.2rem;padding:16px;">▶ Read Again</button>
-        <button class="btn-main btn-coral" id="btn-solo-wpm" style="margin-top:10px;font-size:1.1rem;">🎤 Read It Myself!</button>
+        <button class="btn-main btn-coral" id="btn-solo-wpm" style="margin-top:10px;font-size:1.1rem;">⏱ Time My Reading!</button>
         <button class="btn-main btn-purple" id="btn-solo-wordbank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
         <button class="btn-main btn-outline" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
       </div>
@@ -1525,12 +1525,12 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: WPM Timer (Read It Myself) -->
   <div class="screen" id="screen-wpm-read">
     <div class="card">
-      <div class="card-title">🎤 Read It Myself!</div>
+      <div class="card-title">⏱ Timed Reading</div>
       <div class="wpm-timer-bar">
         <div class="wpm-timer-display" id="wpm-timer">0:00</div>
         <div class="wpm-timer-label">⏱ Reading Timer</div>
       </div>
-      <div class="encouragement" id="wpm-read-tip">Read the story out loud. Tap "I'm Done!" when you finish.</div>
+      <div class="encouragement" id="wpm-read-tip">Read the story out loud as fast as you can. Tap "I'm Done!" when you finish.</div>
       <div id="wpm-story-scroll" style="max-height:45vh;overflow-y:auto;margin:14px 0;scroll-behavior:smooth;overscroll-behavior:contain;">
         <div id="wpm-story-text" style="font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;"></div>
       </div>
@@ -1542,7 +1542,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: WPM Results -->
   <div class="screen" id="screen-wpm-results">
     <div class="card" style="text-align:center;">
-      <div class="card-title">🏆 Your Reading Speed!</div>
+      <div class="card-title">⏱ Your Timed Score!</div>
       <div class="wpm-result-big" id="wpm-result-number">0</div>
       <div class="wpm-result-unit">Words Per Minute</div>
       <div id="wpm-read-summary" style="font-size:0.92rem;font-weight:800;color:var(--muted);margin-top:6px;"></div>
@@ -1571,7 +1571,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD H</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD J</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4041,7 +4041,7 @@ function startWPMRead() {
 
   // Reset timer
   document.getElementById('wpm-timer').textContent = '0:00';
-  document.getElementById('wpm-read-tip').textContent = 'Read the story out loud. Tap "I\'m Done!" when you finish.';
+  document.getElementById('wpm-read-tip').textContent = 'Read the story out loud as fast as you can. Tap "I\'m Done!" when you finish.';
 
   // Show countdown first
   show('screen-countdown');
@@ -4119,7 +4119,7 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
   } else {
     timeStr = `${totalSec} sec`;
   }
-  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in ${timeStr}`;
+  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in ${timeStr} — that's ${wpm} words per minute pace!`;
 
   // Benchmark
   const bench = WPM_BENCHMARKS[S.grade] || WPM_BENCHMARKS['1'];
