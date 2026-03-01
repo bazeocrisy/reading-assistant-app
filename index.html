@@ -1621,15 +1621,25 @@ function startHighlightLoop() {
   const timingsAreReal = ttsWordTimings.length > 1 &&
     ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
 
+  // MP3 decoder delay compensation
+  const MP3_OFFSET_MS = 50;
+
+  // Check if we have real startMs AND endMs (forced alignment) vs just startMs (SSML marks)
+  const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 && ttsWordTimings[0].endMs > 0;
+
+  // Verify timing/word count alignment
+  if (timingsAreReal && ttsWordTimings.length !== S.wordEls.length) {
+    console.warn(`Timing mismatch: ${ttsWordTimings.length} timings vs ${S.wordEls.length} words`);
+  }
+
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
-    // currentTime is the actual position in the audio (already accounts for playbackRate)
-    const nowMs = ttsAudio.currentTime * 1000;
+    const nowMs = (ttsAudio.currentTime * 1000) + MP3_OFFSET_MS;
     const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
 
     if (timingsAreReal && ttsWordTimings.length > 0) {
-      // Use real timings — binary search for better performance on long texts
+      // Binary search for the current word
       let lo = 0, hi = ttsWordTimings.length - 1;
       while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
@@ -1640,11 +1650,8 @@ function startHighlightLoop() {
           hi = mid - 1;
         }
       }
-      // Add a small look-ahead buffer (100ms) so highlight feels snappier
-      if (activeIdx < ttsWordTimings.length - 1 && 
-          ttsWordTimings[activeIdx + 1].startMs - nowMs < 80) {
-        activeIdx++;
-      }
+      // Clamp to word element count in case of mismatch
+      if (activeIdx >= S.wordEls.length) activeIdx = S.wordEls.length - 1;
     } else {
       // Improved estimation: weight by word length (longer words take more time)
       const wordsCount = S.wordEls.length;
@@ -1767,8 +1774,9 @@ async function playSpeech(startFromMs) {
     } else {
       ttsWordTimings = [];
     }
-    console.log(`TTS timings: ${ttsWordTimings.length} timepoints, words: ${S.wordEls.length}, real timings: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
-    const audio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+    console.log(`TTS: ${ttsWordTimings.length} timings, ${S.wordEls.length} words, method: ${data.alignmentMethod || 'unknown'}, real: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
+    const audio = new Audio('data:audio/ogg;base64,' + data.audioBase64);
+    // Use speed slider for playback rate adjustment
     audio.playbackRate = S.speed;
     ttsAudio = audio;
     audio.addEventListener('canplaythrough', () => {
