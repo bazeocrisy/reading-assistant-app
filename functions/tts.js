@@ -1,8 +1,43 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { TextToSpeechClient } = require("@google-cloud/text-to-speech");
+const { SpeechClient } = require("@google-cloud/speech");
 const cors = require("cors")({ origin: true });
 
 const ttsClient = new TextToSpeechClient();
+const sttClient = new SpeechClient();
+
+/**
+ * Wrap raw PCM (LINEAR16) data in a WAV header so browsers can play it.
+ */
+function createWavBuffer(pcmBuffer, sampleRate, numChannels, bitsPerSample) {
+  const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+  const blockAlign = numChannels * (bitsPerSample / 8);
+  const dataSize = pcmBuffer.length;
+  const headerSize = 44;
+  const buffer = Buffer.alloc(headerSize + dataSize);
+
+  // RIFF header
+  buffer.write("RIFF", 0);
+  buffer.writeUInt32LE(36 + dataSize, 4);
+  buffer.write("WAVE", 8);
+
+  // fmt chunk
+  buffer.write("fmt ", 12);
+  buffer.writeUInt32LE(16, 16);           // chunk size
+  buffer.writeUInt16LE(1, 20);            // PCM format
+  buffer.writeUInt16LE(numChannels, 22);
+  buffer.writeUInt32LE(sampleRate, 24);
+  buffer.writeUInt32LE(byteRate, 28);
+  buffer.writeUInt16LE(blockAlign, 32);
+  buffer.writeUInt16LE(bitsPerSample, 34);
+
+  // data chunk
+  buffer.write("data", 36);
+  buffer.writeUInt32LE(dataSize, 40);
+  pcmBuffer.copy(buffer, 44);
+
+  return buffer;
+}
 
 function buildSSML(text) {
   const words = text.trim().split(/\s+/);
@@ -20,8 +55,114 @@ function buildWordTimings(words, timepoints, totalDurationMs) {
   });
 }
 
+/**
+ * Forced alignment: Run the TTS audio back through STT to get precise word timestamps.
+ * STT analyzes the actual audio waveform and returns exact start/end times for each word.
+ * This is dramatically more accurate than SSML mark timepoints.
+ */
+async function getAlignedTimings(audioContent, originalWords) {
+  try {
+    const [sttResponse] = await sttClient.recognize({
+      audio: { content: audioContent.toString("base64") },
+      config: {
+        encoding: "LINEAR16",
+        sampleRateHertz: 24000,
+        languageCode: "en-US",
+        enableWordTimeOffsets: true,
+        speechContexts: [{
+          phrases: originalWords.slice(0, 100),
+          boost: 20.0,
+        }],
+      },
+    });
+
+    if (!sttResponse.results || sttResponse.results.length === 0) {
+      return null;
+    }
+
+    // Collect all word timings from all result segments
+    const sttWords = [];
+    for (const result of sttResponse.results) {
+      const alt = result.alternatives && result.alternatives[0];
+      if (alt && alt.words) {
+        for (const w of alt.words) {
+          sttWords.push({
+            word: w.word,
+            startMs: Math.round(
+              (parseInt(w.startTime?.seconds || "0") * 1000) +
+              ((w.startTime?.nanos || 0) / 1000000)
+            ),
+            endMs: Math.round(
+              (parseInt(w.endTime?.seconds || "0") * 1000) +
+              ((w.endTime?.nanos || 0) / 1000000)
+            ),
+          });
+        }
+      }
+    }
+
+    if (sttWords.length === 0) return null;
+
+    // Align STT words back to original text words
+    const aligned = alignWords(originalWords, sttWords);
+    return aligned;
+  } catch (err) {
+    console.error("STT alignment failed:", err.message);
+    return null;
+  }
+}
+
+/**
+ * Align original text words with STT-detected words.
+ * Uses sequential matching with fuzzy comparison.
+ */
+function alignWords(originalWords, sttWords) {
+  const result = [];
+  let sttIdx = 0;
+
+  for (let i = 0; i < originalWords.length; i++) {
+    const cleanOrig = originalWords[i].replace(/[^a-zA-Z0-9'-]/g, "").toLowerCase();
+
+    if (sttIdx < sttWords.length) {
+      const cleanStt = sttWords[sttIdx].word.replace(/[^a-zA-Z0-9'-]/g, "").toLowerCase();
+
+      if (cleanOrig === cleanStt || cleanOrig.includes(cleanStt) || cleanStt.includes(cleanOrig)) {
+        result.push({
+          word: originalWords[i],
+          index: i,
+          startMs: sttWords[sttIdx].startMs,
+          endMs: sttWords[sttIdx].endMs,
+        });
+        sttIdx++;
+      } else {
+        // No match — interpolate from neighbors
+        const prevMs = result.length > 0 ? result[result.length - 1].endMs : 0;
+        const nextMs = sttIdx < sttWords.length ? sttWords[sttIdx].startMs : prevMs + 200;
+        result.push({
+          word: originalWords[i],
+          index: i,
+          startMs: prevMs,
+          endMs: nextMs,
+        });
+      }
+    } else {
+      // Ran out of STT words — interpolate remaining
+      const prevMs = result.length > 0 ? result[result.length - 1].endMs : 0;
+      const avgWordMs = prevMs > 0 && i > 0 ? prevMs / i : 300;
+      result.push({
+        word: originalWords[i],
+        index: i,
+        startMs: prevMs,
+        endMs: prevMs + avgWordMs,
+      });
+    }
+  }
+
+  return result;
+}
+
 exports.synthesizeSpeech = onRequest(
-  { region: "us-central1", memory: "256MiB", timeoutSeconds: 30, cors: true },
+  { region: "us-central1", memory: "512MiB", timeoutSeconds: 60, cors: true },
   async (req, res) => {
     cors(req, res, async () => {
       if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
@@ -34,20 +175,20 @@ exports.synthesizeSpeech = onRequest(
         const words = text.trim().split(/\s+/);
         const ssml = buildSSML(text);
 
-        // Wavenet voices support SSML timepoints; Neural2 does not
         const resolvedVoice = voiceName || (grade === 3 ? "en-US-Wavenet-C" : "en-US-Wavenet-F");
-
-        // Force Wavenet if a Neural2 voice was passed in — Neural2 won't return timepoints
         const finalVoice = resolvedVoice.replace("Neural2", "Wavenet");
 
-        // Speaking rate by grade: 0=Pre-K/K (slowest), 1=1st, 2=2nd, 3=3rd
+        // Speaking rate by grade
         const speakingRate = grade === 0 ? 0.75 : grade === 1 ? 0.85 : grade === 2 ? 0.9 : 1.0;
 
-        const [response] = await ttsClient.synthesizeSpeech({
+        // Step 1: Generate LINEAR16 audio — used for BOTH playback and STT alignment
+        // This ensures the audio the browser plays is identical to what timestamps are based on
+        const [wavResponse] = await ttsClient.synthesizeSpeech({
           input: { ssml },
           voice: { languageCode: "en-US", name: finalVoice },
           audioConfig: {
-            audioEncoding: "MP3",
+            audioEncoding: "LINEAR16",
+            sampleRateHertz: 24000,
             speakingRate,
             pitch: 0.0,
             effectsProfileId: ["headphone-class-device"],
@@ -55,13 +196,38 @@ exports.synthesizeSpeech = onRequest(
           enableTimePointing: ["SSML_MARK"],
         });
 
-        const audioBase64 = response.audioContent.toString("base64");
-        const timepoints = response.timepoints || [];
+        // Wrap raw PCM in a WAV header so the browser can play it
+        const pcmData = wavResponse.audioContent;
+        const wavBuffer = createWavBuffer(pcmData, 24000, 1, 16);
+        const audioBase64 = wavBuffer.toString("base64");
+
+        // Step 3: SSML mark timings as fallback
+        const timepoints = wavResponse.timepoints || [];
         const lastTp = timepoints[timepoints.length - 1];
         const estimatedDurationMs = lastTp ? Math.round(lastTp.timeSeconds * 1000) + 800 : words.length * 350;
-        const wordTimings = buildWordTimings(words, timepoints, estimatedDurationMs);
+        const ssmlTimings = buildWordTimings(words, timepoints, estimatedDurationMs);
 
-        return res.status(200).json({ audioBase64, wordTimings, totalWords: words.length, voiceUsed: finalVoice });
+        // Step 4: Forced alignment via STT for precise timings
+        let wordTimings = ssmlTimings;
+        let alignmentMethod = "ssml_marks";
+
+        const alignedTimings = await getAlignedTimings(wavResponse.audioContent, words);
+        if (alignedTimings && alignedTimings.length > 0) {
+          wordTimings = alignedTimings;
+          alignmentMethod = "forced_alignment";
+          console.log(`Forced alignment: ${alignedTimings.length} words aligned`);
+        } else {
+          console.log("Forced alignment failed, using SSML marks");
+        }
+
+        return res.status(200).json({
+          audioBase64,
+          audioFormat: "wav",
+          wordTimings,
+          totalWords: words.length,
+          voiceUsed: finalVoice,
+          alignmentMethod,
+        });
       } catch (err) {
         console.error("TTS error:", err);
         return res.status(500).json({ error: "TTS synthesis failed", details: err.message });

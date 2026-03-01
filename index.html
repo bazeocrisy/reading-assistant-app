@@ -1621,8 +1621,8 @@ function startHighlightLoop() {
   const timingsAreReal = ttsWordTimings.length > 1 &&
     ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
 
-  // MP3 decoder delay compensation
-  const MP3_OFFSET_MS = 50;
+  // WAV has zero decoder delay — no offset needed (MP3 would need ~50ms compensation)
+  const AUDIO_OFFSET_MS = 0;
 
   // Check if we have real startMs AND endMs (forced alignment) vs just startMs (SSML marks)
   const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 && ttsWordTimings[0].endMs > 0;
@@ -1634,7 +1634,7 @@ function startHighlightLoop() {
 
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
-    const nowMs = (ttsAudio.currentTime * 1000) + MP3_OFFSET_MS;
+    const nowMs = (ttsAudio.currentTime * 1000) + AUDIO_OFFSET_MS;
     const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
 
@@ -1775,7 +1775,8 @@ async function playSpeech(startFromMs) {
       ttsWordTimings = [];
     }
     console.log(`TTS: ${ttsWordTimings.length} timings, ${S.wordEls.length} words, method: ${data.alignmentMethod || 'unknown'}, real: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
-    const audio = new Audio('data:audio/ogg;base64,' + data.audioBase64);
+    const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
+    const audio = new Audio(`data:${audioMime};base64,` + data.audioBase64);
     // Use speed slider for playback rate adjustment
     audio.playbackRate = S.speed;
     ttsAudio = audio;
