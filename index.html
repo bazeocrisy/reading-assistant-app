@@ -2510,6 +2510,7 @@ document.getElementById('btn-new').addEventListener('click', () => {
 document.getElementById('btn-finished-reading').addEventListener('click', () => {
   document.getElementById('btn-finished-reading').style.display = 'none';
   clearTimeout(S._finishedBtnTimer);
+  stopTTS();
   recordReadComplete();
 });
 document.getElementById('btn-solo-retry').addEventListener('click', () => {
