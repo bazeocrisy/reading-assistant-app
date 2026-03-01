@@ -2341,9 +2341,11 @@ async function hostSetStory(title, body, grade, isAI) {
   S.grade = grade;
   S.isAIStory = isAI;
   S.wordTarget = body.trim().split(/\s+/).length;
+  S._contentType = 'passage';
   recordStoryStart();
   // Push to Firebase so guest gets it
   await update(S.roomRef, {
+    contentType: 'passage',
     story: body,
     title: title,
     grade: grade,
@@ -2414,7 +2416,7 @@ document.getElementById('host-paste-input').addEventListener('input', () => {
   el.style.color = count > 500 ? '#FF6B6B' : '#aaa';
 });
 
-// Spelling words button
+// Spelling words button (typed)
 document.getElementById('btn-use-spelling').addEventListener('click', async () => {
   const raw = document.getElementById('host-spelling-input').value.trim();
   if (!raw) {
@@ -2424,10 +2426,43 @@ document.getElementById('btn-use-spelling').addEventListener('click', async () =
   document.getElementById('host-spelling-input').style.borderColor = '#ddd';
   const words = raw.split(/[,\s\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
   if (words.length === 0) return;
-  const title = '🔤 Spelling Practice';
-  const body = words.join('  ·  ');
-  const grade = hostGrade || '1';
-  await hostSetStory(title, body, grade, false);
+
+  // Build spelling list with simple syllable breakdown
+  const spellingList = {
+    id: Date.now().toString(36),
+    date: new Date().toISOString(),
+    grade: hostGrade || '2',
+    words: words.map((w, i) => ({
+      word: w,
+      syllables: w, // Simple — no syllable breakdown for typed words
+      isRedWord: false,
+      num: i + 1,
+      practiced: 0,
+      mastered: false
+    }))
+  };
+
+  // Save locally
+  const d = getData();
+  d.spellingLists.push(spellingList);
+  if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
+  saveData(d);
+
+  // Set as current and navigate to spelling screen
+  currentSpellingList = spellingList;
+  renderSpellingWords(spellingList);
+  S._contentType = 'spelling';
+  S._spellingList = spellingList;
+
+  // Push to Firebase for guest
+  await update(S.roomRef, {
+    contentType: 'spelling',
+    spellingList: spellingList,
+    grade: hostGrade || '2',
+    status: 'story-ready'
+  });
+  S._storyReady = true;
+  S._tryStartCountdown();
 });
 
 // ── Image upload + OCR for Read Together content picker ───
@@ -2502,7 +2537,7 @@ document.getElementById('host-passage-file').addEventListener('change', async (e
   btn.disabled = false;
 });
 
-// Upload spelling words photo
+// Upload spelling words photo — use dedicated CF_SPELLING endpoint
 document.getElementById('btn-upload-spelling').addEventListener('click', () => {
   document.getElementById('host-spelling-file').click();
 });
@@ -2517,12 +2552,76 @@ document.getElementById('host-spelling-file').addEventListener('change', async (
   status.style.color = 'var(--muted)';
   btn.disabled = true;
   try {
-    const text = await processUploadedImage(file);
-    // Put extracted words into the spelling textarea
-    // Clean up: extract individual words, remove numbers/bullets
-    const words = text.replace(/[\d.)\-•·]/g, ' ').split(/[,\s\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 1 && /^[a-z]+$/i.test(w));
-    document.getElementById('host-spelling-input').value = words.join(', ');
-    status.textContent = `✅ Found ${words.length} words! Review and tap "Practice These Words"`;
+    // Compress image
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1600;
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    // Use CF_SPELLING for proper syllable/red word extraction
+    const response = await fetch(CF_SPELLING, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg', grade: hostGrade || '2' })
+    });
+    if (!response.ok) throw new Error('Extraction failed');
+    const data = await response.json();
+    if (!data.words || data.words.length === 0) throw new Error('No words found');
+
+    // Build spelling list
+    const spellingList = {
+      id: Date.now().toString(36),
+      date: new Date().toISOString(),
+      grade: hostGrade || '2',
+      words: data.words.map((w, i) => ({
+        word: w.word.toLowerCase().trim(),
+        syllables: w.syllables || w.word,
+        isRedWord: w.isRedWord || false,
+        num: i + 1,
+        practiced: 0,
+        mastered: false
+      }))
+    };
+
+    // Save locally too
+    const d = getData();
+    d.spellingLists.push(spellingList);
+    if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
+    saveData(d);
+
+    // Set as current and navigate to the spelling screen
+    currentSpellingList = spellingList;
+    renderSpellingWords(spellingList);
+    
+    // Push to Firebase for guest
+    await update(S.roomRef, {
+      contentType: 'spelling',
+      spellingList: spellingList,
+      grade: hostGrade || '2',
+      status: 'story-ready'
+    });
+    S._storyReady = true;
+    S._tryStartCountdown();
+
+    status.textContent = `✅ Found ${spellingList.words.length} spelling words!`;
     status.style.color = 'var(--green)';
   } catch (err) {
     console.error('Spelling scan error:', err);
@@ -2658,15 +2757,25 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
     const roomData = snap.val();
     if (!roomData) return;
 
-    // Pick up story as soon as host sets it
-    if (roomData.story && !S.story) {
+    // Pick up story or spelling words as soon as host sets them
+    if (roomData.contentType === 'spelling' && roomData.spellingList && !S._contentReady) {
+      S._contentReady = true;
+      S._contentType = 'spelling';
+      S._spellingList = roomData.spellingList;
+      S.grade = roomData.grade;
+      if (roomData.voiceGender) S.voiceGender = roomData.voiceGender;
+      if (roomData.speed) S.speed = roomData.speed;
+      const msg = document.getElementById('guest-wait-msg');
+      if (msg) msg.textContent = '🔤 Spelling words ready! Starting soon...';
+    } else if (roomData.story && !S.story && !S._contentReady) {
+      S._contentReady = true;
+      S._contentType = 'passage';
       S.story = roomData.story;
       S.storyTitle = roomData.title;
       S.grade = roomData.grade;
       S.wordTarget = roomData.wordTarget;
       if (roomData.voiceGender) S.voiceGender = roomData.voiceGender;
       if (roomData.speed) S.speed = roomData.speed;
-      // Update waiting message
       const msg = document.getElementById('guest-wait-msg');
       if (msg) msg.textContent = '📖 Story picked! Getting ready...';
     }
@@ -2809,17 +2918,26 @@ async function startCountdown() {
         const snap = await get(ref(db, `rooms/${S.roomCode}`));
         if (snap.exists()) {
           const room = snap.val();
-          S.story = room.story;
-          S.storyTitle = room.title;
-          S.grade = room.grade;
-          S.wordTarget = room.wordTarget;
-          S.isAIStory = true;
+          // Handle different content types
+          if (room.contentType === 'spelling' && room.spellingList) {
+            S._contentType = 'spelling';
+            S._spellingList = room.spellingList;
+            currentSpellingList = room.spellingList;
+            S.grade = room.grade;
+          } else if (room.story) {
+            S._contentType = 'passage';
+            S.story = room.story;
+            S.storyTitle = room.title;
+            S.grade = room.grade;
+            S.wordTarget = room.wordTarget;
+            S.isAIStory = true;
+          }
           if (room.voiceGender) S.voiceGender = room.voiceGender;
           if (room.speed) S.speed = room.speed;
         }
       } catch(e) { console.warn('Could not refresh story:', e); }
-      // Preload TTS audio so it's ready when Play is hit
-      if (S.story && navigator.onLine) {
+      // Preload TTS audio for passages (not needed for spelling)
+      if (S._contentType === 'passage' && S.story && navigator.onLine) {
         await fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
       }
     })();
@@ -2854,7 +2972,20 @@ async function startCountdown() {
           sub.remove();
         }
       }
-      setupReadScreen(); show('screen-read');
+      // Route to appropriate screen based on content type
+      if (S._contentType === 'spelling' || (S.myRole === 'host' && S._spellingList)) {
+        // Spelling mode — show the spelling screen
+        const list = S._spellingList || currentSpellingList;
+        if (list) {
+          currentSpellingList = list;
+          renderSpellingWords(list);
+          show('screen-spelling');
+        } else {
+          setupReadScreen(); show('screen-read');
+        }
+      } else {
+        setupReadScreen(); show('screen-read');
+      }
     }, 400);
   };
   tick();
