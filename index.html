@@ -688,6 +688,21 @@ body.bedtime #home-stats-bar { display: none; }
   .kid-action-label { font-size: 1.2rem; }
 }
 
+/* ── Story Size Buttons ── */
+.story-size-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 8px; border: 3px solid var(--border); border-radius: 20px;
+  background: var(--card); cursor: pointer; transition: all 0.2s;
+  font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700;
+  color: var(--ink); -webkit-tap-highlight-color: transparent;
+}
+.story-size-btn:hover { border-color: var(--purple-light); transform: translateY(-2px); }
+.story-size-btn.sel-size {
+  border-color: var(--green); background: #F0FFF0;
+  box-shadow: 0 4px 14px rgba(92,216,90,0.2);
+}
+.story-size-btn:active { transform: scale(0.96); }
+
 </style>
 </head>
 <body>
@@ -878,104 +893,137 @@ body.bedtime #home-stats-bar { display: none; }
   <div class="screen" id="screen-story-builder">
     <div class="card">
       <div class="card-title" style="text-align:center;font-size:1.6rem;">✨ Build Your Story!</div>
-      <div class="section-label" style="font-size:0.88rem;">How old are you?</div>
-      <div class="option-row" id="grade-row">
-        <button class="opt-btn" data-grade="prek">Pre-K</button>
-        <button class="opt-btn" data-grade="k">K</button>
-        <button class="opt-btn sel-grade" data-grade="1">1st</button>
-        <button class="opt-btn" data-grade="2">2nd</button>
-        <button class="opt-btn" data-grade="3">3rd</button>
+
+      <!-- Grade: collapsed by default, shows saved grade -->
+      <div id="grade-display" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
+        <span style="font-weight:800;color:var(--ink);font-size:1rem;">📚 Grade: <span id="grade-label" style="color:var(--purple);">1st</span></span>
+        <button id="btn-change-grade" style="background:none;border:2px dashed var(--border);border-radius:12px;padding:4px 12px;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;">Change</button>
       </div>
-      <div class="section-label" style="font-size:0.88rem;">How long?</div>
-      <div class="option-row" id="words-row">
-        <button class="opt-btn" data-words="50" style="position:relative;">50<span style="display:block;font-size:0.6rem;color:var(--muted);font-weight:700;">Short</span></button>
+      <div id="grade-picker" style="display:none;margin-bottom:12px;">
+        <div class="option-row" id="grade-row">
+          <button class="opt-btn" data-grade="prek">Pre-K</button>
+          <button class="opt-btn" data-grade="k">K</button>
+          <button class="opt-btn sel-grade" data-grade="1">1st</button>
+          <button class="opt-btn" data-grade="2">2nd</button>
+          <button class="opt-btn" data-grade="3">3rd</button>
+        </div>
+      </div>
+
+      <!-- Story length: 3 visual book sizes -->
+      <div class="section-label" style="font-size:0.88rem;text-align:center;">How long should your story be?</div>
+      <div id="story-size-row" style="display:flex;justify-content:center;gap:10px;margin-bottom:16px;">
+        <button class="story-size-btn" data-words="50">
+          <svg viewBox="0 0 40 50" width="36" height="44"><rect x="6" y="8" width="28" height="34" rx="3" fill="var(--gold)" opacity="0.85"/><rect x="8" y="10" width="24" height="30" rx="2" fill="#FFF8E1"/><line x1="12" y1="18" x2="28" y2="18" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="24" x2="24" y2="24" stroke="var(--border)" stroke-width="1.5"/></svg>
+          <span>Quick</span>
+        </button>
+        <button class="story-size-btn sel-size" data-words="100">
+          <svg viewBox="0 0 44 56" width="40" height="50"><rect x="6" y="6" width="32" height="42" rx="3" fill="var(--green)" opacity="0.85"/><rect x="8" y="8" width="28" height="38" rx="2" fill="#F1FFF1"/><line x1="12" y1="16" x2="32" y2="16" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="22" x2="30" y2="22" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="28" x2="28" y2="28" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="34" x2="26" y2="34" stroke="var(--border)" stroke-width="1.5"/></svg>
+          <span>Regular</span>
+        </button>
+        <button class="story-size-btn" data-words="300">
+          <svg viewBox="0 0 50 64" width="44" height="56"><rect x="6" y="4" width="38" height="54" rx="3" fill="var(--ocean)" opacity="0.85"/><rect x="8" y="6" width="34" height="50" rx="2" fill="#EFF7FF"/><line x1="12" y1="14" x2="38" y2="14" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="20" x2="36" y2="20" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="26" x2="34" y2="26" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="32" x2="36" y2="32" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="38" x2="32" y2="38" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="44" x2="34" y2="44" stroke="var(--border)" stroke-width="1.5"/></svg>
+          <span>Long</span>
+        </button>
+      </div>
+      <!-- Hidden original words row for JS compatibility -->
+      <div id="words-row" style="display:none;">
+        <button class="opt-btn" data-words="50">50</button>
         <button class="opt-btn sel-words" data-words="100">100</button>
         <button class="opt-btn" data-words="150">150</button>
         <button class="opt-btn" data-words="200">200</button>
         <button class="opt-btn" data-words="300">300</button>
-        <button class="opt-btn" data-words="500" style="position:relative;">500<span style="display:block;font-size:0.6rem;color:var(--muted);font-weight:700;">Long</span></button>
+        <button class="opt-btn" data-words="500">500</button>
       </div>
-      <div class="section-label" style="font-size:0.88rem;">What do you want to read about?</div>
+
+      <!-- Topics -->
+      <div class="section-label" style="font-size:0.88rem;text-align:center;">What sounds fun?</div>
       <div style="text-align:center;margin-bottom:12px;">
         <button class="btn-main btn-yellow" id="btn-surprise-me" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:10px 24px;font-size:0.95rem;margin:0;">🎲 Surprise Me!</button>
       </div>
-      <div class="categories">
+      <div class="categories" id="topics-grid">
+        <!-- TOP 9: visible by default -->
         <button class="cat-btn selected" data-cat="animals">
           <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="10" fill="#FFB088" opacity="0.3"/><path d="M12 12c-2-4-6-3-6 0s3 4 5 3" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><path d="M28 12c2-4 6-3 6 0s-3 4-5 3" stroke="#E55D2B" stroke-width="2" stroke-linecap="round"/><ellipse cx="20" cy="20" rx="9" ry="8" fill="#FF9F43"/><circle cx="16.5" cy="18" r="1.5" fill="#fff"/><circle cx="23.5" cy="18" r="1.5" fill="#fff"/><ellipse cx="20" cy="22" rx="2.5" ry="1.5" fill="#E55D2B"/><path d="M15 26c0 3 2 6 5 6s5-3 5-6" stroke="#E55D2B" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
           Animals
-        </button>
-        <button class="cat-btn" data-cat="space">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#1A237E" opacity="0.12"/><path d="M20 6L22 14H28L23 19L25 27L20 22L15 27L17 19L12 14H18L20 6Z" fill="#FFD93D" stroke="#FBC02D" stroke-width="1"/><circle cx="10" cy="10" r="1.5" fill="#90CAF9"/><circle cx="32" cy="12" r="1" fill="#90CAF9"/><circle cx="8" cy="30" r="1" fill="#CE93D8"/><circle cx="33" cy="28" r="1.5" fill="#90CAF9"/></svg>
-          Space
         </button>
         <button class="cat-btn" data-cat="dinosaurs">
           <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="14" ry="10" fill="#A5D6A7" opacity="0.25"/><path d="M10 28c0-8 4-16 12-16 6 0 10 5 10 12" stroke="#388E3C" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="27" cy="16" r="2" fill="#4CAF50"/><circle cx="27" cy="16" r="0.8" fill="#fff"/><path d="M30 14c2-2 4-1 3 1" stroke="#388E3C" stroke-width="1.5" stroke-linecap="round"/><path d="M10 28l-2 4M14 30l-1 4M28 28l1 4M24 30l1 4" stroke="#388E3C" stroke-width="2" stroke-linecap="round"/><path d="M8 22l-3-1M8 18l-3 0M8 25l-4 0" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/></svg>
           Dinosaurs
         </button>
-        <button class="cat-btn" data-cat="ocean">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M4 22c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#90CAF9" stroke-width="1.5" opacity="0.5"/><path d="M4 28c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#90CAF9" stroke-width="1.5" opacity="0.3"/><path d="M20 10c-6 0-10 5-10 10 0 3 2 6 5 7l5-2 5 2c3-1 5-4 5-7 0-5-4-10-10-10z" fill="#42A5F5" opacity="0.85"/><circle cx="16" cy="17" r="1.5" fill="#fff"/><circle cx="24" cy="17" r="1.5" fill="#fff"/><path d="M30 16c3-5 6-2 4 1" stroke="#1E88E5" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-          Ocean
-        </button>
         <button class="cat-btn" data-cat="superheroes">
           <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#EF5350"/><circle cx="20" cy="12" r="3.5" fill="#B71C1C"/><path d="M14 20h12l2 14H12l2-14z" fill="#1565C0"/><path d="M20 20v14" stroke="#EF5350" stroke-width="2"/><path d="M16 20l-6 8" stroke="#FFB088" stroke-width="2.5" stroke-linecap="round"/><path d="M24 20l6 8" stroke="#FFB088" stroke-width="2.5" stroke-linecap="round"/><polygon points="20,3 21.5,6.5 25,6.5 22.2,8.8 23.2,12.3 20,10 16.8,12.3 17.8,8.8 15,6.5 18.5,6.5" fill="#FFD93D" opacity="0.8"/></svg>
           Heroes
         </button>
-        <button class="cat-btn" data-cat="magic">
-          <svg viewBox="0 0 40 40" fill="none"><line x1="8" y1="34" x2="32" y2="8" stroke="#7B1FA2" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="8" r="3" fill="#CE93D8"/><circle cx="32" cy="8" r="1.5" fill="#FFD93D"/><circle cx="14" cy="12" r="1.5" fill="#CE93D8"/><circle cx="22" cy="8" r="1" fill="#E1BEE7"/><circle cx="28" cy="18" r="1" fill="#CE93D8"/><path d="M24 14l2-3M26 16l3-1M25 12l3 1" stroke="#CE93D8" stroke-width="1" stroke-linecap="round"/></svg>
-          Magic
+        <button class="cat-btn" data-cat="space">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#1A237E" opacity="0.12"/><path d="M20 6L22 14H28L23 19L25 27L20 22L15 27L17 19L12 14H18L20 6Z" fill="#FFD93D" stroke="#FBC02D" stroke-width="1"/><circle cx="10" cy="10" r="1.5" fill="#90CAF9"/><circle cx="32" cy="12" r="1" fill="#90CAF9"/><circle cx="8" cy="30" r="1" fill="#CE93D8"/><circle cx="33" cy="28" r="1.5" fill="#90CAF9"/></svg>
+          Space
         </button>
-        <button class="cat-btn" data-cat="sports">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FF9800" opacity="0.15"/><circle cx="20" cy="20" r="10" fill="#FF9800" stroke="#E65100" stroke-width="1.5"/><path d="M10 20h20M20 10v20" stroke="#E65100" stroke-width="1.2" opacity="0.5"/><path d="M13 12c2 2 5 3 7 3M27 28c-2-2-5-3-7-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>
-          Sports
-        </button>
-        <button class="cat-btn" data-cat="cooking">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M10 18h20v4c0 6-4 10-10 10s-10-4-10-10v-4z" fill="#FF7043" opacity="0.85"/><rect x="8" y="16" width="24" height="4" rx="2" fill="#D84315"/><path d="M14 16v-4c0-2 1-4 3-4" stroke="#FFAB91" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M20 16v-5c0-2 1-3 2-3" stroke="#FFAB91" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M26 16v-3c0-2-1-3-2-3" stroke="#FFAB91" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="24" r="1.5" fill="#fff" opacity="0.5"/><circle cx="22" cy="26" r="1" fill="#fff" opacity="0.5"/></svg>
-          Cooking
-        </button>
-        <button class="cat-btn" data-cat="friends">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="14" cy="14" r="5" fill="#42A5F5"/><circle cx="14" cy="14" r="2.5" fill="#1565C0"/><path d="M8 26c0-4 3-7 6-7s6 3 6 7" fill="#1E88E5" opacity="0.7"/><circle cx="26" cy="14" r="5" fill="#EF5350"/><circle cx="26" cy="14" r="2.5" fill="#C62828"/><path d="M20 26c0-4 3-7 6-7s6 3 6 7" fill="#E53935" opacity="0.5"/><circle cx="20" cy="32" r="1" fill="#FFD93D"/></svg>
-          Friends
-        </button>
-        <button class="cat-btn" data-cat="confidence">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#FFD93D" opacity="0.2"/><path d="M20 8l2.5 7.5H30l-6.5 4.5 2.5 7.5L20 23l-6 4.5 2.5-7.5L10 15.5h7.5L20 8z" fill="#FFD93D" stroke="#F9A825" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#FF9800"/></svg>
-          I Can Do It!
-        </button>
-        <button class="cat-btn" data-cat="blackhistory">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#5D4037" opacity="0.15"/><path d="M20 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8z" fill="#8D6E63" opacity="0.85"/><path d="M15 20l3 3 7-7" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Black History
-        </button>
-        <button class="cat-btn" data-cat="helpers">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="6" rx="2" fill="#EF5350"/><rect x="8" y="14" width="24" height="18" rx="3" fill="#C62828" opacity="0.85"/><rect x="17" y="18" width="6" height="10" rx="1" fill="#FFD93D"/><rect x="13" y="22" width="14" height="3" rx="1" fill="#FFD93D"/><circle cx="30" cy="10" r="4" fill="#FFCDD2"/><path d="M28 10h4M30 8v4" stroke="#C62828" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Helpers
-        </button>
-        <button class="cat-btn" data-cat="nature">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#FFD93D" opacity="0.9"/><path d="M8 28c2-8 5-12 12-12s10 4 12 12" fill="#4CAF50" opacity="0.8"/><path d="M20 16v12" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/><path d="M14 32h12" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="16" r="3" fill="#81C784" opacity="0.5"/><circle cx="32" cy="20" r="2" fill="#A5D6A7" opacity="0.4"/></svg>
-          Outside
-        </button>
-        <button class="cat-btn" data-cat="emotions">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FFD93D" opacity="0.25"/><circle cx="20" cy="20" r="10" fill="#FFD93D" opacity="0.85"/><circle cx="16" cy="17" r="1.8" fill="#5D4037"/><circle cx="24" cy="17" r="1.8" fill="#5D4037"/><path d="M14 24c1.5 2.5 10.5 2.5 12 0" stroke="#5D4037" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="28" cy="10" r="2" fill="#FF7043"/><path d="M26 8l3-2M30 10l2-1" stroke="#FF7043" stroke-width="1" stroke-linecap="round"/></svg>
-          Feelings
-        </button>
-        <button class="cat-btn" data-cat="trucks">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="4" y="16" width="22" height="12" rx="2" fill="#F44336"/><rect x="26" y="20" width="10" height="8" rx="2" fill="#B71C1C"/><rect x="28" y="22" width="6" height="4" rx="1" fill="#FFCDD2" opacity="0.5"/><circle cx="11" cy="30" r="3" fill="#212121" stroke="#757575" stroke-width="1.5"/><circle cx="31" cy="30" r="3" fill="#212121" stroke="#757575" stroke-width="1.5"/><rect x="6" y="18" width="8" height="5" rx="1" fill="#FFD93D" opacity="0.6"/></svg>
-          Trucks
+        <button class="cat-btn" data-cat="ocean">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M4 22c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#90CAF9" stroke-width="1.5" opacity="0.5"/><path d="M4 28c4-3 8 0 12-3s8 0 12-3s8 1 8 1" stroke="#90CAF9" stroke-width="1.5" opacity="0.3"/><path d="M20 10c-6 0-10 5-10 10 0 3 2 6 5 7l5-2 5 2c3-1 5-4 5-7 0-5-4-10-10-10z" fill="#42A5F5" opacity="0.85"/><circle cx="16" cy="17" r="1.5" fill="#fff"/><circle cx="24" cy="17" r="1.5" fill="#fff"/><path d="M30 16c3-5 6-2 4 1" stroke="#1E88E5" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          Ocean
         </button>
         <button class="cat-btn" data-cat="princesses">
           <svg viewBox="0 0 40 40" fill="none"><path d="M20 6l-8 12h16L20 6z" fill="#FFD93D"/><circle cx="20" cy="6" r="2" fill="#CE93D8"/><circle cx="14" cy="14" r="1.5" fill="#CE93D8"/><circle cx="26" cy="14" r="1.5" fill="#CE93D8"/><rect x="10" y="18" width="20" height="16" rx="3" fill="#CE93D8"/><rect x="14" y="24" width="5" height="10" rx="1" fill="#7B1FA2"/><path d="M24 22v6" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/><path d="M22 25h4" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/></svg>
           Princesses
         </button>
-        <button class="cat-btn" data-cat="robots">
+        <button class="cat-btn" data-cat="trucks">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="4" y="16" width="22" height="12" rx="2" fill="#F44336"/><rect x="26" y="20" width="10" height="8" rx="2" fill="#B71C1C"/><rect x="28" y="22" width="6" height="4" rx="1" fill="#FFCDD2" opacity="0.5"/><circle cx="11" cy="30" r="3" fill="#212121" stroke="#757575" stroke-width="1.5"/><circle cx="31" cy="30" r="3" fill="#212121" stroke="#757575" stroke-width="1.5"/><rect x="6" y="18" width="8" height="5" rx="1" fill="#FFD93D" opacity="0.6"/></svg>
+          Trucks
+        </button>
+        <button class="cat-btn" data-cat="magic">
+          <svg viewBox="0 0 40 40" fill="none"><line x1="8" y1="34" x2="32" y2="8" stroke="#7B1FA2" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="8" r="3" fill="#CE93D8"/><circle cx="32" cy="8" r="1.5" fill="#FFD93D"/><circle cx="14" cy="12" r="1.5" fill="#CE93D8"/><circle cx="22" cy="8" r="1" fill="#E1BEE7"/><circle cx="28" cy="18" r="1" fill="#CE93D8"/><path d="M24 14l2-3M26 16l3-1M25 12l3 1" stroke="#CE93D8" stroke-width="1" stroke-linecap="round"/></svg>
+          Magic
+        </button>
+        <button class="cat-btn" data-cat="blackhistory">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#5D4037" opacity="0.15"/><path d="M20 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8z" fill="#8D6E63" opacity="0.85"/><path d="M15 20l3 3 7-7" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Black History
+        </button>
+
+        <!-- MORE TOPICS: hidden by default -->
+        <button class="cat-btn more-topic" data-cat="sports" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FF9800" opacity="0.15"/><circle cx="20" cy="20" r="10" fill="#FF9800" stroke="#E65100" stroke-width="1.5"/><path d="M10 20h20M20 10v20" stroke="#E65100" stroke-width="1.2" opacity="0.5"/><path d="M13 12c2 2 5 3 7 3M27 28c-2-2-5-3-7-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>
+          Sports
+        </button>
+        <button class="cat-btn more-topic" data-cat="cooking" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M10 18h20v4c0 6-4 10-10 10s-10-4-10-10v-4z" fill="#FF7043" opacity="0.85"/><rect x="8" y="16" width="24" height="4" rx="2" fill="#D84315"/><path d="M14 16v-4c0-2 1-4 3-4" stroke="#FFAB91" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M20 16v-5c0-2 1-3 2-3" stroke="#FFAB91" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M26 16v-3c0-2-1-3-2-3" stroke="#FFAB91" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="24" r="1.5" fill="#fff" opacity="0.5"/><circle cx="22" cy="26" r="1" fill="#fff" opacity="0.5"/></svg>
+          Cooking
+        </button>
+        <button class="cat-btn more-topic" data-cat="friends" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="14" cy="14" r="5" fill="#42A5F5"/><circle cx="14" cy="14" r="2.5" fill="#1565C0"/><path d="M8 26c0-4 3-7 6-7s6 3 6 7" fill="#1E88E5" opacity="0.7"/><circle cx="26" cy="14" r="5" fill="#EF5350"/><circle cx="26" cy="14" r="2.5" fill="#C62828"/><path d="M20 26c0-4 3-7 6-7s6 3 6 7" fill="#E53935" opacity="0.5"/><circle cx="20" cy="32" r="1" fill="#FFD93D"/></svg>
+          Friends
+        </button>
+        <button class="cat-btn more-topic" data-cat="confidence" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#FFD93D" opacity="0.2"/><path d="M20 8l2.5 7.5H30l-6.5 4.5 2.5 7.5L20 23l-6 4.5 2.5-7.5L10 15.5h7.5L20 8z" fill="#FFD93D" stroke="#F9A825" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#FF9800"/></svg>
+          I Can Do It!
+        </button>
+        <button class="cat-btn more-topic" data-cat="helpers" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="6" rx="2" fill="#EF5350"/><rect x="8" y="14" width="24" height="18" rx="3" fill="#C62828" opacity="0.85"/><rect x="17" y="18" width="6" height="10" rx="1" fill="#FFD93D"/><rect x="13" y="22" width="14" height="3" rx="1" fill="#FFD93D"/><circle cx="30" cy="10" r="4" fill="#FFCDD2"/><path d="M28 10h4M30 8v4" stroke="#C62828" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Helpers
+        </button>
+        <button class="cat-btn more-topic" data-cat="nature" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="12" r="6" fill="#FFD93D" opacity="0.9"/><path d="M8 28c2-8 5-12 12-12s10 4 12 12" fill="#4CAF50" opacity="0.8"/><path d="M20 16v12" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/><path d="M14 32h12" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="16" r="3" fill="#81C784" opacity="0.5"/><circle cx="32" cy="20" r="2" fill="#A5D6A7" opacity="0.4"/></svg>
+          Outside
+        </button>
+        <button class="cat-btn more-topic" data-cat="emotions" style="display:none;">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FFD93D" opacity="0.25"/><circle cx="20" cy="20" r="10" fill="#FFD93D" opacity="0.85"/><circle cx="16" cy="17" r="1.8" fill="#5D4037"/><circle cx="24" cy="17" r="1.8" fill="#5D4037"/><path d="M14 24c1.5 2.5 10.5 2.5 12 0" stroke="#5D4037" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="28" cy="10" r="2" fill="#FF7043"/><path d="M26 8l3-2M30 10l2-1" stroke="#FF7043" stroke-width="1" stroke-linecap="round"/></svg>
+          Feelings
+        </button>
+        <button class="cat-btn more-topic" data-cat="robots" style="display:none;">
           <svg viewBox="0 0 40 40" fill="none"><rect x="12" y="14" width="16" height="16" rx="3" fill="#78909C"/><rect x="15" y="6" width="10" height="8" rx="3" fill="#546E7A"/><circle cx="18" cy="10" r="1.5" fill="#4FC3F7"/><circle cx="22" cy="10" r="1.5" fill="#4FC3F7"/><rect x="8" y="18" width="4" height="8" rx="2" fill="#90A4AE"/><rect x="28" y="18" width="4" height="8" rx="2" fill="#90A4AE"/><rect x="16" y="32" width="3" height="4" rx="1" fill="#546E7A"/><rect x="21" y="32" width="3" height="4" rx="1" fill="#546E7A"/><path d="M20 4v-2" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="1" r="1.5" fill="#4FC3F7"/><rect x="16" y="20" width="8" height="3" rx="1" fill="#B0BEC5" opacity="0.5"/></svg>
           Robots
         </button>
-        <button class="cat-btn" data-cat="pirates">
+        <button class="cat-btn more-topic" data-cat="pirates" style="display:none;">
           <svg viewBox="0 0 40 40" fill="none"><path d="M6 28c2-6 8-10 14-10s12 4 14 10" fill="#5D4037" opacity="0.3"/><path d="M8 30h24l-2 4H10l-2-4z" fill="#5D4037"/><path d="M20 8v20" stroke="#3E2723" stroke-width="2.5" stroke-linecap="round"/><path d="M20 8c6 0 10 3 10 6H20V8z" fill="#212121"/><path d="M16 10l-2-3M24 10l2-3" stroke="#FFD93D" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="22" r="4" fill="#FFD93D" opacity="0.6"/><path d="M18 21l4 2M22 21l-4 2" stroke="#3E2723" stroke-width="1.5" stroke-linecap="round"/></svg>
           Pirates
         </button>
-        <button class="cat-btn" data-cat="airplanes">
+        <button class="cat-btn more-topic" data-cat="airplanes" style="display:none;">
           <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="16" ry="4" fill="#90CAF9" opacity="0.2"/><path d="M6 20h28" stroke="#42A5F5" stroke-width="2.5" stroke-linecap="round"/><path d="M20 20l-6-8h-4l3 8-3 8h4l6-8z" fill="#42A5F5"/><path d="M20 20l8-4h4l-3 4 3 4h-4l-8-4z" fill="#1E88E5"/><circle cx="20" cy="20" r="2" fill="#FFD93D"/><path d="M18 18l-2-6M22 18l2-6" stroke="#90CAF9" stroke-width="1" stroke-linecap="round"/></svg>
           Airplanes
         </button>
+      </div>
+      <!-- More topics toggle -->
+      <div style="text-align:center;margin:8px 0 14px;">
+        <button id="btn-more-topics" style="background:none;border:2px dashed var(--border);border-radius:16px;padding:8px 20px;font-size:0.9rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;">+ More Topics</button>
       </div>
       <button class="btn-main" id="btn-generate" style="font-size:1.3rem;padding:18px;">✨ Make My Story!</button>
       <button class="btn-main btn-outline" id="btn-story-builder-back" style="margin-top:10px;">← Back</button>
@@ -1757,21 +1805,6 @@ function rotateBookie() {
 }
 setInterval(rotateBookie, 5000);
 
-// ── Home Stats Bar (reads from localStorage) ─────────────
-function updateHomeStats() {
-  try {
-    const data = JSON.parse(localStorage.getItem('readup_dash') || '{}');
-    const allStories = data.stories ? Object.keys(data.stories).length : 0;
-    const totalReads = data.stories ? Object.values(data.stories).reduce((s,v) => s + (v.reads||0), 0) : 0;
-    const wordCount = data.wordBank ? Object.keys(data.wordBank).length : 0;
-    const el1 = document.getElementById('home-stories-count');
-    const el2 = document.getElementById('home-words-count');
-    if (el1) el1.textContent = allStories + (allStories === 1 ? ' story' : ' stories');
-    if (el2) el2.textContent = wordCount + (wordCount === 1 ? ' word' : ' words');
-  } catch(e) {}
-}
-updateHomeStats();
-
 function cleanupRoom() {
   // Remove room from Firebase so partner gets disconnect notification
   if (S.roomRef && S.roomCode) {
@@ -2289,6 +2322,8 @@ document.getElementById('btn-stop-tts').addEventListener('click', () => {
 
 // ── Pickers ───────────────────────────────────────────────
 const GRADE_DEFAULTS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
+// Map word counts to nearest story-size button value
+const NEAREST_SIZE = { 50: 50, 100: 100, 150: 100, 200: 300, 300: 300, 500: 300 };
 
 document.querySelectorAll('#grade-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('#grade-row .opt-btn').forEach(b => b.classList.remove('sel-grade'));
@@ -2300,6 +2335,12 @@ document.querySelectorAll('#grade-row .opt-btn').forEach(btn => btn.addEventList
   document.querySelectorAll('#words-row .opt-btn').forEach(b => {
     b.classList.remove('sel-words');
     if (parseInt(b.dataset.words) === defaultWords) b.classList.add('sel-words');
+  });
+  // Also sync visual story-size buttons
+  const nearestSize = NEAREST_SIZE[defaultWords] || 100;
+  document.querySelectorAll('.story-size-btn').forEach(b => {
+    b.classList.remove('sel-size');
+    if (parseInt(b.dataset.words) === nearestSize) b.classList.add('sel-size');
   });
 }));
 document.querySelectorAll('#words-row .opt-btn').forEach(btn => btn.addEventListener('click', () => {
@@ -2318,7 +2359,92 @@ document.getElementById('btn-generate').addEventListener('click', () => { S.isRa
 document.getElementById('btn-go-story-builder').addEventListener('click', () => show('screen-story-builder'));
 document.getElementById('btn-story-builder-back').addEventListener('click', () => show('screen-pick'));
 
-// Surprise Me — pick a random topic and generate
+// ── Grade display / toggle ───────────────────────────────
+const GRADE_LABELS = { prek: 'Pre-K', k: 'K', '1': '1st', '2': '2nd', '3': '3rd' };
+function updateGradeLabel() {
+  const el = document.getElementById('grade-label');
+  if (el) el.textContent = GRADE_LABELS[S.grade] || S.grade;
+}
+updateGradeLabel();
+
+document.getElementById('btn-change-grade').addEventListener('click', () => {
+  const picker = document.getElementById('grade-picker');
+  const btn = document.getElementById('btn-change-grade');
+  if (picker.style.display === 'none') {
+    picker.style.display = 'block';
+    btn.textContent = 'Done';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+  } else {
+    picker.style.display = 'none';
+    btn.textContent = 'Change';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }
+});
+// When a grade is picked, also update the label and auto-close
+const origGradeHandler = () => {};
+document.querySelectorAll('#grade-row .opt-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    updateGradeLabel();
+    // Auto-close grade picker after selection
+    setTimeout(() => {
+      document.getElementById('grade-picker').style.display = 'none';
+      const changeBtn = document.getElementById('btn-change-grade');
+      changeBtn.textContent = 'Change';
+      changeBtn.style.borderColor = '';
+      changeBtn.style.color = '';
+    }, 300);
+  });
+});
+
+// ── Story Size Picker (Quick/Regular/Long) ───────────────
+const SIZE_MAP = { 50: 'Quick', 100: 'Regular', 300: 'Long' };
+document.querySelectorAll('.story-size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.story-size-btn').forEach(b => b.classList.remove('sel-size'));
+    btn.classList.add('sel-size');
+    const words = parseInt(btn.dataset.words);
+    S.wordTarget = words;
+    // Also sync the hidden original words-row for any code that reads it
+    document.querySelectorAll('#words-row .opt-btn').forEach(b => {
+      b.classList.remove('sel-words');
+      if (parseInt(b.dataset.words) === words) b.classList.add('sel-words');
+    });
+  });
+});
+
+// ── More Topics toggle ───────────────────────────────────
+let moreTopicsOpen = false;
+document.getElementById('btn-more-topics').addEventListener('click', () => {
+  moreTopicsOpen = !moreTopicsOpen;
+  document.querySelectorAll('.more-topic').forEach(el => {
+    el.style.display = moreTopicsOpen ? '' : 'none';
+  });
+  document.getElementById('btn-more-topics').textContent = moreTopicsOpen ? '− Fewer Topics' : '+ More Topics';
+});
+
+// ── Zero-state: hide stats bar if no data ────────────────
+function updateHomeStats() {
+  try {
+    const data = JSON.parse(localStorage.getItem('readup_dash') || '{}');
+    const allStories = data.stories ? Object.keys(data.stories).length : 0;
+    const totalReads = data.stories ? Object.values(data.stories).reduce((s,v) => s + (v.reads||0), 0) : 0;
+    const wordCount = data.wordBank ? Object.keys(data.wordBank).length : 0;
+    const el1 = document.getElementById('home-stories-count');
+    const el2 = document.getElementById('home-words-count');
+    const bar = document.getElementById('home-stats-bar');
+    if (allStories === 0 && wordCount === 0) {
+      // Hide stats bar, let Bookie speak instead
+      if (bar) bar.style.display = 'none';
+    } else {
+      if (bar) bar.style.display = 'flex';
+      if (el1) el1.textContent = allStories + (allStories === 1 ? ' story' : ' stories');
+      if (el2) el2.textContent = wordCount + (wordCount === 1 ? ' word' : ' words');
+    }
+  } catch(e) {}
+}
+updateHomeStats();
 document.getElementById('btn-surprise-me').addEventListener('click', () => {
   const allCats = document.querySelectorAll('.cat-btn');
   const randomCat = allCats[Math.floor(Math.random() * allCats.length)];
@@ -2326,6 +2452,12 @@ document.getElementById('btn-surprise-me').addEventListener('click', () => {
   allCats.forEach(b => b.classList.remove('selected'));
   randomCat.classList.add('selected');
   S.category = randomCat.dataset.cat;
+  // If it's a hidden topic, reveal all topics so the kid can see which was picked
+  if (randomCat.classList.contains('more-topic') && !moreTopicsOpen) {
+    moreTopicsOpen = true;
+    document.querySelectorAll('.more-topic').forEach(el => el.style.display = '');
+    document.getElementById('btn-more-topics').textContent = '− Fewer Topics';
+  }
   // Quick flash animation
   randomCat.style.transform = 'scale(1.15)';
   setTimeout(() => { randomCat.style.transform = ''; }, 300);
