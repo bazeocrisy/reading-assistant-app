@@ -341,35 +341,19 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
 .change-pin-row input:focus { border-color: var(--purple); }
 
 /* Story scroll container — kid-friendly thick scrollbar + no page-scroll conflict */
+/* Story text flows naturally — no inner scroll (prevents iOS double-scroll trap) */
 #story-scroll-container {
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;        /* prevents page from scrolling when story is touched */
-  touch-action: pan-y;                 /* ensure vertical scroll works inside */
-  scrollbar-width: auto;
-  scrollbar-color: var(--purple-light) var(--section);
+  /* No max-height, no overflow — natural page flow */
 }
 @media (min-width: 768px) {
-  #story-scroll-container { max-height: 60vh !important; }
   #spelling-word-list, #spell-picker-list, #wpm-story-scroll { max-height: 55vh !important; }
   #wordbank-review-list { max-height: 60vh !important; }
 }
 @media (min-width: 1024px) {
-  #story-scroll-container { max-height: 68vh !important; }
   #spelling-word-list, #spell-picker-list, #wpm-story-scroll { max-height: 62vh !important; }
   #wordbank-review-list { max-height: 68vh !important; }
 }
-#story-scroll-container::-webkit-scrollbar { width: 14px; }
-#story-scroll-container::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
-#story-scroll-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--purple), var(--purple-light));
-  border-radius: 10px; border: 3px solid var(--section); min-height: 40px;
-}
-#story-scroll-container::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
-#story-scroll-container::-webkit-scrollbar-thumb:active { background: var(--purple-deep); }
-body.bedtime #story-scroll-container { scrollbar-color: #4a4a3a #252540; }
-body.bedtime #story-scroll-container::-webkit-scrollbar-track { background: #252540; }
-body.bedtime #story-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
-body.bedtime #story-scroll-container::-webkit-scrollbar-thumb:hover { background: #7a6a9a; }
+/* Story container scrollbar removed — natural page scroll */
 
 /* ── Word Bank Review Screen ── */
 .wb-review-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; margin-bottom: 8px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; }
@@ -719,16 +703,19 @@ body.bedtime #home-stats-bar { display: none; }
 .read-play-label { text-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .read-play-side { display: flex; flex-direction: column; gap: 6px; }
 .read-side-btn {
-  width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 14px;
-  background: var(--card); display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border: none; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
   font-size: 1.1rem; cursor: pointer; transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent; color: white;
 }
-.read-side-btn:hover { border-color: var(--purple-light); background: var(--section); }
+.read-side-btn:nth-child(1) { background: linear-gradient(135deg, #FFD93D, #F9A825); } /* Pause — gold */
+.read-side-btn:nth-child(2) { background: linear-gradient(135deg, #FF6B6B, #EE5A24); } /* Stop — red */
+.read-side-btn:nth-child(3) { background: linear-gradient(135deg, #54A0FF, #2E86DE); } /* Settings — blue */
+.read-side-btn:hover { transform: translateY(-2px); }
 .read-side-btn:active { transform: scale(0.92); }
-.read-side-btn:disabled { opacity: 0.35; pointer-events: none; }
+.read-side-btn:disabled { opacity: 0.3; pointer-events: none; }
 body.bedtime .read-big-play { background: linear-gradient(135deg, #4a8a5a, #2a6a3a); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-body.bedtime .read-side-btn { background: #252540; border-color: #3a3a5c; }
+body.bedtime .read-side-btn { opacity: 0.8; }
 
 /* ── Story Size Buttons ── */
 .story-size-btn {
@@ -1274,8 +1261,8 @@ body.bedtime .read-side-btn { background: #252540; border-color: #3a3a5c; }
         <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:8px 16px;font-size:0.82rem;width:auto;display:inline-flex;align-items:center;gap:4px;">📖 Reading Mode</button>
       </div>
 
-      <!-- Story text in scrollable container -->
-      <div id="story-scroll-container" style="max-height:55vh;overflow-y:auto;margin:10px 0;scroll-behavior:smooth;overscroll-behavior:contain;padding:4px 0;">
+      <!-- Story text flows naturally — no inner scroll container (prevents iOS double-scroll trap) -->
+      <div id="story-scroll-container" style="margin:10px 0;padding:4px 0;">
         <div id="story-text"></div>
       </div>
 
@@ -5652,33 +5639,7 @@ document.getElementById('btn-reset-data').addEventListener('click', () => {
   openParentDashboard();
   alert('All data has been reset.');
 });
-// ── Fix 3: Lock page scroll when touching inside story container ──
-(function initStoryScrollLock() {
-  const container = document.getElementById('story-scroll-container');
-  if (!container) return;
-  
-  container.addEventListener('touchstart', function(e) {
-    // Record starting scroll position so we can tell if we're at the edge
-    this._scrollTop = this.scrollTop;
-    this._scrollHeight = this.scrollHeight;
-    this._clientHeight = this.clientHeight;
-  }, { passive: true });
-
-  container.addEventListener('touchmove', function(e) {
-    const atTop = this.scrollTop <= 0;
-    const atBottom = this.scrollTop + this._clientHeight >= this._scrollHeight;
-    const scrollingUp = e.touches[0].clientY > (this._lastTouchY || 0);
-    const scrollingDown = !scrollingUp;
-    this._lastTouchY = e.touches[0].clientY;
-
-    // Only allow page scroll if story is at the very top/bottom AND user is trying to scroll past it
-    if ((atTop && scrollingUp) || (atBottom && scrollingDown)) {
-      return; // Let page scroll naturally
-    }
-    // Otherwise prevent page from scrolling — only story scrolls
-    e.stopPropagation();
-  }, { passive: true });
-})();
+// (Story scroll lock removed — no inner scroll container, natural page flow)
 
 // Change 7: Offline detection banner
 window.addEventListener('offline', () => {
