@@ -2610,6 +2610,8 @@ document.getElementById('host-spelling-file').addEventListener('change', async (
     // Set as current and navigate to the spelling screen
     currentSpellingList = spellingList;
     renderSpellingWords(spellingList);
+    S._contentType = 'spelling';
+    S._spellingList = spellingList;
     
     // Push to Firebase for guest
     await update(S.roomRef, {
