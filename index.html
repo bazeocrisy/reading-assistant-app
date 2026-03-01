@@ -2901,16 +2901,24 @@ async function startCountdown() {
   show('screen-countdown');
   const el = document.getElementById('countdown-display');
 
-  // Unlock audio playback (fire and forget — don't block countdown)
+  // Unlock audio playback during user gesture chain (countdown triggered by tap)
   try {
     const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=');
-    silentAudio.play().then(() => {
-      silentAudio.pause();
-      togetherLog('🔓 Audio unlocked');
-    }).catch(e => {
-      togetherLog('🔒 Audio lock: ' + e.message);
-    });
-  } catch(e) {}
+    await silentAudio.play();
+    silentAudio.pause();
+    togetherLog('🔓 Audio unlocked');
+    
+    // Pre-create a TTS audio element during this user gesture
+    // so it inherits the gesture context for later reuse
+    if (!ttsPreloadedAudio) {
+      const preAudio = new Audio();
+      preAudio.preload = 'auto';
+      ttsPreloadedAudio = preAudio;
+      togetherLog('🔊 Audio element created with gesture');
+    }
+  } catch(e) {
+    togetherLog('🔒 Audio lock: ' + e.message);
+  }
 
   // Guest: fetch story + settings and preload TTS in background
   let ttsPreloadPromise = null;
@@ -3102,7 +3110,11 @@ function setupReadScreen() {
       if (data && data.audioBase64) {
         const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
         const audioSrc = `data:${audioMime};base64,` + data.audioBase64;
-        const preAudio = new Audio(audioSrc);
+        // CRITICAL: Reuse the audio element created during countdown's user gesture
+        // so iOS allows .play() from remote Firebase commands later.
+        // If no gesture-created element exists, create a new one (desktop doesn't need gesture).
+        const preAudio = ttsPreloadedAudio || new Audio();
+        preAudio.src = audioSrc;
         preAudio._readupSrc = audioSrc;
         preAudio.preload = 'auto';
         preAudio.addEventListener('canplaythrough', () => {
