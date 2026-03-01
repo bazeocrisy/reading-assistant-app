@@ -2077,6 +2077,11 @@ function listenForPartnerPlayback() {
       if (ttsState === 'idle' || ttsState === 'paused') {
         S.wordEls.forEach(w => { w.className = 'word'; });
         document.getElementById('progress-bar').style.width = '0%';
+        // If TTS is still loading from preload, wait for it before playing
+        if (ttsState === 'loading') {
+          console.log('Partner pressed play but TTS still loading, will auto-play when ready');
+          return;
+        }
         playSpeech(cmd.positionMs || 0);
       }
     } else if (cmd.action === 'pause') {
@@ -2112,6 +2117,9 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
   const room = snap.val();
   S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
   S.story = room.story; S.storyTitle = room.title; S.grade = room.grade; S.wordTarget = room.wordTarget;
+  // Pick up host's voice settings so both use the same TTS voice
+  if (room.voiceGender) S.voiceGender = room.voiceGender;
+  if (room.speed) S.speed = room.speed;
   S.myRole = 'guest'; S.isRace = true;
   await update(S.roomRef, { guestJoined: true });
   show('screen-waiting-guest');
@@ -2163,7 +2171,7 @@ async function loadStory() {
 async function createRoom() {
   const code = String(Math.floor(1000 + Math.random() * 9000));
   S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
-  await set(S.roomRef, { story: S.story, title: S.storyTitle, grade: S.grade, wordTarget: S.wordTarget, status: 'waiting', host: { progress: 0, wpm: 0, done: false }, guest: { progress: 0, wpm: 0, done: false }, createdAt: Date.now() });
+  await set(S.roomRef, { story: S.story, title: S.storyTitle, grade: S.grade, wordTarget: S.wordTarget, voiceGender: S.voiceGender, speed: S.speed, status: 'waiting', host: { progress: 0, wpm: 0, done: false }, guest: { progress: 0, wpm: 0, done: false }, createdAt: Date.now() });
   document.getElementById('display-room-code').textContent = code;
   show('screen-waiting-host');
   const unsub = onValue(S.roomRef, snap => {
@@ -2183,6 +2191,30 @@ async function startCountdown() {
   if (S.myRole === 'host') await update(S.roomRef, { status: 'countdown' });
   show('screen-countdown');
   const el = document.getElementById('countdown-display');
+
+  // Fix: Guest fetches story + host settings from Firebase as single source of truth
+  if (S.myRole === 'guest' && S.roomCode) {
+    try {
+      const snap = await get(ref(db, `rooms/${S.roomCode}`));
+      if (snap.exists()) {
+        const room = snap.val();
+        S.story = room.story;
+        S.storyTitle = room.title;
+        S.grade = room.grade;
+        S.wordTarget = room.wordTarget;
+        S.isAIStory = true;
+        // Use host's voice settings so both get the same TTS audio/timings
+        if (room.voiceGender) S.voiceGender = room.voiceGender;
+        if (room.speed) S.speed = room.speed;
+      }
+    } catch(e) { console.warn('Could not refresh story:', e); }
+
+    // Start preloading TTS audio during countdown so it's ready when Play is hit
+    if (S.story && navigator.onLine) {
+      fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
+    }
+  }
+
   const steps = ['3','2','1','GO!']; let i = 0;
   const tick = () => {
     el.textContent = steps[i];
@@ -2191,20 +2223,6 @@ async function startCountdown() {
     i++;
     if (i < steps.length) setTimeout(tick, 900);
     else setTimeout(async () => {
-      // Fix 1: Guest double-checks story from Firebase to ensure it matches host
-      if (S.myRole === 'guest' && S.roomCode) {
-        try {
-          const snap = await get(ref(db, `rooms/${S.roomCode}`));
-          if (snap.exists()) {
-            const room = snap.val();
-            S.story = room.story;
-            S.storyTitle = room.title;
-            S.grade = room.grade;
-            S.wordTarget = room.wordTarget;
-            S.isAIStory = true;
-          }
-        } catch(e) { console.warn('Could not refresh story:', e); }
-      }
       setupReadScreen(); show('screen-read');
     }, 400);
   };
