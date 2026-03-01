@@ -1783,9 +1783,12 @@ function stopTTS() {
   stopRAF();
   // Cancel any in-flight playSpeech loading
   playSpeechId++;
-  if (ttsAudio) { ttsAudio.pause(); ttsAudio.src = ''; ttsAudio = null; }
+  if (ttsAudio) {
+    ttsAudio.pause();
+    ttsAudio.currentTime = 0;
+    // Don't destroy — keep for reuse (iOS blocks new Audio without gesture)
+  }
   S.wordEls.forEach(w => w.classList.remove('highlight'));
-  // Clear reading mode highlights too
   document.querySelectorAll('#rm-text .word-span').forEach(w => w.classList.remove('active-word'));
   ttsState = 'idle';
   resetTTSButtons();
@@ -1903,8 +1906,42 @@ async function playSpeech(startFromMs) {
 
     console.log(`TTS: ${ttsWordTimings.length} timings, ${displayCount} words, method: ${data.alignmentMethod || 'unknown'}, format: ${ttsAudioFormat}, real: ${ttsWordTimings.length > 1 && ttsWordTimings[Math.floor(ttsWordTimings.length/2)]?.startMs > 0}`);
     const audioMime = data.audioFormat === 'wav' ? 'audio/wav' : 'audio/mp3';
-    const audio = new Audio(`data:${audioMime};base64,` + data.audioBase64);
-    // Use speed slider for playback rate adjustment
+
+    // Reuse existing audio element if same content (avoids iOS autoplay block on new Audio)
+    let audio;
+    const audioSrc = `data:${audioMime};base64,` + data.audioBase64;
+    if (ttsAudio && ttsAudio._readupSrc === audioSrc) {
+      audio = ttsAudio;
+      audio.currentTime = 0;
+      audio.playbackRate = S.speed;
+      togetherLog('♻️ Reusing audio element');
+      // Skip canplaythrough — audio is already loaded, play directly
+      if (myId !== playSpeechId) return;
+      if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
+      audio.play().then(() => {
+        ttsState = 'playing';
+        document.getElementById('btn-play').textContent = '▶ Playing...';
+        document.getElementById('btn-play').disabled = true;
+        document.getElementById('btn-pause').disabled = false;
+        document.getElementById('btn-pause').textContent = '⏸ Pause';
+        document.getElementById('btn-stop-tts').disabled = false;
+        startHighlightLoop();
+      }).catch(playErr => {
+        togetherLog('🔒 Autoplay blocked: ' + playErr.message);
+        ttsState = 'idle';
+        document.getElementById('btn-play').textContent = '▶ Tap to Play';
+        document.getElementById('btn-play').disabled = false;
+        document.getElementById('btn-pause').disabled = true;
+        const t = document.getElementById('word-toast');
+        t.textContent = '👆 Tap Play to start — your partner is reading!';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+      });
+      return; // skip the new Audio path below
+    }
+
+    audio = new Audio(audioSrc);
+    audio._readupSrc = audioSrc; // tag for reuse detection
     audio.playbackRate = S.speed;
     ttsAudio = audio;
     audio.addEventListener('canplaythrough', () => {
@@ -2348,9 +2385,10 @@ async function startCountdown() {
     });
   } catch(e) {}
 
-  // Guest: fetch story + settings in background (don't block countdown)
+  // Guest: fetch story + settings and preload TTS in background
+  let ttsPreloadPromise = null;
   if (S.myRole === 'guest' && S.roomCode) {
-    (async () => {
+    ttsPreloadPromise = (async () => {
       try {
         const snap = await get(ref(db, `rooms/${S.roomCode}`));
         if (snap.exists()) {
@@ -2366,9 +2404,12 @@ async function startCountdown() {
       } catch(e) { console.warn('Could not refresh story:', e); }
       // Preload TTS audio so it's ready when Play is hit
       if (S.story && navigator.onLine) {
-        fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
+        await fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
       }
     })();
+  } else if (S.myRole === 'host' && S.story && navigator.onLine) {
+    // Host also preloads during countdown
+    ttsPreloadPromise = fetchTTSAudio(S.story, S.grade, S.voiceGender).catch(() => {});
   }
 
   // Start countdown immediately — never blocked by network calls
@@ -2380,6 +2421,23 @@ async function startCountdown() {
     i++;
     if (i < steps.length) setTimeout(tick, 900);
     else setTimeout(async () => {
+      // Wait for TTS preload to finish (show "Getting ready" if slow)
+      if (ttsPreloadPromise) {
+        const timeout = new Promise(resolve => setTimeout(resolve, 500));
+        const result = await Promise.race([ttsPreloadPromise, timeout]);
+        if (result === undefined) {
+          // TTS still loading after 500ms — show status and wait
+          el.textContent = '📖';
+          el.className = 'countdown-go';
+          el.style.fontSize = '3rem';
+          const sub = document.createElement('div');
+          sub.style.cssText = 'font-size:1rem;color:var(--muted);margin-top:10px;';
+          sub.textContent = 'Getting the story ready...';
+          el.after(sub);
+          await ttsPreloadPromise;
+          sub.remove();
+        }
+      }
       setupReadScreen(); show('screen-read');
     }, 400);
   };
