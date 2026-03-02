@@ -943,7 +943,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AY</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AZ</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1771,13 +1771,16 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div id="wpm-story-scroll" style="margin:4px 0;">
         <div id="wpm-story-text" style="font-size:1.3rem;line-height:2.1rem;color:var(--ink);font-weight:700;"></div>
       </div>
+      <div style="text-align:center;margin-top:12px;">
+        <button class="btn-main btn-green" id="btn-wpm-done-early" style="font-size:1rem;padding:12px 28px;border-radius:16px;">✅ I Finished!</button>
+      </div>
     </div>
   </div>
 
   <!-- SCREEN: WPM Tap Last Word -->
   <div class="screen" id="screen-wpm-tap">
     <div class="card" style="text-align:center;padding-bottom:40px;">
-      <div class="card-title">⏰ Time's Up!</div>
+      <div class="card-title" id="wpm-tap-title">⏰ Time's Up!</div>
       <div class="encouragement" style="margin-bottom:10px;background:linear-gradient(135deg, #FFF3E8, #FFE8D5);font-size:1rem;">
         👆 <strong>Tap the last word you read</strong>
       </div>
@@ -1874,7 +1877,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AY</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AZ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2262,6 +2265,7 @@ function show(id) {
   document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'screen-pick') updateHomeStats();
+  if (typeof updateBottomBar === 'function') updateBottomBar();
 }
 // Bug 6 fix: robust fallback chain handles missing grade levels
 function getStory(cat, grade, wordTarget) {
@@ -2373,6 +2377,7 @@ let ttsAudio = null;
 let ttsWordTimings = [];
 let ttsRafId = null;
 let ttsState = 'idle';
+function setTtsState(newState) { ttsState = newState; if (typeof updateBottomBar === 'function') updateBottomBar(); }
 let ttsPausedAtMs = 0;
 let ttsAudioCache = new Map();
 let ttsAudioFormat = 'mp3';
@@ -2398,7 +2403,7 @@ function resetTTSButtons() {
   playBtn.disabled = false;
   document.getElementById('btn-pause').disabled = true;
   document.getElementById('btn-stop-tts').disabled = false;
-  ttsState = 'idle';
+  setTtsState('idle');
 }
 
 // Helpers for updating play button states
@@ -2550,7 +2555,7 @@ function stopTTS() {
   }
   S.wordEls.forEach(w => w.classList.remove('highlight'));
   document.querySelectorAll('#rm-text .word-span').forEach(w => w.classList.remove('active-word'));
-  ttsState = 'idle';
+  setTtsState('idle');
   resetTTSButtons();
   ttsPausedAtMs = 0;
 }
@@ -2598,7 +2603,7 @@ async function playSpeech(startFromMs) {
   // Each call gets a unique ID; if stopTTS runs, it bumps the ID
   // so this call knows to abort after the await
   const myId = ++playSpeechId;
-  ttsState = 'loading';
+  setTtsState('loading');
   setPlayBtn('⏳', 'Loading...', true);
   
   document.getElementById('btn-pause').disabled = true;
@@ -2679,7 +2684,7 @@ async function playSpeech(startFromMs) {
       if (myId !== playSpeechId) return;
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
-        ttsState = 'playing';
+        setTtsState('playing');
         setPlayBtn('▶', 'Playing...', true);
         
         document.getElementById('btn-play').style.animation = '';
@@ -2689,7 +2694,7 @@ async function playSpeech(startFromMs) {
         startHighlightLoop();
       }).catch(playErr => {
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
-        ttsState = 'idle';
+        setTtsState('idle');
         const playBtn = document.getElementById('btn-play');
         playBtn.textContent = '▶ Tap to Play!';
         playBtn.disabled = false;
@@ -2723,7 +2728,7 @@ async function playSpeech(startFromMs) {
       if (myId !== playSpeechId) return;
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
-        ttsState = 'playing';
+        setTtsState('playing');
         setPlayBtn('▶', 'Playing...', true);
         
         document.getElementById('btn-pause').disabled = false;
@@ -2732,7 +2737,7 @@ async function playSpeech(startFromMs) {
         startHighlightLoop();
       }).catch(playErr => {
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
-        ttsState = 'idle';
+        setTtsState('idle');
         const playBtn = document.getElementById('btn-play');
         playBtn.textContent = '▶ Tap to Play!';
         playBtn.disabled = false;
@@ -2759,7 +2764,7 @@ async function playSpeech(startFromMs) {
       }
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
-        ttsState = 'playing';
+        setTtsState('playing');
         setPlayBtn('▶', 'Playing...', true);
         
         document.getElementById('btn-pause').disabled = false;
@@ -2770,7 +2775,7 @@ async function playSpeech(startFromMs) {
         // Browser blocked autoplay (no user gesture) — common on guest device
         // when host triggers play remotely
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
-        ttsState = 'idle';
+        setTtsState('idle');
         const playBtn = document.getElementById('btn-play');
         playBtn.textContent = '▶ Tap to Play!';
         playBtn.disabled = false;
@@ -2825,7 +2830,7 @@ document.getElementById('btn-pause').addEventListener('click', () => {
     ttsPausedAtMs = ttsAudio.currentTime * 1000;
     ttsAudio.pause();
     stopRAF();
-    ttsState = 'paused';
+    setTtsState('paused');
     document.getElementById('btn-pause').textContent = '▶'; document.getElementById('btn-pause').title = 'Resume';
     
     if (S.isRace) broadcastPlayback('pause', ttsPausedAtMs);
@@ -3626,7 +3631,7 @@ function listenForPartnerPlayback() {
         ttsPausedAtMs = ttsAudio.currentTime * 1000;
         ttsAudio.pause();
         stopRAF();
-        ttsState = 'paused';
+        setTtsState('paused');
         document.getElementById('btn-pause').textContent = '▶'; document.getElementById('btn-pause').title = 'Resume';
         
       }
@@ -4284,7 +4289,7 @@ function showDictionaryPopup(word, idx) {
     teacherPausePosition = ttsAudio.currentTime * 1000;
     ttsAudio.pause();
     stopRAF();
-    ttsState = 'paused';
+    setTtsState('paused');
     document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
     
     teacherWasPaused = true;
@@ -4685,7 +4690,8 @@ function beginWPMCountdown() {
         // Time's up!
         if (remaining <= 0) {
           clearInterval(wpmTimerInterval); wpmTimerInterval = null;
-          showTapLastWord();
+          wpmElapsedSeconds = 60;
+          showTapLastWord(false);
         }
       }, 250);
     }, 400);
@@ -4693,13 +4699,25 @@ function beginWPMCountdown() {
   tick();
 }
 
-function showTapLastWord() {
+let wpmElapsedSeconds = 60; // track actual elapsed time for early finish
+
+function showTapLastWord(finishedEarly) {
   const passage = wpmPassage || S.story;
   // Render tappable words
   const tapContainer = document.getElementById('wpm-tap-text');
   renderWPMWords(tapContainer);
   // Store exact count from rendered elements
   wpmPassageWordCount = wpmWordEls.length;
+
+  // Update title based on how we got here
+  const titleEl = document.getElementById('wpm-tap-title');
+  if (finishedEarly) {
+    titleEl.textContent = '🎉 Great Job!';
+  } else {
+    titleEl.textContent = '⏰ Time\'s Up!';
+  }
+
+  const elapsed = wpmElapsedSeconds;
 
   // Add tap handlers to each word
   wpmWordEls.forEach(span => {
@@ -4720,16 +4738,23 @@ function showTapLastWord() {
       const wordsRead = idx + 1;
       // Small delay then show results
       setTimeout(() => {
-        // WPM = words read in 60 seconds = wordsRead (it's already per minute!)
-        const wpm = wordsRead;
-        saveWPMScore(wpm, 60, wordsRead);
-        showWPMResults(wpm, wordsRead, 60);
+        // WPM = words read ÷ seconds × 60 (normalizes to per-minute rate)
+        const wpm = Math.round(wordsRead / elapsed * 60);
+        saveWPMScore(wpm, elapsed, wordsRead);
+        showWPMResults(wpm, wordsRead, elapsed);
       }, 500);
     });
   });
 
   show('screen-wpm-tap');
 }
+
+// "I Finished!" button — stop timer early and go to tap-last-word
+document.getElementById('btn-wpm-done-early').addEventListener('click', () => {
+  if (wpmTimerInterval) { clearInterval(wpmTimerInterval); wpmTimerInterval = null; }
+  wpmElapsedSeconds = Math.max(Math.round((Date.now() - wpmStartTime) / 1000), 1);
+  showTapLastWord(true);
+});
 
 function saveWPMScore(wpm, seconds, wordCount) {
   const d = getData();
@@ -4765,8 +4790,9 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
   // Big number
   document.getElementById('wpm-result-number').textContent = wpm;
 
-  // Summary line — simple for 60-second method
-  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in 60 seconds!`;
+  // Summary line
+  const secLabel = Math.round(elapsedSec) === 60 ? '60 seconds' : `${Math.round(elapsedSec)} seconds`;
+  document.getElementById('wpm-read-summary').textContent = `You read ${wordCount} words in ${secLabel}!`;
 
   // Benchmark
   const bench = WPM_BENCHMARKS[S.grade] || WPM_BENCHMARKS['1'];
@@ -4789,7 +4815,13 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
 
   // Populate explanation math
   const explainMath = document.getElementById('wpm-explain-math');
-  if (explainMath) explainMath.textContent = `${wordCount} words in 60 seconds = ${wpm} WPM`;
+  if (explainMath) {
+    if (Math.round(elapsedSec) === 60) {
+      explainMath.textContent = `${wordCount} words in 60 seconds = ${wpm} WPM`;
+    } else {
+      explainMath.textContent = `${wordCount} words ÷ ${Math.round(elapsedSec)} seconds × 60 = ${wpm} WPM`;
+    }
+  }
 
   // Reset explain box state
   document.getElementById('wpm-explain-box').style.display = 'none';
@@ -5412,28 +5444,67 @@ function renderSpellingWords(list) {
     const cacheKey = `${w.word}_${S.grade}`;
     const definition = dictCache[cacheKey] || '';
 
-    // Format syllables with colored dots
-    const syllableHTML = w.syllables.includes('·')
-      ? w.syllables.split('·').map((s, i, arr) =>
-          i < arr.length - 1 ? `${s}<span class="syl-dot">·</span>` : s
-        ).join('')
-      : w.syllables;
-
     const card = document.createElement('div');
     card.className = 'spelling-word-card' + (w.isRedWord ? ' red-word' : '');
-    card.innerHTML = `
-      <div class="spelling-word-main">
-        <div>
-          <span class="spelling-word-text">${w.word}</span>
-          ${w.isRedWord ? '<span class="spelling-red-badge">TRICKY</span>' : ''}
-        </div>
-        <div class="spelling-syllables">${syllableHTML}</div>
-        ${definition
-          ? `<div class="spelling-word-def">${definition}</div>`
-          : '<div class="spelling-word-def" style="font-style:italic;display:flex;align-items:center;gap:6px;"><span class="spell-def-spinner"></span> Loading definition...</div>'}
-      </div>
-      <div class="spelling-word-tap">🔊</div>
-    `;
+
+    // Build card with safe DOM methods (no innerHTML with user/API data)
+    const mainDiv = document.createElement('div');
+    mainDiv.className = 'spelling-word-main';
+
+    const topRow = document.createElement('div');
+    const wordSpan = document.createElement('span');
+    wordSpan.className = 'spelling-word-text';
+    wordSpan.textContent = w.word;
+    topRow.appendChild(wordSpan);
+    if (w.isRedWord) {
+      const badge = document.createElement('span');
+      badge.className = 'spelling-red-badge';
+      badge.textContent = 'TRICKY';
+      topRow.appendChild(badge);
+    }
+    mainDiv.appendChild(topRow);
+
+    // Syllables with colored dots
+    const sylDiv = document.createElement('div');
+    sylDiv.className = 'spelling-syllables';
+    if (w.syllables.includes('·')) {
+      w.syllables.split('·').forEach((s, i, arr) => {
+        sylDiv.appendChild(document.createTextNode(s));
+        if (i < arr.length - 1) {
+          const dot = document.createElement('span');
+          dot.className = 'syl-dot';
+          dot.textContent = '·';
+          sylDiv.appendChild(dot);
+        }
+      });
+    } else {
+      sylDiv.textContent = w.syllables;
+    }
+    mainDiv.appendChild(sylDiv);
+
+    // Definition
+    const defDiv = document.createElement('div');
+    defDiv.className = 'spelling-word-def';
+    if (definition) {
+      defDiv.textContent = definition;
+    } else {
+      defDiv.style.fontStyle = 'italic';
+      defDiv.style.display = 'flex';
+      defDiv.style.alignItems = 'center';
+      defDiv.style.gap = '6px';
+      const spinner = document.createElement('span');
+      spinner.className = 'spell-def-spinner';
+      defDiv.appendChild(spinner);
+      defDiv.appendChild(document.createTextNode(' Loading definition...'));
+    }
+    mainDiv.appendChild(defDiv);
+
+    const tapDiv = document.createElement('div');
+    tapDiv.className = 'spelling-word-tap';
+    tapDiv.textContent = '🔊';
+
+    card.appendChild(mainDiv);
+    card.appendChild(tapDiv);
 
     card.addEventListener('click', () => {
       w.practiced = (w.practiced || 0) + 1;
@@ -6582,7 +6653,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'AY',
+      appBuild: 'AZ',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -6966,8 +7037,8 @@ function updateBottomBar() {
   }
 }
 
-// Poll to keep bar in sync
-setInterval(updateBottomBar, 200);
+// Call updateBottomBar on initial load
+updateBottomBar();
 
 // Back button handler — uses data-target to navigate
 document.getElementById('bar-back').addEventListener('click', () => {
