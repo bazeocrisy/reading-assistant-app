@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD Z</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AA</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1625,14 +1625,14 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-label">Upload a Passage</div>
       </button>
       <input type="file" id="timed-scan-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Upload a photo of a reading passage or worksheet</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words for read-aloud</p>
 
       <!-- Paste Text -->
       <button class="kid-action-btn" id="btn-timed-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
         <div class="kid-action-icon">📋</div>
         <div class="kid-action-label">Paste a Passage</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste text from a document, email, or website</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 250+ words from a document, email, or website</p>
 
       <button class="btn-main btn-outline" id="btn-timed-source-back" style="margin-top:8px;">← Back Home</button>
     </div>
@@ -1662,14 +1662,14 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-icon">📄</div>
         <div class="kid-action-label">Upload a Document</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Upload a photo, screenshot, or image of a reading passage</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words for read-aloud</p>
 
       <!-- Paste Text -->
       <button class="kid-action-btn" id="btn-own-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
         <div class="kid-action-icon">📋</div>
         <div class="kid-action-label">Paste a Passage</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste text from a document, email, or website</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 500 words from a document, email, or website</p>
 
       <button class="btn-main btn-outline" id="btn-own-source-back" style="margin-top:8px;">← Back Home</button>
     </div>
@@ -1834,7 +1834,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD Z</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AA</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3020,10 +3020,10 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
   container.innerHTML = '<div style="text-align:center;padding:40px 0;"><div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div><p style="font-weight:800;color:var(--muted);font-size:1rem;">Reading the text from your file...</p></div>';
 
   try {
-    const text = await processUploadedFile(file);
+    const result = await processUploadedFile(file);
 
     // Use extracted text as the story
-    S.story = text;
+    S.story = result.text;
     S.storyTitle = '📄 My Page';
     S.category = 'scanned';
     S.wordTarget = S.story.split(/\s+/).length;
@@ -3035,6 +3035,14 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
     // Render the story
     renderStory(S.storyTitle, S.story);
     setupReadScreen();
+
+    // Show toast if text was trimmed
+    if (result.wasTrimmed) {
+      const t = document.getElementById('word-toast');
+      t.textContent = `✂️ Trimmed from ${result.originalWordCount} to 500 words for read-aloud support`;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 4000);
+    }
 
   } catch (err) {
     console.error('Scan error:', err);
@@ -3240,13 +3248,17 @@ document.getElementById('btn-use-spelling').addEventListener('click', async () =
 
 // ── Image upload + OCR for Read Together content picker ───
 // ── Smart file processor: handles .txt, .pdf, and images ──
+// Returns { text, wasTrimmed } — caps at 500 words for TTS compatibility
+const UPLOAD_WORD_LIMIT = 500;
+
 async function processUploadedFile(file) {
   const name = (file.name || '').toLowerCase();
   const type = (file.type || '').toLowerCase();
+  let rawText = '';
 
   // 1) Plain text files — read directly, no OCR needed
   if (name.endsWith('.txt') || type === 'text/plain') {
-    return new Promise((resolve, reject) => {
+    rawText = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result.trim();
@@ -3256,10 +3268,9 @@ async function processUploadedFile(file) {
       reader.onerror = reject;
       reader.readAsText(file);
     });
-  }
 
   // 2) PDF files — send raw base64 to Cloud Function with application/pdf mediaType
-  if (name.endsWith('.pdf') || type === 'application/pdf') {
+  } else if (name.endsWith('.pdf') || type === 'application/pdf') {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -3274,49 +3285,57 @@ async function processUploadedFile(file) {
     if (!response.ok) throw new Error('PDF scan failed: ' + response.status);
     const data = await response.json();
     if (!data.text) throw new Error('No text found in PDF');
-    return data.text.trim();
-  }
+    rawText = data.text.trim();
 
   // 3) Images — compress and send to OCR (existing flow)
-  const base64 = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const maxDim = 1600;
-        let w = img.width, h = img.height;
-        if (w > maxDim || h > maxDim) {
-          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-          else { w = Math.round(w * maxDim / h); h = maxDim; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        resolve(dataUrl.split(',')[1]);
+  } else {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1600;
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(dataUrl.split(',')[1]);
+        };
+        img.onerror = () => reject(new Error('Could not load image. Try a .txt, .pdf, or image file.'));
+        img.src = reader.result;
       };
-      img.onerror = () => reject(new Error('Could not load image. Try a .txt, .pdf, or image file.'));
-      img.src = reader.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
-  const response = await fetch(CF_OCR, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
-  });
-  if (!response.ok) throw new Error('Scan failed: ' + response.status);
-  const data = await response.json();
-  if (!data.text) throw new Error('No text found in image');
-  return data.text.trim();
+    const response = await fetch(CF_OCR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+    });
+    if (!response.ok) throw new Error('Scan failed: ' + response.status);
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found in image');
+    rawText = data.text.trim();
+  }
+
+  // Cap at 500 words
+  const words = rawText.split(/\s+/);
+  const wasTrimmed = words.length > UPLOAD_WORD_LIMIT;
+  const finalText = wasTrimmed ? words.slice(0, UPLOAD_WORD_LIMIT).join(' ') : rawText;
+  return { text: finalText, wasTrimmed, originalWordCount: words.length };
 }
 
-// Legacy wrapper for Read Together (uses same smart processor now)
+// Legacy wrapper for Read Together (returns just text string)
 async function processUploadedImage(file) {
-  return processUploadedFile(file);
+  const result = await processUploadedFile(file);
+  return result.text;
 }
 
 // Upload passage photo
@@ -4758,8 +4777,11 @@ document.getElementById('timed-scan-input').addEventListener('change', async (e)
   show('screen-loading');
   document.getElementById('loading-msg').textContent = '📄 Reading your passage...';
   try {
-    const text = await processUploadedFile(file);
-    wpmPassage = text;
+    const result = await processUploadedFile(file);
+    wpmPassage = result.text;
+    if (result.wasTrimmed) {
+      wpmPassage += '\n'; // ensure clean ending
+    }
     updateWPMInstructionCount();
     show('screen-wpm-instructions');
   } catch (err) {
