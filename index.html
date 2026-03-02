@@ -408,6 +408,26 @@ body.bedtime .wb-review-item { background: #2a2a28; }
 body.bedtime .wb-review-word { color: #d4a76a; }
 body.bedtime .wb-review-hint { color: #8080a8; }
 
+/* Word Bank "I Know This" button */
+.wb-know-btn {
+  padding: 5px 12px; border-radius: 20px; border: 2px solid var(--green);
+  background: #EFFFF4; color: #1B7A3E; font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.wb-know-btn:hover { background: var(--green); color: #fff; }
+.wb-know-btn:active { transform: scale(0.93); }
+body.bedtime .wb-know-btn { background: #1a3a2a; border-color: #4a8a5a; color: #8adca0; }
+body.bedtime .wb-know-btn:hover { background: #4a8a5a; color: #fff; }
+
+/* Word Bank card slide-out animation on dismiss */
+@keyframes wbSlideOut {
+  0% { opacity: 1; transform: translateX(0); max-height: 100px; margin-bottom: 8px; }
+  50% { opacity: 0; transform: translateX(60px); max-height: 100px; margin-bottom: 8px; }
+  100% { opacity: 0; transform: translateX(60px); max-height: 0; margin-bottom: 0; padding: 0; border-width: 0; }
+}
+.wb-review-item.removing { animation: wbSlideOut 0.4s ease forwards; pointer-events: none; }
+
 /* ── Spelling Words Screen ── */
 .spelling-header { text-align: center; margin-bottom: 16px; }
 .spelling-week { font-size: 0.82rem; font-weight: 800; color: var(--muted); margin-top: 4px; }
@@ -922,7 +942,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AU</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AV</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1425,13 +1445,16 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-wordbank">
     <div class="card">
       <div class="card-title">📖 Word Bank</div>
-      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:4px;">Tap any word to hear it and its meaning!</p>
+      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:4px;">Tap any word to hear it. Hit ✅ when you know it!</p>
       <div class="encouragement" id="wordbank-count-msg" style="margin-bottom:12px;"></div>
       <div id="wordbank-review-list"></div>
       <div id="wordbank-empty" style="display:none;text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">🌟</div>
         <p style="font-weight:800;color:var(--muted);font-size:1rem;">No words yet!</p>
         <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap words while reading to add them here.</p>
+      </div>
+      <div id="wordbank-clear-section" style="display:none;margin-top:18px;text-align:center;">
+        <button class="btn-main btn-outline" id="btn-wordbank-clear-all" aria-label="Clear all words from Word Bank" style="font-size:0.88rem;border-color:var(--coral) !important;color:var(--coral) !important;">🗑 Clear All Words</button>
       </div>
       <button class="btn-main btn-green" id="btn-wordbank-done" style="display:none;">✅ Done Reviewing</button>
     </div>
@@ -1834,7 +1857,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AU</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AV</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4379,6 +4402,7 @@ function openWordBankReview() {
   const listEl = document.getElementById('wordbank-review-list');
   const emptyEl = document.getElementById('wordbank-empty');
   const countEl = document.getElementById('wordbank-count-msg');
+  const clearSection = document.getElementById('wordbank-clear-section');
   listEl.innerHTML = '';
 
   // Get words sorted by most recently seen
@@ -4388,9 +4412,11 @@ function openWordBankReview() {
     emptyEl.style.display = 'block';
     listEl.style.display = 'none';
     countEl.textContent = '';
+    clearSection.style.display = 'none';
   } else {
     emptyEl.style.display = 'none';
     listEl.style.display = 'block';
+    clearSection.style.display = 'block';
     countEl.textContent = `You have ${words.length} word${words.length === 1 ? '' : 's'} to practice!`;
 
     const dictCache = getDictCache();
@@ -4405,19 +4431,79 @@ function openWordBankReview() {
       item.style.alignItems = 'flex-start';
       item.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-          <div class="wb-review-word">${w.word}</div>
-          <div class="wb-review-tap">tap to hear 🔊</div>
+          <div class="wb-review-word" style="flex:1;cursor:pointer;">${w.word}</div>
+          <button class="wb-know-btn" aria-label="I know the word ${w.word}">✅ I Know This!</button>
         </div>
-        ${definition ? `<div style="font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;">${definition}</div>` : '<div style="font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;">Tap to look up meaning</div>'}
+        ${definition ? `<div style="font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;cursor:pointer;">${definition}</div>` : '<div style="font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;cursor:pointer;">Tap to look up meaning</div>'}
       `;
-      item.addEventListener('click', () => {
+
+      // Tap word/definition area to hear it
+      item.addEventListener('click', (e) => {
+        // Don't trigger dictionary if they clicked the "I Know This" button
+        if (e.target.closest('.wb-know-btn')) return;
         showDictionaryPopup(w.word, -1);
       });
+
+      // "I Know This!" removes the word
+      const knowBtn = item.querySelector('.wb-know-btn');
+      knowBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        item.classList.add('removing');
+        setTimeout(() => {
+          // Remove from data
+          const d2 = getData();
+          d2.wordBank = d2.wordBank.filter(wb => wb.word !== w.word);
+          saveData(d2);
+          item.remove();
+          // Update count
+          const remaining = d2.wordBank.length;
+          if (remaining === 0) {
+            emptyEl.style.display = 'block';
+            listEl.style.display = 'none';
+            clearSection.style.display = 'none';
+            countEl.textContent = '🎉 You learned every word!';
+          } else {
+            countEl.textContent = `You have ${remaining} word${remaining === 1 ? '' : 's'} to practice!`;
+          }
+        }, 400);
+      });
+
       listEl.appendChild(item);
     });
   }
   show('screen-wordbank');
 }
+
+// Clear All Words — with confirmation
+document.getElementById('btn-wordbank-clear-all').addEventListener('click', () => {
+  const btn = document.getElementById('btn-wordbank-clear-all');
+  if (btn.dataset.confirming === 'true') {
+    // Second tap — actually clear
+    const d = getData();
+    d.wordBank = [];
+    saveData(d);
+    btn.dataset.confirming = 'false';
+    btn.textContent = '🗑 Clear All Words';
+    btn.style.background = '';
+    btn.style.color = '';
+    openWordBankReview();
+  } else {
+    // First tap — ask for confirmation
+    btn.dataset.confirming = 'true';
+    btn.textContent = '⚠️ Tap again to clear all words';
+    btn.style.background = 'var(--coral)';
+    btn.style.color = '#fff';
+    // Reset after 3 seconds if they don't confirm
+    setTimeout(() => {
+      if (btn.dataset.confirming === 'true') {
+        btn.dataset.confirming = 'false';
+        btn.textContent = '🗑 Clear All Words';
+        btn.style.background = '';
+        btn.style.color = '';
+      }
+    }, 3000);
+  }
+});
 
 // ── WPM Timer (60-Second Timed Reading) ──────────────────
 const WPM_BENCHMARKS = {
