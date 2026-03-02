@@ -307,7 +307,7 @@ header { position: relative; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── Universal Bottom Nav Bar ── */
-.parent-bar { position: fixed; bottom: 4px; left: 8px; right: 8px; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; background: rgba(255,255,255,0.97); border: 1.5px solid var(--border); border-radius: 14px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
+.parent-bar { position: fixed; bottom: 10px; left: 8px; right: 8px; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; background: rgba(255,255,255,0.97); border: 1.5px solid var(--border); border-radius: 14px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
 .parent-bar-btn { border: 2px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
@@ -738,7 +738,7 @@ body.bedtime #home-stats-bar { display: none; }
 .read-big-play:disabled { opacity: 0.5; pointer-events: none; }
 .read-play-icon { font-size: 1.4rem; }
 .read-play-label { text-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.read-play-side { display: flex; flex-direction: column; gap: 6px; }
+.read-play-side { display: none !important; } /* Bottom bar handles play/pause/stop now */
 .read-side-btn {
   width: 44px; height: 44px; border: none; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
@@ -920,7 +920,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AQ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AR</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1832,7 +1832,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AQ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AR</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6673,6 +6673,14 @@ const SCREEN_BACK_MAP = {
   'screen-countdown': null, // no back during countdown
 };
 
+function showBarBtn(btn, label) {
+  if (label) btn.textContent = label;
+  btn.style.display = 'inline-block';
+}
+function hideBarBtn(btn) {
+  btn.style.display = 'none';
+}
+
 function updateBottomBar() {
   const barBack = document.getElementById('bar-back');
   const barPlay = document.getElementById('bar-play');
@@ -6687,37 +6695,34 @@ function updateBottomBar() {
   // --- Back button ---
   const backInfo = SCREEN_BACK_MAP[activeScreenId];
   if (backInfo) {
-    barBack.textContent = backInfo[0];
-    barBack.style.display = '';
+    showBarBtn(barBack, backInfo[0]);
     barBack.dataset.target = backInfo[1];
   } else {
-    barBack.style.display = 'none';
+    hideBarBtn(barBack);
   }
 
   // --- Reading controls (only on read screen) ---
   if (isReadScreen) {
     if (ttsState === 'playing') {
-      barPlay.style.display = 'none';
-      barPause.style.display = '';
-      barStop.style.display = '';
+      hideBarBtn(barPlay);
+      showBarBtn(barPause);
+      showBarBtn(barStop);
       barStop.style.opacity = '1';
     } else if (ttsState === 'paused') {
-      barPlay.textContent = '▶ Resume';
-      barPlay.style.display = '';
-      barPause.style.display = 'none';
-      barStop.style.display = '';
+      showBarBtn(barPlay, '▶ Resume');
+      hideBarBtn(barPause);
+      showBarBtn(barStop);
       barStop.style.opacity = '1';
     } else {
-      barPlay.textContent = '▶ Play';
-      barPlay.style.display = '';
-      barPause.style.display = 'none';
-      barStop.style.display = '';
+      showBarBtn(barPlay, '▶ Play');
+      hideBarBtn(barPause);
+      showBarBtn(barStop);
       barStop.style.opacity = '0.4';
     }
   } else {
-    barPlay.style.display = 'none';
-    barPause.style.display = 'none';
-    barStop.style.display = 'none';
+    hideBarBtn(barPlay);
+    hideBarBtn(barPause);
+    hideBarBtn(barStop);
   }
 
   // Hide bar on welcome screens and overlays
