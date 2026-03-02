@@ -306,15 +306,22 @@ header { position: relative; }
 .word-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── Fixed parent bar at bottom ── */
-.parent-bar { position: fixed; bottom: 4px; left: 8px; right: 8px; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; background: rgba(255,255,255,0.97); border: 1.5px solid var(--border); border-radius: 14px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
-.parent-bar-btn { background: var(--purple-soft); border: 2px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+/* ── Universal Bottom Nav Bar ── */
+.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 100; display: flex; justify-content: center; gap: 6px; padding: 8px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); background: rgba(255,255,255,0.97); border-top: 2px solid var(--border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 16px rgba(0,0,0,0.08); border-radius: 0; }
+.parent-bar-btn { background: var(--purple-soft); border: 2.5px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 800; padding: 10px 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s; flex: 1; max-width: 140px; text-align: center; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
+.parent-bar-btn:active { transform: scale(0.95); }
+.bar-btn-home { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
+.bar-btn-back { background: var(--orange) !important; color: #fff !important; border-color: var(--orange) !important; }
+.bar-btn-settings { background: linear-gradient(135deg, #54A0FF, #2E86DE) !important; color: #fff !important; border-color: #2E86DE !important; }
+.bar-btn-play { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
+.bar-btn-pause { background: var(--coral) !important; color: #fff !important; border-color: var(--coral) !important; }
+.bar-btn-stop { background: var(--muted) !important; color: #fff !important; border-color: var(--muted) !important; }
 body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
 body.bedtime .parent-bar-btn { background: #3a2a1a; border-color: #3a3a5c; color: #d4a76a; }
 body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a; color: #fff; }
-#btn-go-home { transition: all 0.2s; }
-body.bedtime #btn-go-home { background: #2a6a3a; border-color: #2a6a3a; color: #d0f0d0; }
+/* Add bottom padding to all cards so content isn't hidden behind the bar */
+.screen > .card:last-child { margin-bottom: 60px; }
 
 /* ── Spelling Study Mode (Fullscreen) ── */
 .spell-study-overlay { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; display: none; animation: fadeIn 0.3s ease; }
@@ -918,7 +925,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AF</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1100,7 +1107,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button id="btn-more-topics" style="background:none;border:2px dashed var(--border);border-radius:16px;padding:8px 20px;font-size:0.9rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;">+ More Topics</button>
       </div>
       <button class="btn-main" id="btn-generate" style="font-size:1.3rem;padding:18px;">✨ Make My Story!</button>
-      <button class="btn-main btn-outline" id="btn-story-builder-back" style="margin-top:10px;">← Back</button>
+      <button class="btn-main btn-outline" id="btn-story-builder-back" style="display:none;">← Back</button>
     </div>
   </div>
 
@@ -1193,7 +1200,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric">
       <div id="join-error" style="background:#FFF0F0;border:2px solid #FF6B6B;border-radius:14px;padding:12px 16px;color:#FF6B6B;font-weight:700;margin-top:10px;display:none;"></div>
       <button class="btn-main btn-green" id="btn-join-room">Join Room →</button>
-      <button class="btn-main btn-outline" id="btn-back-join" style="margin-top:10px;">← Back</button>
+      <button class="btn-main btn-outline" id="btn-back-join" style="display:none;">← Back</button>
     </div>
   </div>
 
@@ -1372,7 +1379,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
 
       <div class="listening-badge" id="listening-badge" style="display:none;"></div>
-      <button class="btn-main btn-outline" id="btn-new" style="margin-top:14px;">🏠 Back Home</button>
+      <button class="btn-main btn-outline" id="btn-new" style="display:none;">🏠 Back Home</button>
       <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;font-size:1.15rem;padding:16px;">✅ I Finished Reading!</button>
     </div>
   </div>
@@ -1429,7 +1436,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <p style="font-weight:800;color:var(--muted);font-size:1rem;">No words yet!</p>
         <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap words while reading to add them here.</p>
       </div>
-      <button class="btn-main btn-green" id="btn-wordbank-done" style="margin-top:16px;font-size:1.1rem;">✅ Done Reviewing</button>
+      <button class="btn-main btn-green" id="btn-wordbank-done" style="display:none;">✅ Done Reviewing</button>
     </div>
   </div>
 
@@ -1464,7 +1471,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="btn-main btn-outline" id="btn-spelling-study" style="font-size:0.9rem;">📖 Study</button>
         <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.9rem;">🎯 Practice</button>
         <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.9rem;">📝 Quiz</button>
-        <button class="btn-main btn-green" id="btn-spelling-done" style="font-size:0.9rem;">✅ Done</button>
+        <button class="btn-main btn-green" id="btn-spelling-done" style="display:none;">✅ Done</button>
       </div>
     </div>
   </div>
@@ -1487,7 +1494,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="spell-picker-bar">
         <div class="spell-picker-count" id="spell-picker-count">0 words selected</div>
         <button class="btn-main btn-green" id="btn-spell-picker-go" style="font-size:1.1rem;" disabled>Let's Go! 🚀</button>
-        <button class="btn-main btn-outline" id="btn-spell-picker-back" style="margin-top:8px;font-size:0.9rem;">← Back</button>
+        <button class="btn-main btn-outline" id="btn-spell-picker-back" style="display:none;">← Back</button>
       </div>
     </div>
   </div>
@@ -1518,7 +1525,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         </div>
       </div>
       <div class="spell-practice-feedback" id="spell-practice-feedback"></div>
-      <button class="btn-main btn-coral" id="btn-practice-quit" style="margin-top:18px;font-size:1rem;">← Quit Practice</button>
+      <button class="btn-main btn-coral" id="btn-practice-quit" style="display:none;">← Quit Practice</button>
     </div>
   </div>
 
@@ -1535,7 +1542,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <button class="btn-main btn-purple" id="btn-spell-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Practice Missed Words</button>
       <button class="btn-main btn-coral" id="btn-spell-take-quiz" style="font-size:1rem;margin-top:10px;">📝 Take Quiz Now</button>
       <button class="btn-main btn-green" id="btn-spell-retry-all" style="font-size:1rem;margin-top:10px;">🎯 Practice Again</button>
-      <button class="btn-main btn-outline" id="btn-spell-results-done" style="margin-top:10px;font-size:0.9rem;">← Back to Words</button>
+      <button class="btn-main btn-outline" id="btn-spell-results-done" style="display:none;">← Back to Words</button>
     </div>
   </div>
 
@@ -1569,7 +1576,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="btn-main btn-outline" id="btn-quiz-replay" style="font-size:0.95rem;width:auto;padding:14px 24px;">🔊 Repeat</button>
       </div>
       <div class="spell-practice-feedback" id="quiz-feedback"></div>
-      <button class="btn-main btn-coral" id="btn-quiz-quit" style="margin-top:18px;font-size:1rem;">← Quit Quiz</button>
+      <button class="btn-main btn-coral" id="btn-quiz-quit" style="display:none;">← Quit Quiz</button>
     </div>
   </div>
 
@@ -1585,7 +1592,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="spell-result-list" id="quiz-results-list" style="overscroll-behavior:contain;"></div>
       <button class="btn-main btn-coral" id="btn-quiz-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Retry Missed Words</button>
       <button class="btn-main btn-green" id="btn-quiz-retry-all" style="font-size:1rem;margin-top:10px;">📝 Quiz Again</button>
-      <button class="btn-main btn-outline" id="btn-quiz-results-done" style="margin-top:10px;font-size:0.9rem;">← Back to Words</button>
+      <button class="btn-main btn-outline" id="btn-quiz-results-done" style="display:none;">← Back to Words</button>
     </div>
   </div>
 
@@ -1630,7 +1637,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 250+ words from a document, email, or website</p>
 
-      <button class="btn-main btn-outline" id="btn-timed-source-back" style="margin-top:8px;">← Back Home</button>
+      <button class="btn-main btn-outline" id="btn-timed-source-back" style="display:none;">← Back Home</button>
     </div>
   </div>
 
@@ -1643,7 +1650,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div id="timed-paste-count" style="text-align:right;font-size:0.78rem;font-weight:800;color:var(--muted);margin-top:4px;">0 words</div>
       <div id="timed-paste-warning" style="display:none;background:#FFF3E8;border:2px solid #FF9F43;border-radius:12px;padding:10px 14px;font-weight:700;font-size:0.82rem;color:#E17055;margin-top:8px;">⚠️ Passage is under 250 words. For accurate timing, longer passages work best.</div>
       <button class="btn-main btn-green" id="btn-timed-paste-go" style="font-size:1.1rem;">Use This Passage →</button>
-      <button class="btn-main btn-outline" id="btn-timed-paste-back" style="margin-top:8px;">← Back</button>
+      <button class="btn-main btn-outline" id="btn-timed-paste-back" style="display:none;">← Back</button>
     </div>
   </div>
 
@@ -1667,7 +1674,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 500 words from a document, email, or website</p>
 
-      <button class="btn-main btn-outline" id="btn-own-source-back" style="margin-top:8px;">← Back Home</button>
+      <button class="btn-main btn-outline" id="btn-own-source-back" style="display:none;">← Back Home</button>
     </div>
   </div>
 
@@ -1683,7 +1690,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div id="own-paste-count" style="font-size:0.78rem;font-weight:800;color:var(--muted);">0 / 500 words</div>
       </div>
       <button class="btn-main btn-green" id="btn-own-paste-go" style="font-size:1.1rem;margin-top:12px;">Read This Passage →</button>
-      <button class="btn-main btn-outline" id="btn-own-paste-back" style="margin-top:8px;">← Back</button>
+      <button class="btn-main btn-outline" id="btn-own-paste-back" style="display:none;">← Back</button>
     </div>
   </div>
 
@@ -1704,7 +1711,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <p style="margin:0;font-size:0.82rem;color:var(--muted);">💡 This is the same way schools test reading speed!</p>
       </div>
       <button class="btn-main btn-green" id="btn-wpm-start" style="font-size:1.2rem;padding:16px;">I'm Ready! 🚀</button>
-      <button class="btn-main btn-outline" id="btn-wpm-instructions-back" style="margin-top:10px;">← Go Back</button>
+      <button class="btn-main btn-outline" id="btn-wpm-instructions-back" style="display:none;">← Go Back</button>
     </div>
   </div>
 
@@ -1830,19 +1837,17 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AF</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <div class="parent-bar" id="parent-bar">
-  <!-- Default mode: Home + Settings -->
-  <button class="parent-bar-btn" id="btn-go-home" style="background:var(--green);color:#fff;border-color:var(--green);">🏠 Home</button>
-  <!-- Reading mode buttons (hidden by default) -->
-  <button class="parent-bar-btn" id="bar-play" style="display:none;background:var(--green);color:#fff;border-color:var(--green);">▶ Play</button>
-  <button class="parent-bar-btn" id="bar-pause" style="display:none;background:var(--coral);color:#fff;border-color:var(--coral);">⏸ Pause</button>
-  <button class="parent-bar-btn" id="bar-stop" style="display:none;background:var(--muted);color:#fff;border-color:var(--muted);">⏹ Stop</button>
-  <!-- Settings always visible -->
-  <button class="parent-bar-btn" id="btn-bar-settings" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);color:#fff;border-color:#2E86DE;">⚙️ Settings</button>
+  <button class="parent-bar-btn bar-btn-home" id="btn-go-home">🏠 Home</button>
+  <button class="parent-bar-btn bar-btn-back" id="bar-back" style="display:none;">← Back</button>
+  <button class="parent-bar-btn bar-btn-play" id="bar-play" style="display:none;">▶ Play</button>
+  <button class="parent-bar-btn bar-btn-pause" id="bar-pause" style="display:none;">⏸ Pause</button>
+  <button class="parent-bar-btn bar-btn-stop" id="bar-stop" style="display:none;">⏹ Stop</button>
+  <button class="parent-bar-btn bar-btn-settings" id="btn-bar-settings">⚙️</button>
 </div>
 
 <!-- Word saved toast -->
@@ -6642,54 +6647,115 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ── Contextual Bottom Bar ────────────────────────────────
-// Reading screen: Home | Play | Pause | Stop | Settings
-// All other screens: Home | Settings
+// ── Universal Bottom Nav Bar ─────────────────────────────
+// Maps screen IDs to their back action: [label, target screen or function]
+const SCREEN_BACK_MAP = {
+  'screen-pick': null, // home — no back button
+  'screen-story-builder': ['← Back', 'screen-pick'],
+  'screen-read': ['← Back', 'screen-pick'],
+  'screen-solo-complete': ['← Back', 'screen-pick'],
+  'screen-spelling': ['← Back', 'screen-pick'],
+  'screen-spell-picker': ['← Back', 'screen-spelling'],
+  'screen-spell-practice': ['← Quit', 'screen-spelling'],
+  'screen-spell-results': ['← Back', 'screen-spelling'],
+  'screen-quiz-countdown': ['← Quit', 'screen-spelling'],
+  'screen-quiz': ['← Quit', 'screen-spelling'],
+  'screen-quiz-results': ['← Back', 'screen-spelling'],
+  'screen-wordbank': ['← Back', 'screen-pick'],
+  'screen-timed-source': ['← Back', 'screen-pick'],
+  'screen-timed-paste': ['← Back', 'screen-timed-source'],
+  'screen-own-source': ['← Back', 'screen-pick'],
+  'screen-own-paste': ['← Back', 'screen-own-source'],
+  'screen-wpm-instructions': ['← Back', 'screen-timed-source'],
+  'screen-wpm-read': null, // no back during timed reading
+  'screen-wpm-tap': null, // no back during tap
+  'screen-wpm-results': ['← Done', 'screen-pick'],
+  'screen-join': ['← Back', 'screen-pick'],
+  'screen-waiting-host': ['← Back', 'screen-pick'],
+  'screen-waiting-guest': ['← Back', 'screen-pick'],
+  'screen-race-results': ['← Done', 'screen-pick'],
+  'screen-loading': null, // no back during loading
+  'screen-countdown': null, // no back during countdown
+};
 
 function updateBottomBar() {
-  const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
+  const barBack = document.getElementById('bar-back');
   const barPlay = document.getElementById('bar-play');
   const barPause = document.getElementById('bar-pause');
   const barStop = document.getElementById('bar-stop');
+  const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
 
+  // Find active screen
+  let activeScreenId = null;
+  document.querySelectorAll('.screen.active').forEach(s => { activeScreenId = s.id; });
+
+  // --- Back button ---
+  const backInfo = SCREEN_BACK_MAP[activeScreenId];
+  if (backInfo) {
+    barBack.textContent = backInfo[0];
+    barBack.style.display = '';
+    barBack.dataset.target = backInfo[1];
+  } else {
+    barBack.style.display = 'none';
+  }
+
+  // --- Reading controls (only on read screen) ---
   if (isReadScreen) {
-    barPlay.style.display = '';
-    barPause.style.display = '';
-    barStop.style.display = '';
-    // Update states based on TTS
     if (ttsState === 'playing') {
       barPlay.style.display = 'none';
       barPause.style.display = '';
+      barStop.style.display = '';
+      barStop.style.opacity = '1';
     } else if (ttsState === 'paused') {
       barPlay.textContent = '▶ Resume';
       barPlay.style.display = '';
       barPause.style.display = 'none';
+      barStop.style.display = '';
+      barStop.style.opacity = '1';
     } else {
       barPlay.textContent = '▶ Play';
       barPlay.style.display = '';
       barPause.style.display = 'none';
+      barStop.style.display = '';
       barStop.style.opacity = '0.4';
-      barStop.style.pointerEvents = 'none';
-    }
-    if (ttsState === 'playing' || ttsState === 'paused') {
-      barStop.style.opacity = '1';
-      barStop.style.pointerEvents = 'auto';
     }
   } else {
     barPlay.style.display = 'none';
     barPause.style.display = 'none';
     barStop.style.display = 'none';
   }
+
+  // Hide bar on welcome screens and overlays
+  const parentBar = document.getElementById('parent-bar');
+  const hideOnScreens = ['screen-welcome-1','screen-welcome-2','screen-welcome-3','screen-welcome-4'];
+  if (hideOnScreens.includes(activeScreenId)) {
+    parentBar.style.display = 'none';
+  } else {
+    parentBar.style.display = 'flex';
+  }
 }
 
-// Poll to keep bar in sync with TTS state
+// Poll to keep bar in sync
 setInterval(updateBottomBar, 200);
 
-// Bar button handlers
+// Back button handler — uses data-target to navigate
+document.getElementById('bar-back').addEventListener('click', () => {
+  const target = document.getElementById('bar-back').dataset.target;
+  if (!target) return;
+
+  // Stop TTS if leaving reading screen
+  if (ttsState === 'playing' || ttsState === 'paused') {
+    stopTTS();
+  }
+
+  show(target);
+});
+
+// Bar play/pause/stop handlers
 document.getElementById('bar-play').addEventListener('click', () => {
   if (ttsState === 'paused') {
     const pauseBtn = document.getElementById('btn-pause');
-    if (pauseBtn) pauseBtn.click(); // toggles resume
+    if (pauseBtn) pauseBtn.click();
   } else {
     const playBtn = document.getElementById('btn-play');
     if (playBtn && !playBtn.disabled) playBtn.click();
@@ -6706,28 +6772,23 @@ document.getElementById('bar-stop').addEventListener('click', () => {
   if (stopBtn && !stopBtn.disabled) stopBtn.click();
 });
 
-// Settings button — on reading screen opens the drawer, otherwise opens global overlay
+// Settings button — reading screen opens drawer, others open global overlay
 document.getElementById('btn-bar-settings').addEventListener('click', () => {
   const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
   if (isReadScreen) {
-    // Toggle the reading settings drawer
     const drawer = document.getElementById('read-settings-drawer');
     drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
-    // Scroll to it
     if (drawer.style.display === 'block') {
       drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   } else {
-    // Open global settings overlay
-    const overlay = document.getElementById('global-settings-overlay');
-    overlay.style.display = 'flex';
+    document.getElementById('global-settings-overlay').style.display = 'flex';
   }
 });
 
 // Global settings overlay handlers
 document.getElementById('btn-global-parent').addEventListener('click', () => {
   document.getElementById('global-settings-overlay').style.display = 'none';
-  // Trigger PIN screen
   pinBuffer = '';
   updatePinDots();
   document.getElementById('pin-error').textContent = '';
@@ -6736,7 +6797,6 @@ document.getElementById('btn-global-parent').addEventListener('click', () => {
 
 document.getElementById('btn-global-help').addEventListener('click', () => {
   document.getElementById('global-settings-overlay').style.display = 'none';
-  // Show welcome screens
   show('screen-welcome-1');
 });
 
@@ -6744,7 +6804,6 @@ document.getElementById('btn-global-settings-close').addEventListener('click', (
   document.getElementById('global-settings-overlay').style.display = 'none';
 });
 
-// Close overlay when tapping backdrop
 document.getElementById('global-settings-overlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) {
     e.currentTarget.style.display = 'none';
