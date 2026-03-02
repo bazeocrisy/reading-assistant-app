@@ -4333,7 +4333,7 @@ async function sayDictEntry(word, definition) {
     if (data.audioBase64) {
       if (dictAudio) { dictAudio.pause(); }
       dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      dictAudio.playbackRate = 0.85;
+      dictAudio.playbackRate = 0.75;
       dictAudio.play();
       return;
     }
@@ -4357,7 +4357,7 @@ async function sayWordOnly(word) {
     if (data.audioBase64) {
       if (dictAudio) { dictAudio.pause(); }
       dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      dictAudio.playbackRate = 0.85;
+      dictAudio.playbackRate = 0.75;
       dictAudio.play();
       return;
     }
