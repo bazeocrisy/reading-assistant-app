@@ -307,17 +307,17 @@ header { position: relative; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── Universal Bottom Nav Bar ── */
-.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 12px 14px 20px; padding-bottom: max(20px, env(safe-area-inset-bottom)); background: rgba(255,255,255,0.98); border-top: 2.5px solid var(--border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); border-radius: 0; }
+.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 10px 14px 12px; background: var(--bg); border-top: 2.5px solid var(--border); box-sizing: border-box; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
 .parent-bar-btn { background: var(--purple-soft); border: 2.5px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 800; padding: 12px 18px; border-radius: 14px; cursor: pointer; transition: all 0.2s; flex: 1; text-align: center; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
 @media (min-width: 768px) {
-  .parent-bar { padding: 14px 20px 18px; gap: 10px; max-width: 600px; margin: 0 auto; left: 50%; transform: translateX(-50%); }
-  .parent-bar-btn { font-size: 0.95rem; padding: 14px 28px; border-radius: 16px; }
+  .parent-bar { padding: 12px 20px 14px; gap: 10px; }
+  .parent-bar-btn { font-size: 1rem; padding: 14px 28px; border-radius: 16px; }
 }
 @media (min-width: 1024px) {
-  .parent-bar { padding: 14px 30px 18px; gap: 12px; max-width: 700px; }
-  .parent-bar-btn { font-size: 1rem; padding: 14px 36px; }
+  .parent-bar { padding: 14px 30px 16px; gap: 12px; }
+  .parent-bar-btn { font-size: 1.05rem; padding: 16px 36px; }
 }
 .bar-btn-home { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
 .bar-btn-back { background: var(--orange) !important; color: #fff !important; border-color: var(--orange) !important; }
@@ -328,9 +328,9 @@ header { position: relative; }
 body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
 body.bedtime .parent-bar-btn { background: #3a2a1a; border-color: #3a3a5c; color: #d4a76a; }
 body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a; color: #fff; }
-/* Add bottom padding so content isn't hidden behind the bar */
-.screen > .card:last-child { margin-bottom: 85px; }
-.screen { padding-bottom: 85px; }
+/* Bottom nav bar is fixed at bottom — add padding so content clears it */
+.screen > .card:last-child { margin-bottom: 70px; }
+.screen { padding-bottom: 70px; }
 
 /* ── Spelling Study Mode (Fullscreen) ── */
 .spell-study-overlay { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; display: none; animation: fadeIn 0.3s ease; }
@@ -934,7 +934,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AN</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1846,7 +1846,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AN</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
