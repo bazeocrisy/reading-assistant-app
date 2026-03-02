@@ -20,7 +20,7 @@
     --section: #FFF8EE;
     --ink: #2C3E50;
     --body: #4A5568;
-    --muted: #94A3B8;
+    --muted: #64748B;
     --border: #F0E6D8;
     --gold: #FFD93D;
     --green: #5CD85A;
@@ -212,7 +212,7 @@ input[type=range].speed-slider::-webkit-slider-thumb {
   cursor: pointer; transition: border-color 0.2s;
 }
 input[type=range].speed-slider::-webkit-slider-thumb:hover { border-color: var(--purple-deep); }
-.speed-emoji-row { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; color: #bbb; margin-top: 4px; padding: 0 2px; }
+.speed-emoji-row { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; color: #8896A6; margin-top: 4px; padding: 0 2px; }
 
 /* ── TTS controls ── */
 /* TTS controls now in .read-play-zone */
@@ -379,7 +379,7 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
 .topic-bar-wrap { flex: 1; background: var(--border); border-radius: 20px; height: 10px; overflow: hidden; }
 .topic-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--purple), var(--purple-light)); transition: width 0.4s; }
 .topic-bar-count { font-size: 0.75rem; font-weight: 800; color: var(--muted); width: 20px; text-align: right; flex-shrink: 0; }
-.word-bank-list { max-height: 200px; overflow-y: auto; }
+.word-bank-list { }
 .word-bank-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 10px; margin-bottom: 4px; background: var(--section); }
 .word-bank-word { font-weight: 800; color: var(--ink); font-size: 0.95rem; }
 .word-bank-count { font-size: 0.75rem; font-weight: 700; color: var(--muted); }
@@ -394,12 +394,6 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
 /* Story text flows naturally — no inner scroll (prevents iOS double-scroll trap) */
 #story-scroll-container {
   /* No max-height, no overflow — natural page flow */
-}
-@media (min-width: 768px) {
-  #wordbank-review-list { max-height: 60vh !important; }
-}
-@media (min-width: 1024px) {
-  #wordbank-review-list { max-height: 68vh !important; }
 }
 /* Story container scrollbar removed — natural page scroll */
 
@@ -928,7 +922,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AU</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1267,9 +1261,9 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <input type="file" id="host-passage-file" accept="image/*" style="display:none;">
         <button class="btn-main btn-purple" id="btn-upload-passage" style="font-size:1rem;margin-bottom:6px;">📷 Take Photo or Upload Image</button>
         <div id="host-passage-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
-        <div style="text-align:center;color:#aaa;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type it in —</div>
+        <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type it in —</div>
         <textarea id="host-paste-input" rows="4" placeholder="Paste or type a reading passage here..." style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
-        <div style="text-align:right;font-size:0.75rem;color:#aaa;font-weight:700;margin-top:2px;"><span id="paste-word-count">0</span> / 500 words</div>
+        <div style="text-align:right;font-size:0.75rem;color:#7A8A9A;font-weight:700;margin-top:2px;"><span id="paste-word-count">0</span> / 500 words</div>
         <input id="host-paste-title" type="text" placeholder="Title (optional)" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:8px 10px;font-size:0.9rem;margin-top:6px;box-sizing:border-box;">
         <button class="btn-main btn-green" id="btn-use-passage" style="font-size:1rem;margin-top:10px;">📖 Use This Passage</button>
         <button class="btn-main btn-outline" id="btn-back-to-picker-paste" style="margin-top:6px;font-size:0.85rem;">← Back</button>
@@ -1281,7 +1275,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <input type="file" id="host-spelling-file" accept="image/*" style="display:none;">
         <button class="btn-main btn-purple" id="btn-upload-spelling" style="font-size:1rem;margin-bottom:6px;">📷 Take Photo or Upload Image</button>
         <div id="host-spelling-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
-        <div style="text-align:center;color:#aaa;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type them in —</div>
+        <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type them in —</div>
         <textarea id="host-spelling-input" rows="3" placeholder="Type spelling words separated by commas&#10;Example: cat, dog, run, jump, happy" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
         <button class="btn-main btn-green" id="btn-use-spelling" style="font-size:1rem;margin-top:10px;">🔤 Practice These Words</button>
         <button class="btn-main btn-outline" id="btn-back-to-picker-spell" style="margin-top:6px;font-size:0.85rem;">← Back</button>
@@ -1433,7 +1427,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="card-title">📖 Word Bank</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:4px;">Tap any word to hear it and its meaning!</p>
       <div class="encouragement" id="wordbank-count-msg" style="margin-bottom:12px;"></div>
-      <div id="wordbank-review-list" style="max-height:50vh;overflow-y:auto;overscroll-behavior:contain;"></div>
+      <div id="wordbank-review-list"></div>
       <div id="wordbank-empty" style="display:none;text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">🌟</div>
         <p style="font-weight:800;color:var(--muted);font-size:1rem;">No words yet!</p>
@@ -1840,7 +1834,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6394,7 +6388,7 @@ function openParentDashboard() {
     const practiced = latest.words.filter(w => (w.practiced || 0) > 0).length;
     spellingEl.innerHTML = `
       <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 8px;">Latest list: ${dateStr} · ${latest.words.length} words · ${practiced} practiced</p>
-      <div class="word-bank-list" style="max-height:160px;">
+      <div class="word-bank-list">
         ${latest.words.map(w => `
           <div class="word-bank-item">
             <span class="word-bank-word">${w.word}${w.isRedWord ? ' <span style="font-size:0.65rem;background:var(--coral);color:#fff;padding:1px 6px;border-radius:6px;font-weight:800;vertical-align:middle;">TRICKY</span>' : ''}</span>
