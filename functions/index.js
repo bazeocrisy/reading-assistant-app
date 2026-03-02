@@ -29,6 +29,7 @@ exports.generateStory = onRequest(
           model: "claude-haiku-4-5-20251001",
           max_tokens: 2048,
           temperature: 1.0,
+          system: "You are a children's story writer for ReadUp!, a reading app for kids ages 3-9. Write only age-appropriate, positive, encouraging stories. Never include violence, death, weapons, scary situations, mean behavior, or inappropriate content. Keep all content safe for young children.",
           messages: [{
             role: "user",
             content: storyInstructions,
@@ -71,10 +72,6 @@ exports.extractText = onRequest(
       return res.status(400).json({error: "No image provided"});
     }
 
-    // Determine content block type: PDFs use "document", everything else uses "image"
-    const isPDF = (mediaType || "").toLowerCase() === "application/pdf";
-    const contentType = isPDF ? "document" : "image";
-
     try {
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -90,7 +87,7 @@ exports.extractText = onRequest(
             role: "user",
             content: [
               {
-                type: contentType,
+                type: "image",
                 source: {
                   type: "base64",
                   media_type: mediaType || "image/jpeg",
@@ -99,7 +96,7 @@ exports.extractText = onRequest(
               },
               {
                 type: "text",
-                text: "Read every word from this " + (isPDF ? "document" : "image") + " exactly as written. Return ONLY the text content, nothing else. No descriptions, no commentary, no formatting marks. Just the exact words as they appear on the page, preserving paragraph breaks with blank lines.",
+                text: "Read every word from this image exactly as written. Return ONLY the text content, nothing else. No descriptions, no commentary, no formatting marks. Just the exact words as they appear on the page, preserving paragraph breaks with blank lines.",
               },
             ],
           }],
