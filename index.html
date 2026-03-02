@@ -583,6 +583,26 @@ body.bedtime .dict-word { color: #d4a76a; }
 body.bedtime .dict-definition { color: #e0d8c0; }
 body.bedtime .dict-speaker-btn { background: #3a2a1a; border-color: #8a6a3a; color: #d4a76a; }
 
+/* ── App Modal (replaces confirm/alert) ── */
+.app-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 400; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; padding: 20px; }
+.app-modal-box { width: 100%; max-width: 360px; background: var(--card); border-radius: 24px; padding: 28px 24px 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); animation: modalPop 0.3s cubic-bezier(0.34,1.56,0.64,1); text-align: center; }
+@keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.app-modal-emoji { font-size: 2.5rem; margin-bottom: 8px; line-height: 1; }
+.app-modal-title { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--ink); margin-bottom: 8px; font-weight: 600; }
+.app-modal-msg { font-family: 'Nunito', sans-serif; font-size: 1rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; font-weight: 700; white-space: pre-line; }
+.app-modal-buttons { display: flex; gap: 10px; }
+.app-modal-buttons.single { justify-content: center; }
+.app-modal-btn { flex: 1; padding: 14px 10px; border-radius: var(--r); border: none; font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; }
+.app-modal-btn:active { transform: scale(0.96); }
+.app-modal-btn-cancel { background: var(--section); color: var(--ink); }
+.app-modal-btn-confirm { background: linear-gradient(135deg, var(--green), #1BA053); color: #fff; box-shadow: 0 4px 14px rgba(107,203,119,0.35); }
+.app-modal-btn-danger { background: linear-gradient(135deg, var(--coral), #D64545); color: #fff; box-shadow: 0 4px 14px rgba(214,69,69,0.3); }
+.app-modal-btn-info { background: linear-gradient(135deg, var(--purple), var(--purple-deep)); color: #fff; box-shadow: 0 4px 14px rgba(155,89,182,0.3); }
+body.bedtime .app-modal-box { background: #252540; }
+body.bedtime .app-modal-title { color: #e0d8c0; }
+body.bedtime .app-modal-msg { color: #b0a890; }
+body.bedtime .app-modal-btn-cancel { background: #3a3a5c; color: #e0d8c0; }
+
 /* ── WPM Timer ── */
 .wpm-timer-bar { text-align: center; margin-bottom: 14px; }
 .wpm-timer-display { font-family: 'Fredoka', sans-serif; font-size: 2.5rem; color: var(--purple); line-height: 1; }
@@ -943,7 +963,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AZ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BA</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1877,7 +1897,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AZ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BA</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -1900,6 +1920,16 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     <div class="dict-definition" id="dict-definition" role="status" aria-live="polite"></div>
     <button class="dict-speaker-btn" id="dict-hear-btn" aria-label="Hear the word again">🔊 Hear it again</button>
     <button class="dict-close-btn" id="dict-close-btn" aria-label="Close definition">✅ Got it!</button>
+  </div>
+</div>
+
+<!-- App Modal (replaces confirm/alert) -->
+<div id="app-modal-overlay" class="app-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="app-modal-title" style="display:none;">
+  <div class="app-modal-box">
+    <div class="app-modal-emoji" id="app-modal-emoji" aria-hidden="true"></div>
+    <div class="app-modal-title" id="app-modal-title"></div>
+    <div class="app-modal-msg" id="app-modal-msg"></div>
+    <div class="app-modal-buttons" id="app-modal-buttons"></div>
   </div>
 </div>
 
@@ -4407,6 +4437,48 @@ document.getElementById('dict-hear-btn').addEventListener('click', () => {
   }
 });
 
+// ── App Modal (kid-friendly confirm/alert replacement) ────
+function showAppModal({ emoji, title, message, confirmText, cancelText, onConfirm, onCancel, style }) {
+  const overlay = document.getElementById('app-modal-overlay');
+  const emojiEl = document.getElementById('app-modal-emoji');
+  const titleEl = document.getElementById('app-modal-title');
+  const msgEl = document.getElementById('app-modal-msg');
+  const btnsEl = document.getElementById('app-modal-buttons');
+
+  emojiEl.textContent = emoji || '';
+  emojiEl.style.display = emoji ? 'block' : 'none';
+  titleEl.textContent = title || '';
+  msgEl.textContent = message || '';
+  btnsEl.innerHTML = '';
+
+  const isConfirm = !!cancelText;
+  btnsEl.className = 'app-modal-buttons' + (isConfirm ? '' : ' single');
+
+  if (isConfirm) {
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'app-modal-btn app-modal-btn-cancel';
+    cancelBtn.textContent = cancelText;
+    cancelBtn.addEventListener('click', () => { closeAppModal(); if (onCancel) onCancel(); });
+    btnsEl.appendChild(cancelBtn);
+  }
+
+  const confirmBtn = document.createElement('button');
+  const btnStyle = style === 'danger' ? 'app-modal-btn-danger' : style === 'info' ? 'app-modal-btn-info' : 'app-modal-btn-confirm';
+  confirmBtn.className = 'app-modal-btn ' + btnStyle;
+  confirmBtn.textContent = confirmText || 'OK';
+  confirmBtn.addEventListener('click', () => { closeAppModal(); if (onConfirm) onConfirm(); });
+  btnsEl.appendChild(confirmBtn);
+
+  overlay.style.display = 'flex';
+  confirmBtn.focus();
+}
+function closeAppModal() {
+  document.getElementById('app-modal-overlay').style.display = 'none';
+}
+document.getElementById('app-modal-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'app-modal-overlay') closeAppModal();
+});
+
 // ── Nav ───────────────────────────────────────────────────
 document.getElementById('btn-cancel-host').addEventListener('click', async () => {
   if (S.roomRef) try { await remove(S.roomRef); } catch(e) {}
@@ -4421,7 +4493,20 @@ document.getElementById('btn-read-settings').addEventListener('click', () => {
 document.getElementById('btn-new').addEventListener('click', () => {
   const count = getCurrentReadCount();
   if (count > 0 && count < 3) {
-    if (!confirm(`You're on Read #${count}! Leave this story?`)) return;
+    showAppModal({
+      emoji: '📖',
+      title: `You're on Read #${count}!`,
+      message: 'Are you sure you want to pick a new story?',
+      confirmText: 'Yes, new story!',
+      cancelText: 'Keep reading',
+      onConfirm: () => {
+        stopTTS(); cleanupRoom();
+        clearTimeout(S._finishedBtnTimer);
+        document.getElementById('btn-finished-reading').style.display = 'none';
+        show('screen-pick');
+      }
+    });
+    return;
   }
   stopTTS(); cleanupRoom();
   clearTimeout(S._finishedBtnTimer);
@@ -4963,7 +5048,13 @@ document.getElementById('timed-scan-input').addEventListener('change', async (e)
     show('screen-wpm-instructions');
   } catch (err) {
     console.warn('Upload failed:', err);
-    alert('Could not read that file. Try a .txt, .pdf, or image file.');
+    showAppModal({
+      emoji: '😕',
+      title: 'Oops!',
+      message: 'Could not read that file. Try a .txt, .pdf, or image file.',
+      confirmText: 'OK, got it!',
+      style: 'info'
+    });
     show('screen-timed-source');
   }
 });
@@ -4984,7 +5075,13 @@ document.getElementById('timed-paste-textarea').addEventListener('input', (e) =>
 document.getElementById('btn-timed-paste-go').addEventListener('click', () => {
   const text = document.getElementById('timed-paste-textarea').value.trim();
   if (!text || text.split(/\s+/).length < 10) {
-    alert('Please paste at least 10 words.');
+    showAppModal({
+      emoji: '✏️',
+      title: 'Need more words!',
+      message: 'Please paste at least 10 words so we can time your reading.',
+      confirmText: 'OK!',
+      style: 'info'
+    });
     return;
   }
   wpmPassage = text;
@@ -6612,16 +6709,34 @@ document.getElementById('btn-parent-done').addEventListener('click', () => {
 });
 
 document.getElementById('btn-clear-words').addEventListener('click', () => {
-  if (!confirm('Clear all saved words?')) return;
-  const d = getData(); d.wordBank = []; saveData(d);
-  openParentDashboard();
+  showAppModal({
+    emoji: '🗑️',
+    title: 'Clear Word Bank?',
+    message: 'This will remove all saved words. This cannot be undone.',
+    confirmText: 'Yes, clear',
+    cancelText: 'Never mind',
+    style: 'danger',
+    onConfirm: () => {
+      const d = getData(); d.wordBank = []; saveData(d);
+      openParentDashboard();
+    }
+  });
 });
 
 document.getElementById('btn-clear-spelling').addEventListener('click', () => {
-  if (!confirm('Clear all spelling word lists?')) return;
-  const d = getData(); d.spellingLists = []; saveData(d);
-  currentSpellingList = null;
-  openParentDashboard();
+  showAppModal({
+    emoji: '🗑️',
+    title: 'Clear Spelling Lists?',
+    message: 'This will remove all spelling word lists. This cannot be undone.',
+    confirmText: 'Yes, clear',
+    cancelText: 'Never mind',
+    style: 'danger',
+    onConfirm: () => {
+      const d = getData(); d.spellingLists = []; saveData(d);
+      currentSpellingList = null;
+      openParentDashboard();
+    }
+  });
 });
 
 document.getElementById('btn-save-pin').addEventListener('click', () => {
@@ -6639,11 +6754,25 @@ document.getElementById('btn-save-pin').addEventListener('click', () => {
 });
 
 document.getElementById('btn-reset-data').addEventListener('click', () => {
-  if (!confirm('Reset ALL ReadUp! data? This cannot be undone.')) return;
-  localStorage.removeItem(LS_KEY);
-  localStorage.removeItem(DICT_CACHE_KEY);
-  openParentDashboard();
-  alert('All data has been reset.');
+  showAppModal({
+    emoji: '⚠️',
+    title: 'Reset ALL Data?',
+    message: 'This will erase everything — stories, words, spelling lists, and reading logs. This cannot be undone!',
+    confirmText: 'Yes, reset everything',
+    cancelText: 'Cancel',
+    style: 'danger',
+    onConfirm: () => {
+      localStorage.removeItem(LS_KEY);
+      localStorage.removeItem(DICT_CACHE_KEY);
+      openParentDashboard();
+      showAppModal({
+        emoji: '✅',
+        title: 'All Done',
+        message: 'All data has been reset.',
+        confirmText: 'OK'
+      });
+    }
+  });
 });
 
 // ── Data Export ──────────────────────────────────────────
@@ -6653,7 +6782,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'AZ',
+      appBuild: 'BA',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -6714,29 +6843,30 @@ importFileInput.addEventListener('change', (e) => {
       const spellingCount = (rd.spellingLists || []).length;
       const exportDate = imported.exportedAt ? new Date(imported.exportedAt).toLocaleDateString() : 'unknown date';
 
-      const msg = `Import backup from ${exportDate}?\n\n` +
-        `📚 ${storyCount} stories\n` +
-        `📖 ${wordCount} word bank words\n` +
-        `📝 ${spellingCount} spelling lists\n` +
-        `📅 ${logDays} days of reading logs\n\n` +
-        `⚠️ This will REPLACE all current data.`;
+      const importMsg = `📚 ${storyCount} stories\n📖 ${wordCount} word bank words\n📝 ${spellingCount} spelling lists\n📅 ${logDays} days of reading logs\n\nThis will REPLACE all current data.`;
 
-      if (!confirm(msg)) {
-        msgEl.style.color = 'var(--muted)';
-        msgEl.textContent = 'Import cancelled.';
-        setTimeout(() => { msgEl.textContent = ''; }, 2000);
-        return;
-      }
-
-      // Apply the import
-      localStorage.setItem(LS_KEY, JSON.stringify(imported.readup_data));
-      if (imported.readup_dict_cache && typeof imported.readup_dict_cache === 'object') {
-        localStorage.setItem(DICT_CACHE_KEY, JSON.stringify(imported.readup_dict_cache));
-      }
-
-      msgEl.style.color = 'var(--green)';
-      msgEl.textContent = `✓ Imported! ${storyCount} stories, ${wordCount} words restored.`;
-      openParentDashboard(); // Refresh dashboard with imported data
+      showAppModal({
+        emoji: '📥',
+        title: `Import backup from ${exportDate}?`,
+        message: importMsg,
+        confirmText: 'Yes, import',
+        cancelText: 'Cancel',
+        style: 'danger',
+        onConfirm: () => {
+          localStorage.setItem(LS_KEY, JSON.stringify(imported.readup_data));
+          if (imported.readup_dict_cache && typeof imported.readup_dict_cache === 'object') {
+            localStorage.setItem(DICT_CACHE_KEY, JSON.stringify(imported.readup_dict_cache));
+          }
+          msgEl.style.color = 'var(--green)';
+          msgEl.textContent = `✓ Imported! ${storyCount} stories, ${wordCount} words restored.`;
+          openParentDashboard();
+        },
+        onCancel: () => {
+          msgEl.style.color = 'var(--muted)';
+          msgEl.textContent = 'Import cancelled.';
+          setTimeout(() => { msgEl.textContent = ''; }, 2000);
+        }
+      });
     } catch(err) {
       msgEl.style.color = 'var(--coral)';
       msgEl.textContent = 'Could not read file — is it a valid ReadUp backup?';
