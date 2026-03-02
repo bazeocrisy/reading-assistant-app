@@ -27,6 +27,7 @@
     --coral: #FF6B6B;
     --ocean: #54A0FF;
     --orange: #FF9F43;
+    --cream: #FFF8EE;
     --shadow: 0 4px 24px rgba(255,107,53,0.08);
     --r: 22px;
   }
@@ -40,13 +41,13 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-.fat-scroll::-webkit-scrollbar, #spelling-word-list::-webkit-scrollbar, #spell-picker-list::-webkit-scrollbar, #wordbank-review-list::-webkit-scrollbar::-webkit-scrollbar, .word-bank-list::-webkit-scrollbar, #spell-results-list::-webkit-scrollbar { width: 14px; }
-.fat-scroll::-webkit-scrollbar-track, #spelling-word-list::-webkit-scrollbar-track, #spell-picker-list::-webkit-scrollbar-track, #wordbank-review-list::-webkit-scrollbar-track::-webkit-scrollbar-track, .word-bank-list::-webkit-scrollbar-track, #spell-results-list::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
-.fat-scroll::-webkit-scrollbar-thumb, #spelling-word-list::-webkit-scrollbar-thumb, #spell-picker-list::-webkit-scrollbar-thumb, #wordbank-review-list::-webkit-scrollbar-thumb::-webkit-scrollbar-thumb, .word-bank-list::-webkit-scrollbar-thumb, #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--purple), var(--purple-light)); border-radius: 10px; border: 3px solid var(--section); min-height: 40px; }
-.fat-scroll::-webkit-scrollbar-thumb:hover, #spelling-word-list::-webkit-scrollbar-thumb:hover, #spell-picker-list::-webkit-scrollbar-thumb:hover, #wordbank-review-list::-webkit-scrollbar-thumb:hover::-webkit-scrollbar-thumb:hover, .word-bank-list::-webkit-scrollbar-thumb:hover, #spell-results-list::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
+.fat-scroll::-webkit-scrollbar, #spelling-word-list::-webkit-scrollbar, #spell-picker-list::-webkit-scrollbar, #wordbank-review-list::-webkit-scrollbar, .word-bank-list::-webkit-scrollbar, #spell-results-list::-webkit-scrollbar { width: 14px; }
+.fat-scroll::-webkit-scrollbar-track, #spelling-word-list::-webkit-scrollbar-track, #spell-picker-list::-webkit-scrollbar-track, #wordbank-review-list::-webkit-scrollbar-track, .word-bank-list::-webkit-scrollbar-track, #spell-results-list::-webkit-scrollbar-track { background: var(--section); border-radius: 10px; margin: 4px 0; }
+.fat-scroll::-webkit-scrollbar-thumb, #spelling-word-list::-webkit-scrollbar-thumb, #spell-picker-list::-webkit-scrollbar-thumb, #wordbank-review-list::-webkit-scrollbar-thumb, .word-bank-list::-webkit-scrollbar-thumb, #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--purple), var(--purple-light)); border-radius: 10px; border: 3px solid var(--section); min-height: 40px; }
+.fat-scroll::-webkit-scrollbar-thumb:hover, #spelling-word-list::-webkit-scrollbar-thumb:hover, #spell-picker-list::-webkit-scrollbar-thumb:hover, #wordbank-review-list::-webkit-scrollbar-thumb:hover, .word-bank-list::-webkit-scrollbar-thumb:hover, #spell-results-list::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--purple-deep), var(--purple)); }
 body.bedtime .fat-scroll, body.bedtime #spelling-word-list, body.bedtime #spell-picker-list, body.bedtime #wordbank-review-list, body.bedtime .word-bank-list, body.bedtime #spell-results-list { scrollbar-color: #4a4a3a #252540; }
-body.bedtime .fat-scroll::-webkit-scrollbar-track, body.bedtime #spelling-word-list::-webkit-scrollbar-track, body.bedtime #spell-picker-list::-webkit-scrollbar-track, body.bedtime #wordbank-review-list::-webkit-scrollbar-track::-webkit-scrollbar-track, body.bedtime .word-bank-list::-webkit-scrollbar-track, body.bedtime #spell-results-list::-webkit-scrollbar-track { background: #252540; }
-body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-track, body.bedtime #spelling-word-list::-webkit-scrollbar-track, body.bedtime #spell-picker-list::-webkit-scrollbar-track, body.bedtime #wordbank-review-list::-webkit-scrollbar-track, body.bedtime .word-bank-list::-webkit-scrollbar-track, body.bedtime #spell-results-list::-webkit-scrollbar-track { background: #252540; }
+body.bedtime .fat-scroll::-webkit-scrollbar-thumb, body.bedtime #spelling-word-list::-webkit-scrollbar-thumb, body.bedtime #spell-picker-list::-webkit-scrollbar-thumb, body.bedtime #wordbank-review-list::-webkit-scrollbar-thumb, body.bedtime .word-bank-list::-webkit-scrollbar-thumb, body.bedtime #spell-results-list::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #7a6a4a, #4a4a3a); border-color: #252540; }
 
 .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .blob { position: absolute; border-radius: 50%; opacity: 0.06; filter: blur(60px); animation: drift 12s ease-in-out infinite alternate; }
@@ -173,7 +174,7 @@ header { text-align: center; padding: 24px 0 16px; }
 
 .or-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; }
 .or-divider::before, .or-divider::after { content:''; flex:1; height:2px; background: var(--border); border-radius:2px; }
-.or-divider span { font-weight: 800; color: #ccc; font-size: 0.85rem; }
+.or-divider span { font-weight: 800; color: #7A8A9A; font-size: 0.85rem; }
 
 #story-text { font-size: 1.4rem; line-height: 2.2rem; color: var(--ink); font-weight: 700; }
 .word { display: inline-block; padding: 3px 5px; border-radius: 7px; transition: background 0.05s, transform 0.05s, color 0.05s; cursor: default; }
@@ -403,7 +404,7 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
 .wb-review-item:active { transform: translateY(0); }
 .wb-review-word { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--purple); }
 .wb-review-hint { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
-.wb-review-tap { font-size: 0.72rem; font-weight: 800; color: var(--purple-light); }
+.wb-review-tap { font-size: 0.72rem; font-weight: 800; color: var(--muted); }
 body.bedtime .wb-review-item { background: #2a2a28; }
 body.bedtime .wb-review-word { color: #d4a76a; }
 body.bedtime .wb-review-hint { color: #8080a8; }
@@ -441,7 +442,7 @@ body.bedtime .wb-know-btn:hover { background: #4a8a5a; color: #fff; }
 .spelling-syllables { font-size: 0.92rem; font-weight: 800; color: var(--ink); margin-top: 3px; letter-spacing: 0.5px; }
 .spelling-syllables .syl-dot { color: var(--coral); font-weight: 900; padding: 0 1px; }
 .spelling-word-def { font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-top: 4px; line-height: 1.35; }
-.spelling-word-tap { font-size: 0.72rem; font-weight: 800; color: var(--purple-light); flex-shrink: 0; }
+.spelling-word-tap { font-size: 0.72rem; font-weight: 800; color: var(--muted); flex-shrink: 0; }
 .spelling-red-badge { display: inline-block; background: var(--coral); color: #fff; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 8px; margin-left: 8px; vertical-align: middle; }
 .spelling-actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
 .spelling-actions .btn-main { flex: 1; min-width: calc(33% - 8px); }
@@ -942,7 +943,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AW</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AX</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1857,7 +1858,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AW</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AX</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2924,6 +2925,7 @@ document.getElementById('btn-more-topics').addEventListener('click', () => {
     el.style.display = moreTopicsOpen ? '' : 'none';
   });
   document.getElementById('btn-more-topics').textContent = moreTopicsOpen ? '− Fewer Topics' : '+ More Topics';
+  document.getElementById('btn-more-topics').setAttribute('aria-expanded', moreTopicsOpen);
 });
 
 // ── Zero-state: hide stats bar if no data ────────────────
@@ -6546,7 +6548,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'AW',
+      appBuild: 'AX',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
