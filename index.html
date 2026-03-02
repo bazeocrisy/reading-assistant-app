@@ -431,27 +431,28 @@ body.bedtime .wb-know-btn:hover { background: #4a8a5a; color: #fff; }
 
 /* ── Spelling Words Screen ── */
 .spelling-header { text-align: center; margin-bottom: 16px; }
-.spelling-week { font-size: 0.82rem; font-weight: 800; color: var(--muted); margin-top: 4px; }
-.spelling-word-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; margin-bottom: 10px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; position: relative; overflow: hidden; }
+.spelling-week { display: none; }
+.spelling-word-card { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 18px; margin-bottom: 10px; background: var(--section); cursor: pointer; transition: all 0.2s; border: 2.5px solid transparent; position: relative; overflow: hidden; }
 .spelling-word-card:hover { border-color: var(--purple-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.12); }
 .spelling-word-card:active { transform: translateY(0); }
 .spelling-word-card.red-word { border-left: 5px solid var(--coral); }
-.spelling-word-num { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--muted); min-width: 24px; text-align: center; }
+.spelling-word-num { display: none; }
 .spelling-word-main { flex: 1; }
-.spelling-word-text { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--purple); line-height: 1.2; }
+.spelling-word-text { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--purple); line-height: 1.2; }
 .spelling-syllables { font-size: 0.92rem; font-weight: 800; color: var(--ink); margin-top: 3px; letter-spacing: 0.5px; }
 .spelling-syllables .syl-dot { color: var(--coral); font-weight: 900; padding: 0 1px; }
-.spelling-word-def { font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-top: 4px; line-height: 1.35; }
-.spelling-word-tap { font-size: 0.72rem; font-weight: 800; color: var(--muted); flex-shrink: 0; }
+.spelling-word-def { font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-top: 4px; line-height: 1.35; display: none; }
+.spelling-word-card.show-def .spelling-word-def { display: block; }
+.spelling-word-tap { font-size: 1.3rem; flex-shrink: 0; }
 .spelling-red-badge { display: inline-block; background: var(--coral); color: #fff; font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 8px; margin-left: 8px; vertical-align: middle; }
-.spelling-actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
-.spelling-actions .btn-main { flex: 1; min-width: calc(33% - 8px); }
+.spelling-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.spelling-actions .btn-main { min-width: 0; margin-top: 0; }
 .spelling-upload-area { text-align: center; padding: 40px 20px; }
 .spelling-upload-icon { font-size: 4rem; margin-bottom: 12px; }
 .spelling-upload-text { font-weight: 800; color: var(--ink); font-size: 1.05rem; margin-bottom: 6px; }
 .spelling-upload-hint { font-weight: 700; color: var(--muted); font-size: 0.85rem; }
 .spelling-loading { text-align: center; padding: 40px 0; }
-.spelling-count-bar { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; padding: 10px; background: var(--purple-soft); border-radius: 12px; }
+.spelling-count-bar { display: none !important; }
 .spelling-count-num { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--purple); }
 .spelling-count-label { font-size: 0.82rem; font-weight: 800; color: var(--purple-deep); }
 body.bedtime .spelling-word-card { background: #2a2a28; }
@@ -670,7 +671,7 @@ body.bedtime .btn-rm-listen { background: #8a6a3a; }
   .opt-btn { padding: 12px 10px; font-size: 0.95rem; }
   .btn-main { font-size: 1.05rem; padding: 16px; }
   .spelling-word-card { padding: 18px 20px; }
-  .spelling-word-text { font-size: 1.4rem; }
+  .spelling-word-text { font-size: 1.7rem; }
   .spell-picker-word { padding: 16px 20px; }
   .spell-picker-label { font-size: 1.25rem; }
   .spell-choice-btn { font-size: 1.4rem; padding: 22px 18px; min-height: 64px; }
@@ -943,7 +944,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AX</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AY</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1465,8 +1466,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-spelling">
     <div class="card">
       <div class="spelling-header">
-        <div class="card-title">📝 My Spelling Words</div>
-        <p style="color:var(--muted);font-weight:700;font-size:0.88rem;">Tap any word to hear it and learn what it means!</p>
+        <div class="card-title">🔤 My Spelling Words</div>
+        <p style="color:var(--muted);font-weight:700;font-size:0.88rem;">Tap a word to hear it!</p>
         <div class="spelling-week" id="spelling-week-label"></div>
       </div>
       <div class="spelling-count-bar" id="spelling-count-bar" style="display:none;">
@@ -1476,7 +1477,23 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div id="spelling-word-list" style="overscroll-behavior:contain;"></div>
       <div id="spelling-empty" style="display:none;">
         <div class="spelling-upload-area">
-          <div class="spelling-upload-icon">📸</div>
+          <div aria-hidden="true" style="margin:0 auto 8px;">
+            <svg viewBox="0 0 100 90" width="100" height="90" style="animation:mascotWiggle 2.5s ease-in-out infinite;">
+              <ellipse cx="50" cy="55" rx="28" ry="30" fill="#FECA57"/>
+              <ellipse cx="50" cy="62" rx="18" ry="15" fill="#FFF9E6"/>
+              <circle cx="38" cy="38" r="10" fill="white"/><circle cx="62" cy="38" r="10" fill="white"/>
+              <circle cx="39" cy="39" r="6" fill="#2C3E50"/><circle cx="61" cy="39" r="6" fill="#2C3E50"/>
+              <circle cx="40" cy="37" r="2.5" fill="white"/><circle cx="62" cy="37" r="2.5" fill="white"/>
+              <path d="M44 48 L50 55 L56 48Z" fill="#FF6B35"/>
+              <path d="M40 58 Q50 68 60 58" fill="none" stroke="#E17055" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M28 28 L22 12 L36 25Z" fill="#FF9F43"/>
+              <path d="M72 28 L78 12 L64 25Z" fill="#FF9F43"/>
+              <!-- Pencil in hand -->
+              <path d="M22 55 Q14 50 10 58" stroke="#FF9F43" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <line x1="6" y1="60" x2="2" y2="72" stroke="#FFD93D" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="2" cy="73" r="1.5" fill="#2C3E50"/>
+            </svg>
+          </div>
           <div class="spelling-upload-text">No spelling words yet!</div>
           <div class="spelling-upload-hint">Take a photo of your spelling word list<br>and we'll load them right up.</div>
           <button class="btn-main" id="btn-spelling-upload-empty" style="margin-top:18px;font-size:1rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);box-shadow:0 4px 14px rgba(255,107,107,0.35);">📸 Upload Word List</button>
@@ -1858,7 +1875,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AX</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5386,7 +5403,6 @@ function renderSpellingWords(list) {
     const card = document.createElement('div');
     card.className = 'spelling-word-card' + (w.isRedWord ? ' red-word' : '');
     card.innerHTML = `
-      <div class="spelling-word-num">${w.num}</div>
       <div class="spelling-word-main">
         <div>
           <span class="spelling-word-text">${w.word}</span>
@@ -5395,12 +5411,14 @@ function renderSpellingWords(list) {
         <div class="spelling-syllables">${syllableHTML}</div>
         ${definition
           ? `<div class="spelling-word-def">${definition}</div>`
-          : '<div class="spelling-word-def" style="font-style:italic;display:flex;align-items:center;gap:6px;"><span class="spell-def-spinner"></span> Loading definition...</div>'}
+          : '<div class="spelling-word-def" style="font-style:italic;display:none;align-items:center;gap:6px;"><span class="spell-def-spinner"></span> Loading definition...</div>'}
       </div>
       <div class="spelling-word-tap">🔊</div>
     `;
 
     card.addEventListener('click', () => {
+      // Toggle definition visibility
+      card.classList.toggle('show-def');
       w.practiced = (w.practiced || 0) + 1;
       const data = getData();
       const savedList = data.spellingLists.find(l => l.id === list.id);
@@ -5458,14 +5476,13 @@ async function fetchDefinitionsBatch(queue) {
             const defEl = item.card.querySelector('.spelling-word-def');
             if (defEl) {
               defEl.style.fontStyle = 'normal';
-              defEl.style.display = 'block';
-              defEl.innerHTML = def;
+              defEl.textContent = def;
             }
           } else {
             const defEl = item.card.querySelector('.spelling-word-def');
             if (defEl) {
               defEl.style.fontStyle = 'italic';
-              defEl.innerHTML = 'Tap to look up meaning';
+              defEl.textContent = 'Tap to look up meaning';
             }
           }
         }
@@ -5476,9 +5493,9 @@ async function fetchDefinitionsBatch(queue) {
       // Fallback: mark remaining as tap-to-look-up
       for (const item of chunk) {
         const defEl = item.card.querySelector('.spelling-word-def');
-        if (defEl && defEl.innerHTML.includes('Loading')) {
+        if (defEl && defEl.textContent.includes('Loading')) {
           defEl.style.fontStyle = 'italic';
-          defEl.innerHTML = 'Tap to look up meaning';
+          defEl.textContent = 'Tap to look up meaning';
         }
       }
     }
@@ -6548,7 +6565,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'AX',
+      appBuild: 'AY',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
