@@ -311,12 +311,6 @@ header { position: relative; }
 .parent-bar-btn { border: 2px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
-.bar-btn-home { background: var(--green); color: #fff; border-color: var(--green); }
-.bar-btn-back { background: var(--orange); color: #fff; border-color: var(--orange); }
-.bar-btn-settings { background: #54A0FF; color: #fff; border-color: #2E86DE; }
-.bar-btn-play { background: var(--green); color: #fff; border-color: var(--green); }
-.bar-btn-pause { background: var(--coral); color: #fff; border-color: var(--coral); }
-.bar-btn-stop { background: var(--muted); color: #fff; border-color: var(--muted); }
 body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
 body.bedtime .parent-bar-btn { background: #3a2a1a; border-color: #3a3a5c; color: #d4a76a; }
 body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a; color: #fff; }
@@ -926,7 +920,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AP</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AQ</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1838,17 +1832,17 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AP</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AQ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <div class="parent-bar" id="parent-bar">
-  <button class="parent-bar-btn bar-btn-home" id="btn-go-home">🏠 Home</button>
-  <button class="parent-bar-btn bar-btn-back" id="bar-back" style="display:none;">← Back</button>
-  <button class="parent-bar-btn bar-btn-play" id="bar-play" style="display:none;">▶ Play</button>
-  <button class="parent-bar-btn bar-btn-pause" id="bar-pause" style="display:none;">⏸ Pause</button>
-  <button class="parent-bar-btn bar-btn-stop" id="bar-stop" style="display:none;">⏹ Stop</button>
-  <button class="parent-bar-btn bar-btn-settings" id="btn-bar-settings">👩‍👧 Parent</button>
+  <button class="parent-bar-btn" id="btn-go-home" style="background:var(--green);color:#fff;border-color:var(--green);">🏠 Home</button>
+  <button class="parent-bar-btn" id="bar-back" style="display:none;background:var(--orange);color:#fff;border-color:var(--orange);">← Back</button>
+  <button class="parent-bar-btn" id="bar-play" style="display:none;background:var(--green);color:#fff;border-color:var(--green);">▶ Play</button>
+  <button class="parent-bar-btn" id="bar-pause" style="display:none;background:var(--coral);color:#fff;border-color:var(--coral);">⏸ Pause</button>
+  <button class="parent-bar-btn" id="bar-stop" style="display:none;background:var(--muted);color:#fff;border-color:var(--muted);">⏹ Stop</button>
+  <button class="parent-bar-btn" id="btn-bar-settings" style="background:#54A0FF;color:#fff;border-color:#2E86DE;">👩‍👧 Parent</button>
 </div>
 
 <!-- Word saved toast -->
