@@ -386,11 +386,9 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
   /* No max-height, no overflow — natural page flow */
 }
 @media (min-width: 768px) {
-  #spelling-word-list, #spell-picker-list { max-height: 55vh !important; }
   #wordbank-review-list { max-height: 60vh !important; }
 }
 @media (min-width: 1024px) {
-  #spelling-word-list, #spell-picker-list { max-height: 62vh !important; }
   #wordbank-review-list { max-height: 68vh !important; }
 }
 /* Story container scrollbar removed — natural page scroll */
@@ -920,7 +918,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AD</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AE</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1447,7 +1445,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div><span class="spelling-count-num" id="spelling-word-count">0</span></div>
         <div class="spelling-count-label">spelling words loaded</div>
       </div>
-      <div id="spelling-word-list" style="max-height:50vh;overflow-y:auto;overscroll-behavior:contain;"></div>
+      <div id="spelling-word-list" style="overscroll-behavior:contain;"></div>
       <div id="spelling-empty" style="display:none;">
         <div class="spelling-upload-area">
           <div class="spelling-upload-icon">📸</div>
@@ -1485,7 +1483,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <button class="opt-btn spell-voice-btn" data-voice="male" id="spell-voice-male" style="padding:5px 12px;min-width:auto;font-size:0.82rem;margin:0;white-space:nowrap;">👨 Man</button>
         </div>
       </div>
-      <div id="spell-picker-list" style="max-height:45vh;overflow-y:auto;overscroll-behavior:contain;"></div>
+      <div id="spell-picker-list" style="overscroll-behavior:contain;"></div>
       <div class="spell-picker-bar">
         <div class="spell-picker-count" id="spell-picker-count">0 words selected</div>
         <button class="btn-main btn-green" id="btn-spell-picker-go" style="font-size:1.1rem;" disabled>Let's Go! 🚀</button>
@@ -1533,7 +1531,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="spell-practice-score-label">words correct</div>
         <div class="spell-practice-stars" id="spell-results-stars"></div>
       </div>
-      <div class="spell-result-list" id="spell-results-list" style="max-height:40vh;overflow-y:auto;overscroll-behavior:contain;"></div>
+      <div class="spell-result-list" id="spell-results-list" style="overscroll-behavior:contain;"></div>
       <button class="btn-main btn-purple" id="btn-spell-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Practice Missed Words</button>
       <button class="btn-main btn-coral" id="btn-spell-take-quiz" style="font-size:1rem;margin-top:10px;">📝 Take Quiz Now</button>
       <button class="btn-main btn-green" id="btn-spell-retry-all" style="font-size:1rem;margin-top:10px;">🎯 Practice Again</button>
@@ -1584,7 +1582,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="spell-practice-score-label">words correct</div>
         <div class="spell-practice-stars" id="quiz-results-stars"></div>
       </div>
-      <div class="spell-result-list" id="quiz-results-list" style="max-height:40vh;overflow-y:auto;overscroll-behavior:contain;"></div>
+      <div class="spell-result-list" id="quiz-results-list" style="overscroll-behavior:contain;"></div>
       <button class="btn-main btn-coral" id="btn-quiz-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Retry Missed Words</button>
       <button class="btn-main btn-green" id="btn-quiz-retry-all" style="font-size:1rem;margin-top:10px;">📝 Quiz Again</button>
       <button class="btn-main btn-outline" id="btn-quiz-results-done" style="margin-top:10px;font-size:0.9rem;">← Back to Words</button>
@@ -1832,7 +1830,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AD</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AE</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
