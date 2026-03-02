@@ -71,6 +71,10 @@ exports.extractText = onRequest(
       return res.status(400).json({error: "No image provided"});
     }
 
+    // Determine content block type: PDFs use "document", everything else uses "image"
+    const isPDF = (mediaType || "").toLowerCase() === "application/pdf";
+    const contentType = isPDF ? "document" : "image";
+
     try {
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -86,7 +90,7 @@ exports.extractText = onRequest(
             role: "user",
             content: [
               {
-                type: "image",
+                type: contentType,
                 source: {
                   type: "base64",
                   media_type: mediaType || "image/jpeg",
@@ -95,7 +99,7 @@ exports.extractText = onRequest(
               },
               {
                 type: "text",
-                text: "Read every word from this image exactly as written. Return ONLY the text content, nothing else. No descriptions, no commentary, no formatting marks. Just the exact words as they appear on the page, preserving paragraph breaks with blank lines.",
+                text: "Read every word from this " + (isPDF ? "document" : "image") + " exactly as written. Return ONLY the text content, nothing else. No descriptions, no commentary, no formatting marks. Just the exact words as they appear on the page, preserving paragraph breaks with blank lines.",
               },
             ],
           }],
