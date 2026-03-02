@@ -942,7 +942,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AV</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AW</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1857,7 +1857,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AV</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AW</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -1989,6 +1989,14 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
       <div id="pin-save-msg" style="font-size:0.82rem;color:var(--green);font-weight:800;min-height:1.2em;margin-top:6px;"></div>
       <button class="btn-main btn-danger" id="btn-reset-data" style="margin-top:16px;">🗑️ Reset All Data</button>
+
+      <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--border);">
+        <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:10px;">Backup & Restore:</p>
+        <button class="btn-main" id="btn-export-data" style="background:var(--purple);color:#fff;margin-top:0;">📤 Export My Data</button>
+        <button class="btn-main" id="btn-import-data" style="background:var(--section);color:var(--ink);border:2px solid var(--border);margin-top:8px;">📥 Import Data Backup</button>
+        <input type="file" id="import-file-input" accept=".json" style="display:none;">
+        <div id="import-export-msg" style="font-size:0.82rem;font-weight:800;min-height:1.2em;margin-top:6px;" aria-live="polite" role="status"></div>
+      </div>
     </div>
     <div style="height:40px;"></div>
   </div>
@@ -6529,6 +6537,105 @@ document.getElementById('btn-reset-data').addEventListener('click', () => {
   localStorage.removeItem(DICT_CACHE_KEY);
   openParentDashboard();
   alert('All data has been reset.');
+});
+
+// ── Data Export ──────────────────────────────────────────
+document.getElementById('btn-export-data').addEventListener('click', () => {
+  const msgEl = document.getElementById('import-export-msg');
+  try {
+    const exportData = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      appBuild: 'AW',
+      readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
+      readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `ReadUp_Backup_${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    msgEl.style.color = 'var(--green)';
+    msgEl.textContent = '✓ Data exported!';
+    setTimeout(() => { msgEl.textContent = ''; }, 3000);
+  } catch(e) {
+    msgEl.style.color = 'var(--coral)';
+    msgEl.textContent = 'Export failed — ' + e.message;
+  }
+});
+
+// ── Data Import ──────────────────────────────────────────
+const importFileInput = document.getElementById('import-file-input');
+document.getElementById('btn-import-data').addEventListener('click', () => {
+  importFileInput.value = '';
+  importFileInput.click();
+});
+
+importFileInput.addEventListener('change', (e) => {
+  const msgEl = document.getElementById('import-export-msg');
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.name.endsWith('.json')) {
+    msgEl.style.color = 'var(--coral)';
+    msgEl.textContent = 'Please select a .json backup file.';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      const imported = JSON.parse(evt.target.result);
+
+      // Validate structure
+      if (!imported.readup_data || typeof imported.readup_data !== 'object') {
+        msgEl.style.color = 'var(--coral)';
+        msgEl.textContent = 'Invalid backup file — missing ReadUp data.';
+        return;
+      }
+
+      // Show summary and confirm
+      const rd = imported.readup_data;
+      const storyCount = (rd.stories || []).length;
+      const wordCount = (rd.wordBank || []).length;
+      const logDays = (rd.weeklyLog || []).length;
+      const spellingCount = (rd.spellingLists || []).length;
+      const exportDate = imported.exportedAt ? new Date(imported.exportedAt).toLocaleDateString() : 'unknown date';
+
+      const msg = `Import backup from ${exportDate}?\n\n` +
+        `📚 ${storyCount} stories\n` +
+        `📖 ${wordCount} word bank words\n` +
+        `📝 ${spellingCount} spelling lists\n` +
+        `📅 ${logDays} days of reading logs\n\n` +
+        `⚠️ This will REPLACE all current data.`;
+
+      if (!confirm(msg)) {
+        msgEl.style.color = 'var(--muted)';
+        msgEl.textContent = 'Import cancelled.';
+        setTimeout(() => { msgEl.textContent = ''; }, 2000);
+        return;
+      }
+
+      // Apply the import
+      localStorage.setItem(LS_KEY, JSON.stringify(imported.readup_data));
+      if (imported.readup_dict_cache && typeof imported.readup_dict_cache === 'object') {
+        localStorage.setItem(DICT_CACHE_KEY, JSON.stringify(imported.readup_dict_cache));
+      }
+
+      msgEl.style.color = 'var(--green)';
+      msgEl.textContent = `✓ Imported! ${storyCount} stories, ${wordCount} words restored.`;
+      openParentDashboard(); // Refresh dashboard with imported data
+    } catch(err) {
+      msgEl.style.color = 'var(--coral)';
+      msgEl.textContent = 'Could not read file — is it a valid ReadUp backup?';
+    }
+  };
+  reader.readAsText(file);
 });
 // (Story scroll lock removed — no inner scroll container, natural page flow)
 
