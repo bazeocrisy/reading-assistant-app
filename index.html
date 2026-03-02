@@ -926,7 +926,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AA</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AB</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1834,7 +1834,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AA</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2983,8 +2983,17 @@ document.getElementById('btn-own-paste-go').addEventListener('click', () => {
   }
   document.getElementById('own-paste-textarea').style.borderColor = 'var(--border)';
 
-  // Trim to 500 words if over
+  // Minimum word check
   const words = text.split(/\s+/);
+  if (words.length < 5) {
+    const t = document.getElementById('word-toast');
+    t.textContent = '📝 Please paste at least 5 words to read!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+    return;
+  }
+
+  // Trim to 500 words if over
   if (words.length > 500) {
     text = words.slice(0, 500).join(' ');
   }
@@ -2997,6 +3006,7 @@ document.getElementById('btn-own-paste-go').addEventListener('click', () => {
   S.wordTarget = text.split(/\s+/).length;
 
   recordStoryStart();
+  show('screen-read');
   renderStory(S.storyTitle, S.story);
   setupReadScreen();
 });
