@@ -311,6 +311,14 @@ header { position: relative; }
 .parent-bar-btn { background: var(--purple-soft); border: 2.5px solid var(--border); color: var(--purple-deep); font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 800; padding: 12px 18px; border-radius: 14px; cursor: pointer; transition: all 0.2s; flex: 1; max-width: 150px; text-align: center; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
+@media (min-width: 768px) {
+  .parent-bar { padding: 14px 20px 18px; gap: 10px; }
+  .parent-bar-btn { font-size: 0.95rem; padding: 14px 28px; max-width: 180px; border-radius: 16px; }
+}
+@media (min-width: 1024px) {
+  .parent-bar { padding: 14px 30px 18px; gap: 12px; }
+  .parent-bar-btn { font-size: 1rem; padding: 14px 36px; max-width: 200px; }
+}
 .bar-btn-home { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
 .bar-btn-back { background: var(--orange) !important; color: #fff !important; border-color: var(--orange) !important; }
 .bar-btn-settings { background: linear-gradient(135deg, #54A0FF, #2E86DE) !important; color: #fff !important; border-color: #2E86DE !important; }
@@ -926,7 +934,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AI</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AJ</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1838,7 +1846,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AI</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AJ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
