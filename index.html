@@ -780,7 +780,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 </style>
 </head>
 <body>
-<div class="bg">
+<div class="bg" aria-hidden="true">
   <div class="blob blob1"></div>
   <div class="blob blob2"></div>
   <div class="blob blob3"></div>
@@ -789,9 +789,9 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <div class="app">
   <header>
     <div class="logo" style="color:var(--purple);text-shadow:0 3px 0 var(--purple-deep), 0 6px 20px rgba(255,107,53,0.15);letter-spacing:2px;">ReadUp!</div>
-    <button class="bedtime-toggle" id="btn-bedtime" title="Bedtime Mode">🌙</button>
+    <button class="bedtime-toggle" id="btn-bedtime" title="Bedtime Mode" aria-label="Toggle bedtime mode">🌙</button>
     <!-- Bookie the Book Owl mascot -->
-    <div id="mascot-zone" style="display:flex;flex-direction:column;align-items:center;margin:4px 0 0;gap:4px;">
+    <div id="mascot-zone" aria-hidden="true" style="display:flex;flex-direction:column;align-items:center;margin:4px 0 0;gap:4px;">
       <div id="bookie-speech" style="background:white;border-radius:20px;padding:10px 18px;font-size:1rem;font-weight:700;color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,0.06);text-align:center;max-width:280px;position:relative;animation:fadeUp 0.4s ease both;">
         Ready to read? Let's go! 🚀
         <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white;"></div>
@@ -836,7 +836,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </svg>
     </div>
     <!-- Mini stats bar -->
-    <div id="home-stats-bar" style="display:flex;justify-content:center;gap:18px;margin-top:4px;">
+    <div id="home-stats-bar" role="status" aria-label="Reading stats" style="display:flex;justify-content:center;gap:18px;margin-top:4px;">
       <div style="text-align:center;"><span style="font-size:1.3rem;">🔥</span><div style="font-family:'Fredoka';font-weight:700;font-size:0.95rem;color:#FF6B35;" id="home-streak">0 days</div></div>
       <div style="width:2px;background:rgba(0,0,0,0.06);border-radius:4px;"></div>
       <div style="text-align:center;"><span style="font-size:1.3rem;">⭐</span><div style="font-family:'Fredoka';font-weight:700;font-size:0.95rem;color:#F9A825;" id="home-stories-count">0 stories</div></div>
@@ -860,7 +860,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <p style="font-weight:700;color:var(--muted);font-size:0.82rem;margin-bottom:6px;">📖 <strong style="color:var(--ink);">Read Together</strong> — Read with a friend from any device</p>
         <p style="font-weight:700;color:var(--muted);font-size:0.82rem;">🔊 <strong style="color:var(--ink);">Word-by-Word Tracking</strong> — Words highlight as they're read aloud</p>
       </div>
-      <button class="btn-main btn-green" id="btn-welcome-next-1" style="font-size:1.1rem;">Next →</button>
+      <button class="btn-main btn-green" id="btn-welcome-next-1" aria-label="Next step" style="font-size:1.1rem;">Next →</button>
     </div>
   </div>
 
@@ -878,7 +878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <p style="font-weight:700;color:var(--muted);font-size:0.82rem;">Your child reads independently and records their own reading speed!</p>
       </div>
       <p style="color:var(--muted);font-weight:700;font-size:0.82rem;line-height:1.5;">This works for AI-generated stories <strong>and</strong> pages you upload from books or worksheets. Tap any word to hear it and learn what it means!</p>
-      <button class="btn-main btn-green" id="btn-welcome-next-2" style="font-size:1.1rem;">Next →</button>
+      <button class="btn-main btn-green" id="btn-welcome-next-2" aria-label="Next step" style="font-size:1.1rem;">Next →</button>
     </div>
   </div>
 
@@ -897,7 +897,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <p style="font-weight:800;color:var(--ink);font-size:0.88rem;margin-bottom:6px;">📖 Reading Mode</p>
         <p style="font-weight:700;color:var(--muted);font-size:0.82rem;">Full-screen reading with play/pause controls — great for reading along on a big screen.</p>
       </div>
-      <button class="btn-main btn-green" id="btn-welcome-next-3" style="font-size:1.1rem;">Next →</button>
+      <button class="btn-main btn-green" id="btn-welcome-next-3" aria-label="Next step" style="font-size:1.1rem;">Next →</button>
     </div>
   </div>
 
@@ -922,50 +922,50 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="opt-btn" data-wgrade="2" style="min-width:60px;">2nd</button>
         <button class="opt-btn" data-wgrade="3" style="min-width:60px;">3rd</button>
       </div>
-      <button class="btn-main btn-green" id="btn-welcome-go" style="font-size:1.1rem;margin-top:16px;" disabled>✨ Let's Go!</button>
+      <button class="btn-main btn-green" id="btn-welcome-go" aria-label="Start using ReadUp" style="font-size:1.1rem;margin-top:16px;" disabled>✨ Let's Go!</button>
     </div>
   </div>
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AS</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AT</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
-      <button class="kid-action-btn" id="btn-go-story-builder" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 8px 24px rgba(255,107,53,0.4);">
-        <div class="kid-action-icon">✨</div>
+      <button class="kid-action-btn" id="btn-go-story-builder" aria-label="Read a Story" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 8px 24px rgba(255,107,53,0.4);">
+        <div class="kid-action-icon" aria-hidden="true">✨</div>
         <div class="kid-action-label">Read a Story!</div>
       </button>
 
       <!-- Time My Reading — PURPLE (standalone assessment) -->
-      <button class="kid-action-btn" id="btn-timed-reading-home" style="background:linear-gradient(135deg, #9B59B6, #8E44AD);box-shadow:0 8px 24px rgba(142,68,173,0.35);">
-        <div class="kid-action-icon">⏱</div>
+      <button class="kid-action-btn" id="btn-timed-reading-home" aria-label="Time My Reading" style="background:linear-gradient(135deg, #9B59B6, #8E44AD);box-shadow:0 8px 24px rgba(142,68,173,0.35);">
+        <div class="kid-action-icon" aria-hidden="true">⏱</div>
         <div class="kid-action-label">Time My Reading</div>
       </button>
 
       <!-- My Own Reading — BLUE -->
-      <button class="kid-action-btn" id="btn-scan-page" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 8px 24px rgba(46,134,222,0.35);">
-        <div class="kid-action-icon">📸</div>
+      <button class="kid-action-btn" id="btn-scan-page" aria-label="My Own Reading" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 8px 24px rgba(46,134,222,0.35);">
+        <div class="kid-action-icon" aria-hidden="true">📸</div>
         <div class="kid-action-label">My Own Reading</div>
       </button>
       <input type="file" id="scan-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
 
       <!-- Read Together — GREEN -->
-      <button class="kid-action-btn" id="btn-together-start" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 8px 24px rgba(39,174,96,0.35);">
-        <div class="kid-action-icon">📖</div>
+      <button class="kid-action-btn" id="btn-together-start" aria-label="Read Together" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 8px 24px rgba(39,174,96,0.35);">
+        <div class="kid-action-icon" aria-hidden="true">📖</div>
         <div class="kid-action-label">Read Together</div>
       </button>
 
       <!-- Spelling Words — RED/CORAL -->
-      <button class="kid-action-btn" id="btn-spelling-start" style="background:linear-gradient(135deg, #FF6B6B, #EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
-        <div class="kid-action-icon">🔤</div>
+      <button class="kid-action-btn" id="btn-spelling-start" aria-label="Spelling Words" style="background:linear-gradient(135deg, #FF6B6B, #EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
+        <div class="kid-action-icon" aria-hidden="true">🔤</div>
         <div class="kid-action-label">Spelling Words</div>
       </button>
       <input type="file" id="spelling-file-input" accept="image/*" style="display:none;">
     </div>
 
     <!-- Word Bank quick access -->
-    <button class="btn-main btn-outline" id="btn-wordbank-home" style="margin-top:14px;border:3px dashed var(--gold) !important;color:var(--ink) !important;font-size:1rem;">
+    <button class="btn-main btn-outline" id="btn-wordbank-home" aria-label="My Word Bank" style="margin-top:14px;border:3px dashed var(--gold) !important;color:var(--ink) !important;font-size:1rem;">
       💾 My Word Bank
     </button>
   </div>
@@ -978,7 +978,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Grade: collapsed by default, shows saved grade -->
       <div id="grade-display" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
         <span style="font-weight:800;color:var(--ink);font-size:1rem;">📚 Grade: <span id="grade-label" style="color:var(--purple);">1st</span></span>
-        <button id="btn-change-grade" style="background:none;border:2px dashed var(--border);border-radius:12px;padding:4px 12px;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;">Change</button>
+        <button id="btn-change-grade" aria-label="Change grade level" style="background:none;border:2px dashed var(--border);border-radius:12px;padding:4px 12px;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;">Change</button>
       </div>
       <div id="grade-picker" style="display:none;margin-bottom:12px;">
         <div class="option-row" id="grade-row">
@@ -993,18 +993,18 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Story length: 3 visual book sizes -->
       <div class="section-label" style="font-size:0.88rem;text-align:center;">How long should your story be?</div>
       <div id="story-size-row" style="display:flex;justify-content:center;gap:10px;margin-bottom:16px;">
-        <button class="story-size-btn" data-words="50">
-          <svg viewBox="0 0 40 50" width="36" height="44"><rect x="6" y="8" width="28" height="34" rx="3" fill="var(--gold)" opacity="0.85"/><rect x="8" y="10" width="24" height="30" rx="2" fill="#FFF8E1"/><line x1="12" y1="18" x2="28" y2="18" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="24" x2="24" y2="24" stroke="var(--border)" stroke-width="1.5"/></svg>
+        <button class="story-size-btn" data-words="50" aria-label="Quick story, 30 to 60 words">
+          <svg viewBox="0 0 40 50" width="36" height="44" aria-hidden="true"><rect x="6" y="8" width="28" height="34" rx="3" fill="var(--gold)" opacity="0.85"/><rect x="8" y="10" width="24" height="30" rx="2" fill="#FFF8E1"/><line x1="12" y1="18" x2="28" y2="18" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="24" x2="24" y2="24" stroke="var(--border)" stroke-width="1.5"/></svg>
           <span>Quick</span>
           <span style="font-size:0.6rem;color:var(--muted);font-weight:700;margin-top:-2px;">30–60 words</span>
         </button>
-        <button class="story-size-btn sel-size" data-words="100">
-          <svg viewBox="0 0 44 56" width="40" height="50"><rect x="6" y="6" width="32" height="42" rx="3" fill="var(--green)" opacity="0.85"/><rect x="8" y="8" width="28" height="38" rx="2" fill="#F1FFF1"/><line x1="12" y1="16" x2="32" y2="16" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="22" x2="30" y2="22" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="28" x2="28" y2="28" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="34" x2="26" y2="34" stroke="var(--border)" stroke-width="1.5"/></svg>
+        <button class="story-size-btn sel-size" data-words="100" aria-label="Regular story, 80 to 120 words">
+          <svg viewBox="0 0 44 56" width="40" height="50" aria-hidden="true"><rect x="6" y="6" width="32" height="42" rx="3" fill="var(--green)" opacity="0.85"/><rect x="8" y="8" width="28" height="38" rx="2" fill="#F1FFF1"/><line x1="12" y1="16" x2="32" y2="16" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="22" x2="30" y2="22" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="28" x2="28" y2="28" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="34" x2="26" y2="34" stroke="var(--border)" stroke-width="1.5"/></svg>
           <span>Regular</span>
           <span style="font-size:0.6rem;color:var(--muted);font-weight:700;margin-top:-2px;">80–120 words</span>
         </button>
-        <button class="story-size-btn" data-words="300">
-          <svg viewBox="0 0 50 64" width="44" height="56"><rect x="6" y="4" width="38" height="54" rx="3" fill="var(--ocean)" opacity="0.85"/><rect x="8" y="6" width="34" height="50" rx="2" fill="#EFF7FF"/><line x1="12" y1="14" x2="38" y2="14" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="20" x2="36" y2="20" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="26" x2="34" y2="26" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="32" x2="36" y2="32" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="38" x2="32" y2="38" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="44" x2="34" y2="44" stroke="var(--border)" stroke-width="1.5"/></svg>
+        <button class="story-size-btn" data-words="300" aria-label="Long story, 250 to 350 words">
+          <svg viewBox="0 0 50 64" width="44" height="56" aria-hidden="true"><rect x="6" y="4" width="38" height="54" rx="3" fill="var(--ocean)" opacity="0.85"/><rect x="8" y="6" width="34" height="50" rx="2" fill="#EFF7FF"/><line x1="12" y1="14" x2="38" y2="14" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="20" x2="36" y2="20" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="26" x2="34" y2="26" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="32" x2="36" y2="32" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="38" x2="32" y2="38" stroke="var(--border)" stroke-width="1.5"/><line x1="12" y1="44" x2="34" y2="44" stroke="var(--border)" stroke-width="1.5"/></svg>
           <span>Long</span>
           <span style="font-size:0.6rem;color:var(--muted);font-weight:700;margin-top:-2px;">250–350 words</span>
         </button>
@@ -1022,7 +1022,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Topics -->
       <div class="section-label" style="font-size:0.88rem;text-align:center;">What sounds fun?</div>
       <div style="text-align:center;margin-bottom:12px;">
-        <button class="btn-main btn-yellow" id="btn-surprise-me" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:10px 24px;font-size:0.95rem;margin:0;">🎲 Surprise Me!</button>
+        <button class="btn-main btn-yellow" id="btn-surprise-me" aria-label="Pick a random topic for me" style="width:auto;display:inline-flex;align-items:center;gap:6px;padding:10px 24px;font-size:0.95rem;margin:0;">🎲 Surprise Me!</button>
       </div>
       <div class="categories" id="topics-grid">
         <!-- TOP 9: visible by default -->
@@ -1107,9 +1107,9 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
       <!-- More topics toggle -->
       <div style="text-align:center;margin:8px 0 14px;">
-        <button id="btn-more-topics" style="background:none;border:2px dashed var(--border);border-radius:16px;padding:8px 20px;font-size:0.9rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;">+ More Topics</button>
+        <button id="btn-more-topics" aria-label="Show more story topics" aria-expanded="false" style="background:none;border:2px dashed var(--border);border-radius:16px;padding:8px 20px;font-size:0.9rem;font-weight:800;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;">+ More Topics</button>
       </div>
-      <button class="btn-main" id="btn-generate" style="font-size:1.3rem;padding:18px;">✨ Make My Story!</button>
+      <button class="btn-main" id="btn-generate" aria-label="Create my story" style="font-size:1.3rem;padding:18px;">✨ Make My Story!</button>
       <button class="btn-main btn-outline" id="btn-story-builder-back" style="display:none;">← Back</button>
     </div>
   </div>
@@ -1133,7 +1133,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-loading">
     <div class="card" style="text-align:center;padding:30px 20px;">
       <!-- Bookie reading a book -->
-      <div id="loading-bookie" style="margin:0 auto 8px;">
+      <div id="loading-bookie" aria-hidden="true" style="margin:0 auto 8px;">
         <svg width="120" height="110" viewBox="0 0 120 110">
           <!-- Body -->
           <ellipse cx="60" cy="68" rx="32" ry="30" fill="#FF9F43"/>
@@ -1185,9 +1185,9 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         </svg>
       </div>
       <!-- Rotating message -->
-      <div id="loading-msg" style="font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;color:var(--purple);min-height:2.5em;transition:opacity 0.3s;">Getting your story ready...</div>
+      <div id="loading-msg" role="status" aria-live="polite" style="font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;color:var(--purple);min-height:2.5em;transition:opacity 0.3s;">Getting your story ready...</div>
       <!-- Subtle progress dots -->
-      <div id="loading-dots" style="display:flex;justify-content:center;gap:8px;margin-top:12px;">
+      <div id="loading-dots" aria-hidden="true" style="display:flex;justify-content:center;gap:8px;margin-top:12px;">
         <div style="width:10px;height:10px;border-radius:50%;background:var(--purple);animation:loadDot 1.4s infinite ease-in-out;"></div>
         <div style="width:10px;height:10px;border-radius:50%;background:var(--purple);animation:loadDot 1.4s infinite ease-in-out;animation-delay:0.2s;"></div>
         <div style="width:10px;height:10px;border-radius:50%;background:var(--purple);animation:loadDot 1.4s infinite ease-in-out;animation-delay:0.4s;"></div>
@@ -1200,8 +1200,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     <div class="card">
       <div class="card-title">Join a Reading Room! 📖</div>
       <p style="color:#555;font-weight:700;margin-bottom:4px;">Enter your partner's room code:</p>
-      <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric">
-      <div id="join-error" style="background:#FFF0F0;border:2px solid #FF6B6B;border-radius:14px;padding:12px 16px;color:#FF6B6B;font-weight:700;margin-top:10px;display:none;"></div>
+      <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric" aria-label="Room code">
+      <div id="join-error" role="alert" aria-live="assertive" style="background:#FFF0F0;border:2px solid #FF6B6B;border-radius:14px;padding:12px 16px;color:#FF6B6B;font-weight:700;margin-top:10px;display:none;"></div>
       <button class="btn-main btn-green" id="btn-join-room">Join Room →</button>
       <button class="btn-main btn-outline" id="btn-back-join" style="display:none;">← Back</button>
     </div>
@@ -1333,14 +1333,14 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
       <!-- BIG play button — the main action -->
       <div class="read-play-zone">
-        <button class="read-big-play" id="btn-play">
-          <span class="read-play-icon" id="play-icon">▶</span>
+        <button class="read-big-play" id="btn-play" aria-label="Listen to story">
+          <span class="read-play-icon" id="play-icon" aria-hidden="true">▶</span>
           <span class="read-play-label" id="play-label">Listen to Story</span>
         </button>
-        <div class="read-play-side">
-          <button class="read-side-btn" id="btn-pause" disabled title="Pause">⏸</button>
-          <button class="read-side-btn" id="btn-stop-tts" disabled title="Stop">⏹</button>
-          <button class="read-side-btn" id="btn-read-settings" title="Settings">⚙️</button>
+        <div class="read-play-side" aria-hidden="true">
+          <button class="read-side-btn" id="btn-pause" disabled title="Pause" aria-label="Pause audio">⏸</button>
+          <button class="read-side-btn" id="btn-stop-tts" disabled title="Stop" aria-label="Stop audio">⏹</button>
+          <button class="read-side-btn" id="btn-read-settings" title="Settings" aria-label="Voice and speed settings">⚙️</button>
         </div>
       </div>
 
@@ -1383,7 +1383,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
       <div class="listening-badge" id="listening-badge" style="display:none;"></div>
       <button class="btn-main btn-outline" id="btn-new" style="display:none;">🏠 Back Home</button>
-      <button class="btn-main btn-green" id="btn-finished-reading" style="display:none;margin-top:10px;font-size:1.15rem;padding:16px;">✅ I Finished Reading!</button>
+      <button class="btn-main btn-green" id="btn-finished-reading" aria-label="I finished reading" style="display:none;margin-top:10px;font-size:1.15rem;padding:16px;">✅ I Finished Reading!</button>
     </div>
   </div>
 
@@ -1391,10 +1391,10 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-solo-complete">
     <div class="card" style="text-align:center;overflow:hidden;position:relative;">
       <!-- Confetti canvas -->
-      <canvas id="confetti-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
+      <canvas id="confetti-canvas" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
       <div style="position:relative;z-index:2;">
         <!-- Bookie celebrating -->
-        <div id="complete-mascot" style="margin:0 auto 8px;">
+        <div id="complete-mascot" aria-hidden="true" style="margin:0 auto 8px;">
           <svg viewBox="0 0 100 90" width="100" height="90" style="animation:mascotWiggle 1.5s ease-in-out infinite;">
             <ellipse cx="50" cy="55" rx="28" ry="30" fill="#FECA57"/>
             <ellipse cx="50" cy="62" rx="18" ry="15" fill="#FFF9E6"/>
@@ -1415,14 +1415,14 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="card-title" id="solo-complete-title" style="font-size:1.6rem;margin-bottom:4px;">⭐ Great Reading!</div>
         <div class="encouragement" id="solo-complete-msg" style="margin-bottom:8px;"></div>
         <!-- Reread progress dots -->
-        <div id="reread-dots" style="display:flex;justify-content:center;gap:10px;margin:12px 0 18px;">
-          <div class="reread-dot" id="dot-1">📖</div>
-          <div class="reread-dot" id="dot-2" style="opacity:0.25;">📖</div>
-          <div class="reread-dot" id="dot-3" style="opacity:0.25;">📖</div>
+        <div id="reread-dots" role="status" aria-label="Reading progress" style="display:flex;justify-content:center;gap:10px;margin:12px 0 18px;">
+          <div class="reread-dot" id="dot-1" aria-hidden="true">📖</div>
+          <div class="reread-dot" id="dot-2" aria-hidden="true" style="opacity:0.25;">📖</div>
+          <div class="reread-dot" id="dot-3" aria-hidden="true" style="opacity:0.25;">📖</div>
         </div>
-        <button class="btn-main btn-green" id="btn-solo-retry" style="font-size:1.2rem;padding:16px;">▶ Read Again</button>
-        <button class="btn-main btn-purple" id="btn-solo-wordbank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
-        <button class="btn-main btn-outline" id="btn-solo-new" style="margin-top:10px;">📚 New Story</button>
+        <button class="btn-main btn-green" id="btn-solo-retry" aria-label="Read this story again" style="font-size:1.2rem;padding:16px;">▶ Read Again</button>
+        <button class="btn-main btn-purple" id="btn-solo-wordbank" aria-label="Review my Word Bank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
+        <button class="btn-main btn-outline" id="btn-solo-new" aria-label="Start a new story" style="margin-top:10px;">📚 New Story</button>
       </div>
     </div>
   </div>
@@ -1514,7 +1514,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="spell-practice-bar" style="width:0%"></div></div>
       </div>
       <div class="spell-practice-prompt">
-        <div class="spell-practice-hear" id="spell-practice-hear" title="Tap to hear the word">🔊</div>
+        <div class="spell-practice-hear" id="spell-practice-hear" title="Tap to hear the word" role="button" aria-label="Hear the spelling word">🔊</div>
         <div class="spell-practice-hint" id="spell-practice-hint">Tap the speaker to hear the word, then pick the right spelling!</div>
       </div>
       <!-- Multiple choice area -->
@@ -1522,7 +1522,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Fill-in-the-blank area -->
       <div class="spell-fill-container" id="spell-fill-area" style="display:none;">
         <div class="spell-fill-display" id="spell-fill-display"></div>
-        <input type="text" class="spell-fill-input" id="spell-fill-input" placeholder="Type the missing letters..." autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input type="text" class="spell-fill-input" id="spell-fill-input" placeholder="Type the missing letters..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the missing letters">
         <div class="spell-fill-submit">
           <button class="btn-main btn-green" id="btn-spell-fill-check" style="font-size:1rem;width:auto;padding:12px 30px;">Check ✓</button>
         </div>
@@ -1567,11 +1567,11 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="quiz-progress-bar" style="width:0%"></div></div>
       </div>
       <div class="spell-practice-prompt">
-        <div class="spell-practice-hear" id="quiz-hear" title="Tap to hear the word again">🔊</div>
+        <div class="spell-practice-hear" id="quiz-hear" title="Tap to hear the word again" role="button" aria-label="Hear the spelling word again">🔊</div>
         <div class="spell-practice-hint" id="quiz-hint">Listen to the word, then spell it!</div>
       </div>
       <div class="quiz-input-wrap">
-        <input type="text" class="quiz-input" id="quiz-input" placeholder="Type the word..." autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input type="text" class="quiz-input" id="quiz-input" placeholder="Type the word..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the spelling word">
         <div class="quiz-correction" id="quiz-correction" style="display:none;"></div>
       </div>
       <div class="quiz-btn-row">
@@ -1619,23 +1619,23 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Choose where your reading passage comes from:</p>
 
       <!-- AI Generated -->
-      <button class="kid-action-btn" id="btn-timed-ai" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 6px 18px rgba(255,107,53,0.3);margin-bottom:12px;">
-        <div class="kid-action-icon">✨</div>
+      <button class="kid-action-btn" id="btn-timed-ai" aria-label="Generate a reading passage for me" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 6px 18px rgba(255,107,53,0.3);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">✨</div>
         <div class="kid-action-label">Make Me a Passage</div>
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">AI creates a 300-word passage at your grade level</p>
 
       <!-- Upload / Photo -->
-      <button class="kid-action-btn" id="btn-timed-scan" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
-        <div class="kid-action-icon">📄</div>
+      <button class="kid-action-btn" id="btn-timed-scan" aria-label="Upload a reading passage" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">📄</div>
         <div class="kid-action-label">Upload a Passage</div>
       </button>
       <input type="file" id="timed-scan-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words for read-aloud</p>
 
       <!-- Paste Text -->
-      <button class="kid-action-btn" id="btn-timed-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
-        <div class="kid-action-icon">📋</div>
+      <button class="kid-action-btn" id="btn-timed-paste" aria-label="Paste a reading passage" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">📋</div>
         <div class="kid-action-label">Paste a Passage</div>
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 250+ words from a document, email, or website</p>
@@ -1664,15 +1664,15 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Choose how to load your reading passage:</p>
 
       <!-- Upload / Photo -->
-      <button class="kid-action-btn" id="btn-own-scan" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
-        <div class="kid-action-icon">📄</div>
+      <button class="kid-action-btn" id="btn-own-scan" aria-label="Upload a document" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">📄</div>
         <div class="kid-action-label">Upload a Document</div>
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words for read-aloud</p>
 
       <!-- Paste Text -->
-      <button class="kid-action-btn" id="btn-own-paste" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
-        <div class="kid-action-icon">📋</div>
+      <button class="kid-action-btn" id="btn-own-paste" aria-label="Paste a reading passage" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">📋</div>
         <div class="kid-action-label">Paste a Passage</div>
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 500 words from a document, email, or website</p>
@@ -1820,8 +1820,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         </div>
 
         <div class="wpm-history" id="wpm-history-section"></div>
-        <button class="btn-main btn-coral" id="btn-wpm-retry" style="font-size:1.1rem;">⏱ Beat My Score!</button>
-        <button class="btn-main btn-green" id="btn-wpm-back-complete" style="margin-top:10px;font-size:1.1rem;">✅ Done</button>
+        <button class="btn-main btn-coral" id="btn-wpm-retry" aria-label="Try to beat my reading score" style="font-size:1.1rem;">⏱ Beat My Score!</button>
+        <button class="btn-main btn-green" id="btn-wpm-back-complete" aria-label="Done with timed reading" style="margin-top:10px;font-size:1.1rem;">✅ Done</button>
       </div>
     </div>
   </div>
@@ -1840,60 +1840,60 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AS</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AT</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
-<div class="parent-bar" id="parent-bar">
-  <button class="parent-bar-btn bar-btn-home" id="btn-go-home">🏠 Home</button>
-  <button class="parent-bar-btn bar-btn-back" id="bar-back" style="display:none;">← Back</button>
-  <button class="parent-bar-btn bar-btn-play" id="bar-play" style="display:none;">▶ Play</button>
-  <button class="parent-bar-btn bar-btn-pause" id="bar-pause" style="display:none;">⏸ Pause</button>
-  <button class="parent-bar-btn bar-btn-stop" id="bar-stop" style="display:none;">⏹ Stop</button>
-  <button class="parent-bar-btn bar-btn-parent" id="btn-bar-settings">👩‍👧 Parent</button>
-</div>
+<nav class="parent-bar" id="parent-bar" role="navigation" aria-label="Main navigation">
+  <button class="parent-bar-btn bar-btn-home" id="btn-go-home" aria-label="Go to home screen">🏠 Home</button>
+  <button class="parent-bar-btn bar-btn-back" id="bar-back" aria-label="Go back" style="display:none;">← Back</button>
+  <button class="parent-bar-btn bar-btn-play" id="bar-play" aria-label="Play audio" style="display:none;">▶ Play</button>
+  <button class="parent-bar-btn bar-btn-pause" id="bar-pause" aria-label="Pause audio" style="display:none;">⏸ Pause</button>
+  <button class="parent-bar-btn bar-btn-stop" id="bar-stop" aria-label="Stop audio" style="display:none;">⏹ Stop</button>
+  <button class="parent-bar-btn bar-btn-parent" id="btn-bar-settings" aria-label="Parent menu">👩‍👧 Parent</button>
+</nav>
 
 <!-- Word saved toast -->
-<div class="word-toast" id="word-toast">💾 Word saved!</div>
+<div class="word-toast" id="word-toast" role="status" aria-live="polite">💾 Word saved!</div>
 
 <!-- Dictionary popup -->
-<div class="dict-overlay" id="dict-overlay" style="display:none;">
+<div class="dict-overlay" id="dict-overlay" role="dialog" aria-label="Word definition" aria-modal="true" style="display:none;">
   <div class="dict-popup">
     <div class="dict-word" id="dict-word"></div>
-    <div class="dict-definition" id="dict-definition"></div>
-    <button class="dict-speaker-btn" id="dict-hear-btn">🔊 Hear it again</button>
-    <button class="dict-close-btn" id="dict-close-btn">✅ Got it!</button>
+    <div class="dict-definition" id="dict-definition" role="status" aria-live="polite"></div>
+    <button class="dict-speaker-btn" id="dict-hear-btn" aria-label="Hear the word again">🔊 Hear it again</button>
+    <button class="dict-close-btn" id="dict-close-btn" aria-label="Close definition">✅ Got it!</button>
   </div>
 </div>
 
 <!-- SCREEN: Parent PIN -->
-<div class="screen" id="screen-pin" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+<div class="screen" id="screen-pin" role="dialog" aria-label="Parent PIN entry" aria-modal="true" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
   <div style="width:100%;max-width:380px;padding:20px;">
     <div class="card">
       <div class="card-title" style="text-align:center;">👤 Parent Access</div>
       <p style="text-align:center;color:var(--muted);font-weight:700;margin-bottom:16px;">Enter your 4-digit PIN</p>
-      <div class="pin-display">
+      <div class="pin-display" role="status" aria-label="PIN digits entered" aria-live="polite">
         <div class="pin-dot" id="pd0"></div>
         <div class="pin-dot" id="pd1"></div>
         <div class="pin-dot" id="pd2"></div>
         <div class="pin-dot" id="pd3"></div>
       </div>
-      <div class="pin-error" id="pin-error"></div>
-      <div class="pin-keypad" style="margin-top:16px;">
-        <button class="pin-key" data-k="1">1</button>
-        <button class="pin-key" data-k="2">2</button>
-        <button class="pin-key" data-k="3">3</button>
-        <button class="pin-key" data-k="4">4</button>
-        <button class="pin-key" data-k="5">5</button>
-        <button class="pin-key" data-k="6">6</button>
-        <button class="pin-key" data-k="7">7</button>
-        <button class="pin-key" data-k="8">8</button>
-        <button class="pin-key" data-k="9">9</button>
-        <button class="pin-key del" data-k="clear">✕</button>
-        <button class="pin-key" data-k="0">0</button>
-        <button class="pin-key del" data-k="del">⌫</button>
+      <div class="pin-error" id="pin-error" role="alert" aria-live="assertive"></div>
+      <div class="pin-keypad" role="group" aria-label="PIN keypad" style="margin-top:16px;">
+        <button class="pin-key" data-k="1" aria-label="1">1</button>
+        <button class="pin-key" data-k="2" aria-label="2">2</button>
+        <button class="pin-key" data-k="3" aria-label="3">3</button>
+        <button class="pin-key" data-k="4" aria-label="4">4</button>
+        <button class="pin-key" data-k="5" aria-label="5">5</button>
+        <button class="pin-key" data-k="6" aria-label="6">6</button>
+        <button class="pin-key" data-k="7" aria-label="7">7</button>
+        <button class="pin-key" data-k="8" aria-label="8">8</button>
+        <button class="pin-key" data-k="9" aria-label="9">9</button>
+        <button class="pin-key del" data-k="clear" aria-label="Clear all digits">✕</button>
+        <button class="pin-key" data-k="0" aria-label="0">0</button>
+        <button class="pin-key del" data-k="del" aria-label="Delete last digit">⌫</button>
       </div>
-      <button class="btn-main btn-outline" id="btn-pin-cancel" style="margin-top:14px;">Cancel</button>
+      <button class="btn-main btn-outline" id="btn-pin-cancel" aria-label="Cancel PIN entry" style="margin-top:14px;">Cancel</button>
     </div>
   </div>
 </div>
@@ -1903,7 +1903,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="app">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;">
       <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);">👤 Parent Dashboard</div>
-      <button class="btn-main btn-outline" id="btn-parent-done" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
+      <button class="btn-main btn-outline" id="btn-parent-done" aria-label="Close parent dashboard" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
     </div>
 
     <!-- This Week -->
@@ -6909,16 +6909,16 @@ document.addEventListener('keydown', (e) => {
 
 </script>
 <!-- Global Settings Overlay (accessible from any screen) -->
-<div id="global-settings-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center;">
+<div id="global-settings-overlay" role="dialog" aria-label="Parent menu" aria-modal="true" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center;">
   <div style="background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px 30px;width:100%;max-width:480px;box-shadow:0 -4px 30px rgba(0,0,0,0.15);">
     <div style="text-align:center;margin-bottom:14px;">
-      <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 12px;"></div>
+      <div aria-hidden="true" style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 12px;"></div>
       <div class="card-title" style="font-size:1.1rem;">👩‍👧 Parent Menu</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;">
-      <button class="btn-main" id="btn-global-parent" style="font-size:1rem;background:linear-gradient(135deg,#9B59B6,#8E44AD);box-shadow:0 4px 14px rgba(142,68,173,0.3);">👤 Parent Dashboard</button>
-      <button class="btn-main" id="btn-global-help" style="font-size:1rem;background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 4px 14px rgba(46,134,222,0.3);">❓ Help & Tutorial</button>
-      <button class="btn-main btn-outline" id="btn-global-settings-close" style="font-size:0.95rem;margin-top:4px;">✕ Close</button>
+      <button class="btn-main" id="btn-global-parent" aria-label="Open Parent Dashboard" style="font-size:1rem;background:linear-gradient(135deg,#9B59B6,#8E44AD);box-shadow:0 4px 14px rgba(142,68,173,0.3);">👤 Parent Dashboard</button>
+      <button class="btn-main" id="btn-global-help" aria-label="Open help and tutorial" style="font-size:1rem;background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 4px 14px rgba(46,134,222,0.3);">❓ Help & Tutorial</button>
+      <button class="btn-main btn-outline" id="btn-global-settings-close" aria-label="Close parent menu" style="font-size:0.95rem;margin-top:4px;">✕ Close</button>
     </div>
   </div>
 </div>
