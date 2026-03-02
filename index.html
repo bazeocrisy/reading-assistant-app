@@ -610,13 +610,7 @@ body.bedtime .btn-rm-close { background: #252540; border-color: #3a3a5c !importa
 body.bedtime .btn-rm-listen { background: #8a6a3a; }
 
 /* ── Floating Play/Pause Button (both modes) ── */
-.float-tts-btn { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); z-index: 250; padding: 14px 28px; border-radius: 50px; border: none; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(255,107,53,0.35); transition: all 0.2s; display: none; }
-.float-tts-btn:active { transform: translateX(-50%) scale(0.95); }
-.float-tts-btn.playing { background: var(--coral); color: #fff; }
-.float-tts-btn.paused { background: var(--green); color: #fff; }
-.float-tts-btn.loading { background: var(--muted); color: #fff; pointer-events: none; }
-body.bedtime .float-tts-btn.playing { background: #8a4a4a; }
-body.bedtime .float-tts-btn.paused { background: #4a8a5a; }
+/* Float TTS button removed — controls now in bottom bar */
 
 @media (max-width: 480px) {
   .logo { font-size: 2.2rem; }
@@ -926,7 +920,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AD</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1362,6 +1356,10 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           </div>
         </div>
         <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:10px 16px;font-size:0.88rem;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">📖 Reading Mode</button>
+        <div style="border-top:2px solid var(--border);margin-top:12px;padding-top:12px;display:flex;gap:8px;">
+          <button class="btn-main btn-outline" id="btn-open-parent" style="flex:1;margin:0;padding:10px 12px;font-size:0.85rem;">👤 Parent</button>
+          <button class="btn-main btn-outline" id="btn-show-welcome" style="flex:1;margin:0;padding:10px 12px;font-size:0.85rem;">❓ Help</button>
+        </div>
       </div>
 
       <div id="story-info-bar" style="text-align:center;font-size:0.78rem;font-weight:800;color:var(--muted);margin:8px 0 4px;display:none;">
@@ -1834,14 +1832,19 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <div class="parent-bar" id="parent-bar">
+  <!-- Default mode: Home + Settings -->
   <button class="parent-bar-btn" id="btn-go-home" style="background:var(--green);color:#fff;border-color:var(--green);">🏠 Home</button>
-  <button class="parent-bar-btn" id="btn-open-parent">👤 Parent</button>
-  <button class="parent-bar-btn" id="btn-show-welcome">❓ Help</button>
+  <!-- Reading mode buttons (hidden by default) -->
+  <button class="parent-bar-btn" id="bar-play" style="display:none;background:var(--green);color:#fff;border-color:var(--green);">▶ Play</button>
+  <button class="parent-bar-btn" id="bar-pause" style="display:none;background:var(--coral);color:#fff;border-color:var(--coral);">⏸ Pause</button>
+  <button class="parent-bar-btn" id="bar-stop" style="display:none;background:var(--muted);color:#fff;border-color:var(--muted);">⏹ Stop</button>
+  <!-- Settings always visible -->
+  <button class="parent-bar-btn" id="btn-bar-settings" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);color:#fff;border-color:#2E86DE;">⚙️ Settings</button>
 </div>
 
 <!-- Word saved toast -->
@@ -6641,53 +6644,114 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ── Floating Play/Pause Button (works in both modes) ────
-const floatTTSBtn = document.createElement('button');
-floatTTSBtn.className = 'float-tts-btn';
-floatTTSBtn.id = 'float-tts-btn';
-floatTTSBtn.textContent = '⏸ Pause';
-document.body.appendChild(floatTTSBtn);
+// ── Contextual Bottom Bar ────────────────────────────────
+// Reading screen: Home | Play | Pause | Stop | Settings
+// All other screens: Home | Settings
 
-floatTTSBtn.addEventListener('click', () => {
-  if (ttsState === 'playing') {
+function updateBottomBar() {
+  const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
+  const barPlay = document.getElementById('bar-play');
+  const barPause = document.getElementById('bar-pause');
+  const barStop = document.getElementById('bar-stop');
+
+  if (isReadScreen) {
+    barPlay.style.display = '';
+    barPause.style.display = '';
+    barStop.style.display = '';
+    // Update states based on TTS
+    if (ttsState === 'playing') {
+      barPlay.style.display = 'none';
+      barPause.style.display = '';
+    } else if (ttsState === 'paused') {
+      barPlay.textContent = '▶ Resume';
+      barPlay.style.display = '';
+      barPause.style.display = 'none';
+    } else {
+      barPlay.textContent = '▶ Play';
+      barPlay.style.display = '';
+      barPause.style.display = 'none';
+      barStop.style.opacity = '0.4';
+      barStop.style.pointerEvents = 'none';
+    }
+    if (ttsState === 'playing' || ttsState === 'paused') {
+      barStop.style.opacity = '1';
+      barStop.style.pointerEvents = 'auto';
+    }
+  } else {
+    barPlay.style.display = 'none';
+    barPause.style.display = 'none';
+    barStop.style.display = 'none';
+  }
+}
+
+// Poll to keep bar in sync with TTS state
+setInterval(updateBottomBar, 200);
+
+// Bar button handlers
+document.getElementById('bar-play').addEventListener('click', () => {
+  if (ttsState === 'paused') {
     const pauseBtn = document.getElementById('btn-pause');
-    if (pauseBtn && !pauseBtn.disabled) pauseBtn.click();
-  } else if (ttsState === 'paused') {
-    // Pause button toggles to resume, play button is disabled during pause
-    const pauseBtn = document.getElementById('btn-pause');
-    if (pauseBtn) pauseBtn.click();
+    if (pauseBtn) pauseBtn.click(); // toggles resume
+  } else {
+    const playBtn = document.getElementById('btn-play');
+    if (playBtn && !playBtn.disabled) playBtn.click();
   }
 });
 
-// Poll TTS state to show/hide and update the floating button
-let lastFloatState = '';
-setInterval(() => {
-  const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
-  const isReadingMode = readingOverlay.classList.contains('active');
-  const shouldShow = (isReadScreen || isReadingMode) && (ttsState === 'playing' || ttsState === 'paused');
+document.getElementById('bar-pause').addEventListener('click', () => {
+  const pauseBtn = document.getElementById('btn-pause');
+  if (pauseBtn && !pauseBtn.disabled) pauseBtn.click();
+});
 
-  if (shouldShow) {
-    floatTTSBtn.style.display = 'block';
-    if (ttsState !== lastFloatState) {
-      lastFloatState = ttsState;
-      if (ttsState === 'playing') {
-        floatTTSBtn.textContent = '⏸ Pause';
-        floatTTSBtn.className = 'float-tts-btn playing';
-        // Also sync reading mode button
-        const rmBtn = document.getElementById('btn-rm-listen');
-        if (rmBtn) rmBtn.textContent = '⏸ Pause';
-      } else if (ttsState === 'paused') {
-        floatTTSBtn.textContent = '▶ Play';
-        floatTTSBtn.className = 'float-tts-btn paused';
-        const rmBtn = document.getElementById('btn-rm-listen');
-        if (rmBtn) rmBtn.textContent = '🔊 Listen';
-      }
+document.getElementById('bar-stop').addEventListener('click', () => {
+  const stopBtn = document.getElementById('btn-stop-tts');
+  if (stopBtn && !stopBtn.disabled) stopBtn.click();
+});
+
+// Settings button — on reading screen opens the drawer, otherwise opens global overlay
+document.getElementById('btn-bar-settings').addEventListener('click', () => {
+  const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
+  if (isReadScreen) {
+    // Toggle the reading settings drawer
+    const drawer = document.getElementById('read-settings-drawer');
+    drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+    // Scroll to it
+    if (drawer.style.display === 'block') {
+      drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   } else {
-    floatTTSBtn.style.display = 'none';
-    lastFloatState = '';
+    // Open global settings overlay
+    const overlay = document.getElementById('global-settings-overlay');
+    overlay.style.display = 'flex';
   }
-}, 200);
+});
+
+// Global settings overlay handlers
+document.getElementById('btn-global-parent').addEventListener('click', () => {
+  document.getElementById('global-settings-overlay').style.display = 'none';
+  // Trigger PIN screen
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('screen-pin').style.display = 'flex';
+});
+
+document.getElementById('btn-global-help').addEventListener('click', () => {
+  document.getElementById('global-settings-overlay').style.display = 'none';
+  // Show welcome screens
+  show('screen-welcome-1');
+});
+
+document.getElementById('btn-global-settings-close').addEventListener('click', () => {
+  document.getElementById('global-settings-overlay').style.display = 'none';
+});
+
+// Close overlay when tapping backdrop
+document.getElementById('global-settings-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.style.display = 'none';
+  }
+});
 
 // ── Home Button ──────────────────────────────────────────
 document.getElementById('btn-go-home').addEventListener('click', () => {
@@ -6779,5 +6843,19 @@ document.addEventListener('keydown', (e) => {
 });
 
 </script>
+<!-- Global Settings Overlay (accessible from any screen) -->
+<div id="global-settings-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center;">
+  <div style="background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px 30px;width:100%;max-width:480px;box-shadow:0 -4px 30px rgba(0,0,0,0.15);">
+    <div style="text-align:center;margin-bottom:14px;">
+      <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 12px;"></div>
+      <div class="card-title" style="font-size:1.1rem;">⚙️ Settings</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="btn-main" id="btn-global-parent" style="font-size:1rem;background:linear-gradient(135deg,#9B59B6,#8E44AD);box-shadow:0 4px 14px rgba(142,68,173,0.3);">👤 Parent Dashboard</button>
+      <button class="btn-main" id="btn-global-help" style="font-size:1rem;background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 4px 14px rgba(46,134,222,0.3);">❓ Help & Tutorial</button>
+      <button class="btn-main btn-outline" id="btn-global-settings-close" style="font-size:0.95rem;margin-top:4px;">✕ Close</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
