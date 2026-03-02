@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ReadUp! — Transforming Youth Inc.</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@400;500;600;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -26,6 +26,7 @@
     --green: #5CD85A;
     --coral: #FF6B6B;
     --ocean: #54A0FF;
+    --orange: #FF9F43;
     --shadow: 0 4px 24px rgba(255,107,53,0.08);
     --r: 22px;
   }
@@ -307,16 +308,23 @@ header { position: relative; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── Universal Bottom Nav Bar ── */
-.parent-bar { position: fixed; bottom: 10px; left: 8px; right: 8px; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; background: rgba(255,255,255,0.97); border: 1.5px solid var(--border); border-radius: 14px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
+.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; padding-bottom: max(7px, env(safe-area-inset-bottom, 7px)); background: rgba(255,255,255,0.97); border-top: 1.5px solid var(--border); border-radius: 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
 .parent-bar-btn { border: 2px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
-body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
+/* Bar button color classes — explicit so showBarBtn can't lose them */
+.bar-btn-home { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
+.bar-btn-back { background: var(--orange) !important; color: #fff !important; border-color: var(--orange) !important; }
+.bar-btn-play { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
+.bar-btn-pause { background: var(--coral) !important; color: #fff !important; border-color: var(--coral) !important; }
+.bar-btn-stop { background: var(--muted) !important; color: #fff !important; border-color: var(--muted) !important; }
+.bar-btn-parent { background: #54A0FF !important; color: #fff !important; border-color: #2E86DE !important; }
+body.bedtime .parent-bar { background: rgba(26,26,46,0.97); border-top-color: #3a3a5c; box-shadow: 0 -2px 20px rgba(0,0,0,0.3); }
 body.bedtime .parent-bar-btn { background: #3a2a1a; border-color: #3a3a5c; color: #d4a76a; }
 body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a; color: #fff; }
 /* Content clears the fixed bar */
-.screen > .card:last-child { margin-bottom: 56px; }
-.screen { padding-bottom: 56px; }
+.screen > .card:last-child { margin-bottom: 62px; }
+.screen { padding-bottom: 62px; }
 
 /* ── Spelling Study Mode (Fullscreen) ── */
 .spell-study-overlay { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; display: none; animation: fadeIn 0.3s ease; }
@@ -920,7 +928,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD AS</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1832,17 +1840,17 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD AS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <div class="parent-bar" id="parent-bar">
-  <button class="parent-bar-btn" id="btn-go-home" style="background:var(--green);color:#fff;border-color:var(--green);">🏠 Home</button>
-  <button class="parent-bar-btn" id="bar-back" style="display:none;background:var(--orange);color:#fff;border-color:var(--orange);">← Back</button>
-  <button class="parent-bar-btn" id="bar-play" style="display:none;background:var(--green);color:#fff;border-color:var(--green);">▶ Play</button>
-  <button class="parent-bar-btn" id="bar-pause" style="display:none;background:var(--coral);color:#fff;border-color:var(--coral);">⏸ Pause</button>
-  <button class="parent-bar-btn" id="bar-stop" style="display:none;background:var(--muted);color:#fff;border-color:var(--muted);">⏹ Stop</button>
-  <button class="parent-bar-btn" id="btn-bar-settings" style="background:#54A0FF;color:#fff;border-color:#2E86DE;">👩‍👧 Parent</button>
+  <button class="parent-bar-btn bar-btn-home" id="btn-go-home">🏠 Home</button>
+  <button class="parent-bar-btn bar-btn-back" id="bar-back" style="display:none;">← Back</button>
+  <button class="parent-bar-btn bar-btn-play" id="bar-play" style="display:none;">▶ Play</button>
+  <button class="parent-bar-btn bar-btn-pause" id="bar-pause" style="display:none;">⏸ Pause</button>
+  <button class="parent-bar-btn bar-btn-stop" id="bar-stop" style="display:none;">⏹ Stop</button>
+  <button class="parent-bar-btn bar-btn-parent" id="btn-bar-settings">👩‍👧 Parent</button>
 </div>
 
 <!-- Word saved toast -->
