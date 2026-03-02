@@ -2261,6 +2261,7 @@ function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'instant' });
+  if (id === 'screen-pick') updateHomeStats();
 }
 // Bug 6 fix: robust fallback chain handles missing grade levels
 function getStory(cat, grade, wordTarget) {
@@ -2947,20 +2948,39 @@ document.getElementById('btn-more-topics').addEventListener('click', () => {
 // ── Zero-state: hide stats bar if no data ────────────────
 function updateHomeStats() {
   try {
-    const data = JSON.parse(localStorage.getItem('readup_dash') || '{}');
-    const allStories = data.stories ? Object.keys(data.stories).length : 0;
-    const totalReads = data.stories ? Object.values(data.stories).reduce((s,v) => s + (v.reads||0), 0) : 0;
-    const wordCount = data.wordBank ? Object.keys(data.wordBank).length : 0;
+    const data = getData();
+    const storyCount = data.stories ? data.stories.length : 0;
+    const wordCount = data.wordBank ? data.wordBank.length : 0;
+
+    // Calculate streak: consecutive days with activity ending today or yesterday
+    let streak = 0;
+    if (data.weeklyLog && data.weeklyLog.length > 0) {
+      const logDates = new Set(data.weeklyLog.map(e => e.date));
+      const d = new Date(); d.setHours(0,0,0,0);
+      // Check if today or yesterday has activity (allow streak to survive until end of day)
+      const todayStr = d.toISOString().slice(0,10);
+      const yest = new Date(d); yest.setDate(yest.getDate() - 1);
+      const yestStr = yest.toISOString().slice(0,10);
+      let checkDate = logDates.has(todayStr) ? new Date(d) : (logDates.has(yestStr) ? new Date(yest) : null);
+      if (checkDate) {
+        while (logDates.has(checkDate.toISOString().slice(0,10))) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        }
+      }
+    }
+
     const el1 = document.getElementById('home-stories-count');
     const el2 = document.getElementById('home-words-count');
+    const el3 = document.getElementById('home-streak');
     const bar = document.getElementById('home-stats-bar');
-    if (allStories === 0 && wordCount === 0) {
-      // Hide stats bar, let Bookie speak instead
+    if (storyCount === 0 && wordCount === 0) {
       if (bar) bar.style.display = 'none';
     } else {
       if (bar) bar.style.display = 'flex';
-      if (el1) el1.textContent = allStories + (allStories === 1 ? ' story' : ' stories');
+      if (el1) el1.textContent = storyCount + (storyCount === 1 ? ' story' : ' stories');
       if (el2) el2.textContent = wordCount + (wordCount === 1 ? ' word' : ' words');
+      if (el3) el3.textContent = streak + (streak === 1 ? ' day' : ' days');
     }
   } catch(e) {}
 }
