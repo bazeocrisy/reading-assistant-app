@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BU</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BV</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2045,7 +2045,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BU</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BV</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3927,7 +3927,17 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
   const room = snap.val();
   S.roomCode = code; S.roomRef = ref(db, `rooms/${code}`);
   // Pick up whatever is in the room already (story may or may not be set yet)
-  if (room.story) { S.story = room.story; S.storyTitle = room.title; S.grade = room.grade; S.wordTarget = room.wordTarget; }
+  if (room.contentType === 'spelling' && room.spellingList) {
+    S._contentReady = true;
+    S._contentType = 'spelling';
+    S._spellingList = room.spellingList;
+    S.grade = room.grade;
+  } else if (room.story) {
+    S._contentReady = true;
+    S._contentType = 'passage';
+    S.story = room.story; S.storyTitle = room.title; S.grade = room.grade; S.wordTarget = room.wordTarget;
+    S.isAIStory = true;
+  }
   if (room.voiceGender) S.voiceGender = room.voiceGender;
   if (room.speed) S.speed = room.speed;
   S.myRole = 'guest'; S.isRace = true;
@@ -3941,6 +3951,8 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
   const unsub = onValue(ref(db, `rooms/${code}`), snap => {
     const roomData = snap.val();
     if (!roomData) return;
+    console.log('👂 Guest room update:', JSON.stringify({status: roomData.status, hasStory: !!roomData.story, contentType: roomData.contentType, guestJoined: roomData.guestJoined}));
+    console.log('👂 Guest state:', JSON.stringify({story: !!S.story, contentReady: !!S._contentReady, countdownStarted}));
 
     // Pick up story or spelling words as soon as host sets them
     if (roomData.contentType === 'spelling' && roomData.spellingList && !S._contentReady) {
@@ -3991,6 +4003,27 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
     }
   });
   S.unsubscribers.push(unsub);
+
+  // Safety fallback: if guest has content after 15s but Ready button never appeared,
+  // force-show it so the guest isn't stuck forever
+  setTimeout(() => {
+    if (!countdownStarted && (S._contentReady || S.story)) {
+      console.warn('⏰ Guest fallback: 15s with content but no countdown — forcing Ready button');
+      const readyBtn = document.getElementById('btn-guest-ready');
+      const spinner = document.getElementById('guest-spinner');
+      if (readyBtn && readyBtn.style.display === 'none') {
+        readyBtn.style.display = 'block';
+        if (spinner) spinner.style.display = 'none';
+        const waitMsg = document.getElementById('guest-wait-msg');
+        if (waitMsg) waitMsg.textContent = '📖 Story is ready!';
+        readyBtn.addEventListener('click', () => {
+          countdownStarted = true;
+          unsub();
+          startCountdown();
+        }, { once: true });
+      }
+    }
+  }, 15000);
 });
 
 // ── Clean AI story text once at load time ─────────────────
@@ -4118,6 +4151,7 @@ async function createRoom() {
   S._guestJoined = false;
   S._storyReady = false;
   S._tryStartCountdown = () => {
+    console.log('🏠 Host _tryStartCountdown:', JSON.stringify({guestJoined: S._guestJoined, storyReady: S._storyReady}));
     if (S._guestJoined && S._storyReady) {
       document.getElementById('slot-guest').classList.add('joined');
       document.getElementById('slot-guest').querySelector('.slot-name').textContent = 'Partner';
@@ -6949,7 +6983,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BU',
+      appBuild: 'BV',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
