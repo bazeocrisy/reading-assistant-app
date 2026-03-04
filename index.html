@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BS</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1347,107 +1347,135 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
-  <!-- SCREEN: Waiting host — room code + content picker -->
-  <div class="screen" id="screen-waiting-host">
-    <div class="card">
-      <!-- Room info section (hidden when in sub-picker wizard steps) -->
-      <div id="host-room-info">
-        <div style="font-size:2.5rem;text-align:center;margin-bottom:4px;">🏠</div>
-        <div class="card-title" style="font-size:1.3rem;">Your Reading Room</div>
-        <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:6px;">Share this code with your reading partner:</p>
-        <div class="room-code-display">
-          <div class="room-code-number" id="display-room-code">----</div>
-          <div class="room-code-label">Room Code</div>
-        </div>
-        <div class="player-slots">
-          <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Ready</div></div>
-          <div class="player-slot" id="slot-guest"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">Waiting...</div></div>
-        </div>
+  <!-- SCREEN: Together Step 1 — Your Room (room code + partner status) -->
+  <div class="screen" id="screen-together-room">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:4px;">🏠</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Your Reading Room!</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.92rem;margin-bottom:10px;">Tell your reading partner this code:</p>
+      <div class="room-code-display">
+        <div class="room-code-number" id="display-room-code">----</div>
+        <div class="room-code-label">Room Code</div>
       </div>
+      <div class="player-slots">
+        <div class="player-slot me"><span class="slot-icon">🧑</span><div class="slot-name">You</div><div class="slot-status">✓ Ready</div></div>
+        <div class="player-slot" id="slot-guest"><span class="slot-icon">👤</span><div class="slot-name">Partner</div><div class="slot-status">Waiting...</div></div>
+      </div>
+      <button class="wiz-action-btn" id="btn-goto-pick-content" style="background:linear-gradient(135deg,#5CD85A,#27AE60);margin-top:18px;justify-content:center;">
+        <span style="font-size:1.6rem;">📖</span>
+        <span style="font-size:1.15rem;font-weight:900;">Pick What to Read!</span>
+      </button>
+      <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:14px;font-size:0.9rem;">Cancel</button>
+    </div>
+  </div>
 
-      <!-- Compact room code badge (shown during wizard sub-steps) -->
-      <div id="host-code-badge" style="display:none;text-align:center;margin-bottom:12px;">
+  <!-- SCREEN: Together Step 2 — What should we read? -->
+  <div class="screen" id="screen-together-pick">
+    <div class="card" style="text-align:center;">
+      <div id="host-code-badge" style="margin-bottom:14px;">
         <span style="background:var(--section);border-radius:12px;padding:6px 16px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.85rem;color:var(--muted);">🏠 Room: <span id="badge-room-code" style="color:var(--purple);font-size:1rem;">----</span></span>
       </div>
-
-      <!-- Content picker — Step: What should we read? -->
-      <div id="host-content-picker" style="margin-top:18px;border-top:2px solid #eee;padding-top:14px;">
-        <div style="text-align:center;font-weight:900;color:var(--ink);margin-bottom:14px;font-size:1.2rem;">What should we read?</div>
-
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <button class="wiz-action-btn" id="btn-pick-ai" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);">
-            <span style="font-size:1.6rem;">✨</span>
-            <span style="font-size:1.05rem;font-weight:900;">AI Story</span>
-          </button>
-
-          <button class="wiz-action-btn" id="btn-pick-paste" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
-            <span style="font-size:1.6rem;">📸</span>
-            <span style="font-size:1.05rem;font-weight:900;">Upload a Passage</span>
-          </button>
-
-          <button class="wiz-action-btn" id="btn-pick-spelling" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">
-            <span style="font-size:1.6rem;">🔤</span>
-            <span style="font-size:1.05rem;font-weight:900;">Spelling Words</span>
-          </button>
-        </div>
+      <div style="font-size:2.2rem;margin-bottom:4px;">📖</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">What should we read?</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:18px;">Tap to pick!</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="wiz-action-btn" id="btn-pick-ai" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);">
+          <span style="font-size:1.8rem;">✨</span>
+          <div style="text-align:left;">
+            <span style="font-size:1.15rem;font-weight:900;">AI Story</span>
+            <div style="font-size:0.75rem;font-weight:700;opacity:0.9;margin-top:2px;">A brand new story just for you!</div>
+          </div>
+        </button>
+        <button class="wiz-action-btn" id="btn-pick-paste" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
+          <span style="font-size:1.8rem;">📸</span>
+          <div style="text-align:left;">
+            <span style="font-size:1.15rem;font-weight:900;">Upload a Passage</span>
+            <div style="font-size:0.75rem;font-weight:700;opacity:0.9;margin-top:2px;">Take a photo or paste text</div>
+          </div>
+        </button>
+        <button class="wiz-action-btn" id="btn-pick-spelling" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">
+          <span style="font-size:1.8rem;">🔤</span>
+          <div style="text-align:left;">
+            <span style="font-size:1.15rem;font-weight:900;">Spelling Words</span>
+            <div style="font-size:0.75rem;font-weight:700;opacity:0.9;margin-top:2px;">Practice your word list</div>
+          </div>
+        </button>
       </div>
+    </div>
+  </div>
 
-      <!-- AI topic picker (hidden by default) -->
-      <div id="host-ai-picker" style="display:none;">
-        <div style="text-align:center;font-weight:900;color:var(--ink);margin-bottom:12px;font-size:1.2rem;">Pick a Grade</div>
-        <div id="host-grade-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;">
-          <button class="opt-btn host-grade" data-grade="prek" style="font-size:0.9rem;padding:10px 16px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">Pre-K</button>
-          <button class="opt-btn host-grade" data-grade="k" style="font-size:0.9rem;padding:10px 16px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">K</button>
-          <button class="opt-btn host-grade sel-grade" data-grade="1" style="font-size:0.9rem;padding:10px 16px;border-radius:20px;border:3px solid var(--purple);background:var(--purple);color:#fff;cursor:pointer;font-weight:800;">1st</button>
-          <button class="opt-btn host-grade" data-grade="2" style="font-size:0.9rem;padding:10px 16px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">2nd</button>
-          <button class="opt-btn host-grade" data-grade="3" style="font-size:0.9rem;padding:10px 16px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">3rd</button>
-        </div>
-        <div style="text-align:center;font-weight:900;color:var(--ink);margin-bottom:10px;font-size:1.2rem;">Pick a Topic</div>
-        <div id="host-topic-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;">
-          <button class="opt-btn host-topic sel-topic" data-topic="animals" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid var(--green);background:var(--green);color:#fff;cursor:pointer;font-weight:800;">🐾 Animals</button>
-          <button class="opt-btn host-topic" data-topic="space" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">🚀 Space</button>
-          <button class="opt-btn host-topic" data-topic="dinosaurs" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">🦕 Dinos</button>
-          <button class="opt-btn host-topic" data-topic="ocean" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">🌊 Ocean</button>
-          <button class="opt-btn host-topic" data-topic="superheroes" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">🦸 Heroes</button>
-          <button class="opt-btn host-topic" data-topic="sports" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">⚽ Sports</button>
-          <button class="opt-btn host-topic" data-topic="magic" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">🪄 Magic</button>
-          <button class="opt-btn host-topic" data-topic="friends" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">👫 Friends</button>
-          <button class="opt-btn host-topic" data-topic="robots" style="font-size:0.85rem;padding:8px 14px;border-radius:20px;border:3px solid #ddd;background:#fff;cursor:pointer;font-weight:800;">🤖 Robots</button>
-        </div>
-        <button class="btn-main btn-green" id="btn-generate-together" style="font-size:1.1rem;">✨ Generate Story!</button>
-        <button class="btn-main btn-outline" id="btn-back-to-picker" style="margin-top:8px;font-size:0.9rem;">← Back</button>
-        <div id="host-gen-status" style="display:none;text-align:center;margin-top:10px;font-weight:700;color:var(--muted);"></div>
+  <!-- SCREEN: Together Step 3a — AI Story: Pick Grade -->
+  <div class="screen" id="screen-together-ai-grade">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;margin-bottom:4px;">✨</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">What grade are you in?</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:18px;">Tap to pick!</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="wiz-grade-btn host-grade" data-grade="prek" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);"><span style="font-size:1.6rem;">🧸</span><span style="font-size:1.2rem;font-weight:900;">Pre-K</span></button>
+        <button class="wiz-grade-btn host-grade" data-grade="k" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);"><span style="font-size:1.6rem;">🎨</span><span style="font-size:1.2rem;font-weight:900;">Kindergarten</span></button>
+        <button class="wiz-grade-btn host-grade" data-grade="1" style="background:linear-gradient(135deg,#5CD85A,#27AE60);"><span style="font-size:1.6rem;">⭐</span><span style="font-size:1.2rem;font-weight:900;">1st Grade</span></button>
+        <button class="wiz-grade-btn host-grade" data-grade="2" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);"><span style="font-size:1.6rem;">🚀</span><span style="font-size:1.2rem;font-weight:900;">2nd Grade</span></button>
+        <button class="wiz-grade-btn host-grade" data-grade="3" style="background:linear-gradient(135deg,#E74C3C,#C0392B);"><span style="font-size:1.6rem;">🔥</span><span style="font-size:1.2rem;font-weight:900;">3rd Grade</span></button>
       </div>
+    </div>
+  </div>
 
-      <!-- Upload/Paste passage (hidden by default) -->
-      <div id="host-paste-picker" style="display:none;">
-        <div style="text-align:center;font-size:2rem;margin-bottom:4px;">📸</div>
-        <div style="text-align:center;font-weight:900;color:var(--ink);margin-bottom:12px;font-size:1.2rem;">Upload a Reading Passage</div>
-        <input type="file" id="host-passage-file" accept="image/*" style="display:none;">
-        <button class="btn-main btn-purple" id="btn-upload-passage" style="font-size:1rem;margin-bottom:6px;">📷 Take Photo or Upload Image</button>
-        <div id="host-passage-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
-        <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type it in —</div>
-        <textarea id="host-paste-input" rows="4" placeholder="Paste or type a reading passage here..." style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
-        <div style="text-align:right;font-size:0.75rem;color:#7A8A9A;font-weight:700;margin-top:2px;"><span id="paste-word-count">0</span> / 500 words</div>
-        <input id="host-paste-title" type="text" placeholder="Title (optional)" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:8px 10px;font-size:0.9rem;margin-top:6px;box-sizing:border-box;">
-        <button class="btn-main btn-green" id="btn-use-passage" style="font-size:1rem;margin-top:10px;">📖 Use This Passage</button>
-        <button class="btn-main btn-outline" id="btn-back-to-picker-paste" style="margin-top:6px;font-size:0.85rem;">← Back</button>
+  <!-- SCREEN: Together Step 3b — AI Story: Pick Topic -->
+  <div class="screen" id="screen-together-ai-topic">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;margin-bottom:4px;">✨</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">What sounds fun?</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:18px;">Tap a topic!</p>
+      <div class="wiz-topic-grid">
+        <button class="wiz-topic-btn host-topic" data-topic="animals"><span>🐾</span>Animals</button>
+        <button class="wiz-topic-btn host-topic" data-topic="dinosaurs"><span>🦖</span>Dinosaurs</button>
+        <button class="wiz-topic-btn host-topic" data-topic="superheroes"><span>🦸</span>Heroes</button>
+        <button class="wiz-topic-btn host-topic" data-topic="space"><span>🚀</span>Space</button>
+        <button class="wiz-topic-btn host-topic" data-topic="ocean"><span>🌊</span>Ocean</button>
+        <button class="wiz-topic-btn host-topic" data-topic="trucks"><span>🚒</span>Trucks</button>
+        <button class="wiz-topic-btn host-topic" data-topic="magic"><span>🪄</span>Magic</button>
+        <button class="wiz-topic-btn host-topic" data-topic="blackhistory"><span>✊</span>Black History</button>
+        <button class="wiz-topic-btn host-topic" data-topic="princesses"><span>👑</span>Princesses</button>
+        <button class="wiz-topic-btn host-topic" data-topic="sports"><span>🏀</span>Sports</button>
+        <button class="wiz-topic-btn host-topic" data-topic="cooking"><span>🍳</span>Cooking</button>
+        <button class="wiz-topic-btn host-topic" data-topic="friends"><span>🤝</span>Friends</button>
+        <button class="wiz-topic-btn host-topic" data-topic="robots"><span>🤖</span>Robots</button>
+        <button class="wiz-topic-btn host-topic" data-topic="pirates"><span>🏴‍☠️</span>Pirates</button>
+        <button class="wiz-topic-btn host-topic" data-topic="airplanes"><span>✈️</span>Airplanes</button>
       </div>
+      <div id="host-gen-status" style="display:none;text-align:center;margin-top:10px;font-weight:700;color:var(--muted);"></div>
+    </div>
+  </div>
 
-      <!-- Upload/Type spelling words (hidden by default) -->
-      <div id="host-spelling-picker" style="display:none;">
-        <div style="text-align:center;font-size:2rem;margin-bottom:4px;">🔤</div>
-        <div style="text-align:center;font-weight:900;color:var(--ink);margin-bottom:12px;font-size:1.2rem;">Spelling Words</div>
-        <input type="file" id="host-spelling-file" accept="image/*" style="display:none;">
-        <button class="btn-main btn-purple" id="btn-upload-spelling" style="font-size:1rem;margin-bottom:6px;">📷 Take Photo or Upload Image</button>
-        <div id="host-spelling-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
-        <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.8rem;margin:10px 0 6px;">— or type them in —</div>
-        <textarea id="host-spelling-input" rows="3" placeholder="Type spelling words separated by commas&#10;Example: cat, dog, run, jump, happy" style="width:100%;border:2px solid #ddd;border-radius:12px;padding:10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
-        <button class="btn-main btn-green" id="btn-use-spelling" style="font-size:1rem;margin-top:10px;">🔤 Practice These Words</button>
-        <button class="btn-main btn-outline" id="btn-back-to-picker-spell" style="margin-top:6px;font-size:0.85rem;">← Back</button>
-      </div>
+  <!-- SCREEN: Together Step 3c — Upload Passage -->
+  <div class="screen" id="screen-together-upload">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:4px;">📸</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Upload a Reading Passage</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Take a photo or type it in!</p>
+      <input type="file" id="host-passage-file" accept="image/*" style="display:none;">
+      <button class="btn-main btn-purple" id="btn-upload-passage" style="font-size:1.1rem;margin-bottom:8px;">📷 Take Photo or Upload</button>
+      <div id="host-passage-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
+      <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.85rem;margin:12px 0 8px;">— or type it in —</div>
+      <textarea id="host-paste-input" rows="4" placeholder="Paste or type a reading passage here..." style="width:100%;border:2.5px solid var(--border);border-radius:14px;padding:12px;font-size:1rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+      <div style="text-align:right;font-size:0.78rem;color:#7A8A9A;font-weight:700;margin-top:4px;"><span id="paste-word-count">0</span> / 500 words</div>
+      <input id="host-paste-title" type="text" placeholder="Title (optional)" style="width:100%;border:2.5px solid var(--border);border-radius:14px;padding:10px 12px;font-size:1rem;margin-top:8px;box-sizing:border-box;">
+      <button class="btn-main btn-green" id="btn-use-passage" style="font-size:1.1rem;margin-top:12px;">📖 Use This Passage!</button>
+    </div>
+  </div>
 
-      <button class="btn-main btn-outline" id="btn-cancel-host" style="margin-top:14px;">Cancel</button>
+  <!-- SCREEN: Together Step 3d — Spelling Words -->
+  <div class="screen" id="screen-together-spelling">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:4px;">🔤</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Spelling Words</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Take a photo or type your words!</p>
+      <input type="file" id="host-spelling-file" accept="image/*" style="display:none;">
+      <button class="btn-main btn-purple" id="btn-upload-spelling" style="font-size:1.1rem;margin-bottom:8px;">📷 Take Photo or Upload</button>
+      <div id="host-spelling-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
+      <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.85rem;margin:12px 0 8px;">— or type them in —</div>
+      <textarea id="host-spelling-input" rows="3" placeholder="Type spelling words separated by commas&#10;Example: cat, dog, run, jump, happy" style="width:100%;border:2.5px solid var(--border);border-radius:14px;padding:12px;font-size:1rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+      <button class="btn-main btn-green" id="btn-use-spelling" style="font-size:1.1rem;margin-top:12px;">🔤 Practice These Words!</button>
     </div>
   </div>
 
@@ -2017,7 +2045,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3428,48 +3456,48 @@ document.getElementById('btn-together-cancel').addEventListener('click', () => {
 
 document.getElementById('btn-back-join').addEventListener('click', () => show('screen-pick'));
 
-// ── Host content picker for Read Together ─────────────────
-function showHostSubPicker(which) {
-  document.getElementById('host-room-info').style.display = 'none';
-  document.getElementById('host-code-badge').style.display = 'block';
+// ── Host wizard navigation for Read Together ─────────────
+document.getElementById('btn-goto-pick-content').addEventListener('click', () => {
   document.getElementById('badge-room-code').textContent = document.getElementById('display-room-code').textContent;
-  document.getElementById('host-content-picker').style.display = 'none';
-  document.getElementById('host-ai-picker').style.display = which === 'ai' ? 'block' : 'none';
-  document.getElementById('host-paste-picker').style.display = which === 'paste' ? 'block' : 'none';
-  document.getElementById('host-spelling-picker').style.display = which === 'spelling' ? 'block' : 'none';
-}
-function showHostMainPicker() {
-  document.getElementById('host-room-info').style.display = 'block';
-  document.getElementById('host-code-badge').style.display = 'none';
-  document.getElementById('host-content-picker').style.display = 'block';
-  document.getElementById('host-ai-picker').style.display = 'none';
-  document.getElementById('host-paste-picker').style.display = 'none';
-  document.getElementById('host-spelling-picker').style.display = 'none';
-}
+  show('screen-together-pick');
+});
 
-document.getElementById('btn-pick-ai').addEventListener('click', () => showHostSubPicker('ai'));
-document.getElementById('btn-pick-paste').addEventListener('click', () => showHostSubPicker('paste'));
-document.getElementById('btn-pick-spelling').addEventListener('click', () => showHostSubPicker('spelling'));
-document.getElementById('btn-back-to-picker').addEventListener('click', showHostMainPicker);
-document.getElementById('btn-back-to-picker-paste').addEventListener('click', showHostMainPicker);
-document.getElementById('btn-back-to-picker-spell').addEventListener('click', showHostMainPicker);
+document.getElementById('btn-pick-ai').addEventListener('click', () => show('screen-together-ai-grade'));
+document.getElementById('btn-pick-paste').addEventListener('click', () => show('screen-together-upload'));
+document.getElementById('btn-pick-spelling').addEventListener('click', () => show('screen-together-spelling'));
 
-// Grade selector in AI picker
+// Grade selector — tap grade → auto-advance to topic picker
 let hostGrade = '1';
 let hostTopic = 'animals';
-document.querySelectorAll('.host-grade').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.host-grade').forEach(b => {
-    b.style.border = '2px solid #ddd'; b.style.background = '#fff'; b.style.color = '#333';
-  });
-  btn.style.border = '2px solid var(--purple)'; btn.style.background = 'var(--purple)'; btn.style.color = '#fff';
+document.querySelectorAll('#screen-together-ai-grade .host-grade').forEach(btn => btn.addEventListener('click', () => {
   hostGrade = btn.dataset.grade;
+  show('screen-together-ai-topic');
 }));
-document.querySelectorAll('.host-topic').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.host-topic').forEach(b => {
-    b.style.border = '2px solid #ddd'; b.style.background = '#fff'; b.style.color = '#333';
-  });
-  btn.style.border = '2px solid var(--green)'; btn.style.background = 'var(--green)'; btn.style.color = '#fff';
+
+// Topic selector — tap topic → auto-generate story
+document.querySelectorAll('#screen-together-ai-topic .host-topic').forEach(btn => btn.addEventListener('click', async () => {
   hostTopic = btn.dataset.topic;
+  // Disable all topic buttons while generating
+  document.querySelectorAll('#screen-together-ai-topic .host-topic').forEach(b => b.disabled = true);
+  const status = document.getElementById('host-gen-status');
+  status.style.display = 'block';
+  status.textContent = '✨ Writing a story just for you...';
+
+  const GRADE_WORD_TARGETS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
+  const wordTarget = GRADE_WORD_TARGETS[hostGrade] || 100;
+
+  try {
+    const TOPIC_NAMES = { animals:"Animals", space:"Space", dinosaurs:"Dinosaurs", ocean:"Ocean", superheroes:"Superheroes", magic:"Magic", sports:"Sports", cooking:"Cooking", friends:"Friends", confidence:"Self-Confidence", blackhistory:"Black History Heroes", helpers:"Community Helpers", nature:"Nature & Weather", emotions:"Feelings & Emotions", trucks:"Trucks & Vehicles", princesses:"Princesses & Castles", robots:"Robots", pirates:"Pirates", airplanes:"Airplanes & Flying" };
+    const aiText = await generateAIStory(hostGrade, hostTopic, wordTarget);
+    const title = `✨ ${TOPIC_NAMES[hostTopic] || hostTopic} Story`;
+    const cleanedText = cleanStoryText(aiText);
+    status.textContent = '✅ Story ready!';
+    await hostSetStory(title, cleanedText, hostGrade, true);
+  } catch (err) {
+    console.error('AI story generation failed:', err);
+    status.textContent = '⚠️ Could not generate story. Tap a topic to try again!';
+  }
+  document.querySelectorAll('#screen-together-ai-topic .host-topic').forEach(b => b.disabled = false);
 }));
 
 // Push story to Firebase and mark ready
@@ -3495,35 +3523,6 @@ async function hostSetStory(title, body, grade, isAI) {
   S._storyReady = true;
   S._tryStartCountdown();
 }
-
-// Generate AI story button
-document.getElementById('btn-generate-together').addEventListener('click', async () => {
-  const btn = document.getElementById('btn-generate-together');
-  const status = document.getElementById('host-gen-status');
-  btn.disabled = true;
-  btn.textContent = '⏳ Generating...';
-  status.style.display = 'block';
-  status.textContent = '✨ Writing a story just for you...';
-
-  const GRADE_WORD_TARGETS = { prek: 50, k: 50, "1": 100, "2": 100, "3": 150 };
-  const wordTarget = GRADE_WORD_TARGETS[hostGrade] || 100;
-
-  try {
-    const TOPIC_NAMES = { animals:"Animals", space:"Space", dinosaurs:"Dinosaurs", ocean:"Ocean", superheroes:"Superheroes", magic:"Magic", sports:"Sports", cooking:"Cooking", friends:"Friends", confidence:"Self-Confidence", blackhistory:"Black History Heroes", helpers:"Community Helpers", nature:"Nature & Weather", emotions:"Feelings & Emotions", trucks:"Trucks & Vehicles", princesses:"Princesses & Castles", robots:"Robots", pirates:"Pirates", airplanes:"Airplanes & Flying" };
-    const aiText = await generateAIStory(hostGrade, hostTopic, wordTarget);
-    const title = `✨ ${TOPIC_NAMES[hostTopic] || hostTopic} Story`;
-    const cleanedText = cleanStoryText(aiText);
-    status.textContent = '✅ Story ready!';
-    await hostSetStory(title, cleanedText, hostGrade, true);
-    btn.textContent = '✨ Generate Story!';
-    btn.disabled = false;
-  } catch (err) {
-    console.error('AI story generation failed:', err);
-    status.textContent = '⚠️ Could not generate story. Try again.';
-    btn.textContent = '✨ Generate Story!';
-    btn.disabled = false;
-  }
-});
 
 // Paste passage button
 document.getElementById('btn-use-passage').addEventListener('click', async () => {
@@ -4102,12 +4101,7 @@ async function createRoom() {
     createdAt: Date.now()
   });
   document.getElementById('display-room-code').textContent = code;
-  // Show content picker and room code
-  document.getElementById('host-content-picker').style.display = 'block';
-  document.getElementById('host-ai-picker').style.display = 'none';
-  document.getElementById('host-paste-picker').style.display = 'none';
-  document.getElementById('host-spelling-picker').style.display = 'none';
-  show('screen-waiting-host');
+  show('screen-together-room');
 
   // Track state: guest joined + story ready → start countdown
   let guestJoined = false;
@@ -6969,7 +6963,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BR',
+      appBuild: 'BS',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -7239,7 +7233,12 @@ const SCREEN_BACK_MAP = {
   'screen-wpm-tap': null, // no back during tap
   'screen-wpm-results': ['← Done', 'screen-pick'],
   'screen-join': ['← Back', 'screen-pick'],
-  'screen-waiting-host': ['← Back', 'screen-pick'],
+  'screen-together-room': ['← Cancel', 'screen-pick'],
+  'screen-together-pick': ['← Back', 'screen-together-room'],
+  'screen-together-ai-grade': ['← Back', 'screen-together-pick'],
+  'screen-together-ai-topic': ['← Back', 'screen-together-ai-grade'],
+  'screen-together-upload': ['← Back', 'screen-together-pick'],
+  'screen-together-spelling': ['← Back', 'screen-together-pick'],
   'screen-waiting-guest': ['← Back', 'screen-pick'],
   'screen-race-results': ['← Done', 'screen-pick'],
   'screen-loading': null, // no back during loading
@@ -7319,6 +7318,14 @@ document.getElementById('bar-back').addEventListener('click', () => {
   // Stop TTS if leaving reading screen
   if (ttsState === 'playing' || ttsState === 'paused') {
     stopTTS();
+  }
+
+  // Clean up room if backing out of together wizard to home
+  const activeScreen = document.querySelector('.screen.active');
+  const activeId = activeScreen ? activeScreen.id : '';
+  if (activeId === 'screen-together-room' && target === 'screen-pick') {
+    if (S.roomRef) try { remove(S.roomRef); } catch(e) {}
+    cleanupRoom();
   }
 
   show(target);
