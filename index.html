@@ -982,7 +982,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BD</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1381,6 +1381,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <span style="font-weight:800;font-size:0.82rem;color:var(--ink);">🗣 Voice:</span>
           <button class="voice-btn sel-voice" data-voice="female" style="font-size:0.82rem;padding:5px 12px;">👩 Girl</button>
           <button class="voice-btn" data-voice="male" style="font-size:0.82rem;padding:5px 12px;">👨 Boy</button>
+          <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0 0 0 auto;padding:6px 14px;font-size:0.8rem;width:auto;display:inline-flex;align-items:center;gap:4px;">📖 Big Text</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-weight:800;font-size:0.82rem;color:var(--ink);white-space:nowrap;">⚡ Speed:</span>
@@ -1391,15 +1392,6 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <span>🐢 Slow</span>
           <span>🚶 Normal</span>
           <span>🚀 Fast</span>
-        </div>
-      </div>
-
-      <!-- Collapsible extra settings (Parent, Help, Reading Mode) -->
-      <div id="read-settings-drawer" style="display:none;margin-top:10px;padding:14px;background:var(--section);border-radius:16px;">
-        <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:10px 16px;font-size:0.88rem;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">📖 Reading Mode</button>
-        <div style="border-top:2px solid var(--border);margin-top:12px;padding-top:12px;display:flex;gap:8px;">
-          <button class="btn-main btn-outline" id="btn-open-parent" style="flex:1;margin:0;padding:10px 12px;font-size:0.85rem;">👤 Parent</button>
-          <button class="btn-main btn-outline" id="btn-show-welcome" style="flex:1;margin:0;padding:10px 12px;font-size:0.85rem;">❓ Help</button>
         </div>
       </div>
 
@@ -1895,7 +1887,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4088,6 +4080,14 @@ function setupReadScreen() {
   // Close settings drawer
   const drawer = document.getElementById('read-settings-drawer');
   if (drawer) drawer.style.display = 'none';
+  // Sync speed slider and voice buttons to current state
+  const speedSlider = document.getElementById('speed-slider');
+  const speedDisplay = document.getElementById('speed-display');
+  if (speedSlider) speedSlider.value = S.speed;
+  if (speedDisplay) speedDisplay.textContent = S.speed.toFixed(1) + '×';
+  document.querySelectorAll('.voice-btn').forEach(b => {
+    b.classList.toggle('sel-voice', b.dataset.voice === S.voiceGender);
+  });
   // Fix 4: Show connected indicator when reading together
   const existingConnected = document.getElementById('together-connected-badge');
   if (existingConnected) existingConnected.remove();
@@ -4506,7 +4506,7 @@ document.getElementById('btn-cancel-host').addEventListener('click', async () =>
 // ── Reading screen settings drawer ───────────────────────
 document.getElementById('btn-read-settings').addEventListener('click', () => {
   const drawer = document.getElementById('read-settings-drawer');
-  drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+  if (drawer) drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
 });
 
 document.getElementById('btn-new').addEventListener('click', () => {
@@ -6553,7 +6553,8 @@ function updatePinDots() {
   }
 }
 
-document.getElementById('btn-open-parent').addEventListener('click', () => {
+const btnOpenParent = document.getElementById('btn-open-parent');
+if (btnOpenParent) btnOpenParent.addEventListener('click', () => {
   pinBuffer = '';
   updatePinDots();
   document.getElementById('pin-error').textContent = '';
@@ -6915,7 +6916,8 @@ window.addEventListener('offline', () => {
 })();
 
 // ── How it works (footer) ─────────────────────────────────
-document.getElementById('btn-show-welcome').addEventListener('click', () => {
+const btnShowWelcome = document.getElementById('btn-show-welcome');
+if (btnShowWelcome) btnShowWelcome.addEventListener('click', () => {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   ['screen-welcome-2', 'screen-welcome-3', 'screen-welcome-4'].forEach(id => {
     document.getElementById(id).style.display = 'none';
@@ -7173,9 +7175,11 @@ document.getElementById('btn-bar-settings').addEventListener('click', () => {
   const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
   if (isReadScreen) {
     const drawer = document.getElementById('read-settings-drawer');
-    drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
-    if (drawer.style.display === 'block') {
-      drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (drawer) {
+      drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+      if (drawer.style.display === 'block') {
+        drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     }
   } else {
     document.getElementById('global-settings-overlay').style.display = 'flex';
