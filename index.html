@@ -982,7 +982,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BC</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1050,7 +1050,6 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="wiz-size-btn" data-words="50" style="background:linear-gradient(135deg,#FFD93D,#F9A825);color:#5D4037;"><span style="font-size:1.6rem;">📄</span><div><span style="font-size:1.2rem;font-weight:900;">Quick</span><span style="font-size:0.8rem;font-weight:700;display:block;opacity:0.8;">30–60 words</span></div></button>
         <button class="wiz-size-btn" data-words="100" style="background:linear-gradient(135deg,#5CD85A,#27AE60);"><span style="font-size:1.6rem;">📗</span><div><span style="font-size:1.2rem;font-weight:900;">Regular</span><span style="font-size:0.8rem;font-weight:700;display:block;opacity:0.85;">80–120 words</span></div></button>
         <button class="wiz-size-btn" data-words="300" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);"><span style="font-size:1.6rem;">📘</span><div><span style="font-size:1.2rem;font-weight:900;">Long</span><span style="font-size:0.8rem;font-weight:700;display:block;opacity:0.85;">250–350 words</span></div></button>
-        <button class="wiz-size-btn" data-words="surprise" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);"><span style="font-size:1.6rem;">🎲</span><div><span style="font-size:1.2rem;font-weight:900;">Surprise Me!</span><span style="font-size:0.8rem;font-weight:700;display:block;opacity:0.85;">You pick for me!</span></div></button>
       </div>
     </div>
   </div>
@@ -1376,25 +1375,27 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         </div>
       </div>
 
-      <!-- Collapsible voice/speed settings -->
+      <!-- Always-visible voice & speed controls -->
+      <div id="read-quick-controls" style="margin-top:10px;padding:10px 14px;background:var(--section);border-radius:14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-weight:800;font-size:0.82rem;color:var(--ink);">🗣 Voice:</span>
+          <button class="voice-btn sel-voice" data-voice="female" style="font-size:0.82rem;padding:5px 12px;">👩 Girl</button>
+          <button class="voice-btn" data-voice="male" style="font-size:0.82rem;padding:5px 12px;">👨 Boy</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-weight:800;font-size:0.82rem;color:var(--ink);white-space:nowrap;">⚡ Speed:</span>
+          <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="2.0" step="0.1" value="0.9" style="flex:1;">
+          <span class="speed-value-badge" id="speed-display" style="min-width:38px;text-align:center;">0.9×</span>
+        </div>
+        <div class="speed-emoji-row" style="margin-top:2px;">
+          <span>🐢 Slow</span>
+          <span>🚶 Normal</span>
+          <span>🚀 Fast</span>
+        </div>
+      </div>
+
+      <!-- Collapsible extra settings (Parent, Help, Reading Mode) -->
       <div id="read-settings-drawer" style="display:none;margin-top:10px;padding:14px;background:var(--section);border-radius:16px;">
-        <div class="voice-row" style="margin:0 0 10px;">
-          <span class="voice-label">Voice:</span>
-          <button class="voice-btn sel-voice" data-voice="female">👩 Female</button>
-          <button class="voice-btn" data-voice="male">👨 Male</button>
-        </div>
-        <div class="speed-slider-row" style="margin:0 0 10px;">
-          <div class="speed-slider-label-row">
-            <span class="speed-slider-label">⚡ Speed</span>
-            <span class="speed-value-badge" id="speed-display">0.9×</span>
-          </div>
-          <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="2.0" step="0.1" value="0.9">
-          <div class="speed-emoji-row">
-            <span>🐢 Slow</span>
-            <span>🚶 Normal</span>
-            <span>🚀 Fast</span>
-          </div>
-        </div>
         <button class="btn-main btn-outline" id="btn-reading-mode" style="margin:0;padding:10px 16px;font-size:0.88rem;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">📖 Reading Mode</button>
         <div style="border-top:2px solid var(--border);margin-top:12px;padding-top:12px;display:flex;gap:8px;">
           <button class="btn-main btn-outline" id="btn-open-parent" style="flex:1;margin:0;padding:10px 12px;font-size:0.85rem;">👤 Parent</button>
@@ -1894,7 +1895,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BC</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2902,6 +2903,8 @@ document.getElementById('btn-go-story-builder').addEventListener('click', () => 
 document.getElementById('btn-story-builder-back').addEventListener('click', () => show('screen-pick'));
 
 // ── Story Wizard (3-step: Grade → Length → Topic) ────────
+const GRADE_SPEED_DEFAULTS = { prek: 0.7, k: 0.8, "1": 0.9, "2": 0.9, "3": 1.0 };
+
 // Step 1: Grade — tap auto-advances to Step 2
 document.querySelectorAll('.wiz-grade-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2914,6 +2917,12 @@ document.querySelectorAll('.wiz-grade-btn').forEach(btn => {
     });
     const defaultWords = GRADE_DEFAULTS[grade] || 100;
     S.wordTarget = defaultWords;
+    // Set age-appropriate speed default
+    S.speed = GRADE_SPEED_DEFAULTS[grade] || 0.9;
+    const speedSlider = document.getElementById('speed-slider');
+    const speedDisplay = document.getElementById('speed-display');
+    if (speedSlider) speedSlider.value = S.speed;
+    if (speedDisplay) speedDisplay.textContent = S.speed.toFixed(1) + '×';
     updateGradeLabel();
     // Brief visual feedback then advance
     btn.style.transform = 'scale(1.05)';
@@ -2924,13 +2933,8 @@ document.querySelectorAll('.wiz-grade-btn').forEach(btn => {
 // Step 2: Length — tap auto-advances to Step 3
 document.querySelectorAll('.wiz-size-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const words = btn.dataset.words;
-    if (words === 'surprise') {
-      const options = [50, 100, 300];
-      S.wordTarget = options[Math.floor(Math.random() * options.length)];
-    } else {
-      S.wordTarget = parseInt(words);
-    }
+    const words = parseInt(btn.dataset.words);
+    S.wordTarget = words;
     // Sync hidden words-row for compat
     document.querySelectorAll('#words-row .opt-btn').forEach(b => {
       b.classList.remove('sel-words');
