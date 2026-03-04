@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BP</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BQ</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2017,7 +2017,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BP</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BQ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2863,7 +2863,7 @@ async function playSpeech(startFromMs) {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         setTtsState('playing');
-        setPlayBtn('▶', 'Playing...', true);
+        setPlayBtn('⏸', 'Pause', false);
         
         document.getElementById('btn-play').style.animation = '';
         document.getElementById('btn-pause').disabled = false;
@@ -2907,7 +2907,7 @@ async function playSpeech(startFromMs) {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         setTtsState('playing');
-        setPlayBtn('▶', 'Playing...', true);
+        setPlayBtn('⏸', 'Pause', false);
         
         document.getElementById('btn-pause').disabled = false;
         document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
@@ -2943,7 +2943,7 @@ async function playSpeech(startFromMs) {
       if (startFromMs > 0) audio.currentTime = startFromMs / 1000;
       audio.play().then(() => {
         setTtsState('playing');
-        setPlayBtn('▶', 'Playing...', true);
+        setPlayBtn('⏸', 'Pause', false);
         
         document.getElementById('btn-pause').disabled = false;
         document.getElementById('btn-pause').textContent = '⏸'; document.getElementById('btn-pause').title = 'Pause';
@@ -3000,6 +3000,19 @@ document.getElementById('btn-play').addEventListener('click', () => {
     ttsPausedAtMs = 0;
     playSpeech(0);
     if (S.isRace) setTimeout(() => broadcastPlayback('play', 0), 500);
+  } else if (ttsState === 'playing' && ttsAudio) {
+    // Pause — same logic as btn-pause
+    ttsPausedAtMs = ttsAudio.currentTime * 1000;
+    ttsAudio.pause();
+    stopRAF();
+    setTtsState('paused');
+    setPlayBtn('▶', 'Resume', false);
+    document.getElementById('btn-pause').textContent = '▶'; document.getElementById('btn-pause').title = 'Resume';
+    if (S.isRace) broadcastPlayback('pause', ttsPausedAtMs);
+  } else if (ttsState === 'paused') {
+    // Resume — same logic as btn-pause resume
+    playSpeech(ttsPausedAtMs);
+    if (S.isRace) broadcastPlayback('play', ttsPausedAtMs);
   }
 });
 
@@ -3009,6 +3022,7 @@ document.getElementById('btn-pause').addEventListener('click', () => {
     ttsAudio.pause();
     stopRAF();
     setTtsState('paused');
+    setPlayBtn('▶', 'Resume', false);
     document.getElementById('btn-pause').textContent = '▶'; document.getElementById('btn-pause').title = 'Resume';
     
     if (S.isRace) broadcastPlayback('pause', ttsPausedAtMs);
@@ -6955,7 +6969,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BP',
+      appBuild: 'BQ',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
