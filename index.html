@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BJ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BK</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1604,6 +1604,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
       <div class="spelling-actions" id="spelling-actions" style="display:none;">
         <button class="btn-main" id="btn-spelling-new" style="font-size:0.9rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 New Words</button>
+        <button class="btn-main btn-outline" id="btn-spelling-my-lists" style="font-size:0.9rem;">📋 My Lists</button>
         <button class="btn-main btn-outline" id="btn-spelling-study" style="font-size:0.9rem;">👀 Look & Learn</button>
         <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.9rem;">🎯 Let's Practice!</button>
         <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.9rem;">📝 Test Me!</button>
@@ -1976,7 +1977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BJ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BK</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5515,13 +5516,56 @@ function triggerSpellingUpload() {
 }
 
 document.getElementById('btn-spelling-start').addEventListener('click', () => {
-  // Always trigger fresh upload — no grade required
-  document.getElementById('spelling-file-input').click();
+  const d = getData();
+  if (d.spellingLists && d.spellingLists.length > 0) {
+    // Load most recent saved list
+    const lastList = d.spellingLists[d.spellingLists.length - 1];
+    currentSpellingList = lastList;
+    renderSpellingWords(lastList);
+    show('screen-spelling');
+  } else {
+    // No saved lists — go to spelling screen with upload prompt
+    showSpellingEmpty();
+    show('screen-spelling');
+  }
 });
 
 document.getElementById('btn-spelling-upload-empty').addEventListener('click', triggerSpellingUpload);
 
 document.getElementById('btn-spelling-new').addEventListener('click', triggerSpellingUpload);
+
+// My Lists — show saved spelling lists to switch between
+document.getElementById('btn-spelling-my-lists').addEventListener('click', () => {
+  const d = getData();
+  const lists = d.spellingLists || [];
+  if (lists.length === 0) {
+    showAppAlert('📋', 'No Saved Lists', 'Upload your first spelling list with the 📸 New Words button!');
+    return;
+  }
+  // Build list buttons
+  const buttons = lists.map((list, i) => {
+    const date = new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const wordCount = list.words.length;
+    const isActive = currentSpellingList && currentSpellingList.id === list.id;
+    return {
+      label: `${isActive ? '✅ ' : ''}${date} — ${wordCount} words`,
+      cls: isActive ? 'modal-green' : 'modal-purple',
+      value: i
+    };
+  });
+  buttons.push({ label: '← Cancel', cls: 'modal-outline', value: -1 });
+  showAppModal({
+    icon: '📋',
+    title: 'My Spelling Lists',
+    message: 'Tap a list to load it!',
+    buttons
+  }).then(idx => {
+    if (idx >= 0 && idx < lists.length) {
+      currentSpellingList = lists[idx];
+      renderSpellingWords(lists[idx]);
+    }
+  });
+});
 
 document.getElementById('btn-spelling-done').addEventListener('click', () => {
   show('screen-pick');
@@ -5643,6 +5687,11 @@ function renderSpellingWords(list) {
   const actionsEl = document.getElementById('spelling-actions');
   const countBar = document.getElementById('spelling-count-bar');
   const weekLabel = document.getElementById('spelling-week-label');
+
+  // Show/hide My Lists button based on saved list count
+  const d = getData();
+  const myListsBtn = document.getElementById('btn-spelling-my-lists');
+  if (myListsBtn) myListsBtn.style.display = (d.spellingLists && d.spellingLists.length > 1) ? '' : 'none';
 
   loadingEl.style.display = 'none';
   emptyEl.style.display = 'none';
