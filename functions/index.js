@@ -4,8 +4,11 @@ const logger = require("firebase-functions/logger");
 
 const anthropicKey = defineSecret("ANTHROPIC_API_KEY");
 
+// CORS restricted to ReadUp! domain only
+const CORS_ORIGIN = ["https://bazeocrisy.github.io"];
+
 exports.generateStory = onRequest(
-  {secrets: [anthropicKey], cors: true},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -28,7 +31,7 @@ exports.generateStory = onRequest(
         body: JSON.stringify({
           model: "claude-haiku-4-5-20251001",
           max_tokens: 2048,
-          temperature: 1.0,
+          temperature: 0.8,
           system: "You are a children's story writer for ReadUp!, a reading app for kids ages 3-9. Write only age-appropriate, positive, encouraging stories. Never include violence, death, weapons, scary situations, mean behavior, or inappropriate content. Keep all content safe for young children.",
           messages: [{
             role: "user",
@@ -61,7 +64,7 @@ exports.generateStory = onRequest(
 
 // ── Extract Text from Image (OCR via Claude Vision) ──────
 exports.extractText = onRequest(
-  {secrets: [anthropicKey], cors: true},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -127,7 +130,7 @@ exports.extractText = onRequest(
 
 // ── Extract Spelling Words from Image (OCR + AI parsing) ──
 exports.extractSpellingWords = onRequest(
-  {secrets: [anthropicKey], cors: true, timeoutSeconds: 120},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -219,7 +222,7 @@ Important:
 
 // ── Batch Define Words (up to 20 at a time) ──────────────
 exports.batchDefine = onRequest(
-  {secrets: [anthropicKey], cors: true, timeoutSeconds: 120},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
