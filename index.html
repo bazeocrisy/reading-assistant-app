@@ -791,6 +791,35 @@ body.bedtime .kid-action-btn { opacity: 0.85; }
   25% { transform: translateY(-5px) rotate(-2deg); }
   75% { transform: translateY(-5px) rotate(2deg); }
 }
+/* ── Welcome Splash Animations ──────────────────────── */
+@keyframes welcomeBounce {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-14px) scale(1.05); }
+}
+@keyframes welcomeFloat {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-18px) rotate(8deg); }
+  66% { transform: translateY(-6px) rotate(-5deg); }
+}
+@keyframes rainbowShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes welcomePulseGlow {
+  0%,100% { box-shadow: 0 8px 30px rgba(88,204,2,0.4); transform: scale(1); }
+  50% { box-shadow: 0 8px 50px rgba(88,204,2,0.7), 0 0 25px rgba(255,215,0,0.4); transform: scale(1.03); }
+}
+@keyframes starPop {
+  0% { transform: scale(0) rotate(0deg); opacity:0; }
+  40% { transform: scale(1.4) rotate(200deg); opacity:1; }
+  100% { transform: scale(1) rotate(360deg); opacity:0.85; }
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity:0; }
+  20% { opacity:1; }
+  100% { transform: translateY(calc(100vh + 20px)) rotate(720deg); opacity:0.3; }
+}
 body.bedtime #mascot-zone { display: none; }
 body.bedtime #home-stats-bar { display: none; }
 
@@ -928,28 +957,121 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </header>
 
-  <!-- SCREEN: Welcome flow (first time only) — single screen -->
+  <!-- SCREEN: Welcome Splash (first time only) -->
   <div class="screen" id="screen-welcome-1" style="display:none;">
-    <div class="card" style="text-align:center;">
-      <div style="font-size:3.5rem;margin-bottom:2px;">🦉</div>
-      <div class="card-title" style="font-size:1.6rem;margin-bottom:4px;">Welcome to ReadUp!</div>
-      <p style="color:var(--body);font-weight:700;font-size:0.95rem;line-height:1.6;margin-bottom:6px;">A free reading &amp; spelling app for Pre-K through 3rd grade.</p>
-      <p style="color:var(--muted);font-weight:700;font-size:0.82rem;line-height:1.5;margin-bottom:18px;">Built by <strong style="color:var(--purple-deep);">Transforming Youth, Inc.</strong></p>
-      <div style="font-size:1.2rem;font-weight:900;color:var(--ink);margin-bottom:12px;">What grade are you in?</div>
-      <div style="display:flex;flex-direction:column;gap:10px;" id="welcome-grade-row">
-        <button class="wiz-grade-btn" data-wgrade="prek" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);"><span style="font-size:1.6rem;">🧸</span><span style="font-size:1.2rem;font-weight:900;">Pre-K</span></button>
-        <button class="wiz-grade-btn" data-wgrade="k" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);"><span style="font-size:1.6rem;">🎨</span><span style="font-size:1.2rem;font-weight:900;">Kindergarten</span></button>
-        <button class="wiz-grade-btn" data-wgrade="1" style="background:linear-gradient(135deg,#5CD85A,#27AE60);"><span style="font-size:1.6rem;">⭐</span><span style="font-size:1.2rem;font-weight:900;">1st Grade</span></button>
-        <button class="wiz-grade-btn" data-wgrade="2" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);"><span style="font-size:1.6rem;">🚀</span><span style="font-size:1.2rem;font-weight:900;">2nd Grade</span></button>
-        <button class="wiz-grade-btn" data-wgrade="3" style="background:linear-gradient(135deg,#E74C3C,#C0392B);"><span style="font-size:1.6rem;">🔥</span><span style="font-size:1.2rem;font-weight:900;">3rd Grade</span></button>
+    <!-- Floating emoji confetti background -->
+    <div style="position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;">
+      <span style="position:absolute;top:5%;left:8%;font-size:2rem;animation:welcomeFloat 3s ease-in-out infinite;">⭐</span>
+      <span style="position:absolute;top:12%;right:10%;font-size:1.8rem;animation:welcomeFloat 3.5s ease-in-out infinite 0.3s;">📚</span>
+      <span style="position:absolute;top:30%;left:5%;font-size:1.5rem;animation:welcomeFloat 4s ease-in-out infinite 0.6s;">🌟</span>
+      <span style="position:absolute;top:25%;right:6%;font-size:2.2rem;animation:welcomeFloat 3.2s ease-in-out infinite 0.9s;">🎉</span>
+      <span style="position:absolute;top:55%;left:4%;font-size:1.6rem;animation:welcomeFloat 3.8s ease-in-out infinite 1.2s;">✨</span>
+      <span style="position:absolute;top:50%;right:8%;font-size:1.4rem;animation:welcomeFloat 4.2s ease-in-out infinite 0.4s;">🦋</span>
+      <span style="position:absolute;top:70%;left:10%;font-size:1.8rem;animation:welcomeFloat 3.6s ease-in-out infinite 0.7s;">🎨</span>
+      <span style="position:absolute;top:75%;right:12%;font-size:1.5rem;animation:welcomeFloat 3.4s ease-in-out infinite 1.0s;">🚀</span>
+      <span style="position:absolute;top:85%;left:15%;font-size:2rem;animation:welcomeFloat 3.3s ease-in-out infinite 0.5s;">💛</span>
+      <span style="position:absolute;top:42%;left:50%;font-size:1.3rem;animation:welcomeFloat 4.5s ease-in-out infinite 1.5s;">📖</span>
+    </div>
+
+    <div style="position:relative;z-index:1;text-align:center;padding:10px 0;">
+      <!-- Big rainbow ReadUp! title -->
+      <div style="font-family:'Fredoka',sans-serif;font-size:3.2rem;font-weight:700;letter-spacing:2px;
+        background:linear-gradient(90deg,#FF6B35,#FECA57,#5CD85A,#54A0FF,#9B59B6,#FF6B6B,#FF6B35);
+        background-size:300% 100%;
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        background-clip:text;
+        animation:rainbowShift 4s ease infinite;
+        margin-bottom:4px;
+        text-shadow:none;">
+        ReadUp!
       </div>
-      <p style="color:var(--muted);font-weight:700;font-size:0.75rem;margin-top:14px;">🔒 Parents: tap <strong>Parent</strong> at the bottom anytime. Default PIN is <strong>1234</strong>.</p>
+
+      <!-- Bookie mascot — big and bouncy -->
+      <div style="animation:welcomeBounce 2s ease-in-out infinite;margin:8px auto 12px;">
+        <svg viewBox="0 0 120 130" width="170" height="170">
+          <ellipse cx="60" cy="124" rx="32" ry="6" fill="#E8C547" opacity="0.3"/>
+          <ellipse cx="60" cy="72" rx="38" ry="42" fill="#FF9F43"/>
+          <ellipse cx="60" cy="74" rx="33" ry="36" fill="#FECA57"/>
+          <ellipse cx="60" cy="82" rx="22" ry="20" fill="#FFF9E6"/>
+          <path d="M32 36 L24 14 L42 30Z" fill="#FF9F43"/>
+          <path d="M88 36 L96 14 L78 30Z" fill="#FF9F43"/>
+          <path d="M34 36 L28 18 L42 31Z" fill="#FECA57"/>
+          <path d="M86 36 L92 18 L78 31Z" fill="#FECA57"/>
+          <circle cx="44" cy="46" r="16" fill="white"/>
+          <circle cx="76" cy="46" r="16" fill="white"/>
+          <circle cx="46" cy="47" r="9" fill="#2C3E50"/>
+          <circle cx="74" cy="47" r="9" fill="#2C3E50"/>
+          <circle cx="48" cy="45" r="4" fill="white"/>
+          <circle cx="76" cy="45" r="4" fill="white"/>
+          <circle cx="44" cy="51" r="2" fill="white" opacity="0.5"/>
+          <circle cx="72" cy="51" r="2" fill="white" opacity="0.5"/>
+          <circle cx="44" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+          <circle cx="76" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+          <path d="M58 46 L62 46" stroke="#E55D2B" stroke-width="2.5"/>
+          <path d="M54 56 L60 66 L66 56Z" fill="#FF6B35"/>
+          <path d="M50 68 Q60 78 70 68" fill="none" stroke="#E17055" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="34" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
+          <circle cx="86" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
+          <path d="M18 65 Q10 72 16 82 Q22 78 26 70Z" fill="#FF9F43"/>
+          <path d="M102 65 Q110 72 104 82 Q98 78 94 70Z" fill="#FF9F43"/>
+          <rect x="8" y="72" width="16" height="12" rx="2" fill="#54A0FF" transform="rotate(-10 16 78)"/>
+          <rect x="8" y="72" width="8" height="12" rx="1.5" fill="#2E86DE" transform="rotate(-10 16 78)"/>
+          <line x1="16" y1="73" x2="16" y2="83" stroke="#1B6CB5" stroke-width="1" transform="rotate(-10 16 78)"/>
+          <ellipse cx="46" cy="112" rx="10" ry="5" fill="#FF6B35"/>
+          <ellipse cx="74" cy="112" rx="10" ry="5" fill="#FF6B35"/>
+        </svg>
+      </div>
+
+      <!-- Speech bubble -->
+      <div style="background:white;border-radius:24px;padding:16px 24px;margin:0 auto 16px;max-width:320px;
+        box-shadow:0 6px 24px rgba(0,0,0,0.1);position:relative;
+        animation:fadeUp 0.8s ease 0.3s both;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:#FF6B35;margin-bottom:4px;">
+          Hi! I'm Bookie! 🦉
+        </div>
+        <div style="font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:700;color:#5D6D7E;line-height:1.5;">
+          I'll help you read stories, learn new words, and have fun!
+        </div>
+        <!-- Speech bubble arrow -->
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+          width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:12px solid white;"></div>
+      </div>
+
+      <!-- Fun feature pills -->
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 20px;max-width:340px;
+        animation:fadeUp 0.8s ease 0.6s both;">
+        <span style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;padding:8px 14px;border-radius:50px;font-weight:800;font-size:0.82rem;font-family:'Nunito',sans-serif;">✨ AI Stories</span>
+        <span style="background:linear-gradient(135deg,#54A0FF,#2E86DE);color:white;padding:8px 14px;border-radius:50px;font-weight:800;font-size:0.82rem;font-family:'Nunito',sans-serif;">🔊 Read Aloud</span>
+        <span style="background:linear-gradient(135deg,#5CD85A,#27AE60);color:white;padding:8px 14px;border-radius:50px;font-weight:800;font-size:0.82rem;font-family:'Nunito',sans-serif;">📝 Spelling</span>
+        <span style="background:linear-gradient(135deg,#9B59B6,#8E44AD);color:white;padding:8px 14px;border-radius:50px;font-weight:800;font-size:0.82rem;font-family:'Nunito',sans-serif;">⏱ Speed Test</span>
+      </div>
+
+      <!-- Big Let's Go button -->
+      <button id="btn-welcome-go" style="
+        display:block;width:90%;max-width:340px;margin:0 auto 14px;padding:20px;
+        font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;
+        color:white;border:none;border-radius:20px;cursor:pointer;
+        background:linear-gradient(135deg,#5CD85A,#27AE60);
+        animation:welcomePulseGlow 2s ease-in-out infinite;
+        -webkit-appearance:none;
+        transition:transform 0.15s;">
+        ✨ Let's Go! ✨
+      </button>
+
+      <!-- Tiny parent note -->
+      <p style="color:var(--muted);font-weight:700;font-size:0.72rem;margin:0 auto;max-width:300px;opacity:0.7;
+        animation:fadeUp 0.8s ease 1s both;">
+        🔒 Parents: tap <strong>Parent</strong> at the bottom anytime · PIN: <strong>1234</strong>
+      </p>
+      <p style="color:var(--muted);font-weight:700;font-size:0.72rem;margin:4px auto 0;opacity:0.5;">
+        Built with ❤️ by <strong>Transforming Youth, Inc.</strong>
+      </p>
     </div>
   </div>
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BG</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BI</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1854,7 +1976,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BG</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BI</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6856,40 +6978,22 @@ window.addEventListener('offline', () => {
   const d = getData();
   if (d.onboardingDone) return; // Already completed — skip
 
-  // Hide pick screen, show welcome screen
+  // Hide pick screen, show welcome splash
   document.getElementById('screen-pick').classList.remove('active');
   document.getElementById('screen-welcome-1').style.display = 'block';
   document.getElementById('screen-welcome-1').classList.add('active');
 
-  // Grade selection — tap auto-completes onboarding
-  document.querySelectorAll('#welcome-grade-row .wiz-grade-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const grade = btn.dataset.wgrade;
-      S.grade = grade;
-      const defaultWords = GRADE_DEFAULTS[S.grade] || 100;
-      S.wordTarget = defaultWords;
-      S.speed = GRADE_SPEED_DEFAULTS[grade] || 0.9;
-      // Sync hidden grade-row for compat
-      document.querySelectorAll('#grade-row .opt-btn').forEach(b => {
-        b.classList.remove('sel-grade');
-        if (b.dataset.grade === grade) b.classList.add('sel-grade');
-      });
-      document.querySelectorAll('#words-row .opt-btn').forEach(b => {
-        b.classList.remove('sel-words');
-        if (parseInt(b.dataset.words) === defaultWords) b.classList.add('sel-words');
-      });
-      // Mark onboarding complete
-      const d = getData();
-      d.onboardingDone = true;
-      saveData(d);
-      // Brief visual feedback then go to home
-      btn.style.transform = 'scale(1.05)';
-      setTimeout(() => {
-        document.getElementById('screen-welcome-1').classList.remove('active');
-        document.getElementById('screen-welcome-1').style.display = 'none';
-        show('screen-pick');
-      }, 200);
-    });
+  // Single "Let's Go!" button — marks onboarding done and enters app
+  document.getElementById('btn-welcome-go').addEventListener('click', () => {
+    const d = getData();
+    d.onboardingDone = true;
+    saveData(d);
+    document.getElementById('btn-welcome-go').style.transform = 'scale(1.08)';
+    setTimeout(() => {
+      document.getElementById('screen-welcome-1').classList.remove('active');
+      document.getElementById('screen-welcome-1').style.display = 'none';
+      show('screen-pick');
+    }, 250);
   });
 })();
 
@@ -7150,18 +7254,7 @@ document.getElementById('bar-stop').addEventListener('click', () => {
 
 // Settings button — reading screen opens drawer, others open global overlay
 document.getElementById('btn-bar-settings').addEventListener('click', () => {
-  const isReadScreen = document.getElementById('screen-read')?.classList.contains('active');
-  if (isReadScreen) {
-    const drawer = document.getElementById('read-settings-drawer');
-    if (drawer) {
-      drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
-      if (drawer.style.display === 'block') {
-        drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    }
-  } else {
-    document.getElementById('global-settings-overlay').style.display = 'flex';
-  }
+  document.getElementById('global-settings-overlay').style.display = 'flex';
 });
 
 // Global settings overlay handlers
@@ -7175,7 +7268,12 @@ document.getElementById('btn-global-parent').addEventListener('click', () => {
 
 document.getElementById('btn-global-help').addEventListener('click', () => {
   document.getElementById('global-settings-overlay').style.display = 'none';
-  show('screen-welcome-1');
+  showAppModal({
+    icon: '📖',
+    title: 'How ReadUp! Works',
+    message: '✨ Read a Story — AI makes a new story every time!\n\n🔁 Read it 3 times to build fluency:\n  #1 Listen & follow along\n  #2 Read together\n  #3 Read on your own\n\n💡 Tap any word to hear it and see what it means!\n\n📸 My Own Reading — snap a photo of any page\n\n🔤 Spelling Words — study, practice, quiz\n\n🔒 Parent PIN: 1234 (change in dashboard)',
+    buttons: [{ label: '👍 Got It!', cls: 'modal-green', value: true }]
+  });
 });
 
 document.getElementById('btn-global-settings-close').addEventListener('click', () => {
