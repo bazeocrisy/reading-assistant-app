@@ -188,6 +188,35 @@ header { text-align: center; padding: 24px 0 16px; }
 }
 .wiz-topic-surprise:active { transform: scale(0.95); }
 
+/* ── Kid-Friendly App Modal ──────────────────────────── */
+.app-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+  padding: 20px;
+}
+.app-modal-overlay.active { display: flex; }
+.app-modal {
+  background: var(--card); border-radius: 24px; padding: 28px 24px 20px;
+  max-width: 360px; width: 100%; text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  animation: fadeUp 0.3s ease;
+}
+.app-modal-icon { font-size: 2.4rem; margin-bottom: 8px; }
+.app-modal-title { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.app-modal-msg { font-family: 'Nunito', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--muted); line-height: 1.5; margin-bottom: 18px; }
+.app-modal-actions { display: flex; flex-direction: column; gap: 8px; }
+.app-modal-btn {
+  display: block; width: 100%; padding: 14px; border: none; border-radius: 14px;
+  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800;
+  cursor: pointer; transition: transform 0.15s;
+  -webkit-appearance: none;
+}
+.app-modal-btn:active { transform: scale(0.96); }
+.app-modal-btn.modal-green { background: var(--green); color: #fff; }
+.app-modal-btn.modal-red { background: var(--coral); color: #fff; }
+.app-modal-btn.modal-purple { background: var(--purple); color: #fff; }
+.app-modal-btn.modal-outline { background: none; border: 2.5px solid var(--border); color: var(--muted); }
+
 .btn-main {
   display: block; width: 100%; margin-top: 16px; padding: 16px;
   border-radius: var(--r); border: none;
@@ -982,7 +1011,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BF</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1887,7 +1916,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BF</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2296,6 +2325,44 @@ const S = {
   speed: 0.9,
   isAIStory: false,
 };
+
+// ── Kid-Friendly App Modal ──────────────────────────────
+// showAppModal({ icon, title, message, buttons: [{ label, class, action }] })
+// For confirm-style: returns a Promise that resolves true/false
+function showAppModal({ icon = '📖', title = '', message = '', buttons = [] }) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('app-modal-overlay');
+    document.getElementById('app-modal-icon').textContent = icon;
+    document.getElementById('app-modal-title').textContent = title;
+    document.getElementById('app-modal-msg').textContent = message;
+    const actionsEl = document.getElementById('app-modal-actions');
+    actionsEl.innerHTML = '';
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = `app-modal-btn ${b.cls || 'modal-outline'}`;
+      btn.textContent = b.label;
+      btn.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        resolve(b.value !== undefined ? b.value : true);
+      });
+      actionsEl.appendChild(btn);
+    });
+    overlay.classList.add('active');
+  });
+}
+// Shorthand for alert-style (one OK button)
+function showAppAlert(icon, title, message) {
+  return showAppModal({ icon, title, message, buttons: [
+    { label: '👍 OK!', cls: 'modal-green', value: true }
+  ]});
+}
+// Shorthand for confirm-style (Yes/No)
+function showAppConfirm(icon, title, message, yesLabel = '✅ Yes', noLabel = '← No, go back') {
+  return showAppModal({ icon, title, message, buttons: [
+    { label: yesLabel, cls: 'modal-red', value: true },
+    { label: noLabel, cls: 'modal-outline', value: false }
+  ]});
+}
 
 // ── Bookie Mascot Speech Bubble ──────────────────────────
 const bookieGreetings = [
@@ -4509,10 +4576,11 @@ document.getElementById('btn-read-settings').addEventListener('click', () => {
   if (drawer) drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
 });
 
-document.getElementById('btn-new').addEventListener('click', () => {
+document.getElementById('btn-new').addEventListener('click', async () => {
   const count = getCurrentReadCount();
   if (count > 0 && count < 3) {
-    if (!confirm(`You're on Read #${count}! Leave this story?`)) return;
+    const leave = await showAppConfirm('📖', `You're on Read #${count}!`, 'Leave this story and go home?', '🏠 Go Home', '← Keep Reading');
+    if (!leave) return;
   }
   stopTTS(); cleanupRoom();
   clearTimeout(S._finishedBtnTimer);
@@ -5054,7 +5122,7 @@ document.getElementById('timed-scan-input').addEventListener('change', async (e)
     show('screen-wpm-instructions');
   } catch (err) {
     console.warn('Upload failed:', err);
-    alert('Could not read that file. Try a .txt, .pdf, or image file.');
+    showAppAlert('😕', 'Oops!', 'Could not read that file. Try a .txt, .pdf, or image file.');
     show('screen-timed-source');
   }
 });
@@ -5075,7 +5143,7 @@ document.getElementById('timed-paste-textarea').addEventListener('input', (e) =>
 document.getElementById('btn-timed-paste-go').addEventListener('click', () => {
   const text = document.getElementById('timed-paste-textarea').value.trim();
   if (!text || text.split(/\s+/).length < 10) {
-    alert('Please paste at least 10 words.');
+    showAppAlert('✏️', 'Need More Words!', 'Please paste at least 10 words so we have enough to read.');
     return;
   }
   wpmPassage = text;
@@ -6703,14 +6771,16 @@ document.getElementById('btn-parent-done').addEventListener('click', () => {
   document.getElementById('screen-parent').style.display = 'none';
 });
 
-document.getElementById('btn-clear-words').addEventListener('click', () => {
-  if (!confirm('Clear all saved words?')) return;
+document.getElementById('btn-clear-words').addEventListener('click', async () => {
+  const yes = await showAppConfirm('🗑️', 'Clear Word Bank?', 'This will remove all your saved words.', '🗑️ Clear Words', '← Keep Words');
+  if (!yes) return;
   const d = getData(); d.wordBank = []; saveData(d);
   openParentDashboard();
 });
 
-document.getElementById('btn-clear-spelling').addEventListener('click', () => {
-  if (!confirm('Clear all spelling word lists?')) return;
+document.getElementById('btn-clear-spelling').addEventListener('click', async () => {
+  const yes = await showAppConfirm('🗑️', 'Clear Spelling Lists?', 'This will remove all your spelling word lists.', '🗑️ Clear Lists', '← Keep Lists');
+  if (!yes) return;
   const d = getData(); d.spellingLists = []; saveData(d);
   currentSpellingList = null;
   openParentDashboard();
@@ -6730,12 +6800,13 @@ document.getElementById('btn-save-pin').addEventListener('click', () => {
   setTimeout(() => { document.getElementById('pin-save-msg').textContent = ''; }, 2000);
 });
 
-document.getElementById('btn-reset-data').addEventListener('click', () => {
-  if (!confirm('Reset ALL ReadUp! data? This cannot be undone.')) return;
+document.getElementById('btn-reset-data').addEventListener('click', async () => {
+  const yes = await showAppConfirm('⚠️', 'Reset ALL Data?', 'This will erase everything — stories, words, spelling lists, and reading history. This cannot be undone!', '⚠️ Reset Everything', '← No, Keep My Data');
+  if (!yes) return;
   localStorage.removeItem(LS_KEY);
   localStorage.removeItem(DICT_CACHE_KEY);
   openParentDashboard();
-  alert('All data has been reset.');
+  showAppAlert('✅', 'All Done!', 'All data has been reset.');
 });
 
 // ── Data Export ──────────────────────────────────────────
@@ -6787,7 +6858,7 @@ importFileInput.addEventListener('change', (e) => {
   }
 
   const reader = new FileReader();
-  reader.onload = (evt) => {
+  reader.onload = async (evt) => {
     try {
       const imported = JSON.parse(evt.target.result);
 
@@ -6806,14 +6877,11 @@ importFileInput.addEventListener('change', (e) => {
       const spellingCount = (rd.spellingLists || []).length;
       const exportDate = imported.exportedAt ? new Date(imported.exportedAt).toLocaleDateString() : 'unknown date';
 
-      const msg = `Import backup from ${exportDate}?\n\n` +
-        `📚 ${storyCount} stories\n` +
-        `📖 ${wordCount} word bank words\n` +
-        `📝 ${spellingCount} spelling lists\n` +
-        `📅 ${logDays} days of reading logs\n\n` +
-        `⚠️ This will REPLACE all current data.`;
+      const importMsg = `Import backup from ${exportDate}? This will replace all current data.`;
+      const detail = `📚 ${storyCount} stories · 📖 ${wordCount} words · 📝 ${spellingCount} spelling lists · 📅 ${logDays} days of logs`;
 
-      if (!confirm(msg)) {
+      const yes = await showAppConfirm('📦', 'Import Backup?', importMsg + '\n\n' + detail, '📦 Import', '← Cancel');
+      if (!yes) {
         msgEl.style.color = 'var(--muted)';
         msgEl.textContent = 'Import cancelled.';
         setTimeout(() => { msgEl.textContent = ''; }, 2000);
@@ -7312,6 +7380,15 @@ document.addEventListener('keydown', (e) => {
       <button class="btn-main" id="btn-global-help" aria-label="Open help and tutorial" style="font-size:1rem;background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 4px 14px rgba(46,134,222,0.3);">❓ Help & Tutorial</button>
       <button class="btn-main btn-outline" id="btn-global-settings-close" aria-label="Close parent menu" style="font-size:0.95rem;margin-top:4px;">✕ Close</button>
     </div>
+  </div>
+</div>
+<!-- Kid-friendly app modal -->
+<div class="app-modal-overlay" id="app-modal-overlay">
+  <div class="app-modal">
+    <div class="app-modal-icon" id="app-modal-icon"></div>
+    <div class="app-modal-title" id="app-modal-title"></div>
+    <div class="app-modal-msg" id="app-modal-msg"></div>
+    <div class="app-modal-actions" id="app-modal-actions"></div>
   </div>
 </div>
 </body>
