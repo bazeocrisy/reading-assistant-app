@@ -874,6 +874,46 @@ body.bedtime #home-stats-bar { display: none; }
 body.bedtime .read-big-play { background: linear-gradient(135deg, #4a8a5a, #2a6a3a); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 body.bedtime .read-side-btn { opacity: 0.8; }
 
+/* ── Word Search Game ── */
+.ws-cell {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 700;
+  color: var(--ink); background: var(--section); border: 1.5px solid var(--border);
+  cursor: pointer; transition: all 0.15s; user-select: none; -webkit-user-select: none;
+  border-radius: 4px;
+}
+.ws-cell.selecting { background: var(--purple-soft); border-color: var(--purple); color: var(--purple); transform: scale(1.1); }
+.ws-cell.found { background: var(--green); color: #fff; border-color: var(--green); }
+.ws-cell.wrong-flash { background: var(--coral); color: #fff; border-color: var(--coral); }
+.ws-word-tag {
+  display: inline-block; padding: 4px 12px; border-radius: 20px;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.85rem;
+  border: 2px solid var(--border); background: var(--section); color: var(--ink);
+  transition: all 0.3s;
+}
+.ws-word-tag.found { background: var(--green); color: #fff; border-color: var(--green); text-decoration: line-through; }
+@media (max-width: 380px) { .ws-cell { width: 28px; height: 28px; font-size: 0.85rem; } }
+
+/* ── Word Scramble Game ── */
+.scramble-tile {
+  width: 44px; height: 50px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 700;
+  color: var(--ink); background: var(--section); border: 3px solid var(--border);
+  border-radius: 12px; cursor: pointer; transition: all 0.15s;
+  user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.scramble-tile:active { transform: scale(0.9); }
+.scramble-tile.used { opacity: 0.25; pointer-events: none; }
+.scramble-slot {
+  width: 44px; height: 50px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 700;
+  color: var(--purple); background: var(--card); border: 3px dashed var(--border);
+  border-radius: 12px; transition: all 0.15s; cursor: pointer;
+}
+.scramble-slot.filled { border-style: solid; border-color: var(--purple); background: var(--purple-soft); }
+.scramble-slot.correct { border-color: var(--green); background: #EFFFF4; color: #1B7A3E; }
+.scramble-slot.wrong { border-color: var(--coral); background: #FFF0F0; color: #e74c3c; animation: choiceShake 0.4s ease; }
+
 /* ── Story Size Buttons ── */
 .story-size-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -1071,7 +1111,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CC</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1720,6 +1760,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="btn-main btn-outline" id="btn-spelling-study" style="font-size:0.9rem;">👀 Look & Learn</button>
         <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.9rem;">🎯 Let's Practice!</button>
         <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.9rem;">📝 Test Me!</button>
+        <button class="btn-main btn-yellow" id="btn-spelling-games" style="font-size:0.9rem;">🎮 Play a Game!</button>
         <button id="btn-spelling-done" style="display:none;"></button>
       </div>
     </div>
@@ -1842,6 +1883,72 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <button class="btn-main btn-coral" id="btn-quiz-retry-missed" style="font-size:1rem;margin-top:12px;display:none;">🔄 Retry Missed Words</button>
       <button class="btn-main btn-green" id="btn-quiz-retry-all" style="font-size:1rem;margin-top:10px;">📝 Quiz Again</button>
       <button class="btn-main btn-outline" id="btn-quiz-results-done" style="display:none;">← Back to Words</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Game Picker -->
+  <div class="screen" id="screen-game-picker">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:4px;">🎮</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Pick a Game!</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:18px;" id="game-picker-count">Playing with 5 words</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="kid-action-btn" id="btn-game-wordsearch" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.3);">
+          <div class="kid-action-icon">🔍</div>
+          <div style="text-align:left;">
+            <div class="kid-action-label" style="font-size:1.15rem;">Word Search</div>
+            <div style="font-size:0.75rem;font-weight:700;opacity:0.9;color:white;margin-top:2px;">Find your words hidden in a grid!</div>
+          </div>
+        </button>
+        <button class="kid-action-btn" id="btn-game-scramble" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);box-shadow:0 6px 18px rgba(255,107,53,0.3);">
+          <div class="kid-action-icon">🔀</div>
+          <div style="text-align:left;">
+            <div class="kid-action-label" style="font-size:1.15rem;">Word Scramble</div>
+            <div style="font-size:0.75rem;font-weight:700;opacity:0.9;color:white;margin-top:2px;">Unscramble the letters to spell the word!</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Word Search Game -->
+  <div class="screen" id="screen-wordsearch">
+    <div class="card" style="text-align:center;padding:16px 12px;">
+      <div class="card-title" style="font-size:1.2rem;margin-bottom:6px;">🔍 Word Search</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.82rem;margin-bottom:10px;">Find all the hidden words!</p>
+      <div id="ws-found-count" style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.9rem;color:var(--green);margin-bottom:8px;">0 / 5 found</div>
+      <div id="ws-grid" style="display:inline-grid;gap:0;margin:0 auto 12px;user-select:none;-webkit-user-select:none;touch-action:none;"></div>
+      <div id="ws-word-list" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;"></div>
+      <div id="ws-complete" style="display:none;margin-top:14px;">
+        <div style="font-size:2rem;margin-bottom:4px;">🎉</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--green);">You found them all!</div>
+        <button class="btn-main btn-green" id="btn-ws-play-again" style="font-size:1rem;margin-top:12px;">🔄 Play Again</button>
+        <button class="btn-main btn-outline" id="btn-ws-back" style="font-size:0.9rem;margin-top:8px;">← Back to Words</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Word Scramble Game -->
+  <div class="screen" id="screen-scramble">
+    <div class="card" style="text-align:center;padding:20px 16px;">
+      <div class="card-title" style="font-size:1.2rem;margin-bottom:4px;">🔀 Word Scramble</div>
+      <div id="scramble-progress" style="font-weight:800;font-size:0.82rem;color:var(--muted);margin-bottom:10px;">Word 1 of 5</div>
+      <div class="spell-practice-progress" style="margin-bottom:12px;">
+        <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="scramble-bar" style="width:0%"></div></div>
+      </div>
+      <div id="scramble-hear" style="font-size:3rem;cursor:pointer;margin-bottom:8px;transition:transform 0.15s;" title="Hear the word">🔊</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.82rem;margin-bottom:14px;">Tap the speaker, then unscramble the letters!</p>
+      <div id="scramble-answer" style="display:flex;justify-content:center;gap:6px;min-height:52px;margin-bottom:14px;flex-wrap:wrap;"></div>
+      <div style="height:2px;background:var(--border);border-radius:2px;margin:0 20px 14px;"></div>
+      <div id="scramble-tiles" style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;"></div>
+      <div id="scramble-feedback" style="min-height:40px;margin-bottom:8px;"></div>
+      <div id="scramble-word-display" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;"></div>
+      <div id="scramble-complete" style="display:none;">
+        <div style="font-size:2rem;margin-bottom:4px;">🎉</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--green);" id="scramble-final-msg">Great job!</div>
+        <button class="btn-main btn-green" id="btn-scramble-play-again" style="font-size:1rem;margin-top:12px;">🔄 Play Again</button>
+        <button class="btn-main btn-outline" id="btn-scramble-back" style="font-size:0.9rem;margin-top:8px;">← Back to Words</button>
+      </div>
     </div>
   </div>
 
@@ -2093,7 +2200,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CC</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6157,6 +6264,8 @@ function openSpellingPicker() {
   const pickerTitle = document.querySelector('#screen-spell-picker .card-title');
   if (spellingPracticeMode === 'quiz') {
     pickerTitle.textContent = '📝 Which words do you want to be quizzed on?';
+  } else if (spellingPracticeMode === 'games') {
+    pickerTitle.textContent = '🎮 Which words do you want to play with?';
   } else {
     pickerTitle.textContent = '🎯 Which words do you want to practice?';
   }
@@ -6265,6 +6374,10 @@ document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
   const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
   if (spellingPracticeMode === 'quiz') {
     startSpellingQuiz(selectedWords);
+  } else if (spellingPracticeMode === 'games') {
+    gameSelectedWords = selectedWords;
+    document.getElementById('game-picker-count').textContent = `Playing with ${selectedWords.length} word${selectedWords.length !== 1 ? 's' : ''}`;
+    show('screen-game-picker');
   } else {
     startSpellingPractice(selectedWords);
   }
@@ -6985,6 +7098,486 @@ function shuffleArray(arr) {
   return arr;
 }
 
+// ── Spelling Games ───────────────────────────────────────
+let gameSelectedWords = [];
+
+document.getElementById('btn-spelling-games').addEventListener('click', () => {
+  if (!currentSpellingList || !currentSpellingList.words.length) return;
+  spellingPracticeMode = 'games';
+  openSpellingPicker();
+});
+
+// Game picker buttons
+document.getElementById('btn-game-wordsearch').addEventListener('click', () => {
+  startWordSearch(gameSelectedWords);
+});
+document.getElementById('btn-game-scramble').addEventListener('click', () => {
+  startWordScramble(gameSelectedWords);
+});
+
+// ── Word Search Engine ──────────────────────────────────
+let wsGrid = [];
+let wsWords = [];
+let wsFound = [];
+let wsSelecting = false;
+let wsStartCell = null;
+let wsCells = [];
+let wsGridSize = 10;
+let wsPlacedWords = []; // {word, cells: [{r,c},...]}
+
+function startWordSearch(words) {
+  wsWords = words.map(w => w.word.toUpperCase());
+  wsFound = [];
+  
+  // Grid size based on longest word and grade
+  const maxLen = Math.max(...wsWords.map(w => w.length));
+  const gradeNum = S.grade === 'prek' ? 0 : S.grade === 'k' ? 0 : parseInt(S.grade) || 1;
+  wsGridSize = gradeNum <= 0 ? Math.max(8, maxLen + 2) : Math.max(10, maxLen + 2);
+  wsGridSize = Math.min(wsGridSize, 12);
+  
+  // Allow diagonals for grades 1-3
+  const allowDiagonal = gradeNum >= 1;
+  
+  // Generate grid
+  const result = generateWordSearchGrid(wsWords, wsGridSize, allowDiagonal);
+  wsGrid = result.grid;
+  wsPlacedWords = result.placed;
+  
+  // Render
+  renderWordSearchGrid();
+  updateWSFoundCount();
+  document.getElementById('ws-complete').style.display = 'none';
+  show('screen-wordsearch');
+}
+
+function generateWordSearchGrid(words, size, allowDiag) {
+  const grid = Array.from({length: size}, () => Array(size).fill(''));
+  const placed = [];
+  
+  // Directions: right, down, and optionally diagonal
+  const dirs = [{dr:0,dc:1},{dr:1,dc:0}]; // horizontal, vertical
+  if (allowDiag) {
+    dirs.push({dr:1,dc:1});  // diagonal down-right
+    dirs.push({dr:1,dc:-1}); // diagonal down-left
+  }
+  
+  // Sort words longest first for better placement
+  const sorted = [...words].sort((a,b) => b.length - a.length);
+  
+  for (const word of sorted) {
+    let placed_ok = false;
+    let attempts = 0;
+    while (!placed_ok && attempts < 100) {
+      attempts++;
+      const dir = dirs[Math.floor(Math.random() * dirs.length)];
+      const maxR = size - (dir.dr * (word.length - 1));
+      const maxC = dir.dc >= 0 ? size - (dir.dc * (word.length - 1)) : size;
+      const minC = dir.dc < 0 ? word.length - 1 : 0;
+      
+      if (maxR <= 0 || maxC <= minC) continue;
+      
+      const r = Math.floor(Math.random() * maxR);
+      const c = minC + Math.floor(Math.random() * (maxC - minC));
+      
+      // Check if word fits
+      let fits = true;
+      const cells = [];
+      for (let i = 0; i < word.length; i++) {
+        const nr = r + dir.dr * i;
+        const nc = c + dir.dc * i;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) { fits = false; break; }
+        if (grid[nr][nc] !== '' && grid[nr][nc] !== word[i]) { fits = false; break; }
+        cells.push({r: nr, c: nc});
+      }
+      
+      if (fits) {
+        for (let i = 0; i < word.length; i++) {
+          grid[cells[i].r][cells[i].c] = word[i];
+        }
+        placed.push({word, cells});
+        placed_ok = true;
+      }
+    }
+    if (!placed_ok) {
+      // Force place — find any empty row
+      for (let r = 0; r < size && !placed_ok; r++) {
+        for (let c = 0; c <= size - word.length && !placed_ok; c++) {
+          let canPlace = true;
+          const cells = [];
+          for (let i = 0; i < word.length; i++) {
+            if (grid[r][c+i] !== '' && grid[r][c+i] !== word[i]) { canPlace = false; break; }
+            cells.push({r, c: c+i});
+          }
+          if (canPlace) {
+            for (let i = 0; i < word.length; i++) grid[r][c+i] = word[i];
+            placed.push({word, cells});
+            placed_ok = true;
+          }
+        }
+      }
+    }
+  }
+  
+  // Fill empty cells with random letters
+  const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (grid[r][c] === '') grid[r][c] = alpha[Math.floor(Math.random() * 26)];
+    }
+  }
+  
+  return {grid, placed};
+}
+
+function renderWordSearchGrid() {
+  const container = document.getElementById('ws-grid');
+  container.innerHTML = '';
+  container.style.gridTemplateColumns = `repeat(${wsGridSize}, 1fr)`;
+  wsCells = [];
+  
+  for (let r = 0; r < wsGridSize; r++) {
+    for (let c = 0; c < wsGridSize; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'ws-cell';
+      cell.textContent = wsGrid[r][c];
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      
+      // Touch/mouse handlers for drag selection
+      cell.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        wsSelecting = true;
+        wsStartCell = {r, c};
+        clearWSSelection();
+        cell.classList.add('selecting');
+      });
+      
+      cell.addEventListener('pointerenter', () => {
+        if (!wsSelecting || !wsStartCell) return;
+        highlightWSLine(wsStartCell.r, wsStartCell.c, r, c);
+      });
+      
+      cell.addEventListener('pointerup', () => {
+        if (!wsSelecting || !wsStartCell) return;
+        wsSelecting = false;
+        checkWSSelection(wsStartCell.r, wsStartCell.c, r, c);
+        wsStartCell = null;
+      });
+      
+      container.appendChild(cell);
+      wsCells.push(cell);
+    }
+  }
+  
+  // Pointerup on document in case they drag off grid
+  document.addEventListener('pointerup', () => {
+    if (wsSelecting) {
+      wsSelecting = false;
+      clearWSSelection();
+      wsStartCell = null;
+    }
+  }, {once: false});
+  
+  // Word list at bottom
+  const listEl = document.getElementById('ws-word-list');
+  listEl.innerHTML = '';
+  wsWords.forEach(w => {
+    const tag = document.createElement('span');
+    tag.className = 'ws-word-tag';
+    tag.id = 'ws-tag-' + w;
+    tag.textContent = w;
+    listEl.appendChild(tag);
+  });
+}
+
+function getWSCell(r, c) {
+  return wsCells[r * wsGridSize + c];
+}
+
+function clearWSSelection() {
+  wsCells.forEach(c => c.classList.remove('selecting', 'wrong-flash'));
+}
+
+function highlightWSLine(r1, c1, r2, c2) {
+  clearWSSelection();
+  const cells = getLineCells(r1, c1, r2, c2);
+  if (cells) cells.forEach(({r,c}) => getWSCell(r,c).classList.add('selecting'));
+}
+
+function getLineCells(r1, c1, r2, c2) {
+  const dr = r2 - r1;
+  const dc = c2 - c1;
+  const len = Math.max(Math.abs(dr), Math.abs(dc));
+  if (len === 0) return [{r: r1, c: c1}];
+  
+  const sr = dr === 0 ? 0 : dr / Math.abs(dr);
+  const sc = dc === 0 ? 0 : dc / Math.abs(dc);
+  
+  // Must be a straight line (horizontal, vertical, or diagonal)
+  if (Math.abs(dr) !== 0 && Math.abs(dc) !== 0 && Math.abs(dr) !== Math.abs(dc)) return null;
+  
+  const cells = [];
+  for (let i = 0; i <= len; i++) {
+    const r = r1 + sr * i;
+    const c = c1 + sc * i;
+    if (r < 0 || r >= wsGridSize || c < 0 || c >= wsGridSize) return null;
+    cells.push({r, c});
+  }
+  return cells;
+}
+
+function checkWSSelection(r1, c1, r2, c2) {
+  const cells = getLineCells(r1, c1, r2, c2);
+  if (!cells || cells.length < 2) { clearWSSelection(); return; }
+  
+  const selected = cells.map(({r,c}) => wsGrid[r][c]).join('');
+  const reversed = selected.split('').reverse().join('');
+  
+  // Check if selection matches any unfound word
+  let matchedWord = null;
+  let matchedPlaced = null;
+  for (const pw of wsPlacedWords) {
+    if (wsFound.includes(pw.word)) continue;
+    if (selected === pw.word || reversed === pw.word) {
+      matchedWord = pw.word;
+      matchedPlaced = pw;
+      break;
+    }
+  }
+  
+  if (matchedWord) {
+    // Found!
+    wsFound.push(matchedWord);
+    matchedPlaced.cells.forEach(({r,c}) => {
+      getWSCell(r,c).classList.remove('selecting');
+      getWSCell(r,c).classList.add('found');
+    });
+    const tag = document.getElementById('ws-tag-' + matchedWord);
+    if (tag) tag.classList.add('found');
+    updateWSFoundCount();
+    
+    if (wsFound.length === wsWords.length) {
+      // All found!
+      setTimeout(() => {
+        document.getElementById('ws-complete').style.display = 'block';
+      }, 500);
+    }
+  } else {
+    // Wrong — brief flash
+    cells.forEach(({r,c}) => {
+      const cell = getWSCell(r,c);
+      cell.classList.remove('selecting');
+      cell.classList.add('wrong-flash');
+    });
+    setTimeout(clearWSSelection, 400);
+  }
+}
+
+function updateWSFoundCount() {
+  document.getElementById('ws-found-count').textContent = `${wsFound.length} / ${wsWords.length} found`;
+}
+
+document.getElementById('btn-ws-play-again').addEventListener('click', () => {
+  startWordSearch(gameSelectedWords);
+});
+document.getElementById('btn-ws-back').addEventListener('click', () => {
+  show('screen-spelling');
+  if (currentSpellingList) renderSpellingWords(currentSpellingList);
+});
+
+// ── Word Scramble Engine ────────────────────────────────
+let scrambleWords = [];
+let scrambleIndex = 0;
+let scrambleCurrentWord = '';
+let scrambleLetters = [];
+let scrambleAnswer = [];
+let scrambleCorrect = 0;
+
+function startWordScramble(words) {
+  scrambleWords = shuffleArray([...words]);
+  scrambleIndex = 0;
+  scrambleCorrect = 0;
+  document.getElementById('scramble-complete').style.display = 'none';
+  document.getElementById('scramble-hear').style.display = 'block';
+  showScrambleWord();
+  show('screen-scramble');
+}
+
+function showScrambleWord() {
+  if (scrambleIndex >= scrambleWords.length) {
+    showScrambleComplete();
+    return;
+  }
+  
+  const word = scrambleWords[scrambleIndex];
+  scrambleCurrentWord = word.word.toUpperCase();
+  
+  // Update progress
+  document.getElementById('scramble-progress').textContent = `Word ${scrambleIndex + 1} of ${scrambleWords.length}`;
+  const pct = (scrambleIndex / scrambleWords.length) * 100;
+  document.getElementById('scramble-bar').style.width = pct + '%';
+  
+  // Scramble the letters
+  scrambleLetters = shuffleArray(scrambleCurrentWord.split(''));
+  // Make sure it's actually scrambled (not in original order)
+  let attempts = 0;
+  while (scrambleLetters.join('') === scrambleCurrentWord && attempts < 20) {
+    scrambleLetters = shuffleArray(scrambleCurrentWord.split(''));
+    attempts++;
+  }
+  
+  scrambleAnswer = [];
+  
+  // Clear feedback
+  document.getElementById('scramble-feedback').innerHTML = '';
+  
+  // Render answer slots
+  const answerEl = document.getElementById('scramble-answer');
+  answerEl.innerHTML = '';
+  for (let i = 0; i < scrambleCurrentWord.length; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'scramble-slot';
+    slot.dataset.idx = i;
+    // Tap to remove letter
+    slot.addEventListener('click', () => {
+      if (!slot.classList.contains('filled')) return;
+      const letter = slot.textContent;
+      slot.textContent = '';
+      slot.classList.remove('filled');
+      scrambleAnswer[i] = null;
+      // Un-use the tile
+      const tiles = document.querySelectorAll('#scramble-tiles .scramble-tile.used');
+      for (const t of tiles) {
+        if (t.dataset.letter === letter && t.dataset.returnIdx === String(i)) {
+          t.classList.remove('used');
+          break;
+        }
+      }
+    });
+    answerEl.appendChild(slot);
+  }
+  
+  // Render letter tiles
+  const tilesEl = document.getElementById('scramble-tiles');
+  tilesEl.innerHTML = '';
+  scrambleLetters.forEach((letter, idx) => {
+    const tile = document.createElement('div');
+    tile.className = 'scramble-tile';
+    tile.textContent = letter;
+    tile.dataset.letter = letter;
+    tile.dataset.tileIdx = idx;
+    tile.addEventListener('click', () => {
+      if (tile.classList.contains('used')) return;
+      // Find first empty slot
+      const slots = answerEl.querySelectorAll('.scramble-slot');
+      let placed = false;
+      for (let i = 0; i < slots.length; i++) {
+        if (!slots[i].classList.contains('filled')) {
+          slots[i].textContent = letter;
+          slots[i].classList.add('filled');
+          scrambleAnswer[i] = letter;
+          tile.classList.add('used');
+          tile.dataset.returnIdx = String(i);
+          placed = true;
+          break;
+        }
+      }
+      
+      // Check if all slots filled
+      if (placed && scrambleAnswer.filter(a => a !== null && a !== undefined).length === scrambleCurrentWord.length) {
+        checkScrambleAnswer();
+      }
+    });
+    tilesEl.appendChild(tile);
+  });
+  
+  // Show word list at bottom
+  const wordDisplay = document.getElementById('scramble-word-display');
+  wordDisplay.innerHTML = '';
+  scrambleWords.forEach((w, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'ws-word-tag';
+    if (i < scrambleIndex) tag.classList.add('found');
+    tag.textContent = w.word.toUpperCase();
+    wordDisplay.appendChild(tag);
+  });
+  
+  // Auto-play the word
+  setTimeout(() => sayWordForPractice(word.word), 400);
+}
+
+document.getElementById('scramble-hear').addEventListener('click', () => {
+  if (scrambleIndex < scrambleWords.length) {
+    sayWordForPractice(scrambleWords[scrambleIndex].word);
+  }
+});
+
+function checkScrambleAnswer() {
+  const attempt = scrambleAnswer.join('');
+  const slots = document.querySelectorAll('#scramble-answer .scramble-slot');
+  
+  if (attempt === scrambleCurrentWord) {
+    // Correct!
+    scrambleCorrect++;
+    slots.forEach(s => s.classList.add('correct'));
+    document.getElementById('scramble-feedback').innerHTML =
+      '<div class="spell-practice-feedback-msg" style="color:var(--green);">✅ Perfect!</div>';
+    setTimeout(() => {
+      scrambleIndex++;
+      showScrambleWord();
+    }, 1200);
+  } else {
+    // Wrong — show which letters are right/wrong
+    for (let i = 0; i < slots.length; i++) {
+      if (scrambleAnswer[i] === scrambleCurrentWord[i]) {
+        slots[i].classList.add('correct');
+      } else {
+        slots[i].classList.add('wrong');
+      }
+    }
+    document.getElementById('scramble-feedback').innerHTML =
+      `<div class="spell-practice-feedback-msg" style="color:var(--coral);">Not quite — try again!</div>`;
+    
+    // Reset after a moment
+    setTimeout(() => {
+      slots.forEach(s => {
+        s.textContent = '';
+        s.classList.remove('filled', 'correct', 'wrong');
+      });
+      scrambleAnswer = [];
+      document.querySelectorAll('#scramble-tiles .scramble-tile').forEach(t => t.classList.remove('used'));
+      document.getElementById('scramble-feedback').innerHTML = '';
+    }, 1500);
+  }
+}
+
+function showScrambleComplete() {
+  document.getElementById('scramble-hear').style.display = 'none';
+  document.getElementById('scramble-progress').textContent = 'All done!';
+  document.getElementById('scramble-bar').style.width = '100%';
+  document.getElementById('scramble-answer').innerHTML = '';
+  document.getElementById('scramble-tiles').innerHTML = '';
+  document.getElementById('scramble-feedback').innerHTML = '';
+  document.getElementById('scramble-complete').style.display = 'block';
+  
+  const pct = Math.round((scrambleCorrect / scrambleWords.length) * 100);
+  if (pct === 100) {
+    document.getElementById('scramble-final-msg').textContent = '🌟 Perfect! You unscrambled every word!';
+  } else if (pct >= 70) {
+    document.getElementById('scramble-final-msg').textContent = `🎉 Great job! ${scrambleCorrect} out of ${scrambleWords.length}!`;
+  } else {
+    document.getElementById('scramble-final-msg').textContent = `💪 Nice try! ${scrambleCorrect} out of ${scrambleWords.length}!`;
+  }
+}
+
+document.getElementById('btn-scramble-play-again').addEventListener('click', () => {
+  startWordScramble(gameSelectedWords);
+});
+document.getElementById('btn-scramble-back').addEventListener('click', () => {
+  show('screen-spelling');
+  if (currentSpellingList) renderSpellingWords(currentSpellingList);
+});
+
 // ── Bedtime Mode ──────────────────────────────────────────
 function applyBedtime(on) {
   document.body.classList.toggle('bedtime', on);
@@ -7216,7 +7809,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'CB',
+      appBuild: 'CC',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -7478,6 +8071,9 @@ const SCREEN_BACK_MAP = {
   'screen-quiz-countdown': ['← Quit', 'screen-spelling'],
   'screen-quiz': ['← Quit', 'screen-spelling'],
   'screen-quiz-results': ['← Back', 'screen-spelling'],
+  'screen-game-picker': ['← Back', 'screen-spell-picker'],
+  'screen-wordsearch': ['← Quit', 'screen-spelling'],
+  'screen-scramble': ['← Quit', 'screen-spelling'],
   'screen-wordbank': ['← Back', 'screen-pick'],
   'screen-timed-grade': ['← Back', 'screen-pick'],
   'screen-timed-source': ['← Back', 'screen-timed-grade'],
