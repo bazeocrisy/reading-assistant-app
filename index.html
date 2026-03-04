@@ -1111,7 +1111,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CD</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2200,7 +2200,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7491,15 +7491,21 @@ function showScrambleWord() {
     tilesEl.appendChild(tile);
   });
   
-  // Show word list at bottom
+  // Show progress dots at bottom (no words shown - voice says them)
   const wordDisplay = document.getElementById('scramble-word-display');
   wordDisplay.innerHTML = '';
   scrambleWords.forEach((w, i) => {
-    const tag = document.createElement('span');
-    tag.className = 'ws-word-tag';
-    if (i < scrambleIndex) tag.classList.add('found');
-    tag.textContent = w.word.toUpperCase();
-    wordDisplay.appendChild(tag);
+    const dot = document.createElement('span');
+    dot.style.cssText = 'width:12px;height:12px;border-radius:50%;display:inline-block;transition:all 0.3s;';
+    if (i < scrambleIndex) {
+      dot.style.background = 'var(--green)';
+    } else if (i === scrambleIndex) {
+      dot.style.background = 'var(--purple)';
+      dot.style.transform = 'scale(1.3)';
+    } else {
+      dot.style.background = 'var(--border)';
+    }
+    wordDisplay.appendChild(dot);
   });
   
   // Auto-play the word
@@ -7809,7 +7815,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'CC',
+      appBuild: 'CD',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
