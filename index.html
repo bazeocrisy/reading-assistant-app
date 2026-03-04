@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BP</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2017,7 +2017,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BP</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4419,8 +4419,13 @@ function setupReadScreen() {
 
 function renderStory(title, body) {
   const titleEl = document.getElementById('story-title');
-  titleEl.innerHTML = S.isAIStory ? title + ' <span class="ai-badge">✨ AI</span>' : '';
-  if (!S.isAIStory) titleEl.textContent = title;
+  titleEl.textContent = title;
+  if (S.isAIStory) {
+    const badge = document.createElement('span');
+    badge.className = 'ai-badge';
+    badge.textContent = '✨ AI';
+    titleEl.appendChild(badge);
+  }
   const container = document.getElementById('story-text');
   container.innerHTML = ''; S.wordEls = [];
 
@@ -4534,9 +4539,15 @@ let dictPopupOpen = false;
 let teacherWasPaused = false;
 let teacherPausePosition = 0;
 let dictAudio = null;
+let lastDictLookupTime = 0;
+const DICT_THROTTLE_MS = 2000; // 1 lookup per 2 seconds
 
 function showDictionaryPopup(word, idx) {
   if (dictPopupOpen) return;
+  // Throttle: prevent rapid lookups burning API credits
+  const now = Date.now();
+  if (now - lastDictLookupTime < DICT_THROTTLE_MS) return;
+  lastDictLookupTime = now;
   dictPopupOpen = true;
 
   // Pause teacher if playing
@@ -4740,13 +4751,30 @@ function openWordBankReview() {
       item.className = 'wb-review-item';
       item.style.flexDirection = 'column';
       item.style.alignItems = 'flex-start';
-      item.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-          <div class="wb-review-word" style="flex:1;cursor:pointer;">${w.word}</div>
-          <button class="wb-know-btn" aria-label="I know the word ${w.word}">✅ I Know This!</button>
-        </div>
-        ${definition ? `<div style="font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;cursor:pointer;">${definition}</div>` : '<div style="font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;cursor:pointer;">Tap to look up meaning</div>'}
-      `;
+      // Build card with safe DOM methods (no innerHTML with user/API data)
+      const topRow = document.createElement('div');
+      topRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;width:100%;';
+      const wordDiv = document.createElement('div');
+      wordDiv.className = 'wb-review-word';
+      wordDiv.style.cssText = 'flex:1;cursor:pointer;';
+      wordDiv.textContent = w.word;
+      const knowBtn2 = document.createElement('button');
+      knowBtn2.className = 'wb-know-btn';
+      knowBtn2.setAttribute('aria-label', 'I know the word ' + w.word);
+      knowBtn2.textContent = '✅ I Know This!';
+      topRow.appendChild(wordDiv);
+      topRow.appendChild(knowBtn2);
+      item.appendChild(topRow);
+
+      const defDiv = document.createElement('div');
+      if (definition) {
+        defDiv.style.cssText = 'font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;cursor:pointer;';
+        defDiv.textContent = definition;
+      } else {
+        defDiv.style.cssText = 'font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;cursor:pointer;';
+        defDiv.textContent = 'Tap to look up meaning';
+      }
+      item.appendChild(defDiv);
 
       // Tap word/definition area to hear it
       item.addEventListener('click', (e) => {
@@ -4756,8 +4784,7 @@ function openWordBankReview() {
       });
 
       // "I Know This!" removes the word
-      const knowBtn = item.querySelector('.wb-know-btn');
-      knowBtn.addEventListener('click', (e) => {
+      knowBtn2.addEventListener('click', (e) => {
         e.stopPropagation();
         item.classList.add('removing');
         setTimeout(() => {
@@ -5882,10 +5909,21 @@ function openSpellingPicker() {
     const row = document.createElement('div');
     row.className = 'spell-picker-word';
     row.dataset.idx = idx;
-    row.innerHTML = `
-      <div class="spell-picker-check"></div>
-      <div class="spell-picker-label">${w.word}${w.isRedWord ? ' <span class="spelling-red-badge">TRICKY</span>' : ''}</div>
-    `;
+    row.innerHTML = '';
+      const checkDiv = document.createElement('div');
+      checkDiv.className = 'spell-picker-check';
+      const labelDiv = document.createElement('div');
+      labelDiv.className = 'spell-picker-label';
+      labelDiv.textContent = w.word;
+      if (w.isRedWord) {
+        const badge = document.createElement('span');
+        badge.className = 'spelling-red-badge';
+        badge.textContent = 'TRICKY';
+        labelDiv.appendChild(document.createTextNode(' '));
+        labelDiv.appendChild(badge);
+      }
+      row.appendChild(checkDiv);
+      row.appendChild(labelDiv);
     row.addEventListener('click', () => {
       row.classList.toggle('picked');
       const check = row.querySelector('.spell-picker-check');
@@ -6917,7 +6955,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'AZ',
+      appBuild: 'BP',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
