@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BX</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BY</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1629,6 +1629,50 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
+  <!-- SCREEN: Spelling Source Picker -->
+  <div class="screen" id="screen-spelling-source">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">🔤 Spelling Words</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">How do you want to add your spelling words?</p>
+
+      <!-- Upload / Photo -->
+      <button class="kid-action-btn" id="btn-spell-source-upload" aria-label="Upload a spelling word list photo" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">📸</div>
+        <div class="kid-action-label">Upload a Photo</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Take a photo of your spelling word list</p>
+
+      <!-- Type / Paste -->
+      <button class="kid-action-btn" id="btn-spell-source-type" aria-label="Type or paste spelling words" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">✏️</div>
+        <div class="kid-action-label">Type My Words</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Type or paste your spelling words</p>
+
+      <!-- View existing list (if any) -->
+      <button class="btn-main btn-outline" id="btn-spell-source-existing" style="font-size:0.95rem;display:none;">📋 View My Current Words</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Spelling Type/Paste Input -->
+  <div class="screen" id="screen-spelling-type">
+    <div class="card">
+      <div class="card-title">✏️ Type Your Spelling Words</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-bottom:8px;">Type or paste your spelling words below, separated by commas.</p>
+      <textarea id="spell-type-textarea" rows="5" style="width:100%;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;" placeholder="cat, dog, run, jump, happy"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <div id="spell-type-count" style="font-size:0.78rem;font-weight:800;color:var(--muted);">0 words</div>
+      </div>
+      <button class="btn-main btn-green" id="btn-spell-type-go" style="font-size:1.1rem;margin-top:12px;">🔤 Load These Words!</button>
+      <!-- Example hint -->
+      <div style="background:var(--section);border-radius:14px;padding:12px 16px;margin-top:14px;border:2px dashed var(--border);">
+        <p style="font-weight:800;font-size:0.82rem;color:var(--muted);margin:0 0 6px;">💡 Example formats:</p>
+        <p style="font-weight:700;font-size:0.85rem;color:var(--ink);margin:0 0 4px;font-family:'Fredoka',sans-serif;">cat, dog, run, jump, happy</p>
+        <p style="font-weight:700;font-size:0.78rem;color:var(--muted);margin:0;">You can also put one word per line!</p>
+      </div>
+    </div>
+  </div>
+
   <!-- SCREEN: Spelling Words -->
   <div class="screen" id="screen-spelling">
     <div class="card">
@@ -2045,7 +2089,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BX</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5608,13 +5652,105 @@ function triggerSpellingUpload() {
 }
 
 document.getElementById('btn-spelling-start').addEventListener('click', () => {
-  // Always trigger fresh upload — no grade required
+  // Show source picker — also check if existing list exists
+  const d = getData();
+  const existingBtn = document.getElementById('btn-spell-source-existing');
+  if (d.spellingLists && d.spellingLists.length > 0) {
+    existingBtn.style.display = 'block';
+    const latest = d.spellingLists[d.spellingLists.length - 1];
+    existingBtn.textContent = `📋 View My Current Words (${latest.words.length})`;
+  } else {
+    existingBtn.style.display = 'none';
+  }
+  show('screen-spelling-source');
+});
+
+// Spelling source picker: Upload photo
+document.getElementById('btn-spell-source-upload').addEventListener('click', () => {
   document.getElementById('spelling-file-input').click();
 });
 
-document.getElementById('btn-spelling-upload-empty').addEventListener('click', triggerSpellingUpload);
+// Spelling source picker: Type/paste words
+document.getElementById('btn-spell-source-type').addEventListener('click', () => {
+  document.getElementById('spell-type-textarea').value = '';
+  document.getElementById('spell-type-count').textContent = '0 words';
+  show('screen-spelling-type');
+});
 
-document.getElementById('btn-spelling-new').addEventListener('click', triggerSpellingUpload);
+// Spelling source picker: View existing list
+document.getElementById('btn-spell-source-existing').addEventListener('click', () => {
+  const d = getData();
+  if (d.spellingLists && d.spellingLists.length > 0) {
+    currentSpellingList = d.spellingLists[d.spellingLists.length - 1];
+    renderSpellingWords(currentSpellingList);
+    show('screen-spelling');
+  }
+});
+
+// Spelling type screen: live word count
+document.getElementById('spell-type-textarea').addEventListener('input', (e) => {
+  const raw = e.target.value.trim();
+  const words = raw ? raw.split(/[,\n]+/).map(w => w.trim()).filter(w => w.length > 0) : [];
+  document.getElementById('spell-type-count').textContent = `${words.length} word${words.length !== 1 ? 's' : ''}`;
+});
+
+// Spelling type screen: submit
+document.getElementById('btn-spell-type-go').addEventListener('click', () => {
+  const raw = document.getElementById('spell-type-textarea').value.trim();
+  if (!raw) {
+    document.getElementById('spell-type-textarea').style.borderColor = 'var(--coral)';
+    return;
+  }
+  document.getElementById('spell-type-textarea').style.borderColor = 'var(--border)';
+  const words = raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+  if (words.length === 0) {
+    document.getElementById('spell-type-textarea').style.borderColor = 'var(--coral)';
+    return;
+  }
+
+  // Build spelling list
+  const spellingList = {
+    id: Date.now().toString(36),
+    date: new Date().toISOString(),
+    grade: S.grade || '2',
+    words: words.map((w, i) => ({
+      word: w,
+      syllables: w,
+      isRedWord: false,
+      num: i + 1,
+      practiced: 0,
+      mastered: false
+    }))
+  };
+
+  // Save to localStorage
+  const d = getData();
+  d.spellingLists.push(spellingList);
+  if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
+  saveData(d);
+
+  currentSpellingList = spellingList;
+  renderSpellingWords(spellingList);
+  show('screen-spelling');
+});
+
+document.getElementById('btn-spelling-upload-empty').addEventListener('click', () => {
+  show('screen-spelling-source');
+});
+
+document.getElementById('btn-spelling-new').addEventListener('click', () => {
+  // Go to source picker for new words
+  const d = getData();
+  const existingBtn = document.getElementById('btn-spell-source-existing');
+  if (d.spellingLists && d.spellingLists.length > 0) {
+    existingBtn.style.display = 'block';
+    const latest = d.spellingLists[d.spellingLists.length - 1];
+    existingBtn.textContent = `📋 View My Current Words (${latest.words.length})`;
+  } else {
+    existingBtn.style.display = 'none';
+  }
+  show('screen-spelling-source');
+});
 
 document.getElementById('btn-spelling-done').addEventListener('click', () => {
   show('screen-pick');
@@ -6983,7 +7119,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BX',
+      appBuild: 'BY',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -7236,7 +7372,9 @@ const SCREEN_BACK_MAP = {
   'screen-story-builder': ['← Back', 'screen-pick'],
   'screen-read': ['← Back', 'screen-pick'],
   'screen-solo-complete': ['← Back', 'screen-pick'],
-  'screen-spelling': ['← Back', 'screen-pick'],
+  'screen-spelling-source': ['← Back', 'screen-pick'],
+  'screen-spelling-type': ['← Back', 'screen-spelling-source'],
+  'screen-spelling': ['← Back', 'screen-spelling-source'],
   'screen-spell-picker': ['← Back', 'screen-spelling'],
   'screen-spell-practice': ['← Quit', 'screen-spelling'],
   'screen-spell-results': ['← Back', 'screen-spelling'],
