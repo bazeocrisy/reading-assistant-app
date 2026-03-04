@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BS</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BT</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2045,7 +2045,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BS</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BT</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2901,10 +2901,8 @@ async function playSpeech(startFromMs) {
       }).catch(playErr => {
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
         setTtsState('idle');
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '▶ Tap to Play!';
-        playBtn.disabled = false;
-        playBtn.style.animation = 'pulse 1s ease-in-out infinite';
+        setPlayBtn('▶', 'Tap to Play!', false);
+        document.getElementById('btn-play').style.animation = 'pulse 1s ease-in-out infinite';
         document.getElementById('btn-pause').disabled = true;
         const t = document.getElementById('word-toast');
         t.textContent = '👆 Your partner started — tap Play to join!';
@@ -2944,10 +2942,8 @@ async function playSpeech(startFromMs) {
       }).catch(playErr => {
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
         setTtsState('idle');
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '▶ Tap to Play!';
-        playBtn.disabled = false;
-        playBtn.style.animation = 'pulse 1s ease-in-out infinite';
+        setPlayBtn('▶', 'Tap to Play!', false);
+        document.getElementById('btn-play').style.animation = 'pulse 1s ease-in-out infinite';
         document.getElementById('btn-pause').disabled = true;
         const t = document.getElementById('word-toast');
         t.textContent = '👆 Your partner started — tap Play to join!';
@@ -2982,10 +2978,8 @@ async function playSpeech(startFromMs) {
         // when host triggers play remotely
         togetherLog('🔒 Autoplay blocked: ' + playErr.message);
         setTtsState('idle');
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '▶ Tap to Play!';
-        playBtn.disabled = false;
-        playBtn.style.animation = 'pulse 1s ease-in-out infinite';
+        setPlayBtn('▶', 'Tap to Play!', false);
+        document.getElementById('btn-play').style.animation = 'pulse 1s ease-in-out infinite';
         document.getElementById('btn-pause').disabled = true;
         const t = document.getElementById('word-toast');
         t.textContent = '👆 Your partner started — tap Play to join!';
@@ -4300,8 +4294,7 @@ function setupReadScreen() {
   if (navigator.onLine && S.story) {
     if (S.isRace) {
       const playBtn = document.getElementById('btn-play');
-      playBtn.textContent = '⏳ Loading audio...';
-      playBtn.disabled = true;
+      setPlayBtn('⏳', 'Loading audio...', true);
       togetherLog('⏳ Loading TTS audio...');
     }
 
@@ -4314,10 +4307,8 @@ function setupReadScreen() {
       if (!S.isRace) return;
       if (myReady && partnerReady) {
         playEnabled = true;
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '▶ Play';
-        playBtn.disabled = false;
-        playBtn.style.animation = 'pulse 1s ease-in-out 3';
+        setPlayBtn('▶', 'Listen to Story', false);
+        document.getElementById('btn-play').style.animation = 'pulse 1s ease-in-out 3';
         togetherLog('🟢 Both ready — Play enabled!');
         // If partner sent play while we were waiting, auto-play now
         if (pendingPartnerPlay !== null && ttsState === 'idle') {
@@ -4329,9 +4320,7 @@ function setupReadScreen() {
           playSpeech(pos);
         }
       } else if (myReady && !partnerReady) {
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '⏳ Waiting for partner...';
-        playBtn.disabled = true;
+        setPlayBtn('⏳', 'Waiting for partner...', true);
         togetherLog('⏳ My audio ready, waiting for partner...');
       }
     }
@@ -4354,9 +4343,7 @@ function setupReadScreen() {
       setTimeout(() => {
         if (!playEnabled) {
           playEnabled = true;
-          const playBtn = document.getElementById('btn-play');
-          playBtn.textContent = '▶ Play';
-          playBtn.disabled = false;
+          setPlayBtn('▶', 'Listen to Story', false);
           togetherLog('⏰ 30s timeout — Play enabled');
         }
       }, 30000);
@@ -4384,9 +4371,7 @@ function setupReadScreen() {
             checkBothReady();
           } else {
             // Solo mode: enable Play immediately
-            const playBtn = document.getElementById('btn-play');
-            playBtn.textContent = '▶ Play';
-            playBtn.disabled = false;
+            setPlayBtn('▶', 'Listen to Story', false);
           }
         }, { once: true });
         // Fallback if canplaythrough doesn't fire in 15s
@@ -4417,9 +4402,7 @@ function setupReadScreen() {
       if (S.isRace) {
         checkBothReady();
       } else {
-        const playBtn = document.getElementById('btn-play');
-        playBtn.textContent = '▶ Play';
-        playBtn.disabled = false;
+        setPlayBtn('▶', 'Listen to Story', false);
       }
     });
   }
@@ -6963,7 +6946,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BS',
+      appBuild: 'BT',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
