@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BZ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CA</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1845,24 +1845,28 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
-  <!-- SCREEN: Timed Reading Source Picker -->
+  <!-- SCREEN: Timed Reading Step 1 — Pick Grade -->
+  <div class="screen" id="screen-timed-grade">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;margin-bottom:4px;">⏱</div>
+      <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">Time My Reading</div>
+      <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:18px;">What grade are you in?</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="wiz-grade-btn timed-grade-select" data-grade="prek" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);"><span style="font-size:1.6rem;">🧸</span><span style="font-size:1.2rem;font-weight:900;">Pre-K</span></button>
+        <button class="wiz-grade-btn timed-grade-select" data-grade="k" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);"><span style="font-size:1.6rem;">🎨</span><span style="font-size:1.2rem;font-weight:900;">Kindergarten</span></button>
+        <button class="wiz-grade-btn timed-grade-select" data-grade="1" style="background:linear-gradient(135deg,#5CD85A,#27AE60);"><span style="font-size:1.6rem;">⭐</span><span style="font-size:1.2rem;font-weight:900;">1st Grade</span></button>
+        <button class="wiz-grade-btn timed-grade-select" data-grade="2" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);"><span style="font-size:1.6rem;">🚀</span><span style="font-size:1.2rem;font-weight:900;">2nd Grade</span></button>
+        <button class="wiz-grade-btn timed-grade-select" data-grade="3" style="background:linear-gradient(135deg,#E74C3C,#C0392B);"><span style="font-size:1.6rem;">🔥</span><span style="font-size:1.2rem;font-weight:900;">3rd Grade</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Timed Reading Step 2 — Pick Source -->
   <div class="screen" id="screen-timed-source">
     <div class="card" style="text-align:center;">
       <div class="card-title">⏱ Time My Reading</div>
 
-      <!-- Grade selector for benchmarks -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;">
-        <span style="font-weight:800;font-size:0.85rem;color:var(--muted);">Grade:</span>
-        <div id="timed-grade-pills" style="display:flex;gap:6px;">
-          <button class="timed-grade-pill" data-grade="prek" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">Pre-K</button>
-          <button class="timed-grade-pill" data-grade="k" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">K</button>
-          <button class="timed-grade-pill sel" data-grade="1" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--purple);background:var(--purple-soft);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--purple);cursor:pointer;">1st</button>
-          <button class="timed-grade-pill" data-grade="2" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">2nd</button>
-          <button class="timed-grade-pill" data-grade="3" style="padding:6px 12px;border-radius:20px;border:2.5px solid var(--border);background:var(--cream);font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.8rem;color:var(--ink);cursor:pointer;">3rd</button>
-        </div>
-      </div>
-
-      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Choose where your reading passage comes from:</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Where should the reading passage come from?</p>
 
       <!-- AI Generated -->
       <button class="kid-action-btn" id="btn-timed-ai" aria-label="Generate a reading passage for me" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 6px 18px rgba(255,107,53,0.3);margin-bottom:12px;">
@@ -1874,17 +1878,17 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Upload / Photo -->
       <button class="kid-action-btn" id="btn-timed-scan" aria-label="Upload a reading passage" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
         <div class="kid-action-icon" aria-hidden="true">📄</div>
-        <div class="kid-action-label">Upload a Passage</div>
+        <div class="kid-action-label">Upload a Document</div>
       </button>
       <input type="file" id="timed-scan-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words for read-aloud</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words</p>
 
       <!-- Paste Text -->
       <button class="kid-action-btn" id="btn-timed-paste" aria-label="Paste a reading passage" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
         <div class="kid-action-icon" aria-hidden="true">📋</div>
         <div class="kid-action-label">Paste a Passage</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 250+ words from a document, email, or website</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste 250+ words from a document, email, or website</p>
 
       <button class="btn-main btn-outline" id="btn-timed-source-back" style="display:none;">← Back Home</button>
     </div>
@@ -2089,7 +2093,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BZ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CA</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5249,30 +5253,24 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
 // WPM button handlers
 let wpmStandaloneMode = false; // true when launched from home screen
 
-// Home screen → Timed Reading source picker
+// Home screen → Timed Reading grade picker (Step 1)
 document.getElementById('btn-timed-reading-home').addEventListener('click', () => {
   wpmStandaloneMode = true;
-  if (!S.grade) S.grade = '1';
-  // Highlight active grade pill
-  document.querySelectorAll('.timed-grade-pill').forEach(p => {
-    const isActive = p.dataset.grade === S.grade;
-    p.style.borderColor = isActive ? 'var(--purple)' : 'var(--border)';
-    p.style.background = isActive ? 'var(--purple-soft)' : 'var(--cream)';
-    p.style.color = isActive ? 'var(--purple)' : 'var(--ink)';
-  });
-  show('screen-timed-source');
+  show('screen-timed-grade');
 });
 
-// Grade pills on timed source screen
-document.querySelectorAll('.timed-grade-pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    S.grade = pill.dataset.grade;
-    document.querySelectorAll('.timed-grade-pill').forEach(p => {
-      const isActive = p.dataset.grade === S.grade;
-      p.style.borderColor = isActive ? 'var(--purple)' : 'var(--border)';
-      p.style.background = isActive ? 'var(--purple-soft)' : 'var(--cream)';
-      p.style.color = isActive ? 'var(--purple)' : 'var(--ink)';
-    });
+// Timed Reading Step 1: Grade selector — tap grade → auto-advance to source picker
+document.querySelectorAll('#screen-timed-grade .timed-grade-select').forEach(btn => {
+  btn.addEventListener('click', () => {
+    S.grade = btn.dataset.grade;
+    // Set age-appropriate speed
+    S.speed = GRADE_SPEED_DEFAULTS[S.grade] || 0.9;
+    const speedSlider = document.getElementById('speed-slider');
+    const speedDisplay = document.getElementById('speed-display');
+    if (speedSlider) speedSlider.value = S.speed;
+    if (speedDisplay) speedDisplay.textContent = S.speed.toFixed(1) + '×';
+    btn.style.transform = 'scale(1.05)';
+    setTimeout(() => { btn.style.transform = ''; show('screen-timed-source'); }, 200);
   });
 });
 
@@ -7119,7 +7117,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BZ',
+      appBuild: 'CA',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -7382,7 +7380,8 @@ const SCREEN_BACK_MAP = {
   'screen-quiz': ['← Quit', 'screen-spelling'],
   'screen-quiz-results': ['← Back', 'screen-spelling'],
   'screen-wordbank': ['← Back', 'screen-pick'],
-  'screen-timed-source': ['← Back', 'screen-pick'],
+  'screen-timed-grade': ['← Back', 'screen-pick'],
+  'screen-timed-source': ['← Back', 'screen-timed-grade'],
   'screen-timed-paste': ['← Back', 'screen-timed-source'],
   'screen-own-source': ['← Back', 'screen-pick'],
   'screen-own-paste': ['← Back', 'screen-own-source'],
