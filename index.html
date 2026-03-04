@@ -150,7 +150,7 @@ header { text-align: center; padding: 24px 0 16px; }
 .cat-btn .emoji { display: none; }
 
 /* ── Story Wizard Buttons ─────────────────────────────── */
-.wiz-grade-btn, .wiz-size-btn {
+.wiz-grade-btn, .wiz-size-btn, .wiz-action-btn {
   display: flex; align-items: center; gap: 14px; width: 100%;
   padding: 16px 20px; border: none; border-radius: 16px;
   color: #fff; font-family: 'Nunito', sans-serif; cursor: pointer;
@@ -158,7 +158,7 @@ header { text-align: center; padding: 24px 0 16px; }
   box-shadow: 0 4px 14px rgba(0,0,0,0.15);
   -webkit-appearance: none;
 }
-.wiz-grade-btn:active, .wiz-size-btn:active {
+.wiz-grade-btn:active, .wiz-size-btn:active, .wiz-action-btn:active {
   transform: scale(0.96); box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 .wiz-topic-grid {
@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BM</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1245,7 +1245,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
       <div style="display:flex;flex-direction:column;gap:12px;">
         <!-- Create a Room — big wizard button -->
-        <button class="wiz-grade-btn" id="btn-create-room" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">
+        <button class="wiz-action-btn" id="btn-create-room" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">
           <span style="font-size:1.8rem;">🏠</span>
           <div style="text-align:left;">
             <span style="font-size:1.15rem;font-weight:900;">Create a Room</span>
@@ -1254,7 +1254,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         </button>
 
         <!-- Join a Room — big wizard button -->
-        <button class="wiz-grade-btn" id="btn-join-room-choice" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
+        <button class="wiz-action-btn" id="btn-join-room-choice" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
           <span style="font-size:1.8rem;">🔗</span>
           <div style="text-align:left;">
             <span style="font-size:1.15rem;font-weight:900;">Join a Room</span>
@@ -1368,19 +1368,19 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
         <div style="display:flex;flex-direction:column;gap:10px;">
           <!-- Option 1: AI Story -->
-          <button class="wiz-grade-btn" id="btn-pick-ai" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);">
+          <button class="wiz-action-btn" id="btn-pick-ai" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);">
             <span style="font-size:1.6rem;">✨</span>
             <span style="font-size:1.05rem;font-weight:900;">AI Story</span>
           </button>
 
           <!-- Option 2: Upload/Paste a Passage -->
-          <button class="wiz-grade-btn" id="btn-pick-paste" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
+          <button class="wiz-action-btn" id="btn-pick-paste" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
             <span style="font-size:1.6rem;">📸</span>
             <span style="font-size:1.05rem;font-weight:900;">Upload a Passage</span>
           </button>
 
           <!-- Option 3: Upload/Type Spelling Words -->
-          <button class="wiz-grade-btn" id="btn-pick-spelling" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">
+          <button class="wiz-action-btn" id="btn-pick-spelling" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">
             <span style="font-size:1.6rem;">🔤</span>
             <span style="font-size:1.05rem;font-weight:900;">Spelling Words</span>
           </button>
@@ -2010,7 +2010,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
