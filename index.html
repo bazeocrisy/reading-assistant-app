@@ -1061,7 +1061,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Tiny parent note -->
       <p style="color:var(--muted);font-weight:700;font-size:0.72rem;margin:0 auto;max-width:300px;opacity:0.7;
         animation:fadeUp 0.8s ease 1s both;">
-        🔒 Parents: tap <strong>Parent</strong> at the bottom anytime · PIN: <strong>1234</strong>
+        🔒 Parents: tap <strong>Parent</strong> at the bottom anytime to access settings
       </p>
       <p style="color:var(--muted);font-weight:700;font-size:0.72rem;margin:4px auto 0;opacity:0.5;">
         Built with ❤️ by <strong>Transforming Youth, Inc.</strong>
@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CA</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CB</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2093,7 +2093,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CA</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2502,6 +2502,56 @@ const S = {
   speed: 0.9,
   isAIStory: false,
 };
+
+// ── Content Safety Filter ─────────────────────────────────
+// Basic filter to catch inappropriate content before it's displayed or sent to TTS.
+// Not exhaustive — meant to catch obvious stuff a kid might paste or encounter.
+const BLOCKED_WORDS = [
+  // Profanity (common)
+  'fuck','shit','damn','ass','bitch','bastard','crap','dick','cock','pussy',
+  'whore','slut','piss','fag','nigger','nigga','retard','retarded',
+  // Variations & partial matches
+  'f u c k','s h i t','b i t c h','a s s h o l e',
+  // Violence
+  'kill yourself','suicide','cut yourself','shoot up','bomb threat',
+  // Sexual
+  'porn','sex','naked','nude','xxx','hentai','onlyfans',
+  // Drugs
+  'cocaine','heroin','meth','weed','marijuana','fentanyl',
+];
+
+// Build regex from blocked words (word boundary matching, case insensitive)
+const BLOCKED_REGEX = new RegExp(
+  BLOCKED_WORDS.map(w => {
+    // For multi-word phrases, match as-is
+    if (w.includes(' ')) return w.replace(/\s+/g, '\\s+');
+    // For single words, use word boundaries
+    return '\\b' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b';
+  }).join('|'),
+  'gi'
+);
+
+/**
+ * Check text for inappropriate content.
+ * Returns { safe: true } or { safe: false, reason: string }
+ */
+function checkContentSafety(text) {
+  if (!text || typeof text !== 'string') return { safe: true };
+  const match = text.match(BLOCKED_REGEX);
+  if (match) {
+    return { safe: false, reason: 'This text contains words that aren\'t appropriate for reading practice.' };
+  }
+  return { safe: true };
+}
+
+/**
+ * Filter text by replacing blocked words with asterisks.
+ * Used as a secondary defense if text somehow gets through.
+ */
+function filterContent(text) {
+  if (!text) return text;
+  return text.replace(BLOCKED_REGEX, match => '★'.repeat(match.length));
+}
 
 // ── Kid-Friendly App Modal ──────────────────────────────
 // showAppModal({ icon, title, message, buttons: [{ label, class, action }] })
@@ -3410,6 +3460,13 @@ document.getElementById('btn-own-paste-go').addEventListener('click', () => {
     text = words.slice(0, 500).join(' ');
   }
 
+  // Content safety check
+  const safety = checkContentSafety(text);
+  if (!safety.safe) {
+    showAppAlert('🚫', 'Oops!', safety.reason);
+    return;
+  }
+
   // Use pasted text as the story (same as scan flow)
   S.isRace = false; S.myRole = null; S.isAIStory = false;
   S.story = text;
@@ -3468,9 +3525,14 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
 
   } catch (err) {
     console.error('Scan error:', err);
-    container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="font-weight:800;color:#e74c3c;font-size:1.1rem;">😕 Couldn\'t read that file</p><p style="font-weight:700;color:var(--muted);font-size:0.9rem;margin-top:8px;">Try a .txt, .pdf, or image file.</p></div>';
-    titleEl.textContent = '📄 My Page';
-    setTimeout(() => show('screen-own-source'), 3000);
+    if (err.message === 'CONTENT_BLOCKED') {
+      showAppAlert('🚫', 'Oops!', 'This text contains words that aren\'t appropriate for reading practice.');
+      show('screen-own-source');
+    } else {
+      container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="font-weight:800;color:#e74c3c;font-size:1.1rem;">😕 Couldn\'t read that file</p><p style="font-weight:700;color:var(--muted);font-size:0.9rem;margin-top:8px;">Try a .txt, .pdf, or image file.</p></div>';
+      titleEl.textContent = '📄 My Page';
+      setTimeout(() => show('screen-own-source'), 3000);
+    }
   }
 });
 
@@ -3581,6 +3643,12 @@ document.getElementById('btn-use-passage').addEventListener('click', async () =>
     return;
   }
   document.getElementById('host-paste-input').style.borderColor = '#ddd';
+  // Content safety check
+  const safety = checkContentSafety(text);
+  if (!safety.safe) {
+    showAppAlert('🚫', 'Oops!', safety.reason);
+    return;
+  }
   const title = document.getElementById('host-paste-title').value.trim() || '📝 Reading Passage';
   const grade = hostGrade || '1';
   await hostSetStory(title, text, grade, false);
@@ -3605,6 +3673,13 @@ document.getElementById('btn-use-spelling').addEventListener('click', async () =
   document.getElementById('host-spelling-input').style.borderColor = '#ddd';
   const words = raw.split(/[,\s\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
   if (words.length === 0) return;
+
+  // Content safety check on individual words
+  const safety = checkContentSafety(words.join(' '));
+  if (!safety.safe) {
+    showAppAlert('🚫', 'Oops!', safety.reason);
+    return;
+  }
 
   // Build spelling list with simple syllable breakdown
   const spellingList = {
@@ -3727,6 +3802,13 @@ async function processUploadedFile(file) {
   const words = rawText.split(/\s+/);
   const wasTrimmed = words.length > UPLOAD_WORD_LIMIT;
   const finalText = wasTrimmed ? words.slice(0, UPLOAD_WORD_LIMIT).join(' ') : rawText;
+
+  // Content safety check on uploaded text
+  const safety = checkContentSafety(finalText);
+  if (!safety.safe) {
+    throw new Error('CONTENT_BLOCKED');
+  }
+
   return { text: finalText, wasTrimmed, originalWordCount: words.length };
 }
 
@@ -5320,7 +5402,11 @@ document.getElementById('timed-scan-input').addEventListener('change', async (e)
     show('screen-wpm-instructions');
   } catch (err) {
     console.warn('Upload failed:', err);
-    showAppAlert('😕', 'Oops!', 'Could not read that file. Try a .txt, .pdf, or image file.');
+    if (err.message === 'CONTENT_BLOCKED') {
+      showAppAlert('🚫', 'Oops!', 'This text contains words that aren\'t appropriate for reading practice.');
+    } else {
+      showAppAlert('😕', 'Oops!', 'Could not read that file. Try a .txt, .pdf, or image file.');
+    }
     show('screen-timed-source');
   }
 });
@@ -5342,6 +5428,12 @@ document.getElementById('btn-timed-paste-go').addEventListener('click', () => {
   const text = document.getElementById('timed-paste-textarea').value.trim();
   if (!text || text.split(/\s+/).length < 10) {
     showAppAlert('✏️', 'Need More Words!', 'Please paste at least 10 words so we have enough to read.');
+    return;
+  }
+  // Content safety check
+  const safety = checkContentSafety(text);
+  if (!safety.safe) {
+    showAppAlert('🚫', 'Oops!', safety.reason);
     return;
   }
   wpmPassage = text;
@@ -5703,6 +5795,13 @@ document.getElementById('btn-spell-type-go').addEventListener('click', () => {
   const words = raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
   if (words.length === 0) {
     document.getElementById('spell-type-textarea').style.borderColor = 'var(--coral)';
+    return;
+  }
+
+  // Content safety check on spelling words
+  const safety = checkContentSafety(words.join(' '));
+  if (!safety.safe) {
+    showAppAlert('🚫', 'Oops!', safety.reason);
     return;
   }
 
@@ -7117,7 +7216,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'CA',
+      appBuild: 'CB',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
@@ -7528,7 +7627,7 @@ document.getElementById('btn-global-help').addEventListener('click', () => {
   showAppModal({
     icon: '📖',
     title: 'How ReadUp! Works',
-    message: '✨ Read a Story — AI makes a new story every time!\n\n🔁 Read it 3 times to build fluency:\n  #1 Listen & follow along\n  #2 Read together\n  #3 Read on your own\n\n💡 Tap any word to hear it and see what it means!\n\n📸 My Own Reading — snap a photo of any page\n\n🔤 Spelling Words — study, practice, quiz\n\n🔒 Parent PIN: 1234 (change in dashboard)',
+    message: '✨ Read a Story — AI makes a new story every time!\n\n🔁 Read it 3 times to build fluency:\n  #1 Listen & follow along\n  #2 Read together\n  #3 Read on your own\n\n💡 Tap any word to hear it and see what it means!\n\n📸 My Own Reading — snap a photo of any page\n\n🔤 Spelling Words — study, practice, quiz\n\n🔒 Parents: tap Parent at the bottom to access the dashboard',
     buttons: [{ label: '👍 Got It!', cls: 'modal-green', value: true }]
   });
 });
