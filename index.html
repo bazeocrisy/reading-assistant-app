@@ -1071,7 +1071,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD BU</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -2045,7 +2045,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD BU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3965,14 +3965,17 @@ document.getElementById('btn-join-room').addEventListener('click', async () => {
       if (msg) msg.textContent = '📖 Story picked!';
     }
 
-    // When host starts countdown, show Ready button for guest to tap
+    // When host starts countdown OR story is ready and guest has content,
+    // show Ready button for guest to tap
     // (guest MUST tap to establish user gesture for iOS audio unlock)
-    if (roomData.status === 'countdown' && !countdownStarted) {
+    if ((roomData.status === 'countdown' || (roomData.status === 'story-ready' && S._contentReady)) && !countdownStarted) {
       const readyBtn = document.getElementById('btn-guest-ready');
       const spinner = document.getElementById('guest-spinner');
       if (readyBtn) {
         readyBtn.style.display = 'block';
         if (spinner) spinner.style.display = 'none';
+        const waitMsg = document.getElementById('guest-wait-msg');
+        if (waitMsg) waitMsg.textContent = '📖 Story is ready!';
         // Guest taps Ready → starts countdown with user gesture context
         readyBtn.addEventListener('click', () => {
           countdownStarted = true;
@@ -6946,7 +6949,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'BT',
+      appBuild: 'BU',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
