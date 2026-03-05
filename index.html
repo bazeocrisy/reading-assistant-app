@@ -1194,7 +1194,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CM</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1229,6 +1229,14 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <input type="file" id="scan-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
     </div>
+
+    <!-- Vocabulary Words (full-width below grid) -->
+    <button class="home-wordbank-btn" id="btn-vocab-start" aria-label="Vocabulary Words" style="background:linear-gradient(135deg, #00CEC9, #00838F);box-shadow:0 6px 18px rgba(0,131,143,0.35);margin-top:12px;">
+      <span style="font-size:1.4rem;">📚</span>
+      <span class="home-wordbank-label" style="color:#fff;">Vocabulary Words</span>
+      <span class="home-wordbank-badge" id="home-vocab-badge" style="background:rgba(255,255,255,0.25);color:#fff;"></span>
+    </button>
+    <input type="file" id="vocab-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
 
     <!-- Word Bank (compact, secondary) -->
     <button class="home-wordbank-btn" id="btn-wordbank-home" aria-label="My Word Bank" style="justify-content:center;">
@@ -2040,6 +2048,165 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- VOCABULARY WORDS SCREENS                               -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- SCREEN: Vocab Source Picker -->
+  <div class="screen" id="screen-vocab-source">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">📚 Vocabulary Words</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">How do you want to add your vocabulary words?</p>
+
+      <!-- Upload / Photo -->
+      <button class="kid-action-btn" id="btn-vocab-source-upload" aria-label="Upload a vocabulary list" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">📄</div>
+        <div class="kid-action-label">Upload a Document</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file with your vocabulary words</p>
+
+      <!-- Type / Paste -->
+      <button class="kid-action-btn" id="btn-vocab-source-type" aria-label="Type or paste vocabulary words" style="background:linear-gradient(135deg, #00CEC9, #00838F);box-shadow:0 6px 18px rgba(0,131,143,0.25);margin-bottom:12px;">
+        <div class="kid-action-icon" aria-hidden="true">✏️</div>
+        <div class="kid-action-label">Type My Words</div>
+      </button>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Type or paste your vocabulary words (with or without definitions)</p>
+
+      <!-- View existing list (if any) -->
+      <button class="btn-main btn-outline" id="btn-vocab-source-existing" style="font-size:0.95rem;display:none;">📋 View My Current Words</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Vocab Type/Paste Input -->
+  <div class="screen" id="screen-vocab-type">
+    <div class="card">
+      <div class="card-title">✏️ Type Your Vocabulary Words</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-bottom:8px;">Type or paste your words below. Add definitions with a colon, or leave them out and we'll look them up!</p>
+      <textarea id="vocab-type-textarea" rows="6" style="width:100%;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;" placeholder="liberty: freedom from control&#10;justice: fair treatment&#10;democracy&#10;constitution"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <div id="vocab-type-count" style="font-size:0.78rem;font-weight:800;color:var(--muted);">0 words</div>
+      </div>
+      <button class="btn-main btn-green" id="btn-vocab-type-go" style="font-size:1.1rem;margin-top:12px;">📚 Load These Words!</button>
+      <!-- Example hint -->
+      <div style="background:var(--section);border-radius:14px;padding:12px 16px;margin-top:14px;border:2px dashed var(--border);">
+        <p style="font-weight:800;font-size:0.82rem;color:var(--muted);margin:0 0 6px;">💡 Example formats:</p>
+        <p style="font-weight:700;font-size:0.85rem;color:var(--ink);margin:0 0 4px;font-family:'Fredoka',sans-serif;">liberty: freedom from control</p>
+        <p style="font-weight:700;font-size:0.85rem;color:var(--ink);margin:0 0 4px;font-family:'Fredoka',sans-serif;">democracy</p>
+        <p style="font-weight:700;font-size:0.78rem;color:var(--muted);margin:0;">Words without definitions will be looked up automatically!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Vocabulary Word List -->
+  <div class="screen" id="screen-vocab">
+    <div class="card">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div class="card-title">📚 My Vocabulary Words</div>
+        <p style="color:var(--muted);font-weight:700;font-size:0.88rem;">Tap a word to hear it and see its definition!</p>
+        <div id="vocab-week-label" style="font-size:0.78rem;font-weight:800;color:var(--muted);margin-top:4px;"></div>
+      </div>
+      <div id="vocab-loading" style="display:none;text-align:center;padding:40px 0;">
+        <div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div>
+        <p style="font-weight:800;color:var(--muted);font-size:1rem;">Reading your vocabulary words...</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.82rem;margin-top:6px;">This takes just a moment ✨</p>
+      </div>
+      <div id="vocab-word-list" class="fat-scroll" style="overscroll-behavior:contain;"></div>
+      <div id="vocab-empty" style="display:none;text-align:center;padding:40px 20px;">
+        <div style="font-size:3rem;margin-bottom:8px;">📚</div>
+        <div style="font-weight:800;color:var(--ink);font-size:1.05rem;margin-bottom:6px;">No vocabulary words yet!</div>
+        <div style="font-weight:700;color:var(--muted);font-size:0.85rem;">Upload a photo of your vocab list or type your words.</div>
+        <button class="btn-main" id="btn-vocab-upload-empty" style="margin-top:18px;font-size:1rem;background:linear-gradient(135deg, #00CEC9, #00838F);box-shadow:0 4px 14px rgba(0,131,143,0.35);">📄 Upload Word List</button>
+      </div>
+      <div class="spelling-actions" id="vocab-actions" style="display:none;">
+        <button class="btn-main" id="btn-vocab-new" style="font-size:0.9rem;background:linear-gradient(135deg, #54A0FF, #2E86DE);">📄 New Words</button>
+        <button class="btn-main btn-outline" id="btn-vocab-study" style="font-size:0.9rem;">👀 Look &amp; Learn</button>
+        <button class="btn-main btn-purple" id="btn-vocab-flashcard" style="font-size:0.9rem;">🃏 Flashcards</button>
+        <button class="btn-main btn-coral" id="btn-vocab-practice" style="font-size:0.9rem;">🎯 Practice!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Vocab Look & Learn (Study overlay) -->
+  <div class="screen" id="screen-vocab-study">
+    <div class="card">
+      <div class="card-title" style="text-align:center;">👀 Look &amp; Learn</div>
+      <p style="text-align:center;color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:16px;">Tap any card to hear the word!</p>
+      <div id="vocab-study-list" class="fat-scroll" style="overscroll-behavior:contain;"></div>
+      <button class="btn-main btn-green" id="btn-vocab-study-done" style="margin-top:16px;">✅ Done Studying</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Vocab Flashcards -->
+  <div class="screen" id="screen-vocab-flashcard">
+    <div class="card" style="text-align:center;">
+      <div class="card-title">🃏 Flashcards</div>
+      <div id="vocab-flash-progress" style="font-weight:800;font-size:0.85rem;color:var(--muted);margin-bottom:14px;">Card 1 of 5</div>
+      <div class="spell-practice-progress" style="margin-bottom:18px;">
+        <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="vocab-flash-bar" style="width:0%;background:linear-gradient(90deg,#00CEC9,#00838F);"></div></div>
+      </div>
+
+      <!-- Flip card -->
+      <div id="vocab-flashcard-wrap" style="perspective:800px;margin:0 auto 18px;width:100%;max-width:340px;height:180px;cursor:pointer;" aria-label="Tap to flip card">
+        <div id="vocab-flashcard-inner" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);">
+          <!-- Front: word -->
+          <div style="position:absolute;inset:0;backface-visibility:hidden;background:linear-gradient(135deg,#00CEC9,#00838F);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 8px 24px rgba(0,131,143,0.3);">
+            <div id="vocab-flash-word" style="font-family:'Fredoka',sans-serif;font-size:2rem;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.15);margin-bottom:8px;"></div>
+            <div style="font-size:0.8rem;font-weight:800;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;">Tap to see definition</div>
+          </div>
+          <!-- Back: definition -->
+          <div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);background:var(--card);border:3px solid #00CEC9;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+            <div id="vocab-flash-def" style="font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:700;color:var(--ink);line-height:1.5;text-align:center;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:8px;">
+        <button class="btn-main btn-outline" id="btn-flash-prev" style="width:auto;padding:10px 22px;font-size:1rem;">← Prev</button>
+        <button class="btn-main" id="btn-flash-hear" style="width:auto;padding:10px 22px;font-size:1rem;background:linear-gradient(135deg,#00CEC9,#00838F);">🔊 Hear</button>
+        <button class="btn-main btn-green" id="btn-flash-next" style="width:auto;padding:10px 22px;font-size:1rem;">Next →</button>
+      </div>
+      <button class="btn-main btn-outline" id="btn-flash-quit" style="font-size:0.9rem;margin-top:4px;">← Back to Words</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Vocab Practice (multiple choice: see definition, pick word) -->
+  <div class="screen" id="screen-vocab-practice">
+    <div class="card">
+      <div class="card-title" id="vocab-practice-title" style="text-align:center;">🎯 Vocabulary Practice</div>
+      <div class="spell-practice-progress">
+        <div class="spell-practice-label" id="vocab-practice-num">1 / 5</div>
+        <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="vocab-practice-bar" style="width:0%;background:linear-gradient(90deg,#00CEC9,#00838F);"></div></div>
+      </div>
+
+      <!-- Definition prompt -->
+      <div style="background:var(--section);border-radius:16px;padding:16px 18px;margin:14px 0 18px;text-align:center;border:2px solid var(--border);">
+        <div style="font-size:0.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Which word means…</div>
+        <div id="vocab-practice-def" style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);line-height:1.5;"></div>
+        <button id="btn-vocab-practice-hear" style="margin-top:10px;padding:6px 18px;border:2px solid var(--border);border-radius:20px;background:var(--card);font-family:'Nunito';font-weight:800;font-size:0.85rem;cursor:pointer;color:var(--muted);">🔊 Hear the word</button>
+      </div>
+
+      <!-- Multiple choice answers -->
+      <div id="vocab-practice-choices" class="spell-practice-choices"></div>
+      <div class="spell-practice-feedback" id="vocab-practice-feedback"></div>
+      <button class="btn-main btn-coral" id="btn-vocab-practice-quit" style="display:none;margin-top:10px;">← Quit Practice</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Vocab Practice Results -->
+  <div class="screen" id="screen-vocab-results">
+    <div class="card" style="text-align:center;">
+      <div class="card-title" id="vocab-results-title">🌟 Practice Complete!</div>
+      <div class="spell-practice-result">
+        <div class="spell-practice-score" id="vocab-results-score">0/0</div>
+        <div class="spell-practice-score-label">words correct</div>
+        <div class="spell-practice-stars" id="vocab-results-stars"></div>
+      </div>
+      <div class="spell-result-list fat-scroll" id="vocab-results-list" style="overscroll-behavior:contain;"></div>
+      <button class="btn-main btn-green" id="btn-vocab-retry-all" style="font-size:1rem;margin-top:12px;">🎯 Practice Again</button>
+      <button class="btn-main btn-outline" id="btn-vocab-results-done" style="margin-top:10px;">← Back to Words</button>
+    </div>
+  </div>
+
   <!-- SCREEN: Timed Reading Step 1 — Pick Grade -->
   <div class="screen" id="screen-timed-grade">
     <div class="card" style="text-align:center;">
@@ -2288,7 +2455,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5715,6 +5882,7 @@ function getData() {
   if (!d.stories) d.stories = [];
   if (!d.wordBank) d.wordBank = [];
   if (!d.spellingLists) d.spellingLists = [];
+  if (!d.vocabLists) d.vocabLists = [];
   if (!d.weeklyLog) d.weeklyLog = [];
   return d;
 }
@@ -7682,6 +7850,552 @@ document.getElementById('btn-scramble-back').addEventListener('click', () => {
   if (currentSpellingList) renderSpellingWords(currentSpellingList);
 });
 
+// ══════════════════════════════════════════════════════════════
+// VOCABULARY WORDS ENGINE
+// ══════════════════════════════════════════════════════════════
+
+let currentVocabList = null;
+let vocabPracticeWords = [];
+let vocabPracticeIndex = 0;
+let vocabPracticeScore = 0;
+let vocabPracticeMissed = [];
+let vocabFlashIndex = 0;
+let vocabFlashFlipped = false;
+
+// ── Home button ──────────────────────────────────────────────
+document.getElementById('btn-vocab-start').addEventListener('click', () => {
+  const d = getData();
+  const existingBtn = document.getElementById('btn-vocab-source-existing');
+  if (d.vocabLists && d.vocabLists.length > 0) {
+    existingBtn.style.display = 'block';
+    const latest = d.vocabLists[d.vocabLists.length - 1];
+    existingBtn.textContent = `📋 View My Current Words (${latest.words.length})`;
+  } else {
+    existingBtn.style.display = 'none';
+  }
+  show('screen-vocab-source');
+});
+
+// ── Source picker ────────────────────────────────────────────
+document.getElementById('btn-vocab-source-upload').addEventListener('click', () => {
+  document.getElementById('vocab-file-input').click();
+});
+
+document.getElementById('btn-vocab-source-type').addEventListener('click', () => {
+  document.getElementById('vocab-type-textarea').value = '';
+  document.getElementById('vocab-type-count').textContent = '0 words';
+  show('screen-vocab-type');
+});
+
+document.getElementById('btn-vocab-source-existing').addEventListener('click', () => {
+  const d = getData();
+  if (d.vocabLists && d.vocabLists.length > 0) {
+    currentVocabList = d.vocabLists[d.vocabLists.length - 1];
+    renderVocabWords(currentVocabList);
+    show('screen-vocab');
+  }
+});
+
+// ── Type screen: live word count ─────────────────────────────
+document.getElementById('vocab-type-textarea').addEventListener('input', (e) => {
+  const lines = e.target.value.trim().split(/\n/).filter(l => l.trim().length > 0);
+  document.getElementById('vocab-type-count').textContent = `${lines.length} word${lines.length !== 1 ? 's' : ''}`;
+});
+
+// ── Type screen: submit ──────────────────────────────────────
+document.getElementById('btn-vocab-type-go').addEventListener('click', () => {
+  const raw = document.getElementById('vocab-type-textarea').value.trim();
+  if (!raw) {
+    document.getElementById('vocab-type-textarea').style.borderColor = 'var(--coral)';
+    return;
+  }
+  document.getElementById('vocab-type-textarea').style.borderColor = 'var(--border)';
+
+  // Parse: "word: definition" or just "word" per line (also support comma-separated words)
+  const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+  const words = [];
+  for (const line of lines) {
+    // Support comma-separated lines that have no colon (plain word lists)
+    if (!line.includes(':') && line.includes(',')) {
+      const parts = line.split(',').map(w => w.trim().toLowerCase()).filter(w => w);
+      for (const p of parts) words.push({ word: p, definition: '' });
+    } else {
+      const colonIdx = line.indexOf(':');
+      if (colonIdx > 0) {
+        const word = line.slice(0, colonIdx).trim().toLowerCase();
+        const definition = line.slice(colonIdx + 1).trim();
+        if (word) words.push({ word, definition });
+      } else {
+        const word = line.trim().toLowerCase();
+        if (word) words.push({ word, definition: '' });
+      }
+    }
+  }
+
+  if (words.length === 0) {
+    document.getElementById('vocab-type-textarea').style.borderColor = 'var(--coral)';
+    return;
+  }
+
+  const safety = checkContentSafety(words.map(w => w.word).join(' '));
+  if (!safety.safe) { showAppAlert('🚫', 'Oops!', safety.reason); return; }
+
+  const vocabList = {
+    id: Date.now().toString(36),
+    date: new Date().toISOString(),
+    grade: S.grade || '2',
+    words: words.map((w, i) => ({ ...w, num: i + 1, practiced: 0, mastered: false }))
+  };
+
+  const d = getData();
+  d.vocabLists.push(vocabList);
+  if (d.vocabLists.length > 10) d.vocabLists.splice(0, d.vocabLists.length - 10);
+  saveData(d);
+
+  currentVocabList = vocabList;
+  renderVocabWords(vocabList);
+  show('screen-vocab');
+});
+
+// ── File upload ──────────────────────────────────────────────
+document.getElementById('vocab-file-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  show('screen-vocab');
+  document.getElementById('vocab-word-list').innerHTML = '';
+  document.getElementById('vocab-empty').style.display = 'none';
+  document.getElementById('vocab-loading').style.display = 'block';
+  document.getElementById('vocab-actions').style.display = 'none';
+  document.getElementById('vocab-week-label').textContent = '';
+
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1600;
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    // Use extractText OCR, then parse word: definition pairs client-side
+    const response = await fetch(CF_OCR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+    });
+
+    if (!response.ok) throw new Error('OCR failed');
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found');
+
+    // Parse extracted text for word: definition pairs
+    const lines = data.text.split(/\n/).map(l => l.trim()).filter(l => l.length > 1);
+    const words = [];
+    for (const line of lines) {
+      // Skip lines that look like headers/titles (all caps, very short, numbers only)
+      if (/^\d+\.?\s*$/.test(line) || /^[A-Z\s]{1,4}$/.test(line)) continue;
+      const colonIdx = line.indexOf(':');
+      if (colonIdx > 0 && colonIdx < 40) {
+        const word = line.slice(0, colonIdx).trim().toLowerCase().replace(/^\d+[\.\)]\s*/, '');
+        const definition = line.slice(colonIdx + 1).trim();
+        if (word && word.length > 0 && word.length < 40) words.push({ word, definition });
+      } else {
+        // Plain word (strip leading numbers/bullets)
+        const word = line.toLowerCase().replace(/^\d+[\.\)]\s*/, '').replace(/^[-•*]\s*/, '').trim();
+        if (word && word.length > 0 && word.length < 40 && /^[a-z]/.test(word)) {
+          words.push({ word, definition: '' });
+        }
+      }
+    }
+
+    if (words.length === 0) throw new Error('No words found');
+
+    const vocabList = {
+      id: Date.now().toString(36),
+      date: new Date().toISOString(),
+      grade: S.grade || '2',
+      words: words.map((w, i) => ({ ...w, num: i + 1, practiced: 0, mastered: false }))
+    };
+
+    const d = getData();
+    d.vocabLists.push(vocabList);
+    if (d.vocabLists.length > 10) d.vocabLists.splice(0, d.vocabLists.length - 10);
+    saveData(d);
+
+    currentVocabList = vocabList;
+    renderVocabWords(vocabList);
+
+  } catch (err) {
+    console.error('Vocab OCR error:', err);
+    document.getElementById('vocab-loading').style.display = 'none';
+    document.getElementById('vocab-word-list').innerHTML = `
+      <div style="text-align:center;padding:30px 0;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
+        <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo, or type your words instead.</p>
+        <button class="btn-main" id="btn-vocab-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg,#00CEC9,#00838F);">📄 Try Again</button>
+      </div>`;
+    document.getElementById('btn-vocab-retry-error').addEventListener('click', () => {
+      document.getElementById('vocab-file-input').click();
+    });
+  }
+});
+
+// ── Render word list ─────────────────────────────────────────
+function renderVocabWords(list) {
+  const listEl = document.getElementById('vocab-word-list');
+  const loadingEl = document.getElementById('vocab-loading');
+  const emptyEl = document.getElementById('vocab-empty');
+  const actionsEl = document.getElementById('vocab-actions');
+  const weekLabel = document.getElementById('vocab-week-label');
+
+  loadingEl.style.display = 'none';
+  emptyEl.style.display = 'none';
+  actionsEl.style.display = 'flex';
+
+  // Update home badge
+  const badge = document.getElementById('home-vocab-badge');
+  if (badge) { badge.textContent = `${list.words.length} words`; badge.style.display = 'inline-block'; }
+
+  // Date label
+  const d = new Date(list.date);
+  weekLabel.textContent = `Uploaded ${d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+
+  listEl.innerHTML = '';
+  const needsDefs = [];
+
+  list.words.forEach((w, idx) => {
+    const card = document.createElement('div');
+    card.className = 'spelling-word-card';
+    card.style.cursor = 'pointer';
+
+    const mainDiv = document.createElement('div');
+    mainDiv.className = 'spelling-word-main';
+
+    const wordSpan = document.createElement('div');
+    wordSpan.className = 'spelling-word-text';
+    wordSpan.textContent = w.word;
+    mainDiv.appendChild(wordSpan);
+
+    const defDiv = document.createElement('div');
+    defDiv.className = 'spelling-word-def';
+    defDiv.dataset.vocabIdx = idx;
+
+    if (w.definition) {
+      defDiv.textContent = w.definition;
+    } else {
+      defDiv.style.fontStyle = 'italic';
+      defDiv.style.display = 'flex';
+      defDiv.style.alignItems = 'center';
+      defDiv.style.gap = '6px';
+      const spinner = document.createElement('span');
+      spinner.className = 'spell-def-spinner';
+      defDiv.appendChild(spinner);
+      defDiv.appendChild(document.createTextNode(' Looking it up...'));
+      needsDefs.push({ word: w.word, idx, defDiv });
+    }
+    mainDiv.appendChild(defDiv);
+
+    const tapDiv = document.createElement('div');
+    tapDiv.className = 'spelling-word-tap';
+    tapDiv.textContent = '🔊';
+
+    card.appendChild(mainDiv);
+    card.appendChild(tapDiv);
+    card.addEventListener('click', () => {
+      const def = w.definition || defDiv.textContent.replace('Looking it up...', '').trim();
+      showDictionaryPopup(w.word, -1);
+    });
+    listEl.appendChild(card);
+  });
+
+  // Auto-fetch definitions for words that don't have them
+  if (needsDefs.length > 0) fetchVocabDefinitions(list, needsDefs);
+}
+
+async function fetchVocabDefinitions(list, queue) {
+  const wordNames = queue.map(q => q.word);
+  const chunks = [];
+  for (let i = 0; i < wordNames.length; i += 20) chunks.push(queue.slice(i, i + 20));
+
+  for (const chunk of chunks) {
+    try {
+      const resp = await fetch(CF_BATCH_DEF, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ words: chunk.map(c => c.word), grade: S.grade || '2' })
+      });
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      if (!data.definitions) continue;
+
+      chunk.forEach(({ word, idx, defDiv }) => {
+        const def = data.definitions[word];
+        if (def) {
+          // Update in-memory list
+          list.words[idx].definition = def;
+          // Update DOM
+          defDiv.style.fontStyle = '';
+          defDiv.style.display = '';
+          defDiv.style.alignItems = '';
+          defDiv.style.gap = '';
+          defDiv.textContent = def;
+        }
+      });
+
+      // Persist updated definitions
+      const d = getData();
+      const savedList = d.vocabLists.find(l => l.id === list.id);
+      if (savedList) {
+        chunk.forEach(({ word, idx }) => {
+          if (list.words[idx].definition) savedList.words[idx].definition = list.words[idx].definition;
+        });
+        saveData(d);
+      }
+    } catch (err) {
+      console.warn('Vocab batch define failed:', err);
+    }
+  }
+}
+
+// ── Vocab action buttons ─────────────────────────────────────
+document.getElementById('btn-vocab-upload-empty').addEventListener('click', () => {
+  show('screen-vocab-source');
+});
+
+document.getElementById('btn-vocab-new').addEventListener('click', () => {
+  const d = getData();
+  const existingBtn = document.getElementById('btn-vocab-source-existing');
+  if (d.vocabLists && d.vocabLists.length > 0) {
+    existingBtn.style.display = 'block';
+    const latest = d.vocabLists[d.vocabLists.length - 1];
+    existingBtn.textContent = `📋 View My Current Words (${latest.words.length})`;
+  } else {
+    existingBtn.style.display = 'none';
+  }
+  show('screen-vocab-source');
+});
+
+document.getElementById('btn-vocab-study').addEventListener('click', () => {
+  if (!currentVocabList || !currentVocabList.words.length) return;
+  renderVocabStudy(currentVocabList.words);
+  show('screen-vocab-study');
+});
+
+document.getElementById('btn-vocab-study-done').addEventListener('click', () => {
+  show('screen-vocab');
+});
+
+document.getElementById('btn-vocab-flashcard').addEventListener('click', () => {
+  if (!currentVocabList || !currentVocabList.words.length) return;
+  startVocabFlashcards(currentVocabList.words);
+  show('screen-vocab-flashcard');
+});
+
+document.getElementById('btn-vocab-practice').addEventListener('click', () => {
+  if (!currentVocabList || currentVocabList.words.length < 2) {
+    showAppAlert('📚', 'Need More Words', 'Add at least 2 vocabulary words to practice!');
+    return;
+  }
+  startVocabPractice(currentVocabList.words);
+  show('screen-vocab-practice');
+});
+
+document.getElementById('btn-vocab-practice-quit').addEventListener('click', () => {
+  show('screen-vocab');
+});
+
+document.getElementById('btn-vocab-retry-all').addEventListener('click', () => {
+  if (currentVocabList) startVocabPractice(currentVocabList.words);
+  show('screen-vocab-practice');
+});
+
+document.getElementById('btn-vocab-results-done').addEventListener('click', () => {
+  show('screen-vocab');
+});
+
+// ── Look & Learn ─────────────────────────────────────────────
+function renderVocabStudy(words) {
+  const listEl = document.getElementById('vocab-study-list');
+  listEl.innerHTML = '';
+  words.forEach((w, idx) => {
+    const card = document.createElement('div');
+    card.className = 'spell-study-card';
+    card.innerHTML = `
+      <div class="spell-study-num">${idx + 1}</div>
+      <div style="flex:1;">
+        <div class="spell-study-word">${w.word}</div>
+        <div class="spell-study-def">${w.definition || 'Tap 🔊 to hear!'}</div>
+      </div>
+      <div class="spell-study-speaker" title="Hear word">🔊</div>`;
+    card.addEventListener('click', () => speakText(w.word, S.grade));
+    listEl.appendChild(card);
+  });
+}
+
+// ── Flashcards ───────────────────────────────────────────────
+function startVocabFlashcards(words) {
+  vocabFlashIndex = 0;
+  vocabFlashFlipped = false;
+  renderVocabFlashcard(words);
+}
+
+function renderVocabFlashcard(words) {
+  const w = words[vocabFlashIndex];
+  const total = words.length;
+  document.getElementById('vocab-flash-progress').textContent = `Card ${vocabFlashIndex + 1} of ${total}`;
+  document.getElementById('vocab-flash-bar').style.width = `${((vocabFlashIndex + 1) / total) * 100}%`;
+  document.getElementById('vocab-flash-word').textContent = w.word;
+  document.getElementById('vocab-flash-def').textContent = w.definition || '(definition loading…)';
+
+  // Reset flip
+  vocabFlashFlipped = false;
+  document.getElementById('vocab-flashcard-inner').style.transform = 'rotateY(0deg)';
+
+  document.getElementById('btn-flash-prev').disabled = vocabFlashIndex === 0;
+  document.getElementById('btn-flash-next').textContent = vocabFlashIndex === total - 1 ? '✅ Done' : 'Next →';
+}
+
+document.getElementById('vocab-flashcard-wrap').addEventListener('click', () => {
+  vocabFlashFlipped = !vocabFlashFlipped;
+  document.getElementById('vocab-flashcard-inner').style.transform = vocabFlashFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+});
+
+document.getElementById('btn-flash-hear').addEventListener('click', () => {
+  if (currentVocabList) speakText(currentVocabList.words[vocabFlashIndex].word, S.grade);
+});
+
+document.getElementById('btn-flash-prev').addEventListener('click', () => {
+  if (vocabFlashIndex > 0) {
+    vocabFlashIndex--;
+    renderVocabFlashcard(currentVocabList.words);
+  }
+});
+
+document.getElementById('btn-flash-next').addEventListener('click', () => {
+  const words = currentVocabList.words;
+  if (vocabFlashIndex < words.length - 1) {
+    vocabFlashIndex++;
+    renderVocabFlashcard(words);
+  } else {
+    show('screen-vocab');
+  }
+});
+
+document.getElementById('btn-flash-quit').addEventListener('click', () => show('screen-vocab'));
+
+// ── Practice (see definition → pick word) ───────────────────
+function startVocabPractice(words) {
+  // Shuffle and start
+  vocabPracticeWords = [...words].sort(() => Math.random() - 0.5);
+  vocabPracticeIndex = 0;
+  vocabPracticeScore = 0;
+  vocabPracticeMissed = [];
+  document.getElementById('btn-vocab-practice-quit').style.display = 'none';
+  renderVocabPracticeQuestion();
+}
+
+function renderVocabPracticeQuestion() {
+  const words = vocabPracticeWords;
+  const total = words.length;
+  const current = words[vocabPracticeIndex];
+
+  document.getElementById('vocab-practice-num').textContent = `${vocabPracticeIndex + 1} / ${total}`;
+  document.getElementById('vocab-practice-bar').style.width = `${(vocabPracticeIndex / total) * 100}%`;
+  document.getElementById('vocab-practice-def').textContent = current.definition || current.word;
+  document.getElementById('vocab-practice-feedback').innerHTML = '';
+
+  // Build choices: correct + up to 3 random wrong
+  const allWords = currentVocabList.words;
+  const wrongPool = allWords.filter(w => w.word !== current.word);
+  const wrong = wrongPool.sort(() => Math.random() - 0.5).slice(0, Math.min(3, wrongPool.length));
+  const choices = [...wrong, current].sort(() => Math.random() - 0.5);
+
+  const choicesEl = document.getElementById('vocab-practice-choices');
+  choicesEl.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'spell-choice-btn';
+    btn.textContent = choice.word;
+    btn.addEventListener('click', () => handleVocabAnswer(choice.word === current.word, current, btn, choicesEl));
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleVocabAnswer(correct, current, btn, choicesEl) {
+  // Disable all choices
+  choicesEl.querySelectorAll('.spell-choice-btn').forEach(b => b.disabled = true);
+
+  if (correct) {
+    btn.classList.add('correct');
+    vocabPracticeScore++;
+    document.getElementById('vocab-practice-feedback').innerHTML = `<div class="spell-feedback-correct">✅ Correct!</div>`;
+  } else {
+    btn.classList.add('wrong');
+    vocabPracticeMissed.push(current.word);
+    // Highlight correct answer
+    choicesEl.querySelectorAll('.spell-choice-btn').forEach(b => {
+      if (b.textContent === current.word) b.classList.add('correct');
+    });
+    document.getElementById('vocab-practice-feedback').innerHTML = `<div class="spell-feedback-wrong">❌ The answer was: <strong>${current.word}</strong></div>`;
+  }
+
+  setTimeout(() => {
+    vocabPracticeIndex++;
+    if (vocabPracticeIndex < vocabPracticeWords.length) {
+      renderVocabPracticeQuestion();
+    } else {
+      showVocabResults();
+    }
+  }, 1100);
+}
+
+function showVocabResults() {
+  const total = vocabPracticeWords.length;
+  const pct = Math.round((vocabPracticeScore / total) * 100);
+  document.getElementById('vocab-results-score').textContent = `${vocabPracticeScore}/${total}`;
+
+  // Stars
+  let stars = '⭐';
+  if (pct >= 80) stars = '⭐⭐⭐';
+  else if (pct >= 60) stars = '⭐⭐';
+  document.getElementById('vocab-results-stars').textContent = stars;
+
+  // Title
+  document.getElementById('vocab-results-title').textContent =
+    pct === 100 ? '🏆 Perfect Score!' : pct >= 80 ? '🌟 Great Job!' : pct >= 60 ? '👍 Good Try!' : '📚 Keep Practicing!';
+
+  // Result list
+  const listEl = document.getElementById('vocab-results-list');
+  listEl.innerHTML = '';
+  vocabPracticeWords.forEach(w => {
+    const missed = vocabPracticeMissed.includes(w.word);
+    const row = document.createElement('div');
+    row.className = 'spell-result-item' + (missed ? ' missed' : ' correct');
+    row.innerHTML = `<span>${missed ? '❌' : '✅'}</span><span style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;flex:1;">${w.word}</span><span style="font-size:0.82rem;color:var(--muted);font-weight:700;">${w.definition || ''}</span>`;
+    listEl.appendChild(row);
+  });
+
+  show('screen-vocab-results');
+}
+
 // ── Bedtime Mode ──────────────────────────────────────────
 function applyBedtime(on) {
   document.body.classList.toggle('bedtime', on);
@@ -8178,6 +8892,13 @@ const SCREEN_BACK_MAP = {
   'screen-game-picker': ['← Back', 'screen-spell-picker'],
   'screen-wordsearch': ['← Quit', 'screen-spelling'],
   'screen-scramble': ['← Quit', 'screen-spelling'],
+  'screen-vocab-source': ['← Back', 'screen-pick'],
+  'screen-vocab-type': ['← Back', 'screen-vocab-source'],
+  'screen-vocab': ['← Back', 'screen-vocab-source'],
+  'screen-vocab-study': ['← Back', 'screen-vocab'],
+  'screen-vocab-flashcard': ['← Back', 'screen-vocab'],
+  'screen-vocab-practice': ['← Quit', 'screen-vocab'],
+  'screen-vocab-results': ['← Back', 'screen-vocab'],
   'screen-wordbank': ['← Back', 'screen-pick'],
   'screen-timed-grade': ['← Back', 'screen-pick'],
   'screen-timed-source': ['← Back', 'screen-timed-grade'],
