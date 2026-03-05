@@ -1111,7 +1111,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CF</div>
     <!-- Kid-Friendly Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Read a Story — ORANGE (primary action) -->
@@ -1149,7 +1149,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
     <!-- Word Bank quick access -->
     <button class="kid-action-btn" id="btn-wordbank-home" aria-label="My Word Bank" style="background:linear-gradient(135deg, #FFD93D, #F9A825);box-shadow:0 8px 24px rgba(249,168,37,0.35);margin-top:2px;">
-      <div class="kid-action-icon" aria-hidden="true">💾</div>
+      <div class="kid-action-icon" aria-hidden="true">📖</div>
       <div class="kid-action-label" style="color:#5D4037;">My Word Bank</div>
     </button>
   </div>
@@ -2201,7 +2201,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CF</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2215,7 +2215,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 </nav>
 
 <!-- Word saved toast -->
-<div class="word-toast" id="word-toast" role="status" aria-live="polite">💾 Word saved!</div>
+<div class="word-toast" id="word-toast" role="status" aria-live="polite">📖 Word saved!</div>
 
 <!-- Dictionary popup -->
 <div class="dict-overlay" id="dict-overlay" role="dialog" aria-label="Word definition" aria-modal="true" style="display:none;">
@@ -5837,7 +5837,7 @@ function saveWordToBank(word) {
 
 function showWordToast(word) {
   const t = document.getElementById('word-toast');
-  t.textContent = `💾 "${word}" saved!`;
+  t.textContent = `📖 "${word}" saved!`;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 1500);
 }
@@ -7816,7 +7816,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'CE',
+      appBuild: 'CF',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
