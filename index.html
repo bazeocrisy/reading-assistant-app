@@ -744,11 +744,7 @@ body.bedtime .btn-rm-listen { background: #8a6a3a; }
   .spell-choice-btn { font-size: 1.4rem; padding: 22px 18px; min-height: 64px; }
   .quiz-input { font-size: 1.8rem; padding: 18px 24px; max-width: 400px; }
   .reading-mode-text { font-size: 1.8rem; line-height: 3rem; }
-  /* Bottom action cards in a row */
-  /* Bottom action buttons in a row on desktop */
-  #screen-pick > div:first-child { display: grid !important; grid-template-columns: 1fr 1fr; gap: 14px; }
-  #screen-pick > div:first-child .kid-action-btn { flex-direction: column; text-align: center; padding: 24px 16px; }
-  #screen-pick > div:first-child .kid-action-label { font-size: 1.15rem; }
+  /* Home screen hero + grid handles its own layout */
 }
 
 /* Large desktop (1440px+) */
@@ -758,7 +754,94 @@ body.bedtime .btn-rm-listen { background: #8a6a3a; }
   .reading-mode-text { font-size: 2rem; line-height: 3.4rem; }
   .card { padding: 40px 48px; }
 }
-/* ── Kid Action Buttons ── */
+/* ── Home Screen: Hero Button ── */
+.hero-read-btn {
+  width: 100%; border: none; border-radius: 28px; padding: 26px 24px;
+  display: flex; align-items: center; gap: 18px; cursor: pointer;
+  background: linear-gradient(135deg, #FF9F43, #FF6B35);
+  box-shadow: 0 10px 30px rgba(255,107,53,0.4);
+  position: relative; overflow: hidden; transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  animation: heroGlow 3s ease-in-out infinite;
+}
+.hero-read-btn::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+  border-radius: 28px 28px 0 0; pointer-events: none;
+}
+.hero-read-btn:hover { transform: translateY(-3px) scale(1.01); }
+.hero-read-btn:active { transform: scale(0.97); }
+@keyframes heroGlow {
+  0%, 100% { box-shadow: 0 10px 30px rgba(255,107,53,0.4); }
+  50% { box-shadow: 0 10px 40px rgba(255,107,53,0.55), 0 0 20px rgba(255,215,0,0.2); }
+}
+.hero-read-icon {
+  width: 68px; height: 68px; border-radius: 20px;
+  background: rgba(255,255,255,0.3); display: flex;
+  align-items: center; justify-content: center; font-size: 2.2rem; flex-shrink: 0;
+}
+.hero-read-text { color: white; text-align: left; }
+.hero-read-label {
+  font-family: 'Fredoka', sans-serif; font-size: 1.7rem; font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.12); letter-spacing: 0.5px;
+}
+.hero-read-sub { font-size: 0.88rem; font-weight: 700; opacity: 0.9; margin-top: 2px; color: white; }
+
+/* ── Home Screen: Feature Grid ── */
+.home-feature-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px;
+}
+.home-feature-card {
+  border: none; border-radius: 22px; padding: 20px 14px 18px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.15s; -webkit-tap-highlight-color: transparent;
+  text-align: center; -webkit-appearance: none;
+}
+.home-feature-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.22), transparent);
+  border-radius: 22px 22px 0 0; pointer-events: none;
+}
+.home-feature-card:hover { transform: translateY(-3px) scale(1.01); }
+.home-feature-card:active { transform: scale(0.95); }
+.home-feature-emoji { font-size: 2.2rem; margin-bottom: 2px; }
+.home-feature-label {
+  font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 700;
+  color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* ── Home Screen: Word Bank Button ── */
+.home-wordbank-btn {
+  width: 100%; border: none; border-radius: 18px; padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  background: linear-gradient(135deg, #FFD93D, #F9A825);
+  box-shadow: 0 6px 18px rgba(249,168,37,0.3);
+  margin-top: 14px; position: relative; overflow: hidden;
+  transition: transform 0.15s; -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+}
+.home-wordbank-btn::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+  border-radius: 18px 18px 0 0; pointer-events: none;
+}
+.home-wordbank-btn:hover { transform: translateY(-2px); }
+.home-wordbank-btn:active { transform: scale(0.97); }
+.home-wordbank-label {
+  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 700; color: #5D4037;
+}
+.home-wordbank-badge {
+  margin-left: auto; background: rgba(255,255,255,0.5); border-radius: 12px;
+  padding: 2px 10px; font-family: 'Fredoka', sans-serif; font-size: 0.78rem;
+  font-weight: 700; color: #5D4037; display: none;
+}
+body.bedtime .hero-read-btn { background: linear-gradient(135deg, #8a6a3a, #5a4a2a); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+body.bedtime .home-feature-card { opacity: 0.85; }
+body.bedtime .home-wordbank-btn { background: linear-gradient(135deg, #8a7a3a, #6a5a2a); }
+body.bedtime .home-wordbank-label { color: #e0d8c0; }
+
+/* ── Kid Action Buttons (used on inner screens) ── */
 .kid-action-btn {
   width: 100%; border: none; border-radius: 28px;
   padding: 20px 22px; display: flex; align-items: center; gap: 16px;
@@ -1111,46 +1194,47 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CF</div>
-    <!-- Kid-Friendly Action Buttons -->
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <!-- Read a Story — ORANGE (primary action) -->
-      <button class="kid-action-btn" id="btn-go-story-builder" aria-label="Read a Story" style="background:linear-gradient(135deg, #FF9F43, #FF6B35);box-shadow:0 8px 24px rgba(255,107,53,0.4);">
-        <div class="kid-action-icon" aria-hidden="true">✨</div>
-        <div class="kid-action-label">Read a Story!</div>
-      </button>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CG</div>
 
-      <!-- Time My Reading — PURPLE (standalone assessment) -->
-      <button class="kid-action-btn" id="btn-timed-reading-home" aria-label="Time My Reading" style="background:linear-gradient(135deg, #9B59B6, #8E44AD);box-shadow:0 8px 24px rgba(142,68,173,0.35);">
-        <div class="kid-action-icon" aria-hidden="true">⏱</div>
-        <div class="kid-action-label">Time My Reading</div>
-      </button>
+    <!-- HERO: Read a Story (primary CTA) -->
+    <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story">
+      <div class="hero-read-icon" aria-hidden="true">✨</div>
+      <div class="hero-read-text">
+        <div class="hero-read-label">Read a Story!</div>
+        <div class="hero-read-sub">Bookie will read with you 📖</div>
+      </div>
+    </button>
 
-      <!-- My Own Reading — BLUE -->
-      <button class="kid-action-btn" id="btn-scan-page" aria-label="My Own Reading" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 8px 24px rgba(46,134,222,0.35);">
-        <div class="kid-action-icon" aria-hidden="true">📸</div>
-        <div class="kid-action-label">My Own Reading</div>
-      </button>
-      <input type="file" id="scan-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
-
-      <!-- Read Together — GREEN -->
-      <button class="kid-action-btn" id="btn-together-start" aria-label="Read Together" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 8px 24px rgba(39,174,96,0.35);">
-        <div class="kid-action-icon" aria-hidden="true">📖</div>
-        <div class="kid-action-label">Read Together</div>
-      </button>
-
-      <!-- Spelling Words — RED/CORAL -->
-      <button class="kid-action-btn" id="btn-spelling-start" aria-label="Spelling Words" style="background:linear-gradient(135deg, #FF6B6B, #EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
-        <div class="kid-action-icon" aria-hidden="true">🔤</div>
-        <div class="kid-action-label">Spelling Words</div>
+    <!-- 2×2 Feature Grid -->
+    <div class="home-feature-grid">
+      <button class="home-feature-card" id="btn-spelling-start" aria-label="Spelling Words" style="background:linear-gradient(135deg, #FF6B6B, #EE5A24);box-shadow:0 6px 18px rgba(238,90,36,0.3);">
+        <div class="home-feature-emoji" aria-hidden="true">🔤</div>
+        <div class="home-feature-label">Spelling Words</div>
       </button>
       <input type="file" id="spelling-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
+
+      <button class="home-feature-card" id="btn-together-start" aria-label="Read Together" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.3);">
+        <div class="home-feature-emoji" aria-hidden="true">👫</div>
+        <div class="home-feature-label">Read Together</div>
+      </button>
+
+      <button class="home-feature-card" id="btn-timed-reading-home" aria-label="Time My Reading" style="background:linear-gradient(135deg, #9B59B6, #8E44AD);box-shadow:0 6px 18px rgba(142,68,173,0.3);">
+        <div class="home-feature-emoji" aria-hidden="true">⏱</div>
+        <div class="home-feature-label">Time My Reading</div>
+      </button>
+
+      <button class="home-feature-card" id="btn-scan-page" aria-label="My Own Reading" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.3);">
+        <div class="home-feature-emoji" aria-hidden="true">📸</div>
+        <div class="home-feature-label">My Own Reading</div>
+      </button>
+      <input type="file" id="scan-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
     </div>
 
-    <!-- Word Bank quick access -->
-    <button class="kid-action-btn" id="btn-wordbank-home" aria-label="My Word Bank" style="background:linear-gradient(135deg, #FFD93D, #F9A825);box-shadow:0 8px 24px rgba(249,168,37,0.35);margin-top:2px;">
-      <div class="kid-action-icon" aria-hidden="true">📖</div>
-      <div class="kid-action-label" style="color:#5D4037;">My Word Bank</div>
+    <!-- Word Bank (compact, secondary) -->
+    <button class="home-wordbank-btn" id="btn-wordbank-home" aria-label="My Word Bank">
+      <span style="font-size:1.4rem;">📖</span>
+      <span class="home-wordbank-label">My Word Bank</span>
+      <span class="home-wordbank-badge" id="home-wordbank-badge"></span>
     </button>
   </div>
 
@@ -2201,7 +2285,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CF</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CG</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3472,6 +3556,7 @@ function updateHomeStats() {
     const el2 = document.getElementById('home-words-count');
     const el3 = document.getElementById('home-streak');
     const bar = document.getElementById('home-stats-bar');
+    const wbBadge = document.getElementById('home-wordbank-badge');
     if (storyCount === 0 && wordCount === 0) {
       if (bar) bar.style.display = 'none';
     } else {
@@ -3479,6 +3564,15 @@ function updateHomeStats() {
       if (el1) el1.textContent = storyCount + (storyCount === 1 ? ' story' : ' stories');
       if (el2) el2.textContent = wordCount + (wordCount === 1 ? ' word' : ' words');
       if (el3) el3.textContent = streak + (streak === 1 ? ' day' : ' days');
+    }
+    // Update word bank badge
+    if (wbBadge) {
+      if (wordCount > 0) {
+        wbBadge.textContent = wordCount + (wordCount === 1 ? ' word' : ' words');
+        wbBadge.style.display = 'inline-block';
+      } else {
+        wbBadge.style.display = 'none';
+      }
     }
   } catch(e) {}
 }
@@ -7816,7 +7910,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'CF',
+      appBuild: 'CG',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
