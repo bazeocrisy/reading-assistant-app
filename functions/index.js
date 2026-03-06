@@ -299,6 +299,169 @@ Return ONLY a valid JSON object mapping each word to its definition, with no oth
   }
 );
 
+// ── Extract Words from Document (PDF / DOCX / TXT) ───────────
+// Handles:
+//   PDF  → Claude native document source (base64)
+//   DOCX → mammoth converts to plain text, then Claude parses
+//   TXT  → plain text, just send to Claude
+//
+// Request body:
+//   { fileBase64, mediaType, mode, grade }
+//   mode: "spelling" → returns {words:[{word,syllables,isRedWord}]}
+//   mode: "vocab"    → returns {words:[{word,definition}]}
+//
+exports.extractDocument = onRequest(
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 180},
+  async (req, res) => {
+    if (req.method !== "POST") {
+      return res.status(405).send("Method Not Allowed");
+    }
+
+    const {fileBase64, mediaType, mode, grade} = req.body;
+    if (!fileBase64) {
+      return res.status(400).json({error: "No file provided"});
+    }
+
+    const isSpelling = mode !== "vocab";
+    const gradeNames = {
+      "prek": "Pre-K (age 3-4)", "k": "Kindergarten (age 5-6)",
+      "1": "1st grade (age 6-7)", "2": "2nd grade (age 7-8)", "3": "3rd grade (age 8-9)",
+    };
+    const gradeLabel = gradeNames[grade] || "2nd grade (age 7-8)";
+
+    try {
+      let messageContent;
+
+      if (mediaType === "application/pdf") {
+        // PDF — Claude supports natively via document source type
+        const spellPrompt = `You are looking at a child's word list or spelling list document. Extract EVERY spelling/vocabulary word.
+For each word provide: word, syllable breakdown with dots, whether it is a red/tricky/sight word.
+Return ONLY a valid JSON array, no markdown, no backticks:
+[{"word": "elephant", "syllables": "el·e·phant", "isRedWord": false}]
+Do NOT include titles, headers, directions, page numbers, or teacher instructions — only the actual word list items.`;
+
+        const vocabPrompt = `You are looking at a vocabulary word list document for a ${gradeLabel} child.
+Extract EVERY vocabulary word and its definition.
+If the document has definitions (after a colon, dash, or labeled "Meaning:"), use those exactly.
+If a word has no definition in the document, leave definition as empty string "".
+Return ONLY a valid JSON array, no markdown, no backticks:
+[{"word": "liberty", "definition": "freedom from control"}]
+Do NOT include titles, headers, directions, page numbers, or teacher instructions.`;
+
+        messageContent = [
+          {
+            type: "document",
+            source: {
+              type: "base64",
+              media_type: "application/pdf",
+              data: fileBase64,
+            },
+          },
+          {type: "text", text: isSpelling ? spellPrompt : vocabPrompt},
+        ];
+
+      } else if (
+        mediaType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        mediaType === "application/msword"
+      ) {
+        // DOCX/DOC — convert to plain text with mammoth, then send text to Claude
+        let mammoth;
+        try {
+          mammoth = require("mammoth");
+        } catch (e) {
+          logger.error("mammoth not installed:", e);
+          return res.status(500).json({error: "Word document support not available. Please use PDF or image instead."});
+        }
+
+        const buffer = Buffer.from(fileBase64, "base64");
+        const result = await mammoth.extractRawText({buffer});
+        const plainText = result.value;
+
+        if (!plainText || plainText.trim().length === 0) {
+          return res.status(400).json({error: "Could not read Word document"});
+        }
+
+        const spellPrompt = `Here is text from a child's spelling word list document:\n\n${plainText}\n\nExtract EVERY spelling word.
+For each word provide: word, syllable breakdown with dots, whether it is a red/tricky/sight word.
+Return ONLY a valid JSON array, no markdown, no backticks:
+[{"word": "elephant", "syllables": "el·e·phant", "isRedWord": false}]
+Do NOT include titles, headers, directions, page numbers, or teacher instructions.`;
+
+        const vocabPrompt = `Here is text from a vocabulary word list document for a ${gradeLabel} child:\n\n${plainText}\n\nExtract EVERY vocabulary word and its definition.
+If definitions are present (after a colon, dash, or "Meaning:"), use those exactly.
+If a word has no definition, leave definition as "".
+Return ONLY a valid JSON array, no markdown, no backticks:
+[{"word": "liberty", "definition": "freedom from control"}]
+Do NOT include titles, headers, directions, or teacher instructions.`;
+
+        messageContent = [
+          {type: "text", text: isSpelling ? spellPrompt : vocabPrompt},
+        ];
+
+      } else {
+        // Plain text file — decode and send directly
+        const plainText = Buffer.from(fileBase64, "base64").toString("utf-8");
+
+        const spellPrompt = `Here is text from a child's spelling word list:\n\n${plainText}\n\nExtract EVERY spelling word.
+Return ONLY a valid JSON array, no markdown, no backticks:
+[{"word": "elephant", "syllables": "el·e·phant", "isRedWord": false}]`;
+
+        const vocabPrompt = `Here is text from a vocabulary word list for a ${gradeLabel} child:\n\n${plainText}\n\nExtract EVERY vocabulary word and its definition.
+If definitions are present (after a colon, dash, or "Meaning:"), use those exactly. Otherwise leave definition as "".
+Return ONLY a valid JSON array, no markdown, no backticks:
+[{"word": "liberty", "definition": "freedom from control"}]`;
+
+        messageContent = [
+          {type: "text", text: isSpelling ? spellPrompt : vocabPrompt},
+        ];
+      }
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": anthropicKey.value(),
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": "pdfs-2024-09-25",
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 8000,
+          messages: [{role: "user", content: messageContent}],
+        }),
+      });
+
+      const data = await response.json();
+      logger.info("extractDocument response type:", data.type);
+
+      if (data.error) {
+        logger.error("extractDocument API error:", data.error);
+        return res.status(500).json({error: data.error.message || "API error"});
+      }
+
+      if (!data.content || !data.content[0] || !data.content[0].text) {
+        logger.error("extractDocument unexpected response:", JSON.stringify(data));
+        return res.status(500).json({error: "Could not extract words from document"});
+      }
+
+      let rawText = data.content[0].text.trim();
+      rawText = rawText.replace(/^```json?\s*/i, "").replace(/\s*```$/i, "").trim();
+
+      try {
+        const words = JSON.parse(rawText);
+        res.json({words});
+      } catch (parseErr) {
+        logger.error("Failed to parse extractDocument JSON:", rawText);
+        res.json({words: [], raw: rawText, error: "Could not parse words from document"});
+      }
+
+    } catch (error) {
+      logger.error("Error in extractDocument:", error);
+      res.status(500).json({error: "Failed to process document"});
+    }
+  }
+);
+
 const { synthesizeSpeech } = require("./tts");
 exports.synthesizeSpeech = synthesizeSpeech;
 

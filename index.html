@@ -1194,7 +1194,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CR</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1773,7 +1773,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-icon" aria-hidden="true">📄</div>
         <div class="kid-action-label">Upload a Document</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file with your spelling words</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, Word doc, or text file with your spelling words</p>
 
       <!-- Type / Paste -->
       <button class="kid-action-btn" id="btn-spell-source-type" aria-label="Type or paste spelling words" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.25);margin-bottom:12px;">
@@ -2063,17 +2063,20 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-icon" aria-hidden="true">📄</div>
         <div class="kid-action-label">Upload a Document</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file with your vocabulary words</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, Word doc, or text file</p>
 
       <!-- Type / Paste -->
       <button class="kid-action-btn" id="btn-vocab-source-type" aria-label="Type or paste vocabulary words" style="background:linear-gradient(135deg, #00CEC9, #00838F);box-shadow:0 6px 18px rgba(0,131,143,0.25);margin-bottom:12px;">
         <div class="kid-action-icon" aria-hidden="true">✏️</div>
         <div class="kid-action-label">Type My Words</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Type or paste your vocabulary words (with or without definitions)</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Type or paste words — with or without definitions</p>
 
-      <!-- View existing list (if any) -->
-      <button class="btn-main btn-outline" id="btn-vocab-source-existing" style="font-size:0.95rem;display:none;">📋 View My Current Words</button>
+      <!-- View existing list (if any) — matches spelling style -->
+      <button class="kid-action-btn" id="btn-vocab-source-existing" style="display:none;background:linear-gradient(135deg, #FFD93D, #F9A825);box-shadow:0 6px 18px rgba(249,168,37,0.3);">
+        <div class="kid-action-icon" aria-hidden="true">📋</div>
+        <div class="kid-action-label" id="btn-vocab-source-existing-label">View My Current Words</div>
+      </button>
     </div>
   </div>
 
@@ -2081,19 +2084,34 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-vocab-type">
     <div class="card">
       <div class="card-title">✏️ Type Your Vocabulary Words</div>
-      <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-bottom:8px;">Type or paste your words below. Add definitions with a colon, or leave them out and we'll look them up!</p>
-      <textarea id="vocab-type-textarea" rows="6" style="width:100%;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;" placeholder="liberty: freedom from control&#10;justice: fair treatment&#10;democracy&#10;constitution"></textarea>
+
+      <!-- Format instructions - visual and clear -->
+      <div style="background:linear-gradient(135deg,rgba(0,206,201,0.12),rgba(0,131,143,0.08));border:2px solid #00CEC9;border-radius:16px;padding:14px 16px;margin-bottom:14px;">
+        <p style="font-weight:800;font-size:0.88rem;color:#00838F;margin:0 0 10px;">📋 One word per line. Two formats work:</p>
+
+        <!-- Format 1 -->
+        <div style="background:white;border-radius:12px;padding:10px 14px;margin-bottom:8px;border:1.5px solid #b2ebf2;">
+          <div style="font-size:0.72rem;font-weight:800;color:#00838F;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Format 1 — Word + Definition</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;color:#2d3436;">calmly<span style="color:#00838F;font-weight:800;">:</span> <span style="color:#636e72;font-weight:700;">while not moving, being still</span></div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;color:#2d3436;">defective<span style="color:#00838F;font-weight:800;">:</span> <span style="color:#636e72;font-weight:700;">having a flaw</span></div>
+        </div>
+
+        <!-- Format 2 -->
+        <div style="background:white;border-radius:12px;padding:10px 14px;border:1.5px solid #b2ebf2;">
+          <div style="font-size:0.72rem;font-weight:800;color:#00838F;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Format 2 — Word Only (we look it up!)</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;color:#2d3436;">liberty</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;color:#2d3436;">justice</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;color:#2d3436;">democracy</div>
+        </div>
+
+        <p style="font-weight:700;font-size:0.78rem;color:#00838F;margin:8px 0 0;text-align:center;">💡 The colon <strong>:</strong> separates the word from its definition</p>
+      </div>
+
+      <textarea id="vocab-type-textarea" rows="6" style="width:100%;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;" placeholder="calmly: while not moving, being still&#10;defective: having a flaw&#10;hatch&#10;reef&#10;submersible"></textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
         <div id="vocab-type-count" style="font-size:0.78rem;font-weight:800;color:var(--muted);">0 words</div>
       </div>
       <button class="btn-main btn-green" id="btn-vocab-type-go" style="font-size:1.1rem;margin-top:12px;">📚 Load These Words!</button>
-      <!-- Example hint -->
-      <div style="background:var(--section);border-radius:14px;padding:12px 16px;margin-top:14px;border:2px dashed var(--border);">
-        <p style="font-weight:800;font-size:0.82rem;color:var(--muted);margin:0 0 6px;">💡 Example formats:</p>
-        <p style="font-weight:700;font-size:0.85rem;color:var(--ink);margin:0 0 4px;font-family:'Fredoka',sans-serif;">liberty: freedom from control</p>
-        <p style="font-weight:700;font-size:0.85rem;color:var(--ink);margin:0 0 4px;font-family:'Fredoka',sans-serif;">democracy</p>
-        <p style="font-weight:700;font-size:0.78rem;color:var(--muted);margin:0;">Words without definitions will be looked up automatically!</p>
-      </div>
     </div>
   </div>
 
@@ -2457,7 +2475,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CR</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2624,6 +2642,68 @@ const CF_STT   = `${CF_BASE}/transcribeSpeech`;
 const CF_OCR   = `${CF_BASE}/extractText`;
 const CF_SPELLING = `${CF_BASE}/extractSpellingWords`;
 const CF_BATCH_DEF = `${CF_BASE}/batchDefine`;
+const CF_DOC = `${CF_BASE}/extractDocument`;
+
+// ── Shared file-type router ───────────────────────────────────
+// Returns { fileBase64, mediaType, isImage } for any uploaded file.
+// Handles: images, PDF, DOCX, DOC, TXT.
+async function readUploadedFile(file) {
+  const name = file.name.toLowerCase();
+  const type = file.type;
+
+  // Determine media type
+  let mediaType = type;
+  if (!mediaType || mediaType === 'application/octet-stream') {
+    if (name.endsWith('.pdf'))  mediaType = 'application/pdf';
+    else if (name.endsWith('.docx')) mediaType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    else if (name.endsWith('.doc'))  mediaType = 'application/msword';
+    else if (name.endsWith('.txt'))  mediaType = 'text/plain';
+    else mediaType = 'image/jpeg';
+  }
+
+  const isImage = mediaType.startsWith('image/');
+  const isPdf   = mediaType === 'application/pdf';
+  const isDoc   = mediaType.includes('word') || mediaType === 'application/msword';
+  const isTxt   = mediaType === 'text/plain' || name.endsWith('.txt');
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    if (isImage) {
+      // Images: compress via canvas
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1600;
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve({ fileBase64: canvas.toDataURL('image/jpeg', 0.85).split(',')[1], mediaType: 'image/jpeg', isImage: true });
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    } else {
+      // Non-image: read as ArrayBuffer, convert to base64
+      reader.onload = () => {
+        const bytes = new Uint8Array(reader.result);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+        const fileBase64 = btoa(binary);
+        resolve({ fileBase64, mediaType, isImage: false, isPdf, isDoc, isTxt });
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    }
+  });
+}
 
 // ── AI Story Generation ───────────────────────────────────
 async function generateAIStory(grade, category, wordTarget) {
@@ -6251,41 +6331,26 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
   document.getElementById('spelling-week-label').textContent = '';
 
   try {
-    // Convert image to base64 with compression
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const maxDim = 1600;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-            else { w = Math.round(w * maxDim / h); h = maxDim; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          resolve(dataUrl.split(',')[1]);
-        };
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+    const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
 
-    // Send to spelling extraction Cloud Function
-    const response = await fetch(CF_SPELLING, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg', grade: S.grade || '2' })
-    });
-
-    if (!response.ok) throw new Error('Extraction failed');
-    const data = await response.json();
+    let data;
+    if (isImage) {
+      // Image → existing CF_SPELLING (Claude vision)
+      const response = await fetch(CF_SPELLING, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: fileBase64, mediaType, grade: S.grade || '2' })
+      });
+      if (!response.ok) throw new Error('Extraction failed');
+      data = await response.json();
+    } else {
+      // PDF / DOCX / TXT → CF_DOC
+      const response = await fetch(CF_DOC, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileBase64, mediaType, mode: 'spelling', grade: S.grade || '2' })
+      });
+      if (!response.ok) throw new Error('Document extraction failed');
+      data = await response.json();
+    }
 
     if (!data.words || data.words.length === 0) throw new Error('No words found');
 
@@ -6307,7 +6372,6 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     // Save to localStorage — replace existing or push new
     const d = getData();
     d.spellingLists.push(spellingList);
-    // Keep max 10 lists
     if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
     saveData(d);
 
@@ -6321,7 +6385,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
       <div style="text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
         <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo of the spelling list.</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo, or type your words instead.</p>
         <button class="btn-main" id="btn-spelling-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 Try Again</button>
       </div>`;
     document.getElementById('btn-spelling-retry-error').addEventListener('click', triggerSpellingUpload);
@@ -7386,9 +7450,13 @@ document.getElementById('btn-spelling-games').addEventListener('click', () => {
 
 // Game picker buttons
 document.getElementById('btn-game-wordsearch').addEventListener('click', () => {
+  gameSource = 'spelling';
+  SCREEN_BACK_MAP['screen-wordsearch'] = ['← Quit', 'screen-spelling'];
   startWordSearch(gameSelectedWords);
 });
 document.getElementById('btn-game-scramble').addEventListener('click', () => {
+  gameSource = 'spelling';
+  SCREEN_BACK_MAP['screen-scramble'] = ['← Quit', 'screen-spelling'];
   startWordScramble(gameSelectedWords);
 });
 
@@ -7880,18 +7948,21 @@ let vocabFlashIndex = 0;
 let vocabFlashFlipped = false;
 
 // ── Home button ──────────────────────────────────────────────
-document.getElementById('btn-vocab-start').addEventListener('click', () => {
+function showVocabSourceScreen() {
   const d = getData();
   const existingBtn = document.getElementById('btn-vocab-source-existing');
+  const existingLabel = document.getElementById('btn-vocab-source-existing-label');
   if (d.vocabLists && d.vocabLists.length > 0) {
-    existingBtn.style.display = 'block';
+    existingBtn.style.display = 'flex';
     const latest = d.vocabLists[d.vocabLists.length - 1];
-    existingBtn.textContent = `📋 View My Current Words (${latest.words.length})`;
+    if (existingLabel) existingLabel.textContent = `View My Current Words (${latest.words.length})`;
   } else {
     existingBtn.style.display = 'none';
   }
   show('screen-vocab-source');
-});
+}
+
+document.getElementById('btn-vocab-start').addEventListener('click', showVocabSourceScreen);
 
 // ── Source picker ────────────────────────────────────────────
 document.getElementById('btn-vocab-source-upload').addEventListener('click', () => {
@@ -7974,6 +8045,35 @@ document.getElementById('btn-vocab-type-go').addEventListener('click', () => {
   show('screen-vocab');
 });
 
+// ── Parse definitions from raw OCR text ──────────────────────
+// Handles: "word - (part of speech) definition" and "Meaning: definition"
+function parseMeaningsFromText(text) {
+  const lines = text.split(/\n/).map(l => l.trim()).filter(l => l);
+  const map = {};
+  let lastWord = null;
+  for (const line of lines) {
+    const meaningMatch = line.match(/^[Mm]eaning[:\s]+(.+)/);
+    if (meaningMatch && lastWord) {
+      map[lastWord] = meaningMatch[1].trim();
+      lastWord = null;
+      continue;
+    }
+    const dashMatch = line.match(/^(\d+\.\s*)?([a-zA-Z]+)\s+-\s+(?:\([^)]+\)\s+)?(.+)/);
+    if (dashMatch) {
+      const w = dashMatch[2].toLowerCase();
+      const def = dashMatch[3].trim();
+      if (def.length > 10 && !/^\(p\.\s*\d+\)/.test(def) && !/"/.test(def.slice(0, 5))) {
+        map[w] = def;
+      }
+      lastWord = w;
+      continue;
+    }
+    const wordOnlyMatch = line.match(/^(\d+\.\s*)?([a-zA-Z]{2,})[:\s]*$/);
+    if (wordOnlyMatch) lastWord = wordOnlyMatch[2].toLowerCase();
+  }
+  return map;
+}
+
 // ── File upload ──────────────────────────────────────────────
 document.getElementById('vocab-file-input').addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -7988,106 +8088,61 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
   document.getElementById('vocab-week-label').textContent = '';
 
   try {
-    // Compress image
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const maxDim = 1600;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-            else { w = Math.round(w * maxDim / h); h = maxDim; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
-        };
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+    const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
 
-    // Step 1: Use CF_SPELLING (Claude vision) to extract just the vocabulary words.
-    // CF_SPELLING already handles any image format and returns clean JSON {words: [...]}
-    // It correctly ignores headers, titles, page numbers, and example sentences.
-    const spellResp = await fetch(CF_SPELLING, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg', grade: S.grade || '2' })
-    });
-    if (!spellResp.ok) throw new Error('Extraction failed');
-    const spellData = await spellResp.json();
-    if (!spellData.words || spellData.words.length === 0) throw new Error('No words found');
+    let extractedWords; // [{word, definition}]
 
-    // Step 2: Also get raw OCR text so we can try to match Meaning: lines to words
-    let meaningMap = {};
-    try {
-      const ocrResp = await fetch(CF_OCR, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+    if (isImage) {
+      // Image → CF_SPELLING for clean word list + CF_OCR for definitions
+      const spellResp = await fetch(CF_SPELLING, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: fileBase64, mediaType, grade: S.grade || '2' })
       });
-      if (ocrResp.ok) {
-        const ocrData = await ocrResp.json();
-        if (ocrData.text) {
-          // Parse "Meaning: ..." lines and "word - definition" lines from raw text
-          const lines = ocrData.text.split(/\n/).map(l => l.trim()).filter(l => l);
+      if (!spellResp.ok) throw new Error('Extraction failed');
+      const spellData = await spellResp.json();
+      if (!spellData.words || spellData.words.length === 0) throw new Error('No words found');
 
-          // Look for lines starting with "Meaning:" — associate with nearest preceding word
-          let lastWord = null;
-          for (const line of lines) {
-            // Match "Meaning: some definition text"
-            const meaningMatch = line.match(/^[Mm]eaning[:\s]+(.+)/);
-            if (meaningMatch && lastWord) {
-              meaningMap[lastWord] = meaningMatch[1].trim();
-              lastWord = null;
-              continue;
-            }
-            // Match "word - (part of speech) definition" like green sheet format:
-            // "calmly - (adverb) while not moving, or being still"
-            const dashMatch = line.match(/^(\d+\.\s*)?([a-zA-Z]+)\s+-\s+(?:\([^)]+\)\s+)?(.+)/);
-            if (dashMatch) {
-              const w = dashMatch[2].toLowerCase();
-              const def = dashMatch[3].trim();
-              // Only store if definition is a real sentence (not a page citation like "p. 24")
-              if (def.length > 10 && !/^\(p\.\s*\d+\)/.test(def) && !/"/.test(def.slice(0,5))) {
-                meaningMap[w] = def;
-              }
-              lastWord = w;
-              continue;
-            }
-            // Track last word that appeared (numbered list item)
-            const wordOnlyMatch = line.match(/^(\d+\.\s*)?([a-zA-Z]{2,})[:\s]*$/);
-            if (wordOnlyMatch) {
-              lastWord = wordOnlyMatch[2].toLowerCase();
-            }
-          }
+      // Also try to extract definitions from raw OCR
+      let meaningMap = {};
+      try {
+        const ocrResp = await fetch(CF_OCR, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: fileBase64, mediaType })
+        });
+        if (ocrResp.ok) {
+          const ocrData = await ocrResp.json();
+          if (ocrData.text) meaningMap = parseMeaningsFromText(ocrData.text);
         }
-      }
-    } catch (ocrErr) {
-      console.warn('OCR meaning extraction failed (non-fatal):', ocrErr);
+      } catch (ocrErr) { console.warn('OCR meaning extraction failed (non-fatal):', ocrErr); }
+
+      extractedWords = spellData.words.map(w => {
+        const wordKey = w.word.toLowerCase().trim();
+        return { word: wordKey, definition: meaningMap[wordKey] || '' };
+      });
+
+    } else {
+      // PDF / DOCX / TXT → CF_DOC with vocab mode (returns word + definition directly)
+      const docResp = await fetch(CF_DOC, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileBase64, mediaType, mode: 'vocab', grade: S.grade || '2' })
+      });
+      if (!docResp.ok) throw new Error('Document extraction failed');
+      const docData = await docResp.json();
+      if (!docData.words || docData.words.length === 0) throw new Error('No words found');
+
+      extractedWords = docData.words.map(w => ({
+        word: (w.word || '').toLowerCase().trim(),
+        definition: w.definition || ''
+      }));
     }
 
-    // Step 3: Build vocab list — prefer meaningMap definitions, fall back to batchDefine
+    if (!extractedWords || extractedWords.length === 0) throw new Error('No words found');
+
     const vocabList = {
       id: Date.now().toString(36),
       date: new Date().toISOString(),
       grade: S.grade || '2',
-      words: spellData.words.map((w, i) => {
-        const wordKey = w.word.toLowerCase().trim();
-        return {
-          word: wordKey,
-          definition: meaningMap[wordKey] || '',
-          num: i + 1,
-          practiced: 0,
-          mastered: false
-        };
-      })
+      words: extractedWords.map((w, i) => ({ ...w, num: i + 1, practiced: 0, mastered: false }))
     };
 
     const d = getData();
@@ -8096,7 +8151,7 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
     saveData(d);
 
     currentVocabList = vocabList;
-    renderVocabWords(vocabList); // renderVocabWords will auto-call fetchVocabDefinitions for any missing defs
+    renderVocabWords(vocabList);
 
   } catch (err) {
     console.error('Vocab upload error:', err);
@@ -8105,7 +8160,7 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
       <div style="text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
         <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo, or type your words instead.</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try a clearer photo, or type your words instead.</p>
         <button class="btn-main" id="btn-vocab-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg,#00CEC9,#00838F);">📄 Try Again</button>
       </div>`;
     document.getElementById('btn-vocab-retry-error').addEventListener('click', () => {
@@ -8124,7 +8179,7 @@ function renderVocabWords(list) {
 
   loadingEl.style.display = 'none';
   emptyEl.style.display = 'none';
-  actionsEl.style.display = 'flex';
+  actionsEl.style.display = 'grid';
 
   // Update home badge
   const badge = document.getElementById('home-vocab-badge');
@@ -8244,18 +8299,7 @@ document.getElementById('btn-vocab-upload-empty').addEventListener('click', () =
   show('screen-vocab-source');
 });
 
-document.getElementById('btn-vocab-new').addEventListener('click', () => {
-  const d = getData();
-  const existingBtn = document.getElementById('btn-vocab-source-existing');
-  if (d.vocabLists && d.vocabLists.length > 0) {
-    existingBtn.style.display = 'block';
-    const latest = d.vocabLists[d.vocabLists.length - 1];
-    existingBtn.textContent = `📋 View My Current Words (${latest.words.length})`;
-  } else {
-    existingBtn.style.display = 'none';
-  }
-  show('screen-vocab-source');
-});
+document.getElementById('btn-vocab-new').addEventListener('click', showVocabSourceScreen);
 
 document.getElementById('btn-vocab-study').addEventListener('click', () => {
   if (!currentVocabList || !currentVocabList.words.length) return;
@@ -8303,6 +8347,9 @@ document.getElementById('btn-vocab-wordsearch').addEventListener('click', () => 
   gameSource = 'vocab';
   gameSelectedWords = currentVocabList.words;
   startWordSearch(gameSelectedWords);
+  // Update back nav so Quit returns to vocab, not spelling
+  SCREEN_BACK_MAP['screen-wordsearch'] = ['← Quit', 'screen-vocab'];
+  SCREEN_BACK_MAP['screen-scramble'] = ['← Quit', 'screen-vocab'];
   show('screen-wordsearch');
 });
 
@@ -8329,7 +8376,9 @@ function renderVocabStudy(words) {
         <div class="spell-study-def">${w.definition || 'Tap 🔊 to hear!'}</div>
       </div>
       <div class="spell-study-speaker" title="Hear word">🔊</div>`;
-    card.addEventListener('click', () => speakText(w.word, S.grade));
+    card.addEventListener('click', () => {
+      if (w.definition) { sayDictEntry(w.word, w.definition); } else { sayWordOnly(w.word); }
+    });
     listEl.appendChild(card);
   });
 }
@@ -8363,7 +8412,14 @@ document.getElementById('vocab-flashcard-wrap').addEventListener('click', () => 
 });
 
 document.getElementById('btn-flash-hear').addEventListener('click', () => {
-  if (currentVocabList) speakText(currentVocabList.words[vocabFlashIndex].word, S.grade);
+  if (currentVocabList) {
+    const w = currentVocabList.words[vocabFlashIndex];
+    if (w.definition) {
+      sayDictEntry(w.word, w.definition);
+    } else {
+      sayWordOnly(w.word);
+    }
+  }
 });
 
 document.getElementById('btn-flash-prev').addEventListener('click', () => {
