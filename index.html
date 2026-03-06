@@ -1194,7 +1194,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CU</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1820,6 +1820,24 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="spelling-count-bar" id="spelling-count-bar" style="display:none;">
         <div><span class="spelling-count-num" id="spelling-word-count">0</span></div>
         <div class="spelling-count-label">spelling words loaded</div>
+      </div>
+      <!-- Voice & Speed controls — mirrors reading screen -->
+      <div id="spelling-controls" style="display:none;background:linear-gradient(135deg,#FFF5EC,#FFF0F5);border-radius:16px;padding:12px 16px;margin-bottom:12px;border:2px solid #FFD6B0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-weight:800;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;flex-shrink:0;">🎤 Voice:</span>
+          <button class="spell-list-voice-btn" data-voice="female" id="spell-list-voice-female" style="flex:1;padding:7px 10px;border-radius:50px;border:2.5px solid #FF8C42;background:linear-gradient(135deg,#FF8C42,#FF6B6B);color:white;font-family:'Fredoka',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;">👩 Girl</button>
+          <button class="spell-list-voice-btn" data-voice="male" id="spell-list-voice-male" style="flex:1;padding:7px 10px;border-radius:50px;border:2.5px solid var(--border);background:var(--card);color:var(--text);font-family:'Fredoka',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;">👨 Boy</button>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-weight:800;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">⚡ Speed:</span>
+            <span id="spell-list-speed-display" style="background:var(--purple-soft);border:2px solid var(--purple);border-radius:10px;padding:2px 10px;font-family:'Fredoka';font-size:0.95rem;color:var(--purple);font-weight:700;">0.9×</span>
+          </div>
+          <input type="range" id="spell-list-speed-slider" min="0.5" max="2.0" step="0.1" value="0.9" style="width:100%;accent-color:#FF8C42;height:6px;border-radius:4px;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;font-size:0.72rem;font-weight:800;color:#8896A6;margin-top:3px;">
+            <span>🐢 Slow</span><span>🚶 Normal</span><span>🚀 Fast</span>
+          </div>
+        </div>
       </div>
       <div id="spelling-word-list" style="overscroll-behavior:contain;"></div>
       <div id="spelling-empty" style="display:none;">
@@ -2475,7 +2493,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5241,7 +5259,7 @@ async function sayDictEntry(word, definition) {
     if (data.audioBase64) {
       if (dictAudio) { dictAudio.pause(); }
       dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      dictAudio.playbackRate = 0.75;
+      dictAudio.playbackRate = S.spellingSpeed || S.speed || 1.0;
       dictAudio.play();
       return;
     }
@@ -5269,7 +5287,7 @@ async function sayWordOnly(word) {
     if (data.audioBase64) {
       if (dictAudio) { dictAudio.pause(); }
       dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      dictAudio.playbackRate = 0.75;
+      dictAudio.playbackRate = S.spellingSpeed || S.speed || 1.0;
       dictAudio.play();
       return;
     }
@@ -6428,6 +6446,26 @@ function renderSpellingWords(list) {
   actionsEl.style.display = 'flex';
   countBar.style.display = 'flex';
 
+  // Show voice & speed controls, set grade-appropriate speed default
+  const spellControls = document.getElementById('spelling-controls');
+  if (spellControls) {
+    spellControls.style.display = list.words.length > 0 ? 'block' : 'none';
+    const gradeSpeed = (typeof GRADE_SPEED_DEFAULTS !== 'undefined')
+      ? (GRADE_SPEED_DEFAULTS[S.grade] || 0.9) : 0.9;
+    const slider = document.getElementById('spell-list-speed-slider');
+    const display = document.getElementById('spell-list-speed-display');
+    if (slider) slider.value = gradeSpeed;
+    if (display) display.textContent = gradeSpeed.toFixed(1) + '×';
+    S.spellingSpeed = gradeSpeed;
+    // Sync voice button state to current S.voiceGender
+    document.querySelectorAll('.spell-list-voice-btn').forEach(b => {
+      const isSelected = b.dataset.voice === S.voiceGender;
+      b.style.background = isSelected ? 'linear-gradient(135deg,#FF8C42,#FF6B6B)' : 'var(--card)';
+      b.style.color = isSelected ? 'white' : 'var(--text)';
+      b.style.border = isSelected ? '2.5px solid #FF8C42' : '2.5px solid var(--border)';
+    });
+  }
+
   // Show word count
   document.getElementById('spelling-word-count').textContent = list.words.length;
 
@@ -6504,8 +6542,32 @@ function renderSpellingWords(list) {
     tapDiv.className = 'spelling-word-tap';
     tapDiv.textContent = '🔊';
 
+    // Delete button
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '❌';
+    delBtn.title = 'Remove word';
+    delBtn.style.cssText = 'background:none;border:none;font-size:1.1rem;cursor:pointer;padding:4px 6px;opacity:0.6;flex-shrink:0;line-height:1;';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const data = getData();
+      const savedList = data.spellingLists.find(l => l.id === list.id);
+      if (savedList) {
+        savedList.words = savedList.words.filter(sw => sw.word !== w.word);
+        saveData(data);
+        list.words = savedList.words;
+        if (savedList.words.length === 0) {
+          data.spellingLists = data.spellingLists.filter(l => l.id !== list.id);
+          saveData(data);
+          renderSpellingWords({ words: [], id: list.id, date: list.date });
+        } else {
+          renderSpellingWords(savedList);
+        }
+      }
+    });
+
     card.appendChild(mainDiv);
     card.appendChild(tapDiv);
+    card.appendChild(delBtn);
 
     card.addEventListener('click', () => {
       w.practiced = (w.practiced || 0) + 1;
@@ -6714,6 +6776,34 @@ document.querySelectorAll('.spell-voice-btn').forEach(btn => {
     });
   });
 });
+
+// Spelling word LIST screen voice buttons
+document.querySelectorAll('.spell-list-voice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    S.voiceGender = btn.dataset.voice;
+    document.querySelectorAll('.spell-list-voice-btn').forEach(b => {
+      const isSel = b.dataset.voice === S.voiceGender;
+      b.style.background = isSel ? 'linear-gradient(135deg,#FF8C42,#FF6B6B)' : 'var(--card)';
+      b.style.color = isSel ? 'white' : 'var(--text)';
+      b.style.border = isSel ? '2.5px solid #FF8C42' : '2.5px solid var(--border)';
+    });
+    // Keep main voice-btn and spell-voice-btn in sync
+    document.querySelectorAll('.voice-btn, .spell-voice-btn').forEach(b => {
+      b.classList.toggle('sel-voice', b.dataset.voice === S.voiceGender);
+    });
+  });
+});
+
+// Spelling word LIST screen speed slider
+const spellListSlider = document.getElementById('spell-list-speed-slider');
+const spellListDisplay = document.getElementById('spell-list-speed-display');
+if (spellListSlider) {
+  spellListSlider.addEventListener('input', () => {
+    const val = parseFloat(spellListSlider.value);
+    S.spellingSpeed = val;
+    if (spellListDisplay) spellListDisplay.textContent = val.toFixed(1) + '×';
+  });
+}
 
 document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
   if (spellingPickedWords.length < 1) return;
