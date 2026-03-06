@@ -1197,7 +1197,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DD</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2554,7 +2554,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5419,6 +5419,11 @@ async function sayHearItAll(word, definition, sentences, allWordEls) {
     const speed = S.spellingSpeed || S.speed || 1.0;
     dictAudio.playbackRate = speed;
 
+    // DEBUG — log full timing array so we can see what ElevenLabs actually returns
+    console.log('sayHearItAll rawTimings:', JSON.stringify(rawTimings));
+    console.log('sayHearItAll allWordEls count:', allWordEls.length);
+    console.log('sayHearItAll sentences:', sentences);
+
     // Find where sentences start in the timings array by matching
     // the first word of the first sentence — same robust approach as reading screen reconciliation
     let prefixWords = 0;
@@ -5429,9 +5434,11 @@ async function sayHearItAll(word, definition, sentences, allWordEls) {
         if (tw === firstWord) { prefixWords = i; break; }
       }
     }
+    console.log('sayHearItAll prefixWords:', prefixWords);
 
     // Slice to only the sentence timings
     const sentenceTimings = rawTimings.slice(prefixWords);
+    console.log('sayHearItAll sentenceTimings:', JSON.stringify(sentenceTimings));
 
     if (sentenceTimings.length > 0 && allWordEls.length > 0) {
       const AUDIO_OFFSET_MS = 20;
