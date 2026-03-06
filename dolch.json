@@ -1,0 +1,2231 @@
+{
+  "meta": {
+    "name": "Dolch Sight Words",
+    "description": "Classic sight words every young reader needs to know. Used in schools for over 80 years.",
+    "totalWords": 220,
+    "grades": [
+      "prek",
+      "k",
+      "1",
+      "2",
+      "3"
+    ],
+    "wordsPerGrade": {
+      "prek": 40,
+      "k": 52,
+      "1": 41,
+      "2": 46,
+      "3": 41
+    }
+  },
+  "prek": [
+    {
+      "word": "a",
+      "syllables": "a",
+      "definition": "A word we say before things.",
+      "sentences": [
+        "I see a cat.",
+        "A dog ran.",
+        "Get a book."
+      ]
+    },
+    {
+      "word": "and",
+      "syllables": "and",
+      "definition": "Joins two things together.",
+      "sentences": [
+        "Cats and dogs.",
+        "Run and jump.",
+        "Red and blue."
+      ]
+    },
+    {
+      "word": "away",
+      "syllables": "a\u00b7way",
+      "definition": "Going far from here.",
+      "sentences": [
+        "Fly away bird.",
+        "Go away fog.",
+        "Run away fast."
+      ]
+    },
+    {
+      "word": "big",
+      "syllables": "big",
+      "definition": "Very large in size.",
+      "sentences": [
+        "A big dog.",
+        "So big!",
+        "Big red ball."
+      ]
+    },
+    {
+      "word": "blue",
+      "syllables": "blue",
+      "definition": "The color of the sky.",
+      "sentences": [
+        "Blue sky up.",
+        "My blue cup.",
+        "A blue bird."
+      ]
+    },
+    {
+      "word": "can",
+      "syllables": "can",
+      "definition": "Able to do something.",
+      "sentences": [
+        "I can jump.",
+        "Can you run?",
+        "We can go."
+      ]
+    },
+    {
+      "word": "come",
+      "syllables": "come",
+      "definition": "Move toward someone.",
+      "sentences": [
+        "Come here now.",
+        "Come and play.",
+        "Come with me."
+      ]
+    },
+    {
+      "word": "down",
+      "syllables": "down",
+      "definition": "Going to a lower place.",
+      "sentences": [
+        "Sit down here.",
+        "Down we go.",
+        "Fall down slowly."
+      ]
+    },
+    {
+      "word": "find",
+      "syllables": "find",
+      "definition": "To look and get it.",
+      "sentences": [
+        "Find my hat.",
+        "Can you find it?",
+        "Find the dog."
+      ]
+    },
+    {
+      "word": "for",
+      "syllables": "for",
+      "definition": "Meant for someone.",
+      "sentences": [
+        "This is for you.",
+        "A gift for me.",
+        "For my dog."
+      ]
+    },
+    {
+      "word": "funny",
+      "syllables": "fun\u00b7ny",
+      "definition": "Makes you laugh.",
+      "sentences": [
+        "So funny!",
+        "A funny clown.",
+        "That is funny."
+      ]
+    },
+    {
+      "word": "go",
+      "syllables": "go",
+      "definition": "To move to a place.",
+      "sentences": [
+        "Go go go.",
+        "Let us go.",
+        "Go to bed."
+      ]
+    },
+    {
+      "word": "help",
+      "syllables": "help",
+      "definition": "To do good for someone.",
+      "sentences": [
+        "Help me please.",
+        "I can help.",
+        "Help the dog."
+      ]
+    },
+    {
+      "word": "here",
+      "syllables": "here",
+      "definition": "In this very spot.",
+      "sentences": [
+        "Come here now.",
+        "Sit here please.",
+        "Here I am."
+      ]
+    },
+    {
+      "word": "I",
+      "syllables": "I",
+      "definition": "A word for yourself.",
+      "sentences": [
+        "I can run.",
+        "I see you.",
+        "I am here."
+      ]
+    },
+    {
+      "word": "in",
+      "syllables": "in",
+      "definition": "Inside something.",
+      "sentences": [
+        "In the box.",
+        "Get in here.",
+        "A cat in bed."
+      ]
+    },
+    {
+      "word": "is",
+      "syllables": "is",
+      "definition": "A linking word.",
+      "sentences": [
+        "It is big.",
+        "She is here.",
+        "He is funny."
+      ]
+    },
+    {
+      "word": "it",
+      "syllables": "it",
+      "definition": "A word for a thing.",
+      "sentences": [
+        "It is big.",
+        "See it go.",
+        "It is red."
+      ]
+    },
+    {
+      "word": "jump",
+      "syllables": "jump",
+      "definition": "To hop up off the ground.",
+      "sentences": [
+        "I can jump.",
+        "Jump up high.",
+        "Frogs can jump."
+      ]
+    },
+    {
+      "word": "little",
+      "syllables": "lit\u00b7tle",
+      "definition": "Very small in size.",
+      "sentences": [
+        "A little bug.",
+        "So little!",
+        "My little cat."
+      ]
+    },
+    {
+      "word": "look",
+      "syllables": "look",
+      "definition": "To use your eyes.",
+      "sentences": [
+        "Look at that.",
+        "Look up here.",
+        "Look at me."
+      ]
+    },
+    {
+      "word": "make",
+      "syllables": "make",
+      "definition": "To build something new.",
+      "sentences": [
+        "Make a cake.",
+        "I can make it.",
+        "Make a bed."
+      ]
+    },
+    {
+      "word": "me",
+      "syllables": "me",
+      "definition": "Another word for yourself.",
+      "sentences": [
+        "Help me please.",
+        "Read to me.",
+        "Come with me."
+      ]
+    },
+    {
+      "word": "my",
+      "syllables": "my",
+      "definition": "Belonging to you.",
+      "sentences": [
+        "My toy!",
+        "That is my dog.",
+        "My big hat."
+      ]
+    },
+    {
+      "word": "not",
+      "syllables": "not",
+      "definition": "The opposite word.",
+      "sentences": [
+        "Not too big.",
+        "I am not sad.",
+        "Not yet!"
+      ]
+    },
+    {
+      "word": "one",
+      "syllables": "one",
+      "definition": "The number 1.",
+      "sentences": [
+        "One little cat.",
+        "I have one.",
+        "One big frog."
+      ]
+    },
+    {
+      "word": "play",
+      "syllables": "play",
+      "definition": "To have fun.",
+      "sentences": [
+        "I play outside.",
+        "Come and play.",
+        "We play here."
+      ]
+    },
+    {
+      "word": "red",
+      "syllables": "red",
+      "definition": "Color of an apple.",
+      "sentences": [
+        "A red apple.",
+        "My red hat.",
+        "Red is fun."
+      ]
+    },
+    {
+      "word": "run",
+      "syllables": "run",
+      "definition": "To move very fast.",
+      "sentences": [
+        "I can run.",
+        "Run run run.",
+        "Run to me."
+      ]
+    },
+    {
+      "word": "said",
+      "syllables": "said",
+      "definition": "Spoke words out loud.",
+      "sentences": [
+        "She said hi.",
+        "He said yes.",
+        "I said no."
+      ]
+    },
+    {
+      "word": "see",
+      "syllables": "see",
+      "definition": "To look at something.",
+      "sentences": [
+        "I see you.",
+        "See the dog.",
+        "Can you see?"
+      ]
+    },
+    {
+      "word": "the",
+      "syllables": "the",
+      "definition": "Points to one thing.",
+      "sentences": [
+        "The big dog.",
+        "See the cat.",
+        "The red ball."
+      ]
+    },
+    {
+      "word": "three",
+      "syllables": "three",
+      "definition": "The number 3.",
+      "sentences": [
+        "Three little ducks.",
+        "I see three.",
+        "Three big dogs."
+      ]
+    },
+    {
+      "word": "to",
+      "syllables": "to",
+      "definition": "Moving toward a place.",
+      "sentences": [
+        "Go to bed.",
+        "Come to me.",
+        "Run to school."
+      ]
+    },
+    {
+      "word": "two",
+      "syllables": "two",
+      "definition": "The number 2.",
+      "sentences": [
+        "Two big frogs.",
+        "I have two.",
+        "Two little cats."
+      ]
+    },
+    {
+      "word": "up",
+      "syllables": "up",
+      "definition": "Moving to a higher place.",
+      "sentences": [
+        "Look up here.",
+        "Go up high.",
+        "Up up up."
+      ]
+    },
+    {
+      "word": "we",
+      "syllables": "we",
+      "definition": "You and others together.",
+      "sentences": [
+        "We are friends.",
+        "We can run.",
+        "We play here."
+      ]
+    },
+    {
+      "word": "where",
+      "syllables": "where",
+      "definition": "Asks about a place.",
+      "sentences": [
+        "Where is it?",
+        "Where are you?",
+        "Where did it go?"
+      ]
+    },
+    {
+      "word": "yellow",
+      "syllables": "yel\u00b7low",
+      "definition": "Color of the sun.",
+      "sentences": [
+        "Big yellow sun.",
+        "A yellow duck.",
+        "Yellow is bright."
+      ]
+    },
+    {
+      "word": "you",
+      "syllables": "you",
+      "definition": "The person you talk to.",
+      "sentences": [
+        "I like you.",
+        "Can you run?",
+        "You are here."
+      ]
+    }
+  ],
+  "k": [
+    {
+      "word": "all",
+      "syllables": "all",
+      "definition": "Every single one of them.",
+      "sentences": [
+        "All the kids ran.",
+        "We all played.",
+        "All done now."
+      ]
+    },
+    {
+      "word": "am",
+      "syllables": "am",
+      "definition": "A word about yourself now.",
+      "sentences": [
+        "I am happy.",
+        "I am here.",
+        "I am so tired."
+      ]
+    },
+    {
+      "word": "are",
+      "syllables": "are",
+      "definition": "A word about more than one.",
+      "sentences": [
+        "We are friends.",
+        "They are outside.",
+        "Birds are singing."
+      ]
+    },
+    {
+      "word": "at",
+      "syllables": "at",
+      "definition": "Tells you where something is.",
+      "sentences": [
+        "We eat at home.",
+        "She is at school.",
+        "Look at that."
+      ]
+    },
+    {
+      "word": "ate",
+      "syllables": "ate",
+      "definition": "Finished eating something.",
+      "sentences": [
+        "She ate lunch.",
+        "He ate all of it.",
+        "I ate an apple."
+      ]
+    },
+    {
+      "word": "be",
+      "syllables": "be",
+      "definition": "To exist or happen.",
+      "sentences": [
+        "I want to be kind.",
+        "It will be fun.",
+        "Try to be good."
+      ]
+    },
+    {
+      "word": "black",
+      "syllables": "black",
+      "definition": "The darkest color of all.",
+      "sentences": [
+        "The cat is black.",
+        "A black cloud came.",
+        "I see a black bug."
+      ]
+    },
+    {
+      "word": "brown",
+      "syllables": "brown",
+      "definition": "A warm color like chocolate.",
+      "sentences": [
+        "The bear is brown.",
+        "I have brown shoes.",
+        "A brown dog ran."
+      ]
+    },
+    {
+      "word": "but",
+      "syllables": "but",
+      "definition": "Shows two different ideas.",
+      "sentences": [
+        "I tried but fell.",
+        "Small but strong.",
+        "Small but mighty!"
+      ]
+    },
+    {
+      "word": "came",
+      "syllables": "came",
+      "definition": "Moved toward a place before.",
+      "sentences": [
+        "Grandma came today.",
+        "He came to play.",
+        "She came right home."
+      ]
+    },
+    {
+      "word": "did",
+      "syllables": "did",
+      "definition": "Something that happened before.",
+      "sentences": [
+        "Did you see that?",
+        "He did it right.",
+        "She did very well."
+      ]
+    },
+    {
+      "word": "do",
+      "syllables": "do",
+      "definition": "To perform an action.",
+      "sentences": [
+        "I do my work.",
+        "What do you want?",
+        "Do it now please."
+      ]
+    },
+    {
+      "word": "eat",
+      "syllables": "eat",
+      "definition": "To chew and swallow food.",
+      "sentences": [
+        "I eat my lunch.",
+        "Let us eat now.",
+        "Do you eat apples?"
+      ]
+    },
+    {
+      "word": "four",
+      "syllables": "four",
+      "definition": "The number 4.",
+      "sentences": [
+        "I have four cats.",
+        "Four ducks swam.",
+        "Count to four now."
+      ]
+    },
+    {
+      "word": "get",
+      "syllables": "get",
+      "definition": "To go and bring something back.",
+      "sentences": [
+        "Get your coat please.",
+        "I will get it.",
+        "Can I get some water?"
+      ]
+    },
+    {
+      "word": "good",
+      "syllables": "good",
+      "definition": "Something that is nice or right.",
+      "sentences": [
+        "You did good work.",
+        "That smells so good.",
+        "Be a good friend."
+      ]
+    },
+    {
+      "word": "have",
+      "syllables": "have",
+      "definition": "To own or hold something.",
+      "sentences": [
+        "I have a cat.",
+        "Do you have it?",
+        "We have so much fun."
+      ]
+    },
+    {
+      "word": "he",
+      "syllables": "he",
+      "definition": "A word used for a boy.",
+      "sentences": [
+        "He ran fast.",
+        "He is my friend.",
+        "Where did he go?"
+      ]
+    },
+    {
+      "word": "into",
+      "syllables": "in\u00b7to",
+      "definition": "Moving to the inside of something.",
+      "sentences": [
+        "Jump into the pool.",
+        "He went into school.",
+        "She walked into the room."
+      ]
+    },
+    {
+      "word": "like",
+      "syllables": "like",
+      "definition": "To feel happy about something.",
+      "sentences": [
+        "I like cats.",
+        "Do you like pizza?",
+        "We all like to read."
+      ]
+    },
+    {
+      "word": "must",
+      "syllables": "must",
+      "definition": "Something you really need to do.",
+      "sentences": [
+        "You must be kind.",
+        "I must go now.",
+        "We must wash our hands."
+      ]
+    },
+    {
+      "word": "new",
+      "syllables": "new",
+      "definition": "Made or bought just recently.",
+      "sentences": [
+        "I got new shoes.",
+        "My new book is fun.",
+        "She has a new hat."
+      ]
+    },
+    {
+      "word": "no",
+      "syllables": "no",
+      "definition": "The opposite of yes.",
+      "sentences": [
+        "No more candy.",
+        "He said no thanks.",
+        "No pets in here."
+      ]
+    },
+    {
+      "word": "now",
+      "syllables": "now",
+      "definition": "At this very moment.",
+      "sentences": [
+        "Come here now.",
+        "Let us go now.",
+        "Do it right now."
+      ]
+    },
+    {
+      "word": "on",
+      "syllables": "on",
+      "definition": "Resting on top of something.",
+      "sentences": [
+        "Sit on the mat.",
+        "The cup is on the table.",
+        "Put it on here."
+      ]
+    },
+    {
+      "word": "our",
+      "syllables": "our",
+      "definition": "Belonging to us together.",
+      "sentences": [
+        "This is our dog.",
+        "We love our class.",
+        "Our school is big."
+      ]
+    },
+    {
+      "word": "out",
+      "syllables": "out",
+      "definition": "Moving away from inside.",
+      "sentences": [
+        "Go out and play.",
+        "The dog ran out.",
+        "Come out here please."
+      ]
+    },
+    {
+      "word": "please",
+      "syllables": "please",
+      "definition": "A polite word when asking.",
+      "sentences": [
+        "Please sit down.",
+        "Help me please.",
+        "Please be kind today."
+      ]
+    },
+    {
+      "word": "pretty",
+      "syllables": "pret\u00b7ty",
+      "definition": "Something that looks lovely.",
+      "sentences": [
+        "What a pretty flower.",
+        "She has a pretty dress.",
+        "The sky looks pretty tonight."
+      ]
+    },
+    {
+      "word": "ran",
+      "syllables": "ran",
+      "definition": "Moved very fast before now.",
+      "sentences": [
+        "She ran home fast.",
+        "He ran to school.",
+        "The dog ran away."
+      ]
+    },
+    {
+      "word": "ride",
+      "syllables": "ride",
+      "definition": "To sit on something moving.",
+      "sentences": [
+        "I ride my bike.",
+        "Can you ride a horse?",
+        "Let us ride together."
+      ]
+    },
+    {
+      "word": "saw",
+      "syllables": "saw",
+      "definition": "Used your eyes before now.",
+      "sentences": [
+        "I saw a rainbow.",
+        "She saw a big fish.",
+        "We saw the show."
+      ]
+    },
+    {
+      "word": "say",
+      "syllables": "say",
+      "definition": "To speak words out loud.",
+      "sentences": [
+        "What did you say?",
+        "Say it out loud.",
+        "Please say thank you."
+      ]
+    },
+    {
+      "word": "she",
+      "syllables": "she",
+      "definition": "A word used for a girl.",
+      "sentences": [
+        "She can run fast.",
+        "She is my sister.",
+        "Where did she go?"
+      ]
+    },
+    {
+      "word": "so",
+      "syllables": "so",
+      "definition": "Shows a very big amount.",
+      "sentences": [
+        "That is so fun.",
+        "I am so tired.",
+        "She runs so fast."
+      ]
+    },
+    {
+      "word": "soon",
+      "syllables": "soon",
+      "definition": "Something happening in a little while.",
+      "sentences": [
+        "We will eat soon.",
+        "Come home soon please.",
+        "It will be done soon."
+      ]
+    },
+    {
+      "word": "that",
+      "syllables": "that",
+      "definition": "Points to a specific thing.",
+      "sentences": [
+        "I want that book.",
+        "Look at that dog.",
+        "That was so fun."
+      ]
+    },
+    {
+      "word": "there",
+      "syllables": "there",
+      "definition": "In a place away from you.",
+      "sentences": [
+        "Look over there.",
+        "She is over there.",
+        "Put it over there."
+      ]
+    },
+    {
+      "word": "they",
+      "syllables": "they",
+      "definition": "A word about more than one person.",
+      "sentences": [
+        "They are outside.",
+        "Did they go home?",
+        "They like to swim."
+      ]
+    },
+    {
+      "word": "this",
+      "syllables": "this",
+      "definition": "Points to something close to you.",
+      "sentences": [
+        "I love this book.",
+        "This is so good.",
+        "Take this with you."
+      ]
+    },
+    {
+      "word": "too",
+      "syllables": "too",
+      "definition": "Also or more than enough.",
+      "sentences": [
+        "I want to come too.",
+        "That is too hot.",
+        "She is here too."
+      ]
+    },
+    {
+      "word": "under",
+      "syllables": "un\u00b7der",
+      "definition": "Below or beneath something.",
+      "sentences": [
+        "Look under the bed.",
+        "The cat is under there.",
+        "Hide under the blanket."
+      ]
+    },
+    {
+      "word": "want",
+      "syllables": "want",
+      "definition": "To really wish you had something.",
+      "sentences": [
+        "I want a puppy.",
+        "Do you want more?",
+        "We want to go now."
+      ]
+    },
+    {
+      "word": "was",
+      "syllables": "was",
+      "definition": "A word about something before now.",
+      "sentences": [
+        "It was so good.",
+        "She was very kind.",
+        "The cake was yummy."
+      ]
+    },
+    {
+      "word": "well",
+      "syllables": "well",
+      "definition": "Doing something the right way.",
+      "sentences": [
+        "You did very well.",
+        "She reads so well.",
+        "He swims really well."
+      ]
+    },
+    {
+      "word": "went",
+      "syllables": "went",
+      "definition": "Moved to a place before now.",
+      "sentences": [
+        "We went to the park.",
+        "She went home early.",
+        "He went to school."
+      ]
+    },
+    {
+      "word": "what",
+      "syllables": "what",
+      "definition": "A question asking about a thing.",
+      "sentences": [
+        "What is that?",
+        "What do you want?",
+        "What did she say?"
+      ]
+    },
+    {
+      "word": "white",
+      "syllables": "white",
+      "definition": "The lightest color like snow.",
+      "sentences": [
+        "The snow is white.",
+        "She has a white cat.",
+        "A white cloud floated by."
+      ]
+    },
+    {
+      "word": "who",
+      "syllables": "who",
+      "definition": "A question asking about a person.",
+      "sentences": [
+        "Who is that?",
+        "Who wants more cake?",
+        "Who did that today?"
+      ]
+    },
+    {
+      "word": "will",
+      "syllables": "will",
+      "definition": "Something going to happen soon.",
+      "sentences": [
+        "We will go soon.",
+        "She will be here.",
+        "It will be fun."
+      ]
+    },
+    {
+      "word": "with",
+      "syllables": "with",
+      "definition": "Together with someone or something.",
+      "sentences": [
+        "Come with me.",
+        "Play with your friends.",
+        "I read with my mom."
+      ]
+    },
+    {
+      "word": "yes",
+      "syllables": "yes",
+      "definition": "A word that shows you agree.",
+      "sentences": [
+        "Yes I do.",
+        "She said yes please.",
+        "Yes that sounds great."
+      ]
+    }
+  ],
+  "1": [
+    {
+      "word": "after",
+      "syllables": "af\u00b7ter",
+      "definition": "Something that comes later in time.",
+      "sentences": [
+        "We played after lunch.",
+        "She came after school.",
+        "Wash up after you eat."
+      ]
+    },
+    {
+      "word": "again",
+      "syllables": "a\u00b7gain",
+      "definition": "One more time, repeated.",
+      "sentences": [
+        "Read it to me again.",
+        "She tried again and won.",
+        "Can we do that again?"
+      ]
+    },
+    {
+      "word": "an",
+      "syllables": "an",
+      "definition": "Used before a vowel sound.",
+      "sentences": [
+        "She ate an apple.",
+        "He found an egg outside.",
+        "I saw an owl last night."
+      ]
+    },
+    {
+      "word": "any",
+      "syllables": "an\u00b7y",
+      "definition": "One or some, no matter which.",
+      "sentences": [
+        "Do you have any left?",
+        "I do not want any more.",
+        "Take any book you like."
+      ]
+    },
+    {
+      "word": "as",
+      "syllables": "as",
+      "definition": "Used when comparing two things.",
+      "sentences": [
+        "He runs as fast as me.",
+        "She is as tall as a tree.",
+        "The apple is as red as my hat."
+      ]
+    },
+    {
+      "word": "ask",
+      "syllables": "ask",
+      "definition": "To say a question to someone.",
+      "sentences": [
+        "I will ask my teacher.",
+        "Please ask before you take it.",
+        "She did not ask for help."
+      ]
+    },
+    {
+      "word": "by",
+      "syllables": "by",
+      "definition": "Next to something or who made it.",
+      "sentences": [
+        "Sit by me please.",
+        "The dog sat by the door.",
+        "Made by my grandma."
+      ]
+    },
+    {
+      "word": "could",
+      "syllables": "could",
+      "definition": "Something that was able to happen.",
+      "sentences": [
+        "She could hear the music.",
+        "I could not find my shoe.",
+        "He could run very fast then."
+      ]
+    },
+    {
+      "word": "every",
+      "syllables": "ev\u00b7ery",
+      "definition": "Each single one without missing any.",
+      "sentences": [
+        "I brush my teeth every night.",
+        "Every kid got a turn.",
+        "She reads every single day."
+      ]
+    },
+    {
+      "word": "fly",
+      "syllables": "fly",
+      "definition": "To move through the air like a bird.",
+      "sentences": [
+        "Birds can fly very high.",
+        "I wish I could fly too.",
+        "Watch the kite fly in the wind."
+      ]
+    },
+    {
+      "word": "from",
+      "syllables": "from",
+      "definition": "Tells where something started.",
+      "sentences": [
+        "I got a card from grandma.",
+        "She came home from school.",
+        "The wind blew from the north."
+      ]
+    },
+    {
+      "word": "give",
+      "syllables": "give",
+      "definition": "To hand something to another person.",
+      "sentences": [
+        "Please give me a turn.",
+        "I want to give her a gift.",
+        "He will give it back soon."
+      ]
+    },
+    {
+      "word": "going",
+      "syllables": "go\u00b7ing",
+      "definition": "Moving toward a place right now.",
+      "sentences": [
+        "We are going to the park.",
+        "She is going home now.",
+        "I am going to read this book."
+      ]
+    },
+    {
+      "word": "had",
+      "syllables": "had",
+      "definition": "Owned or held something before.",
+      "sentences": [
+        "I had a great idea.",
+        "She had the answer right.",
+        "We had so much fun yesterday."
+      ]
+    },
+    {
+      "word": "has",
+      "syllables": "has",
+      "definition": "To own or hold something right now.",
+      "sentences": [
+        "She has a pet turtle.",
+        "He has the best laugh.",
+        "Our class has twenty kids."
+      ]
+    },
+    {
+      "word": "her",
+      "syllables": "her",
+      "definition": "Belonging to a girl or woman.",
+      "sentences": [
+        "That is her favorite book.",
+        "Give it back to her.",
+        "Her dog is really fluffy."
+      ]
+    },
+    {
+      "word": "him",
+      "syllables": "him",
+      "definition": "Refers to a boy or man.",
+      "sentences": [
+        "Give the ball to him.",
+        "She helped him find it.",
+        "We waited for him outside."
+      ]
+    },
+    {
+      "word": "his",
+      "syllables": "his",
+      "definition": "Belonging to a boy or man.",
+      "sentences": [
+        "That is his new coat.",
+        "He lost his red hat.",
+        "His dog is named Biscuit."
+      ]
+    },
+    {
+      "word": "how",
+      "syllables": "how",
+      "definition": "Asks about the way something is done.",
+      "sentences": [
+        "How did you do that?",
+        "She showed me how to fold it.",
+        "I learned how to swim."
+      ]
+    },
+    {
+      "word": "just",
+      "syllables": "just",
+      "definition": "Only or something that just happened.",
+      "sentences": [
+        "I just got home.",
+        "She just finished her work.",
+        "He ate just one cookie."
+      ]
+    },
+    {
+      "word": "know",
+      "syllables": "know",
+      "definition": "To have something in your mind.",
+      "sentences": [
+        "I know all the words.",
+        "Do you know that song?",
+        "She did not know the answer."
+      ]
+    },
+    {
+      "word": "let",
+      "syllables": "let",
+      "definition": "To allow someone to do something.",
+      "sentences": [
+        "Let me try this time.",
+        "She let him use her crayon.",
+        "Please let me help you."
+      ]
+    },
+    {
+      "word": "live",
+      "syllables": "live",
+      "definition": "To make your home in a place.",
+      "sentences": [
+        "We live near the park.",
+        "Fish live in the water.",
+        "She used to live on my street."
+      ]
+    },
+    {
+      "word": "may",
+      "syllables": "may",
+      "definition": "Asking if you are allowed to do something.",
+      "sentences": [
+        "May I go outside now?",
+        "May I borrow your pencil?",
+        "She asked if she may help."
+      ]
+    },
+    {
+      "word": "of",
+      "syllables": "of",
+      "definition": "Shows what something belongs to.",
+      "sentences": [
+        "She had a bowl of soup.",
+        "He drank a glass of milk.",
+        "I read the end of the book."
+      ]
+    },
+    {
+      "word": "old",
+      "syllables": "old",
+      "definition": "Something around for a long time.",
+      "sentences": [
+        "That is a very old tree.",
+        "My grandpa has old photos.",
+        "She found an old coin outside."
+      ]
+    },
+    {
+      "word": "once",
+      "syllables": "once",
+      "definition": "One time or long ago in a story.",
+      "sentences": [
+        "Once I saw a shooting star.",
+        "She only asked once.",
+        "Once upon a time there was a bear."
+      ]
+    },
+    {
+      "word": "open",
+      "syllables": "o\u00b7pen",
+      "definition": "Not closed so you can go inside.",
+      "sentences": [
+        "Please open the door for me.",
+        "She opened her gift slowly.",
+        "The window is open right now."
+      ]
+    },
+    {
+      "word": "over",
+      "syllables": "o\u00b7ver",
+      "definition": "Above something or all finished.",
+      "sentences": [
+        "The dog jumped over the fence.",
+        "School is over for today.",
+        "She flew over the big hill."
+      ]
+    },
+    {
+      "word": "put",
+      "syllables": "put",
+      "definition": "To place something in a spot.",
+      "sentences": [
+        "Put your shoes by the door.",
+        "She put the book away.",
+        "He put his name on the paper."
+      ]
+    },
+    {
+      "word": "round",
+      "syllables": "round",
+      "definition": "Shaped like a circle or ball.",
+      "sentences": [
+        "The moon looks so round tonight.",
+        "She drew a round sun.",
+        "A round ball rolled down the hill."
+      ]
+    },
+    {
+      "word": "some",
+      "syllables": "some",
+      "definition": "A few of them but not all.",
+      "sentences": [
+        "Can I have some please?",
+        "She gave him some of her grapes.",
+        "Some kids stayed inside today."
+      ]
+    },
+    {
+      "word": "stop",
+      "syllables": "stop",
+      "definition": "To not move or end something.",
+      "sentences": [
+        "Please stop and listen now.",
+        "The bus will stop here.",
+        "She had to stop and rest."
+      ]
+    },
+    {
+      "word": "take",
+      "syllables": "take",
+      "definition": "To pick something up and bring it.",
+      "sentences": [
+        "Take your jacket with you.",
+        "She will take it to school.",
+        "Do not take more than you need."
+      ]
+    },
+    {
+      "word": "thank",
+      "syllables": "thank",
+      "definition": "To tell someone you are grateful.",
+      "sentences": [
+        "Thank you for your help.",
+        "She wrote a thank you card.",
+        "He wanted to thank his teacher."
+      ]
+    },
+    {
+      "word": "them",
+      "syllables": "them",
+      "definition": "Refers to a group of people.",
+      "sentences": [
+        "I shared my snack with them.",
+        "She helped all of them.",
+        "Give the books back to them."
+      ]
+    },
+    {
+      "word": "then",
+      "syllables": "then",
+      "definition": "After that or what happened next.",
+      "sentences": [
+        "We ate and then played outside.",
+        "First wash up then eat.",
+        "She read and then fell asleep."
+      ]
+    },
+    {
+      "word": "think",
+      "syllables": "think",
+      "definition": "To use your brain to figure things out.",
+      "sentences": [
+        "I think it will rain today.",
+        "She had to think for a while.",
+        "What do you think we should do?"
+      ]
+    },
+    {
+      "word": "walk",
+      "syllables": "walk",
+      "definition": "To move your feet one step at a time.",
+      "sentences": [
+        "We walk to school each day.",
+        "She likes to walk in the rain.",
+        "He had to walk the whole way home."
+      ]
+    },
+    {
+      "word": "were",
+      "syllables": "were",
+      "definition": "A word about a group in the past.",
+      "sentences": [
+        "The puppies were so tiny.",
+        "We were at the park all day.",
+        "They were very happy together."
+      ]
+    },
+    {
+      "word": "when",
+      "syllables": "when",
+      "definition": "Asks about what time something happens.",
+      "sentences": [
+        "When is your birthday?",
+        "Tell me when you are ready.",
+        "She smiled when she heard the news."
+      ]
+    }
+  ],
+  "2": [
+    {
+      "word": "always",
+      "syllables": "al\u00b7ways",
+      "definition": "Every single time without ever missing.",
+      "sentences": [
+        "She always shares her snacks with friends.",
+        "He always says please and thank you.",
+        "I always brush my teeth before bed."
+      ]
+    },
+    {
+      "word": "around",
+      "syllables": "a\u00b7round",
+      "definition": "In a circle or on every side.",
+      "sentences": [
+        "The kids ran around the whole playground.",
+        "She wrapped her arms around her dog.",
+        "We walked around the whole neighborhood."
+      ]
+    },
+    {
+      "word": "because",
+      "syllables": "be\u00b7cause",
+      "definition": "Explains the reason why something happened.",
+      "sentences": [
+        "I wore my coat because it was cold.",
+        "She smiled because she got it right.",
+        "He stayed home because he felt sick."
+      ]
+    },
+    {
+      "word": "been",
+      "syllables": "been",
+      "definition": "When something happened over a period of time.",
+      "sentences": [
+        "I have been reading for an hour.",
+        "She has been my best friend for years.",
+        "We have been waiting here for a while."
+      ]
+    },
+    {
+      "word": "before",
+      "syllables": "be\u00b7fore",
+      "definition": "Earlier in time happening first.",
+      "sentences": [
+        "Wash your hands before you eat.",
+        "She finished before anyone else did.",
+        "I had never tried sushi before today."
+      ]
+    },
+    {
+      "word": "best",
+      "syllables": "best",
+      "definition": "Better than everything or everyone else.",
+      "sentences": [
+        "You are my very best friend.",
+        "She did her best work today.",
+        "That was the best birthday ever."
+      ]
+    },
+    {
+      "word": "both",
+      "syllables": "both",
+      "definition": "Two things together not just one of them.",
+      "sentences": [
+        "Both of my dogs love to swim.",
+        "She took both pieces of the puzzle.",
+        "Both teams played really well today."
+      ]
+    },
+    {
+      "word": "buy",
+      "syllables": "buy",
+      "definition": "To pay money to get something you want.",
+      "sentences": [
+        "I want to buy a new book.",
+        "She saved enough to buy a kite.",
+        "He helped his dad buy dinner tonight."
+      ]
+    },
+    {
+      "word": "call",
+      "syllables": "call",
+      "definition": "To say someone's name or use the phone.",
+      "sentences": [
+        "I will call my grandma tonight.",
+        "She heard someone call her name.",
+        "He forgot to call when he got home."
+      ]
+    },
+    {
+      "word": "cold",
+      "syllables": "cold",
+      "definition": "A low temperature the opposite of warm.",
+      "sentences": [
+        "The ice cream felt cold on my tongue.",
+        "She put on a coat because it was cold.",
+        "Drink cold water after you exercise."
+      ]
+    },
+    {
+      "word": "does",
+      "syllables": "does",
+      "definition": "When someone performs an action.",
+      "sentences": [
+        "She does cartwheels in the grass.",
+        "He does his homework right after school.",
+        "Does your dog know any tricks?"
+      ]
+    },
+    {
+      "word": "don't",
+      "syllables": "don't",
+      "definition": "A short way to say do not.",
+      "sentences": [
+        "Don't forget your lunchbox today.",
+        "Please don't run in the hallway.",
+        "I don't want to miss the bus."
+      ]
+    },
+    {
+      "word": "fast",
+      "syllables": "fast",
+      "definition": "Moving at a very high speed.",
+      "sentences": [
+        "The cheetah is the fastest animal alive.",
+        "She ran so fast she won the race.",
+        "Time goes fast when you are having fun."
+      ]
+    },
+    {
+      "word": "first",
+      "syllables": "first",
+      "definition": "Before anyone or anything else.",
+      "sentences": [
+        "I crossed the finish line first.",
+        "She was the first one to raise her hand.",
+        "First we read and then we write."
+      ]
+    },
+    {
+      "word": "five",
+      "syllables": "five",
+      "definition": "The number 5 one more than four.",
+      "sentences": [
+        "I counted five bright stars in the sky.",
+        "She needs five more minutes to finish.",
+        "He scored five goals at the game."
+      ]
+    },
+    {
+      "word": "found",
+      "syllables": "found",
+      "definition": "Looked for something and got it.",
+      "sentences": [
+        "I found a shiny coin on the ground.",
+        "She finally found her missing glove.",
+        "We found a perfect spot for our picnic."
+      ]
+    },
+    {
+      "word": "gave",
+      "syllables": "gave",
+      "definition": "Handed something to someone before now.",
+      "sentences": [
+        "She gave me a beautiful homemade card.",
+        "He gave his teacher an apple.",
+        "They gave everyone a turn on the swing."
+      ]
+    },
+    {
+      "word": "goes",
+      "syllables": "goes",
+      "definition": "When something or someone moves somewhere.",
+      "sentences": [
+        "He goes to soccer practice every Friday.",
+        "She goes to the library after school.",
+        "The train goes really fast through the tunnel."
+      ]
+    },
+    {
+      "word": "green",
+      "syllables": "green",
+      "definition": "The color of leaves and fresh grass.",
+      "sentences": [
+        "The frog sat on a green lily pad.",
+        "She painted her room a bright green.",
+        "Eat your green vegetables every day."
+      ]
+    },
+    {
+      "word": "its",
+      "syllables": "its",
+      "definition": "Belonging to an animal or thing.",
+      "sentences": [
+        "The puppy wagged its fluffy little tail.",
+        "The turtle poked its head out slowly.",
+        "The tree lost all its leaves in fall."
+      ]
+    },
+    {
+      "word": "made",
+      "syllables": "made",
+      "definition": "Built or created something before now.",
+      "sentences": [
+        "She made a special card for her teacher.",
+        "He made a birdhouse with his grandpa.",
+        "We made cookies for the whole class."
+      ]
+    },
+    {
+      "word": "many",
+      "syllables": "man\u00b7y",
+      "definition": "A large number of things together.",
+      "sentences": [
+        "There were so many stars in the sky.",
+        "She has read many books this year.",
+        "How many apples are in the basket?"
+      ]
+    },
+    {
+      "word": "off",
+      "syllables": "off",
+      "definition": "Away from or no longer on something.",
+      "sentences": [
+        "Please turn off the lights when you leave.",
+        "She wiped the mud off her boots.",
+        "The lid fell off the jar and rolled away."
+      ]
+    },
+    {
+      "word": "or",
+      "syllables": "or",
+      "definition": "Shows a choice between two different things.",
+      "sentences": [
+        "Do you want pizza or pasta for dinner?",
+        "We can walk or take the bus.",
+        "Would you like juice or water?"
+      ]
+    },
+    {
+      "word": "pull",
+      "syllables": "pull",
+      "definition": "To grab something and bring it toward you.",
+      "sentences": [
+        "Pull the door handle to open it.",
+        "She had to pull the heavy wagon uphill.",
+        "He helped pull the rope in the contest."
+      ]
+    },
+    {
+      "word": "read",
+      "syllables": "read",
+      "definition": "To look at words and understand them.",
+      "sentences": [
+        "I love to read books before bedtime.",
+        "She can read three chapters in one night.",
+        "He read the whole story without any help."
+      ]
+    },
+    {
+      "word": "right",
+      "syllables": "right",
+      "definition": "The correct answer or opposite of left.",
+      "sentences": [
+        "You got every single answer right.",
+        "Turn right at the stop sign.",
+        "She knew the right thing to do."
+      ]
+    },
+    {
+      "word": "sing",
+      "syllables": "sing",
+      "definition": "To make music using your voice.",
+      "sentences": [
+        "We love to sing songs around the campfire.",
+        "She can sing really high notes.",
+        "He started to sing on the way to school."
+      ]
+    },
+    {
+      "word": "sit",
+      "syllables": "sit",
+      "definition": "To rest with your bottom on something.",
+      "sentences": [
+        "Come sit next to me on the bench.",
+        "Please sit quietly during the movie.",
+        "She chose to sit near the window."
+      ]
+    },
+    {
+      "word": "sleep",
+      "syllables": "sleep",
+      "definition": "To close your eyes and rest your body.",
+      "sentences": [
+        "I sleep with my stuffed elephant every night.",
+        "She could not sleep because of the thunder.",
+        "Babies need a lot of sleep each day."
+      ]
+    },
+    {
+      "word": "tell",
+      "syllables": "tell",
+      "definition": "To share information with another person.",
+      "sentences": [
+        "Tell me all about your day at school.",
+        "She will tell the story from the beginning.",
+        "He forgot to tell his mom about the field trip."
+      ]
+    },
+    {
+      "word": "their",
+      "syllables": "their",
+      "definition": "Belonging to a group of people or animals.",
+      "sentences": [
+        "The dogs played happily in their big yard.",
+        "The kids finished all of their homework.",
+        "They cleaned up their side of the room."
+      ]
+    },
+    {
+      "word": "these",
+      "syllables": "these",
+      "definition": "Points to more than one thing close to you.",
+      "sentences": [
+        "These cookies just came out of the oven.",
+        "Are these your mittens on the floor?",
+        "She wants to keep all of these books."
+      ]
+    },
+    {
+      "word": "those",
+      "syllables": "those",
+      "definition": "Points to more than one thing far from you.",
+      "sentences": [
+        "Those mountains look incredibly tall today.",
+        "Do you know who owns those bikes?",
+        "She wants to try one of those someday."
+      ]
+    },
+    {
+      "word": "upon",
+      "syllables": "u\u00b7pon",
+      "definition": "On top of or used to start a story.",
+      "sentences": [
+        "Once upon a time lived a kind girl.",
+        "She placed the crown upon his head.",
+        "The cat climbed upon the highest shelf."
+      ]
+    },
+    {
+      "word": "us",
+      "syllables": "us",
+      "definition": "Refers to yourself and others together.",
+      "sentences": [
+        "Mom took all of us to the beach.",
+        "The teacher read to us after lunch.",
+        "Will you please wait for us?"
+      ]
+    },
+    {
+      "word": "use",
+      "syllables": "use",
+      "definition": "To do something with a tool or object.",
+      "sentences": [
+        "I use a pencil to draw my pictures.",
+        "She showed him how to use the scissors.",
+        "We can use teamwork to solve hard problems."
+      ]
+    },
+    {
+      "word": "very",
+      "syllables": "ver\u00b7y",
+      "definition": "A much larger amount than usual.",
+      "sentences": [
+        "That elephant is very very enormous.",
+        "She worked very hard on her project.",
+        "The soup is very hot so be careful."
+      ]
+    },
+    {
+      "word": "wash",
+      "syllables": "wash",
+      "definition": "To clean something using soap and water.",
+      "sentences": [
+        "Always wash your hands before eating dinner.",
+        "She helped wash the family car on Saturday.",
+        "He forgot to wash the mud off his boots."
+      ]
+    },
+    {
+      "word": "which",
+      "syllables": "which",
+      "definition": "Asks you to choose between things.",
+      "sentences": [
+        "Which flavor of ice cream do you want?",
+        "She could not decide which book to pick.",
+        "Which path should we take to get there?"
+      ]
+    },
+    {
+      "word": "why",
+      "syllables": "why",
+      "definition": "Asks for the reason something happened.",
+      "sentences": [
+        "Why do birds fly south in the winter?",
+        "She wondered why the sky turns pink at sunset.",
+        "He asked why the plant stopped growing."
+      ]
+    },
+    {
+      "word": "wish",
+      "syllables": "wish",
+      "definition": "To hope for something you really want.",
+      "sentences": [
+        "I wish I could have a pet dragon.",
+        "She closed her eyes to make a wish.",
+        "He wished the rainy day would end soon."
+      ]
+    },
+    {
+      "word": "work",
+      "syllables": "work",
+      "definition": "To do something that takes real effort.",
+      "sentences": [
+        "We work together to keep our classroom clean.",
+        "She had to work hard to learn that skill.",
+        "Good things take a lot of work to build."
+      ]
+    },
+    {
+      "word": "would",
+      "syllables": "would",
+      "definition": "Something that might possibly happen.",
+      "sentences": [
+        "I would love to visit the ocean someday.",
+        "She said she would help after lunch.",
+        "He thought it would be a great surprise."
+      ]
+    },
+    {
+      "word": "write",
+      "syllables": "write",
+      "definition": "To form letters and words on paper.",
+      "sentences": [
+        "I write in my journal every single night.",
+        "She wants to write a book about her dog.",
+        "He learned to write his full name today."
+      ]
+    },
+    {
+      "word": "your",
+      "syllables": "your",
+      "definition": "Something that belongs to you.",
+      "sentences": [
+        "Is this your favorite song to sing?",
+        "Please put your backpack on the hook.",
+        "Your idea was the best one we heard."
+      ]
+    }
+  ],
+  "3": [
+    {
+      "word": "about",
+      "syllables": "a\u00b7bout",
+      "definition": "Having to do with a certain topic or subject.",
+      "sentences": [
+        "I just finished a great book about dinosaurs.",
+        "She told me all about her trip to the mountains.",
+        "We learned about the water cycle in science class."
+      ]
+    },
+    {
+      "word": "better",
+      "syllables": "bet\u00b7ter",
+      "definition": "More good than something else you are comparing.",
+      "sentences": [
+        "I feel so much better after drinking water.",
+        "She got a better score on her second try.",
+        "Practice makes you better at almost everything."
+      ]
+    },
+    {
+      "word": "bring",
+      "syllables": "bring",
+      "definition": "To carry something with you to another place.",
+      "sentences": [
+        "Please remember to bring your lunch to school.",
+        "She will bring her favorite book to share.",
+        "He asked if he could bring a friend along."
+      ]
+    },
+    {
+      "word": "carry",
+      "syllables": "car\u00b7ry",
+      "definition": "To hold something and move from place to place.",
+      "sentences": [
+        "Can you carry this heavy box for me?",
+        "She had to carry all her supplies up the hill.",
+        "He learned to carry responsibility at a young age."
+      ]
+    },
+    {
+      "word": "clean",
+      "syllables": "clean",
+      "definition": "Free from dirt and mess neat and fresh.",
+      "sentences": [
+        "She always keeps a very clean bedroom.",
+        "We worked together to clean the whole classroom.",
+        "He made sure to clean up before his guests arrived."
+      ]
+    },
+    {
+      "word": "cut",
+      "syllables": "cut",
+      "definition": "To use something sharp to divide an object.",
+      "sentences": [
+        "Dad will cut the birthday cake for everyone.",
+        "She used scissors to cut the paper carefully.",
+        "He helped cut the vegetables for the soup."
+      ]
+    },
+    {
+      "word": "done",
+      "syllables": "done",
+      "definition": "Completely finished with nothing more left to do.",
+      "sentences": [
+        "I am finally done with all my homework.",
+        "She was done before the timer even went off.",
+        "When you are done reading please put the book away."
+      ]
+    },
+    {
+      "word": "draw",
+      "syllables": "draw",
+      "definition": "To create a picture using a pencil or crayon.",
+      "sentences": [
+        "I love to draw detailed animals at school.",
+        "She asked her dad to draw a map of the trail.",
+        "He can draw nearly anything you ask him to."
+      ]
+    },
+    {
+      "word": "drink",
+      "syllables": "drink",
+      "definition": "To swallow a liquid such as water or juice.",
+      "sentences": [
+        "I always drink water after I exercise.",
+        "She remembered to drink enough water on the hot day.",
+        "He poured himself a cold drink after the long walk."
+      ]
+    },
+    {
+      "word": "eight",
+      "syllables": "eight",
+      "definition": "The number 8 which is one more than seven.",
+      "sentences": [
+        "Did you know a spider has eight legs?",
+        "She has been reading for eight whole chapters.",
+        "There are eight planets in our solar system."
+      ]
+    },
+    {
+      "word": "fall",
+      "syllables": "fall",
+      "definition": "To drop down or the season that comes after summer.",
+      "sentences": [
+        "Colorful leaves fall gently from trees in autumn.",
+        "She watched the snowflakes fall outside her window.",
+        "He did not want to fall behind in his reading."
+      ]
+    },
+    {
+      "word": "far",
+      "syllables": "far",
+      "definition": "A long distance away from where you are.",
+      "sentences": [
+        "That star looks tiny because it is so far away.",
+        "She had traveled far from her hometown.",
+        "He could hear the music from far down the street."
+      ]
+    },
+    {
+      "word": "full",
+      "syllables": "full",
+      "definition": "Holding as much as possible with no room left.",
+      "sentences": [
+        "My backpack is completely full of library books.",
+        "She felt full after eating the big bowl of soup.",
+        "The auditorium was full for the school concert."
+      ]
+    },
+    {
+      "word": "got",
+      "syllables": "got",
+      "definition": "Received or obtained something before now.",
+      "sentences": [
+        "I got a perfect score on my spelling test.",
+        "She got the last book before the library closed.",
+        "He finally got the answer after thinking hard."
+      ]
+    },
+    {
+      "word": "grow",
+      "syllables": "grow",
+      "definition": "To get bigger or taller naturally over time.",
+      "sentences": [
+        "Plants always grow toward the warm sunlight.",
+        "She watched the tiny seed grow into a tall flower.",
+        "Reading every day helps your mind grow stronger."
+      ]
+    },
+    {
+      "word": "hold",
+      "syllables": "hold",
+      "definition": "To keep something carefully in your hands or arms.",
+      "sentences": [
+        "Always hold my hand when we cross the street.",
+        "She asked him to hold her place in line.",
+        "He tried to hold onto the rope during the game."
+      ]
+    },
+    {
+      "word": "hot",
+      "syllables": "hot",
+      "definition": "Having a very high temperature opposite of cold.",
+      "sentences": [
+        "The soup is still too hot to eat right now.",
+        "She stayed in the shade on the very hot afternoon.",
+        "The sand at the beach felt hot under our feet."
+      ]
+    },
+    {
+      "word": "hurt",
+      "syllables": "hurt",
+      "definition": "To feel pain or to cause pain in someone.",
+      "sentences": [
+        "My leg hurt after I fell off my bicycle.",
+        "She did not want to hurt her friend's feelings.",
+        "He made sure not to hurt the little caterpillar."
+      ]
+    },
+    {
+      "word": "if",
+      "syllables": "if",
+      "definition": "Used when talking about something that might happen.",
+      "sentences": [
+        "If it rains tomorrow we will play inside.",
+        "She asked if she could stay for dinner.",
+        "He wondered if the package would arrive on time."
+      ]
+    },
+    {
+      "word": "keep",
+      "syllables": "keep",
+      "definition": "To hold onto something and not give it away.",
+      "sentences": [
+        "You can keep the special book I gave you.",
+        "She tried to keep her room neat all week.",
+        "He made a promise and worked hard to keep it."
+      ]
+    },
+    {
+      "word": "kind",
+      "syllables": "kind",
+      "definition": "Gentle caring and always nice to other people.",
+      "sentences": [
+        "She is always so kind to new students.",
+        "Being kind to others can make their whole day better.",
+        "He chose to say something kind instead of something mean."
+      ]
+    },
+    {
+      "word": "laugh",
+      "syllables": "laugh",
+      "definition": "The happy sound you make when something is funny.",
+      "sentences": [
+        "That silly joke made absolutely everyone laugh.",
+        "She could not help but laugh at the funny story.",
+        "He started to laugh when the puppy sneezed."
+      ]
+    },
+    {
+      "word": "light",
+      "syllables": "light",
+      "definition": "Brightness that helps you see or not very heavy.",
+      "sentences": [
+        "The flashlight gave us enough light in the dark.",
+        "She chose the light backpack for the long hike.",
+        "He turned on the light to read before bed."
+      ]
+    },
+    {
+      "word": "long",
+      "syllables": "long",
+      "definition": "A large distance from one end all the way to the other.",
+      "sentences": [
+        "The giraffe has an incredibly long neck.",
+        "She had been waiting for a long time to see that show.",
+        "It was a long but very exciting journey home."
+      ]
+    },
+    {
+      "word": "much",
+      "syllables": "much",
+      "definition": "A very large amount of something.",
+      "sentences": [
+        "I had so much fun at the fair yesterday.",
+        "She worked so much harder than she ever had before.",
+        "How much time do we have left to finish?"
+      ]
+    },
+    {
+      "word": "myself",
+      "syllables": "my\u00b7self",
+      "definition": "Doing something completely on your own without help.",
+      "sentences": [
+        "I tied my own shoes by myself today.",
+        "She built the whole model by herself.",
+        "He taught himself to play three songs on the guitar."
+      ]
+    },
+    {
+      "word": "never",
+      "syllables": "nev\u00b7er",
+      "definition": "Not ever not even a single time.",
+      "sentences": [
+        "I have never seen an actual live volcano.",
+        "She said she would never give up on her dream.",
+        "He had never tasted anything quite so delicious before."
+      ]
+    },
+    {
+      "word": "only",
+      "syllables": "on\u00b7ly",
+      "definition": "Just one single thing and absolutely nothing more.",
+      "sentences": [
+        "I only have one piece of candy remaining.",
+        "She was the only one who knew the answer.",
+        "He had only a few minutes left to finish the test."
+      ]
+    },
+    {
+      "word": "own",
+      "syllables": "own",
+      "definition": "Something that belongs to just you alone.",
+      "sentences": [
+        "I have my very own special reading chair.",
+        "She was proud to have her own library card.",
+        "He worked hard to earn his own money."
+      ]
+    },
+    {
+      "word": "pick",
+      "syllables": "pick",
+      "definition": "To choose one thing carefully from a whole group.",
+      "sentences": [
+        "You can pick any book you want from the shelf.",
+        "She took her time to pick the perfect birthday card.",
+        "He could not pick just one favorite flavor."
+      ]
+    },
+    {
+      "word": "seven",
+      "syllables": "sev\u00b7en",
+      "definition": "The number 7 which is one more than six.",
+      "sentences": [
+        "There are exactly seven days in every week.",
+        "She read seven whole chapters before dinner.",
+        "He scored seven points in the basketball game."
+      ]
+    },
+    {
+      "word": "shall",
+      "syllables": "shall",
+      "definition": "Something that will definitely and certainly happen.",
+      "sentences": [
+        "We shall return home before it gets dark.",
+        "She told herself she shall never stop trying.",
+        "Shall we start reading the next chapter now?"
+      ]
+    },
+    {
+      "word": "show",
+      "syllables": "show",
+      "definition": "To let someone see or learn something new.",
+      "sentences": [
+        "Please show me your amazing drawing when done.",
+        "She offered to show him how to solve the problem.",
+        "He was excited to show his project to the class."
+      ]
+    },
+    {
+      "word": "six",
+      "syllables": "six",
+      "definition": "The number 6 which is one more than five.",
+      "sentences": [
+        "A ladybug has exactly six tiny spotted legs.",
+        "She has six books checked out from the library.",
+        "They practiced the song six times before the show."
+      ]
+    },
+    {
+      "word": "small",
+      "syllables": "small",
+      "definition": "Little in size not big at all.",
+      "sentences": [
+        "The kitten was so small it fit in my hand.",
+        "She started with small steps and worked up to big ones.",
+        "Even small acts of kindness can make a big difference."
+      ]
+    },
+    {
+      "word": "start",
+      "syllables": "start",
+      "definition": "To begin something for the very first time.",
+      "sentences": [
+        "We start school promptly at eight in the morning.",
+        "She was nervous but decided to start anyway.",
+        "He read the first page to start the new chapter."
+      ]
+    },
+    {
+      "word": "ten",
+      "syllables": "ten",
+      "definition": "The number 10 which is one more than nine.",
+      "sentences": [
+        "I counted ten glowing fireflies in the yard.",
+        "She has ten favorite books she reads every year.",
+        "He ran ten laps around the track without stopping."
+      ]
+    },
+    {
+      "word": "today",
+      "syllables": "to\u00b7day",
+      "definition": "The day that is currently happening right now.",
+      "sentences": [
+        "Today is a wonderful and perfect day to read.",
+        "She decided that today was the day to try something new.",
+        "He smiled because today was finally his birthday."
+      ]
+    },
+    {
+      "word": "together",
+      "syllables": "to\u00b7geth\u00b7er",
+      "definition": "With each other doing something at the same time.",
+      "sentences": [
+        "We built the whole puzzle together as a family.",
+        "She and her friend studied together every afternoon.",
+        "They decided to face the challenge together and won."
+      ]
+    },
+    {
+      "word": "try",
+      "syllables": "try",
+      "definition": "To make a real effort to do something.",
+      "sentences": [
+        "Always try your absolute best at everything you do.",
+        "She decided to try a new strategy on the hard problem.",
+        "He knew it was worth it to try one more time."
+      ]
+    },
+    {
+      "word": "warm",
+      "syllables": "warm",
+      "definition": "A comfortable temperature not too hot and not too cold.",
+      "sentences": [
+        "The soft blanket kept me perfectly warm all night.",
+        "She loved the warm feeling of sunshine on her face.",
+        "He poured a warm cup of cocoa on the cold morning."
+      ]
+    }
+  ]
+}
