@@ -1194,7 +1194,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CM</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CN</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2455,7 +2455,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CM</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CN</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7971,6 +7971,7 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
   document.getElementById('vocab-week-label').textContent = '';
 
   try {
+    // Compress image
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -7994,44 +7995,82 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
       reader.readAsDataURL(file);
     });
 
-    // Use extractText OCR, then parse word: definition pairs client-side
-    const response = await fetch(CF_OCR, {
+    // Step 1: Use CF_SPELLING (Claude vision) to extract just the vocabulary words.
+    // CF_SPELLING already handles any image format and returns clean JSON {words: [...]}
+    // It correctly ignores headers, titles, page numbers, and example sentences.
+    const spellResp = await fetch(CF_SPELLING, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg', grade: S.grade || '2' })
     });
+    if (!spellResp.ok) throw new Error('Extraction failed');
+    const spellData = await spellResp.json();
+    if (!spellData.words || spellData.words.length === 0) throw new Error('No words found');
 
-    if (!response.ok) throw new Error('OCR failed');
-    const data = await response.json();
-    if (!data.text) throw new Error('No text found');
+    // Step 2: Also get raw OCR text so we can try to match Meaning: lines to words
+    let meaningMap = {};
+    try {
+      const ocrResp = await fetch(CF_OCR, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64, mediaType: 'image/jpeg' })
+      });
+      if (ocrResp.ok) {
+        const ocrData = await ocrResp.json();
+        if (ocrData.text) {
+          // Parse "Meaning: ..." lines and "word - definition" lines from raw text
+          const lines = ocrData.text.split(/\n/).map(l => l.trim()).filter(l => l);
 
-    // Parse extracted text for word: definition pairs
-    const lines = data.text.split(/\n/).map(l => l.trim()).filter(l => l.length > 1);
-    const words = [];
-    for (const line of lines) {
-      // Skip lines that look like headers/titles (all caps, very short, numbers only)
-      if (/^\d+\.?\s*$/.test(line) || /^[A-Z\s]{1,4}$/.test(line)) continue;
-      const colonIdx = line.indexOf(':');
-      if (colonIdx > 0 && colonIdx < 40) {
-        const word = line.slice(0, colonIdx).trim().toLowerCase().replace(/^\d+[\.\)]\s*/, '');
-        const definition = line.slice(colonIdx + 1).trim();
-        if (word && word.length > 0 && word.length < 40) words.push({ word, definition });
-      } else {
-        // Plain word (strip leading numbers/bullets)
-        const word = line.toLowerCase().replace(/^\d+[\.\)]\s*/, '').replace(/^[-•*]\s*/, '').trim();
-        if (word && word.length > 0 && word.length < 40 && /^[a-z]/.test(word)) {
-          words.push({ word, definition: '' });
+          // Look for lines starting with "Meaning:" — associate with nearest preceding word
+          let lastWord = null;
+          for (const line of lines) {
+            // Match "Meaning: some definition text"
+            const meaningMatch = line.match(/^[Mm]eaning[:\s]+(.+)/);
+            if (meaningMatch && lastWord) {
+              meaningMap[lastWord] = meaningMatch[1].trim();
+              lastWord = null;
+              continue;
+            }
+            // Match "word - (part of speech) definition" like green sheet format:
+            // "calmly - (adverb) while not moving, or being still"
+            const dashMatch = line.match(/^(\d+\.\s*)?([a-zA-Z]+)\s+-\s+(?:\([^)]+\)\s+)?(.+)/);
+            if (dashMatch) {
+              const w = dashMatch[2].toLowerCase();
+              const def = dashMatch[3].trim();
+              // Only store if definition is a real sentence (not a page citation like "p. 24")
+              if (def.length > 10 && !/^\(p\.\s*\d+\)/.test(def) && !/"/.test(def.slice(0,5))) {
+                meaningMap[w] = def;
+              }
+              lastWord = w;
+              continue;
+            }
+            // Track last word that appeared (numbered list item)
+            const wordOnlyMatch = line.match(/^(\d+\.\s*)?([a-zA-Z]{2,})[:\s]*$/);
+            if (wordOnlyMatch) {
+              lastWord = wordOnlyMatch[2].toLowerCase();
+            }
+          }
         }
       }
+    } catch (ocrErr) {
+      console.warn('OCR meaning extraction failed (non-fatal):', ocrErr);
     }
 
-    if (words.length === 0) throw new Error('No words found');
-
+    // Step 3: Build vocab list — prefer meaningMap definitions, fall back to batchDefine
     const vocabList = {
       id: Date.now().toString(36),
       date: new Date().toISOString(),
       grade: S.grade || '2',
-      words: words.map((w, i) => ({ ...w, num: i + 1, practiced: 0, mastered: false }))
+      words: spellData.words.map((w, i) => {
+        const wordKey = w.word.toLowerCase().trim();
+        return {
+          word: wordKey,
+          definition: meaningMap[wordKey] || '',
+          num: i + 1,
+          practiced: 0,
+          mastered: false
+        };
+      })
     };
 
     const d = getData();
@@ -8040,10 +8079,10 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
     saveData(d);
 
     currentVocabList = vocabList;
-    renderVocabWords(vocabList);
+    renderVocabWords(vocabList); // renderVocabWords will auto-call fetchVocabDefinitions for any missing defs
 
   } catch (err) {
-    console.error('Vocab OCR error:', err);
+    console.error('Vocab upload error:', err);
     document.getElementById('vocab-loading').style.display = 'none';
     document.getElementById('vocab-word-list').innerHTML = `
       <div style="text-align:center;padding:30px 0;">
