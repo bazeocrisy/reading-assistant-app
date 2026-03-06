@@ -1194,7 +1194,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CN</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CO</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2122,6 +2122,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="btn-main btn-outline" id="btn-vocab-study" style="font-size:0.9rem;">👀 Look &amp; Learn</button>
         <button class="btn-main btn-purple" id="btn-vocab-flashcard" style="font-size:0.9rem;">🃏 Flashcards</button>
         <button class="btn-main btn-coral" id="btn-vocab-practice" style="font-size:0.9rem;">🎯 Practice!</button>
+        <button class="btn-main btn-green" id="btn-vocab-quiz" style="font-size:0.9rem;">📝 Test Me!</button>
+        <button class="btn-main" id="btn-vocab-wordsearch" style="font-size:0.9rem;background:linear-gradient(135deg,#54A0FF,#2E86DE);">🔍 Word Search</button>
       </div>
     </div>
   </div>
@@ -2455,7 +2457,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CN</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CO</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7148,6 +7150,7 @@ document.getElementById('btn-spell-take-quiz').addEventListener('click', () => {
 
 // ── Spelling Quiz (Full Test Mode) ──────────────────────
 let quizWords = [];
+let quizSource = 'spelling'; // 'spelling' or 'vocab'
 let quizIndex = 0;
 let quizResults = [];
 let quizAnswered = false;
@@ -7158,7 +7161,8 @@ document.getElementById('btn-spelling-quiz').addEventListener('click', () => {
   openSpellingPicker();
 });
 
-function startSpellingQuiz(words) {
+function startSpellingQuiz(words, source) {
+  quizSource = source || 'spelling';
   quizWords = shuffleArray([...words]);
   quizIndex = 0;
   quizResults = [];
@@ -7351,8 +7355,14 @@ document.getElementById('btn-quiz-retry-all').addEventListener('click', () => {
 });
 
 document.getElementById('btn-quiz-results-done').addEventListener('click', () => {
-  show('screen-spelling');
-  if (currentSpellingList) renderSpellingWords(currentSpellingList);
+  if (quizSource === 'vocab') {
+    show('screen-vocab');
+    if (currentVocabList) renderVocabWords(currentVocabList);
+  } else {
+    show('screen-spelling');
+    if (currentSpellingList) renderSpellingWords(currentSpellingList);
+  }
+  quizSource = 'spelling';
 });
 
 // Utility: shuffle array
@@ -7366,6 +7376,7 @@ function shuffleArray(arr) {
 
 // ── Spelling Games ───────────────────────────────────────
 let gameSelectedWords = [];
+let gameSource = 'spelling'; // 'spelling' or 'vocab'
 
 document.getElementById('btn-spelling-games').addEventListener('click', () => {
   if (!currentSpellingList || !currentSpellingList.words.length) return;
@@ -7647,8 +7658,14 @@ document.getElementById('btn-ws-play-again').addEventListener('click', () => {
   startWordSearch(gameSelectedWords);
 });
 document.getElementById('btn-ws-back').addEventListener('click', () => {
-  show('screen-spelling');
-  if (currentSpellingList) renderSpellingWords(currentSpellingList);
+  if (gameSource === 'vocab') {
+    show('screen-vocab');
+    if (currentVocabList) renderVocabWords(currentVocabList);
+  } else {
+    show('screen-spelling');
+    if (currentSpellingList) renderSpellingWords(currentSpellingList);
+  }
+  gameSource = 'spelling';
 });
 
 // ── Word Scramble Engine ────────────────────────────────
@@ -8159,8 +8176,16 @@ function renderVocabWords(list) {
     card.appendChild(mainDiv);
     card.appendChild(tapDiv);
     card.addEventListener('click', () => {
-      const def = w.definition || defDiv.textContent.replace('Looking it up...', '').trim();
-      showDictionaryPopup(w.word, -1);
+      // Speak word + definition directly — no API call, no throttle
+      const knownDef = w.definition || defDiv.textContent.replace('Looking it up...', '').trim();
+      if (knownDef && knownDef.length > 2) {
+        sayDictEntry(w.word, knownDef);
+      } else {
+        sayWordOnly(w.word);
+      }
+      // Visual feedback
+      card.style.borderColor = 'var(--ocean)';
+      setTimeout(() => { card.style.borderColor = ''; }, 800);
     });
     listEl.appendChild(card);
   });
@@ -8259,6 +8284,26 @@ document.getElementById('btn-vocab-practice').addEventListener('click', () => {
 
 document.getElementById('btn-vocab-practice-quit').addEventListener('click', () => {
   show('screen-vocab');
+});
+
+document.getElementById('btn-vocab-quiz').addEventListener('click', () => {
+  if (!currentVocabList || currentVocabList.words.length < 2) {
+    showAppAlert('📚', 'Need More Words', 'Add at least 2 vocabulary words to use Test Me!');
+    return;
+  }
+  // Reuse the spelling quiz flow with vocab words
+  startSpellingQuiz(currentVocabList.words, 'vocab');
+});
+
+document.getElementById('btn-vocab-wordsearch').addEventListener('click', () => {
+  if (!currentVocabList || currentVocabList.words.length < 4) {
+    showAppAlert('📚', 'Need More Words', 'Add at least 4 vocabulary words to play Word Search!');
+    return;
+  }
+  gameSource = 'vocab';
+  gameSelectedWords = currentVocabList.words;
+  startWordSearch(gameSelectedWords);
+  show('screen-wordsearch');
 });
 
 document.getElementById('btn-vocab-retry-all').addEventListener('click', () => {
