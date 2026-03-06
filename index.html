@@ -1194,7 +1194,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CS</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2200,7 +2200,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
       <!-- Definition prompt -->
       <div style="background:var(--section);border-radius:16px;padding:16px 18px;margin:14px 0 18px;text-align:center;border:2px solid var(--border);">
-        <div style="font-size:0.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Which word means…</div>
+        <div id="vocab-practice-prompt-label" style="font-size:0.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Which word means…</div>
         <div id="vocab-practice-def" style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);line-height:1.5;"></div>
         <button id="btn-vocab-practice-hear" style="margin-top:10px;padding:6px 18px;border:2px solid var(--border);border-radius:20px;background:var(--card);font-family:'Nunito';font-weight:800;font-size:0.85rem;cursor:pointer;color:var(--muted);">🔊 Hear the word</button>
       </div>
@@ -2475,7 +2475,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6313,7 +6313,13 @@ document.getElementById('btn-practice-quit').addEventListener('click', () => {
   show('screen-spelling');
 });
 document.getElementById('btn-quiz-quit').addEventListener('click', () => {
-  show('screen-spelling');
+  if (quizSource === 'vocab') {
+    show('screen-vocab');
+    if (currentVocabList) renderVocabWords(currentVocabList);
+    quizSource = 'spelling';
+  } else {
+    show('screen-spelling');
+  }
 });
 
 document.getElementById('spelling-file-input').addEventListener('change', async (e) => {
@@ -7227,6 +7233,11 @@ document.getElementById('btn-spelling-quiz').addEventListener('click', () => {
 
 function startSpellingQuiz(words, source) {
   quizSource = source || 'spelling';
+  // Update back map so nav bar Quit goes to the right place
+  const quitTarget = quizSource === 'vocab' ? 'screen-vocab' : 'screen-spelling';
+  SCREEN_BACK_MAP['screen-quiz-countdown'] = ['← Quit', quitTarget];
+  SCREEN_BACK_MAP['screen-quiz'] = ['← Quit', quitTarget];
+  SCREEN_BACK_MAP['screen-quiz-results'] = ['← Back', quitTarget];
   quizWords = shuffleArray([...words]);
   quizIndex = 0;
   quizResults = [];
@@ -8330,13 +8341,36 @@ document.getElementById('btn-vocab-practice-quit').addEventListener('click', () 
   show('screen-vocab');
 });
 
+document.getElementById('btn-vocab-practice-hear').addEventListener('click', () => {
+  const isQuizMode = document.getElementById('vocab-practice-title').textContent.includes('Test Me');
+  if (isQuizMode) {
+    // Quiz: show word, pick definition — hear the WORD pronounced
+    const current = vocabQuizWords[vocabQuizIndex];
+    if (current) sayWordOnly(current.word);
+  } else {
+    // Practice: show definition, pick word — hear the DEFINITION read aloud
+    const current = vocabPracticeWords[vocabPracticeIndex];
+    if (!current) return;
+    if (current.definition) {
+      sayDictEntry(current.word, current.definition);
+    } else {
+      sayWordOnly(current.word);
+    }
+  }
+});
+
 document.getElementById('btn-vocab-quiz').addEventListener('click', () => {
   if (!currentVocabList || currentVocabList.words.length < 2) {
     showAppAlert('📚', 'Need More Words', 'Add at least 2 vocabulary words to use Test Me!');
     return;
   }
-  // Reuse the spelling quiz flow with vocab words
-  startSpellingQuiz(currentVocabList.words, 'vocab');
+  // Check that words have definitions to test
+  const withDefs = currentVocabList.words.filter(w => w.definition && w.definition.length > 3);
+  if (withDefs.length < 2) {
+    showAppAlert('📚', 'No Definitions Yet', 'Wait a moment for definitions to load, then try again!');
+    return;
+  }
+  startVocabDefinitionQuiz(withDefs);
 });
 
 document.getElementById('btn-vocab-wordsearch').addEventListener('click', () => {
@@ -8448,6 +8482,7 @@ function startVocabPractice(words) {
   vocabPracticeIndex = 0;
   vocabPracticeScore = 0;
   vocabPracticeMissed = [];
+  document.getElementById('vocab-practice-title').textContent = '🎯 Vocabulary Practice';
   document.getElementById('btn-vocab-practice-quit').style.display = 'none';
   renderVocabPracticeQuestion();
 }
@@ -8459,6 +8494,7 @@ function renderVocabPracticeQuestion() {
 
   document.getElementById('vocab-practice-num').textContent = `${vocabPracticeIndex + 1} / ${total}`;
   document.getElementById('vocab-practice-bar').style.width = `${(vocabPracticeIndex / total) * 100}%`;
+  document.getElementById('vocab-practice-prompt-label').textContent = 'Which word means…';
   document.getElementById('vocab-practice-def').textContent = current.definition || current.word;
   document.getElementById('vocab-practice-feedback').innerHTML = '';
 
@@ -8534,6 +8570,94 @@ function showVocabResults() {
   });
 
   show('screen-vocab-results');
+}
+
+// ── Vocab Definition Quiz (Test Me!) ─────────────────────────
+// Shows the WORD → pick the correct DEFINITION (opposite of Practice)
+let vocabQuizWords = [];
+let vocabQuizIndex = 0;
+let vocabQuizScore = 0;
+let vocabQuizMissed = [];
+
+function startVocabDefinitionQuiz(words) {
+  vocabQuizWords = [...words].sort(() => Math.random() - 0.5);
+  vocabQuizIndex = 0;
+  vocabQuizScore = 0;
+  vocabQuizMissed = [];
+  // Reuse practice screen with a different title
+  document.getElementById('vocab-practice-title').textContent = '📝 Test Me!';
+  document.getElementById('btn-vocab-practice-quit').style.display = 'none';
+  renderVocabQuizQuestion();
+  show('screen-vocab-practice');
+}
+
+function renderVocabQuizQuestion() {
+  const words = vocabQuizWords;
+  const total = words.length;
+  const current = words[vocabQuizIndex];
+
+  document.getElementById('vocab-practice-num').textContent = `${vocabQuizIndex + 1} / ${total}`;
+  document.getElementById('vocab-practice-bar').style.width = `${(vocabQuizIndex / total) * 100}%`;
+  // Show the WORD, ask which definition matches
+  document.getElementById('vocab-practice-prompt-label').textContent = 'Which definition matches…';
+  document.getElementById('vocab-practice-def').innerHTML =
+    `<span style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--coral);">${current.word}</span>`;
+  document.getElementById('vocab-practice-feedback').innerHTML = '';
+
+  // Build definition choices: correct + up to 3 wrong definitions from other words
+  const allWords = vocabQuizWords.filter(w => w.word !== current.word && w.definition);
+  const wrong = allWords.sort(() => Math.random() - 0.5).slice(0, Math.min(3, allWords.length));
+  const choices = [...wrong, current].sort(() => Math.random() - 0.5);
+
+  const choicesEl = document.getElementById('vocab-practice-choices');
+  choicesEl.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'spell-choice-btn';
+    btn.style.fontSize = '0.88rem';
+    btn.style.textAlign = 'left';
+    btn.style.padding = '12px 16px';
+    btn.style.lineHeight = '1.4';
+    btn.textContent = choice.definition;
+    btn.addEventListener('click', () => handleVocabQuizAnswer(choice.word === current.word, current, btn, choicesEl));
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleVocabQuizAnswer(correct, current, btn, choicesEl) {
+  choicesEl.querySelectorAll('.spell-choice-btn').forEach(b => b.disabled = true);
+
+  if (correct) {
+    btn.classList.add('correct');
+    vocabQuizScore++;
+    document.getElementById('vocab-practice-feedback').innerHTML = `<div class="spell-feedback-correct">✅ Correct!</div>`;
+  } else {
+    btn.classList.add('wrong');
+    vocabQuizMissed.push(current.word);
+    // Highlight the correct definition
+    choicesEl.querySelectorAll('.spell-choice-btn').forEach(b => {
+      if (b.textContent === current.definition) b.classList.add('correct');
+    });
+    document.getElementById('vocab-practice-feedback').innerHTML =
+      `<div class="spell-feedback-wrong">❌ The answer was: <strong>${current.definition}</strong></div>`;
+  }
+
+  setTimeout(() => {
+    vocabQuizIndex++;
+    if (vocabQuizIndex < vocabQuizWords.length) {
+      renderVocabQuizQuestion();
+    } else {
+      // Show results — swap vocabPracticeWords/Score/Missed to reuse showVocabResults
+      vocabPracticeWords = vocabQuizWords;
+      vocabPracticeScore = vocabQuizScore;
+      vocabPracticeMissed = vocabQuizMissed;
+      document.getElementById('vocab-results-title').textContent =
+        vocabQuizScore === vocabQuizWords.length ? '🏆 Perfect Score!' :
+        vocabQuizScore / vocabQuizWords.length >= 0.8 ? '🌟 Great Job!' :
+        vocabQuizScore / vocabQuizWords.length >= 0.6 ? '👍 Good Try!' : '📚 Keep Practicing!';
+      showVocabResults();
+    }
+  }, 1100);
 }
 
 // ── Bedtime Mode ──────────────────────────────────────────
