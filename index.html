@@ -1197,7 +1197,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DC</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2554,7 +2554,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DC</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5434,58 +5434,64 @@ async function sayHearItAll(word, definition, sentences, allWordEls) {
     const sentenceTimings = rawTimings.slice(prefixWords);
 
     if (sentenceTimings.length > 0 && allWordEls.length > 0) {
-      dictAudio.addEventListener('loadedmetadata', () => {
-        // ── Same scaling fix as reading screen ──────────────────
-        // MP3 padding makes audio.duration > last ElevenLabs timestamp
-        // Scale all timestamps proportionally to span the full audio
-        const audioDurationMs = dictAudio.duration * 1000;
-        const lastTiming = sentenceTimings[sentenceTimings.length - 1];
-        const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
-        let scaledTimings = sentenceTimings;
+      const AUDIO_OFFSET_MS = 20;
+      let lastActiveIdx = -1;
+      let scaledTimings = null; // computed once duration is known
 
-        if (lastTimingMs > 0 && audioDurationMs > lastTimingMs * 1.01) {
-          // Scale relative to audio start — use the first sentence timing as the anchor
-          scaledTimings = sentenceTimings.map(t => ({
-            ...t,
-            startMs: Math.round(t.startMs * (audioDurationMs / rawTimings[rawTimings.length - 1]?.startMs || 1)),
-            endMs: t.endMs ? Math.round(t.endMs * (audioDurationMs / rawTimings[rawTimings.length - 1]?.startMs || 1)) : 0,
-          }));
+      function loop() {
+        if (!dictAudio || dictAudio.paused || dictAudio.ended) return;
+
+        // Compute scaled timings once we have a real duration
+        if (!scaledTimings) {
+          const audioDurationMs = dictAudio.duration * 1000;
+          const lastTiming = rawTimings[rawTimings.length - 1];
+          const lastTimingMs = lastTiming?.endMs || lastTiming?.startMs || 0;
+          if (audioDurationMs > 0 && lastTimingMs > 0 && audioDurationMs > lastTimingMs * 1.01) {
+            const scale = audioDurationMs / lastTimingMs;
+            scaledTimings = sentenceTimings.map(t => ({
+              ...t,
+              startMs: Math.round(t.startMs * scale),
+              endMs: t.endMs ? Math.round(t.endMs * scale) : 0,
+            }));
+          } else {
+            scaledTimings = sentenceTimings;
+          }
         }
 
-        const AUDIO_OFFSET_MS = 20; // same perceptual lead as reading screen
-        let lastActiveIdx = -1;
+        const nowMs = dictAudio.currentTime * 1000 + AUDIO_OFFSET_MS;
 
-        function loop() {
-          if (!dictAudio || dictAudio.paused || dictAudio.ended) return;
-          const nowMs = dictAudio.currentTime * 1000 + AUDIO_OFFSET_MS;
-
-          // Binary search — same as reading screen
-          let lo = 0, hi = scaledTimings.length - 1, activeIdx = -1;
-          while (lo <= hi) {
-            const mid = Math.floor((lo + hi) / 2);
-            if (scaledTimings[mid].startMs <= nowMs) { activeIdx = mid; lo = mid + 1; }
-            else { hi = mid - 1; }
-          }
-          if (activeIdx >= allWordEls.length) activeIdx = allWordEls.length - 1;
-
-          if (activeIdx >= 0 && activeIdx !== lastActiveIdx) {
-            lastActiveIdx = activeIdx;
-            allWordEls.forEach(el => el.classList.remove('dict-word-active'));
-            if (allWordEls[activeIdx]) allWordEls[activeIdx].classList.add('dict-word-active');
-          }
-
-          dictRafId = requestAnimationFrame(loop);
+        // Binary search
+        let lo = 0, hi = scaledTimings.length - 1, activeIdx = -1;
+        while (lo <= hi) {
+          const mid = Math.floor((lo + hi) / 2);
+          if (scaledTimings[mid].startMs <= nowMs) { activeIdx = mid; lo = mid + 1; }
+          else { hi = mid - 1; }
         }
+        if (activeIdx >= allWordEls.length) activeIdx = allWordEls.length - 1;
+
+        if (activeIdx >= 0 && activeIdx !== lastActiveIdx) {
+          lastActiveIdx = activeIdx;
+          allWordEls.forEach(el => el.classList.remove('dict-word-active'));
+          if (allWordEls[activeIdx]) allWordEls[activeIdx].classList.add('dict-word-active');
+        }
+
         dictRafId = requestAnimationFrame(loop);
-      });
+      }
 
       dictAudio.addEventListener('ended', () => {
         if (dictRafId) { cancelAnimationFrame(dictRafId); dictRafId = null; }
         allWordEls.forEach(el => el.classList.remove('dict-word-active'));
       });
-    }
 
-    dictAudio.play();
+      dictAudio.play().then(() => {
+        dictRafId = requestAnimationFrame(loop);
+      }).catch(() => {
+        dictRafId = requestAnimationFrame(loop);
+      });
+
+    } else {
+      dictAudio.play();
+    }
 
   } catch(e) {
     console.warn('sayHearItAll fallback:', e);
