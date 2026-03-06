@@ -641,6 +641,7 @@ body.bedtime .quiz-correction { color: #8adca0; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .dict-word { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 4px; }
 .dict-definition { font-size: 1.1rem; font-weight: 700; color: var(--ink); text-align: center; line-height: 1.6; margin: 12px 0 18px; min-height: 2em; }
+.dict-sentence { background: var(--section); border-radius: 12px; padding: 10px 14px; margin-bottom: 7px; font-size: 0.92rem; font-weight: 700; color: var(--ink); line-height: 1.5; border-left: 4px solid var(--purple-light); text-align: left; }
 .dict-loading { text-align: center; color: var(--muted); font-weight: 700; font-size: 0.9rem; }
 .dict-loading .spin-circle { width: 28px; height: 28px; border-width: 4px; margin: 0 auto 8px; }
 .dict-speaker-btn { display: block; margin: 0 auto 12px; padding: 10px 24px; border-radius: 14px; border: 2.5px solid var(--purple); background: var(--purple-soft); font-family: 'Nunito'; font-weight: 800; font-size: 0.95rem; color: var(--purple-deep); cursor: pointer; transition: all 0.2s; }
@@ -1194,7 +1195,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CW</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CY</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2551,7 +2552,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CW</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2571,8 +2572,13 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <div class="dict-overlay" id="dict-overlay" role="dialog" aria-label="Word definition" aria-modal="true" style="display:none;">
   <div class="dict-popup">
     <div class="dict-word" id="dict-word"></div>
+    <div id="dict-syllables" style="display:none;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--muted);text-align:center;letter-spacing:3px;margin-bottom:6px;"></div>
     <div class="dict-definition" id="dict-definition" role="status" aria-live="polite"></div>
-    <button class="dict-speaker-btn" id="dict-hear-btn" aria-label="Hear the word again">🔊 Hear it again</button>
+    <div id="dict-sentences" style="display:none;margin:10px 0 14px;"></div>
+    <div id="dict-hear-all-btn" style="display:none;margin-bottom:8px;">
+      <button class="dict-speaker-btn" id="btn-dict-hear-all" style="width:100%;background:linear-gradient(135deg,#54A0FF,#2E86DE);">🔊 Hear It All</button>
+    </div>
+    <button class="dict-speaker-btn" id="dict-hear-btn" aria-label="Hear the word again">🔤 Just the Word</button>
     <button class="dict-close-btn" id="dict-close-btn" aria-label="Close definition">✅ Got it!</button>
   </div>
 </div>
@@ -5297,7 +5303,71 @@ function closeDictionaryPopup() {
     teacherWasPaused = false;
     playSpeech(teacherPausePosition);
   }
+
+  // Hide sight word extras
+  document.getElementById('dict-syllables').style.display = 'none';
+  document.getElementById('dict-sentences').style.display = 'none';
+  document.getElementById('dict-hear-all-btn').style.display = 'none';
+  document.getElementById('dict-hear-btn').textContent = '🔊 Hear it again';
 }
+
+// Show rich popup for Dolch/Fry words using pre-loaded JSON data
+function showSightWordPopup(entry) {
+  if (dictPopupOpen) return;
+  dictPopupOpen = true;
+
+  const word = entry.word;
+  const syllables = entry.syllables || word;
+  const definition = entry.definition || '';
+  const sentences = entry.sentences || [];
+
+  // Word
+  document.getElementById('dict-word').textContent = word;
+
+  // Syllables
+  const sylEl = document.getElementById('dict-syllables');
+  sylEl.textContent = syllables;
+  sylEl.style.display = 'block';
+
+  // Definition
+  document.getElementById('dict-definition').textContent = definition || 'Tap 🔊 to hear the word!';
+
+  // Sentences
+  const sentEl = document.getElementById('dict-sentences');
+  sentEl.innerHTML = '';
+  if (sentences.length > 0) {
+    sentences.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'dict-sentence';
+      div.textContent = s;
+      sentEl.appendChild(div);
+    });
+    sentEl.style.display = 'block';
+  } else {
+    sentEl.style.display = 'none';
+  }
+
+  // Buttons
+  document.getElementById('dict-hear-all-btn').style.display = 'block';
+  document.getElementById('dict-hear-btn').textContent = '🔤 Just the Word';
+  document.getElementById('dict-hear-btn').style.display = 'block';
+
+  // Show popup
+  document.getElementById('dict-overlay').style.display = 'flex';
+
+  // Auto-play "Hear It All"
+  const fullText = `${word} — ${definition}. ${sentences.join(' ')}`;
+  sayDictEntry(word, definition + '. ' + sentences.join(' '));
+}
+
+// Hear It All button for sight word popup
+document.getElementById('btn-dict-hear-all').addEventListener('click', () => {
+  const word = document.getElementById('dict-word').textContent;
+  const def = document.getElementById('dict-definition').textContent;
+  const sentEls = document.querySelectorAll('#dict-sentences .dict-sentence');
+  const sentences = Array.from(sentEls).map(s => s.textContent).join(' ');
+  sayDictEntry(word, def + '. ' + sentences);
+});
 
 async function sayDictEntry(word, definition) {
   const fullText = word + '. ' + definition;
@@ -5362,12 +5432,7 @@ document.getElementById('dict-overlay').addEventListener('click', (e) => {
 });
 document.getElementById('dict-hear-btn').addEventListener('click', () => {
   const word = document.getElementById('dict-word').textContent;
-  const def = document.getElementById('dict-definition').textContent;
-  if (def && !def.includes('Tap')) {
-    sayDictEntry(word, def);
-  } else {
-    sayWordOnly(word);
-  }
+  sayWordOnly(word);
 });
 
 // ── Nav ───────────────────────────────────────────────────
@@ -6369,11 +6434,12 @@ async function loadSightWordSet(source, grade) {
     const gradeWords = json[grade];
     if (!gradeWords || gradeWords.length === 0) throw new Error(`No ${source} words found for grade ${grade}`);
 
-    // Convert to spelling list format
+    // Convert to spelling list format — carry full JSON entry for tap popup
     const words = gradeWords.map(entry => ({
       word: entry.word,
       syllables: entry.syllables || entry.word,
-      isRedWord: false
+      isRedWord: false,
+      sightData: entry  // full JSON entry: definition, sentences
     }));
 
     const sourceLabel = source === 'dolch' ? '📖 Dolch' : '🌟 Fry';
@@ -6722,7 +6788,12 @@ function renderSpellingWords(list) {
         if (savedWord) savedWord.practiced = w.practiced;
         saveData(data);
       }
-      showDictionaryPopup(w.word, -1);
+      // If this word has full sight word data (Dolch/Fry), show rich popup
+      if (w.sightData) {
+        showSightWordPopup(w.sightData);
+      } else {
+        showDictionaryPopup(w.word, -1);
+      }
     });
 
     listEl.appendChild(card);
@@ -7276,7 +7347,7 @@ function checkFillAnswer() {
   const input = document.getElementById('spell-fill-input');
   const typed = input.value.toLowerCase().trim();
   const needed = fillWord.slice(fillGiven);
-  const isCorrect = typed === needed;
+  const isCorrect = typed === needed || typed === fillWord.toLowerCase(); // accept full word or just missing portion
 
   input.disabled = true;
 
