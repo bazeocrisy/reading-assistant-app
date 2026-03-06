@@ -642,6 +642,8 @@ body.bedtime .quiz-correction { color: #8adca0; }
 .dict-word { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--purple); text-align: center; margin-bottom: 4px; }
 .dict-definition { font-size: 1.1rem; font-weight: 700; color: var(--ink); text-align: center; line-height: 1.6; margin: 12px 0 18px; min-height: 2em; }
 .dict-sentence { background: var(--section); border-radius: 12px; padding: 10px 14px; margin-bottom: 7px; font-size: 0.92rem; font-weight: 700; color: var(--ink); line-height: 1.5; border-left: 4px solid var(--purple-light); text-align: left; }
+.dict-sentence .dict-word-span { display: inline; border-radius: 4px; padding: 0 1px; transition: background 0.1s; }
+.dict-sentence .dict-word-span.dict-word-active { background: var(--gold); color: var(--ink); border-radius: 4px; padding: 0 2px; }
 .dict-loading { text-align: center; color: var(--muted); font-weight: 700; font-size: 0.9rem; }
 .dict-loading .spin-circle { width: 28px; height: 28px; border-width: 4px; margin: 0 auto 8px; }
 .dict-speaker-btn { display: block; margin: 0 auto 12px; padding: 10px 24px; border-radius: 14px; border: 2.5px solid var(--purple); background: var(--purple-soft); font-family: 'Nunito'; font-weight: 800; font-size: 0.95rem; color: var(--purple-deep); cursor: pointer; transition: all 0.2s; }
@@ -1195,7 +1197,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CY</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD CZ</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2552,7 +2554,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CY</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD CZ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5304,11 +5306,12 @@ function closeDictionaryPopup() {
     playSpeech(teacherPausePosition);
   }
 
-  // Hide sight word extras
+  // Hide sight word extras and clear highlights
   document.getElementById('dict-syllables').style.display = 'none';
   document.getElementById('dict-sentences').style.display = 'none';
   document.getElementById('dict-hear-all-btn').style.display = 'none';
   document.getElementById('dict-hear-btn').textContent = '🔊 Hear it again';
+  document.querySelectorAll('#dict-sentences .dict-word-span').forEach(el => el.classList.remove('dict-word-active'));
 }
 
 // Show rich popup for Dolch/Fry words using pre-loaded JSON data
@@ -5332,14 +5335,21 @@ function showSightWordPopup(entry) {
   // Definition
   document.getElementById('dict-definition').textContent = definition || 'Tap 🔊 to hear the word!';
 
-  // Sentences
+  // Sentences — render each word as a span for highlighting
   const sentEl = document.getElementById('dict-sentences');
   sentEl.innerHTML = '';
   if (sentences.length > 0) {
     sentences.forEach(s => {
       const div = document.createElement('div');
       div.className = 'dict-sentence';
-      div.textContent = s;
+      // Wrap each word in a span
+      s.split(' ').forEach((w, i) => {
+        const span = document.createElement('span');
+        span.className = 'dict-word-span';
+        span.textContent = w;
+        div.appendChild(span);
+        if (i < s.split(' ').length - 1) div.appendChild(document.createTextNode(' '));
+      });
       sentEl.appendChild(div);
     });
     sentEl.style.display = 'block';
@@ -5355,19 +5365,99 @@ function showSightWordPopup(entry) {
   // Show popup
   document.getElementById('dict-overlay').style.display = 'flex';
 
-  // Auto-play "Hear It All"
-  const fullText = `${word} — ${definition}. ${sentences.join(' ')}`;
-  sayDictEntry(word, definition + '. ' + sentences.join(' '));
+  // Auto-play "Hear It All" with word highlighting
+  const sentWordEls = Array.from(document.querySelectorAll('#dict-sentences .dict-word-span'));
+  sayHearItAll(word, definition, sentences, sentWordEls);
 }
 
 // Hear It All button for sight word popup
 document.getElementById('btn-dict-hear-all').addEventListener('click', () => {
   const word = document.getElementById('dict-word').textContent;
   const def = document.getElementById('dict-definition').textContent;
-  const sentEls = document.querySelectorAll('#dict-sentences .dict-sentence');
-  const sentences = Array.from(sentEls).map(s => s.textContent).join(' ');
-  sayDictEntry(word, def + '. ' + sentences);
+  const sentEls = Array.from(document.querySelectorAll('#dict-sentences .dict-sentence'));
+  const sentences = sentEls.map(el => Array.from(el.querySelectorAll('.dict-word-span')).map(s => s.textContent).join(' '));
+  const sentWordEls = Array.from(document.querySelectorAll('#dict-sentences .dict-word-span'));
+  sayHearItAll(word, def, sentences, sentWordEls);
 });
+
+// Speak word + definition + sentences with word-by-word yellow highlighting
+async function sayHearItAll(word, definition, sentences, allWordEls) {
+  // Full text: "word — definition. sentence1 sentence2 sentence3"
+  const fullText = `${word} — ${definition}. ${sentences.join(' ')}`;
+
+  // Clear any existing highlights
+  allWordEls.forEach(el => el.classList.remove('dict-word-active'));
+
+  // iOS unlock — must happen synchronously before any await
+  if (dictAudio) { dictAudio.pause(); }
+  dictAudio = new Audio();
+  dictAudio.play().catch(() => {});
+
+  try {
+    const data = await fetchTTSAudio(fullText, S.grade, S.voiceGender);
+    if (!data.audioBase64) throw new Error('no audio');
+
+    // Get word timings
+    let wordTimings = [];
+    if (data.wordTimings && data.wordTimings.length > 0) {
+      wordTimings = data.wordTimings;
+    } else if (data.timepoints && data.timepoints.length > 0) {
+      wordTimings = data.timepoints.map(tp => ({
+        word: tp.word || '',
+        startMs: (tp.timeSeconds || tp.time_seconds || 0) * 1000,
+        endMs: 0
+      }));
+    }
+
+    if (dictAudio) { dictAudio.pause(); }
+    dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
+    const speed = S.spellingSpeed || S.speed || 1.0;
+    dictAudio.playbackRate = speed;
+
+    // Only highlight sentences — skip the word + definition portion at the start
+    // Build a map: for each sentence word span, find its timing index
+    // The full text words are: [word, "—", ...defWords, ...sentence words]
+    // Count how many words come before the sentences start
+    const prefixWords = `${word} — ${definition}.`.trim().split(/\s+/).length;
+
+    if (wordTimings.length > 0 && allWordEls.length > 0) {
+      dictAudio.addEventListener('timeupdate', () => {
+        const nowMs = dictAudio.currentTime * 1000 * speed;
+
+        // Find current timing index
+        let activeIdx = -1;
+        for (let i = 0; i < wordTimings.length; i++) {
+          const t = wordTimings[i];
+          const nextStart = wordTimings[i + 1]?.startMs ?? Infinity;
+          if (nowMs >= t.startMs && nowMs < nextStart) {
+            activeIdx = i;
+            break;
+          }
+        }
+
+        // Map timing index to sentence word span index (subtract prefix)
+        const spanIdx = activeIdx - prefixWords;
+
+        allWordEls.forEach((el, i) => {
+          el.classList.toggle('dict-word-active', i === spanIdx);
+        });
+      });
+
+      dictAudio.addEventListener('ended', () => {
+        allWordEls.forEach(el => el.classList.remove('dict-word-active'));
+      });
+    }
+
+    dictAudio.play();
+
+  } catch(e) {
+    // Fallback: just speak with no highlighting
+    console.warn('sayHearItAll fallback:', e);
+    const utt = new SpeechSynthesisUtterance(fullText);
+    utt.rate = 0.8; utt.pitch = 1.1;
+    window.speechSynthesis.speak(utt);
+  }
+}
 
 async function sayDictEntry(word, definition) {
   const fullText = word + '. ' + definition;
