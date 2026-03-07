@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EH</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EI</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2665,7 +2665,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EH</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EI</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4077,19 +4077,13 @@ document.getElementById('btn-surprise-me').addEventListener('click', () => {
 // ── My Own Reading (Scan My Page) ─────────────────────────
 document.getElementById('btn-scan-page').addEventListener('click', () => {
   show('screen-own-source');
+  refreshOwnSourceScreen();
 });
 
 // Own Reading: Source picker — Upload photo
 document.getElementById('btn-own-scan').addEventListener('click', () => {
   document.getElementById('scan-file-input').click();
 });
-
-// Refresh saved passage section whenever screen-own-source is shown
-const _ownSourceObserver = new MutationObserver(() => {
-  const el = document.getElementById('screen-own-source');
-  if (el && el.classList.contains('active')) refreshOwnSourceScreen();
-});
-_ownSourceObserver.observe(document.getElementById('screen-own-source'), { attributes: true, attributeFilter: ['class'] });
 
 // Own Reading: Source picker — Paste
 document.getElementById('btn-own-paste').addEventListener('click', () => {
@@ -4118,6 +4112,13 @@ function refreshOwnSourceScreen() {
     area.style.display = 'none';
   }
 }
+
+// Refresh when screen-own-source becomes active (belt-and-suspenders)
+const _ownSourceObserver = new MutationObserver(() => {
+  const el = document.getElementById('screen-own-source');
+  if (el && el.classList.contains('active')) refreshOwnSourceScreen();
+});
+_ownSourceObserver.observe(document.getElementById('screen-own-source'), { attributes: true, attributeFilter: ['class'] });
 
 // Continue saved passage
 document.getElementById('btn-own-continue').addEventListener('click', () => {
@@ -4223,6 +4224,7 @@ document.getElementById('btn-own-paste-go').addEventListener('click', () => {
 // Own Reading: Paste — Back
 document.getElementById('btn-own-paste-back').addEventListener('click', () => {
   show('screen-own-source');
+  refreshOwnSourceScreen();
 });
 
 document.getElementById('scan-file-input').addEventListener('change', async (e) => {
