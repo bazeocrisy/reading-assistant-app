@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DV</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DW</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DV</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DW</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6721,7 +6721,7 @@ function showGroupPicker(source, grade, words) {
 
   groups.forEach((group, idx) => {
     const num = idx + 1;
-    const preview = group.slice(0, 3).map(e => e.word).join(', ') + (group.length > 3 ? '…' : '');
+    const preview = group.slice(0, 3).map(e => escapeHtml(e.word)).join(', ') + (group.length > 3 ? '…' : ''); // U-B fix: escapeHtml for consistency
     const card = document.createElement('div');
     card.className = 'group-pick-card';
     card.dataset.groupIdx = idx;
@@ -6820,9 +6820,16 @@ async function loadSightWordSet(source, grade) {
   document.getElementById('spelling-week-label').textContent = '';
 
   try {
-    const res = await fetch(`./${source}.json`);
-    if (!res.ok) throw new Error(`Could not load ${source}.json`);
-    const json = await res.json();
+    // L-A fix: use session cache to avoid re-fetching on back/re-enter
+    let json;
+    if (_sightJsonCache[source]) {
+      json = _sightJsonCache[source];
+    } else {
+      const res = await fetch(`./${source}.json`);
+      if (!res.ok) throw new Error(`Could not load ${source}.json`);
+      json = await res.json();
+      _sightJsonCache[source] = json;
+    }
 
     // JSON is structured as { meta: {...}, prek: [...], k: [...], "1": [...], etc. }
     const gradeWords = json[grade];
@@ -6903,7 +6910,7 @@ function loadSightWordSetFromWords(source, grade, selectedEntries) {
 // Spelling type screen: live word count
 document.getElementById('spell-type-textarea').addEventListener('input', (e) => {
   const raw = e.target.value.trim();
-  const words = raw ? raw.split(/[,\n]+/).map(w => w.trim()).filter(w => w.length > 0) : [];
+  const words = raw ? [...new Set(raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0))] : []; // L-B fix: dedup matches submit
   document.getElementById('spell-type-count').textContent = `${words.length} word${words.length !== 1 ? 's' : ''}`;
 });
 
@@ -6981,6 +6988,7 @@ document.getElementById('btn-practice-quit').addEventListener('click', () => {
   show('screen-spelling');
 });
 document.getElementById('btn-quiz-quit').addEventListener('click', () => {
+  if (quizCountdownInterval) { clearInterval(quizCountdownInterval); quizCountdownInterval = null; } // F-C fix
   if (quizSource === 'vocab') {
     show('screen-vocab');
     if (currentVocabList) renderVocabWords(currentVocabList);
@@ -7062,7 +7070,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
         <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo, or type your words instead.</p>
         <button class="btn-main" id="btn-spelling-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 Try Again</button>
       </div>`;
-    document.getElementById('btn-spelling-retry-error').addEventListener('click', triggerSpellingUpload);
+    document.getElementById('btn-spelling-retry-error').onclick = triggerSpellingUpload; // I-A fix: onclick overwrites itself, no stacking
   }
 });
 
@@ -8063,6 +8071,7 @@ let quizWords = [];
 let quizSource = 'spelling'; // 'spelling' or 'vocab'
 let quizIndex = 0;
 let quizResults = [];
+let quizCountdownInterval = null; // F-C fix: stored globally so it can be cleared on quit
 let quizAnswered = false;
 
 document.getElementById('btn-spelling-quiz').addEventListener('click', () => {
@@ -8090,7 +8099,8 @@ function startSpellingQuiz(words, source) {
   let count = 3;
   document.getElementById('quiz-countdown-num').textContent = count;
 
-  const countdownInterval = setInterval(() => {
+  if (quizCountdownInterval) { clearInterval(quizCountdownInterval); quizCountdownInterval = null; }
+  quizCountdownInterval = setInterval(() => {
     count--;
     if (count > 0) {
       document.getElementById('quiz-countdown-num').textContent = count;
@@ -8103,7 +8113,8 @@ function startSpellingQuiz(words, source) {
       void document.getElementById('quiz-countdown-num').offsetHeight;
       document.getElementById('quiz-countdown-num').style.animation = 'quizPulse 0.6s ease';
     } else {
-      clearInterval(countdownInterval);
+      clearInterval(quizCountdownInterval);
+      quizCountdownInterval = null;
       show('screen-quiz');
       showQuizWord();
     }
@@ -8121,7 +8132,7 @@ function showQuizWord() {
 
   // Update progress
   document.getElementById('quiz-progress-label').textContent = `${quizIndex + 1} / ${quizWords.length}`;
-  const pct = (quizIndex / quizWords.length) * 100;
+  const pct = ((quizIndex + 1) / quizWords.length) * 100;  // F-B fix: +1 so word 1 shows fill
   document.getElementById('quiz-progress-bar').style.width = pct + '%';
 
   // Reset input
@@ -8242,8 +8253,8 @@ function showQuizResults() {
   listEl.innerHTML = quizResults.map(r => `
     <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
       <span>${r.correct ? '✅' : '❌'}</span>
-      <span style="flex:1;">${r.word}</span>
-      ${!r.correct ? `<span style="font-size:0.8rem;opacity:0.7;">wrote: ${r.typed}</span>` : ''}
+      <span style="flex:1;">${escapeHtml(r.word)}</span>
+      ${!r.correct ? `<span style="font-size:0.8rem;opacity:0.7;">wrote: ${escapeHtml(r.typed)}</span>` : ''}
     </div>
   `).join('');
 
@@ -8262,8 +8273,11 @@ function showQuizResults() {
 
 // Quiz results buttons
 document.getElementById('btn-quiz-retry-missed').addEventListener('click', () => {
+  // F-A fix: use quizSourceWords instead of live mutated currentSpellingList.words
+  const sourceWords = quizSourceWords.length > 0 ? quizSourceWords : (currentSpellingList ? currentSpellingList.words : []);
   const missedWords = quizResults.filter(r => !r.correct).map(r => r.word);
-  const missedObjs = currentSpellingList.words.filter(w => missedWords.includes(w.word));
+  const missedObjs = [...new Set(missedWords)].map(w => sourceWords.find(s => s.word === w)).filter(Boolean);
+  if (missedObjs.length === 0) return;
   startSpellingQuiz(missedObjs);
 });
 
@@ -8564,6 +8578,7 @@ document.getElementById('btn-sentence-try-again').addEventListener('click', () =
 });
 
 function showSentenceComplete() {
+  sentenceActive = false; // F-D fix: clear flag on completion, not just on quit
   showAppModal({
     icon: '🌟',
     title: 'Sentence Star!',
