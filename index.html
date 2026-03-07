@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DQ</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2104,7 +2104,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
 
       <!-- Next / Done buttons -->
-      <div id="sentence-nav" style="display:none;margin-top:10px;display:none;">
+      <div id="sentence-nav" style="display:none;margin-top:10px;">
         <button class="btn-main btn-green" id="btn-sentence-next" style="font-size:1.05rem;">Next Word →</button>
       </div>
 
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DQ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7067,6 +7067,12 @@ function renderSpellingWords(list) {
   const countBar = document.getElementById('spelling-count-bar');
   const weekLabel = document.getElementById('spelling-week-label');
 
+  // C-2 fix: if list is empty, show empty state instead of action buttons
+  if (!list.words || list.words.length === 0) {
+    showSpellingEmpty();
+    return;
+  }
+
   loadingEl.style.display = 'none';
   emptyEl.style.display = 'none';
   actionsEl.style.display = 'flex';
@@ -7547,10 +7553,27 @@ function showPracticeQuestion() {
     });
   } else {
     // Fill-in-the-blank mode
-    document.getElementById('spell-practice-choices').style.display = 'none';
-    document.getElementById('spell-fill-area').style.display = 'block';
-
-    setupFillInBlank(word);
+    // C-1 fix: 1-letter words can't have letters hidden — give a second MC round instead
+    if (word.word.length <= 1) {
+      document.getElementById('spell-practice-choices').style.display = 'grid';
+      document.getElementById('spell-fill-area').style.display = 'none';
+      document.getElementById('spell-round-label').textContent = 'ROUND 2: MULTIPLE CHOICE';
+      document.getElementById('spell-practice-hint').textContent = 'One more time — tap the speaker and pick the right spelling!';
+      const choices2 = generateSmartChoices(word.word);
+      const choicesEl2 = document.getElementById('spell-practice-choices');
+      choicesEl2.innerHTML = '';
+      choices2.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'spell-choice-btn';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => handleMCAnswer(btn, choice, word));
+        choicesEl2.appendChild(btn);
+      });
+    } else {
+      document.getElementById('spell-practice-choices').style.display = 'none';
+      document.getElementById('spell-fill-area').style.display = 'block';
+      setupFillInBlank(word);
+    }
   }
 
   // Auto-play the word
@@ -8242,7 +8265,9 @@ function showSentenceQuestion() {
   document.getElementById('sentence-input').value = '';
   document.getElementById('sentence-input').style.borderColor = 'var(--border)';
   document.getElementById('sentence-input').disabled = false;
-  document.getElementById('sentence-feedback').style.display = 'none';
+  const _sfb = document.getElementById('sentence-feedback');
+  _sfb.style.cssText = 'display:none;'; // clear any inline styles from safety warning
+  _sfb.classList.remove('sentence-feedback-perfect','sentence-feedback-almost','sentence-feedback-tryagain');
   document.getElementById('sentence-loading').style.display = 'none';
   document.getElementById('sentence-hint-box').style.display = 'none';
   document.getElementById('sentence-hint-text').textContent = '';
