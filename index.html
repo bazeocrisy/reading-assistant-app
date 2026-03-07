@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ED</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1242,7 +1242,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="home-feature-emoji" aria-hidden="true">🔤</div>
         <div class="home-feature-label">Spelling Words</div>
       </button>
-      <input type="file" id="spelling-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
+      <input type="file" id="spelling-file-input" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
 
       <button class="home-feature-card" id="btn-together-start" aria-label="Read Together" style="background:linear-gradient(135deg, #5CD85A, #27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.3);">
         <div class="home-feature-emoji" aria-hidden="true">👫</div>
@@ -1258,7 +1258,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="home-feature-emoji" aria-hidden="true">📸</div>
         <div class="home-feature-label">My Own Reading</div>
       </button>
-      <input type="file" id="scan-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
+      <input type="file" id="scan-file-input" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
     </div>
 
     <!-- Vocabulary Words (full-width below grid) -->
@@ -1267,7 +1267,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <span class="home-wordbank-label" style="color:#fff;">Vocabulary Words</span>
       <span class="home-wordbank-badge" id="home-vocab-badge" style="background:rgba(255,255,255,0.25);color:#fff;"></span>
     </button>
-    <input type="file" id="vocab-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
+    <input type="file" id="vocab-file-input" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
 
     <!-- Word Bank (compact, secondary) -->
     <button class="home-wordbank-btn" id="btn-wordbank-home" aria-label="My Word Bank" style="justify-content:center;">
@@ -2443,7 +2443,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-icon" aria-hidden="true">📄</div>
         <div class="kid-action-label">Upload a Document</div>
       </button>
-      <input type="file" id="timed-scan-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
+      <input type="file" id="timed-scan-input" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, or text file — up to 500 words</p>
 
       <!-- Paste Text -->
@@ -2656,7 +2656,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ED</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2839,7 +2839,9 @@ async function readUploadedFile(file) {
 
   // Determine media type
   let mediaType = type;
-  if (!mediaType || mediaType === 'application/octet-stream') {
+  // HEIC/HEIF: iOS cameras produce these; browsers often report empty type
+  if (name.endsWith('.heic') || name.endsWith('.heif')) mediaType = 'image/heic';
+  else if (!mediaType || mediaType === 'application/octet-stream') {
     if (name.endsWith('.pdf'))  mediaType = 'application/pdf';
     else if (name.endsWith('.docx')) mediaType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     else if (name.endsWith('.doc'))  mediaType = 'application/msword';
@@ -2848,6 +2850,7 @@ async function readUploadedFile(file) {
   }
 
   const isImage = mediaType.startsWith('image/');
+  const isHeic  = mediaType === 'image/heic' || mediaType === 'image/heif';
   const isPdf   = mediaType === 'application/pdf';
   const isDoc   = mediaType.includes('word') || mediaType === 'application/msword';
   const isTxt   = mediaType === 'text/plain' || name.endsWith('.txt');
@@ -2855,8 +2858,8 @@ async function readUploadedFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    if (isImage) {
-      // Images: compress via canvas
+    if (isImage && !isHeic) {
+      // Standard images: compress via canvas for smaller payload
       reader.onload = () => {
         const img = new Image();
         img.onload = () => {
@@ -2876,6 +2879,17 @@ async function readUploadedFile(file) {
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
+    } else if (isHeic) {
+      // HEIC/HEIF: browsers can't decode these on canvas — send raw bytes to Claude vision API
+      // Claude's API accepts image/heic natively
+      reader.onload = () => {
+        const bytes = new Uint8Array(reader.result);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+        resolve({ fileBase64: btoa(binary), mediaType: 'image/heic', isImage: true });
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
     } else {
       // Non-image: read as ArrayBuffer, convert to base64
       reader.onload = () => {
