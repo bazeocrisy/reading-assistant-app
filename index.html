@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DS</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6947,7 +6947,7 @@ document.getElementById('btn-spelling-new').addEventListener('click', () => {
   const d = getData();
   const existingBtn = document.getElementById('btn-spell-source-existing');
   if (d.spellingLists && d.spellingLists.length > 0) {
-    existingBtn.style.display = 'block';
+    existingBtn.style.display = 'flex'; // F-3 fix: was 'block', button needs flex for icon layout
     const latest = d.spellingLists[d.spellingLists.length - 1];
     existingBtn.querySelector('.spell-existing-count').textContent = `${latest.words.length} word${latest.words.length !== 1 ? 's' : ''} saved`;
   } else {
@@ -7483,7 +7483,10 @@ let practiceRound = 1; // 1 = multiple choice, 2 = fill-in-the-blank
 let practiceTotalSteps = 0;
 let practiceCurrentStep = 0;
 
+let practiceSourceWords = []; // F-1 fix: canonical source for retry buttons
+
 function startSpellingPractice(words) {
+  practiceSourceWords = [...words]; // save before shuffle
   practiceWords = shuffleArray([...words]);
   practiceIndex = 0;
   practiceResults = [];
@@ -8003,8 +8006,11 @@ document.getElementById('btn-spell-retry-missed').addEventListener('click', () =
 });
 
 document.getElementById('btn-spell-retry-all').addEventListener('click', () => {
-  // Re-practice the same selected words
-  const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
+  // F-1 fix: use practiceSourceWords instead of stale spellingPickedWords
+  const selectedWords = practiceSourceWords.length > 0
+    ? practiceSourceWords
+    : spellingPickedWords.map(i => currentSpellingList.words[i]).filter(Boolean);
+  if (selectedWords.length === 0) return;
   startSpellingPractice(selectedWords);
 });
 
@@ -8015,7 +8021,11 @@ document.getElementById('btn-spell-results-done').addEventListener('click', () =
 
 // Take Quiz Now — quiz the same words they just practiced
 document.getElementById('btn-spell-take-quiz').addEventListener('click', () => {
-  const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
+  // F-1 fix: use practiceSourceWords instead of stale spellingPickedWords
+  const selectedWords = practiceSourceWords.length > 0
+    ? practiceSourceWords
+    : spellingPickedWords.map(i => currentSpellingList.words[i]).filter(Boolean);
+  if (selectedWords.length === 0) return;
   startSpellingQuiz(selectedWords);
 });
 
@@ -8032,7 +8042,10 @@ document.getElementById('btn-spelling-quiz').addEventListener('click', () => {
   openSpellingPicker();
 });
 
+let quizSourceWords = []; // F-1 fix: canonical source for quiz retry buttons
+
 function startSpellingQuiz(words, source) {
+  quizSourceWords = [...words]; // save before shuffle
   quizSource = source || 'spelling';
   // Update back map so nav bar Quit goes to the right place
   const quitTarget = quizSource === 'vocab' ? 'screen-vocab' : 'screen-spelling';
@@ -8226,7 +8239,11 @@ document.getElementById('btn-quiz-retry-missed').addEventListener('click', () =>
 });
 
 document.getElementById('btn-quiz-retry-all').addEventListener('click', () => {
-  const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
+  // F-1 fix: use quizSourceWords instead of stale spellingPickedWords
+  const selectedWords = quizSourceWords.length > 0
+    ? quizSourceWords
+    : spellingPickedWords.map(i => currentSpellingList.words[i]).filter(Boolean);
+  if (selectedWords.length === 0) return;
   startSpellingQuiz(selectedWords);
 });
 
@@ -8271,10 +8288,15 @@ let sentenceWords = [];
 let sentenceIndex = 0;
 let sentenceHintCache = {}; // word → example sentence from AI
 
+let sentenceActive = false;    // F-2/F-4: guards async fetches after quit
+let sentenceSubmitPending = false; // F-4: prevents double-submit race
+
 async function startSentenceMode(words) {
   sentenceWords = words;
   sentenceIndex = 0;
   sentenceHintCache = {};
+  sentenceActive = true;
+  sentenceSubmitPending = false;
   SCREEN_BACK_MAP['screen-spell-sentence'] = ['← Quit', 'screen-spelling'];
   showSentenceQuestion();
   show('screen-spell-sentence');
@@ -8362,6 +8384,7 @@ document.getElementById('sentence-input').addEventListener('input', () => {
 
 // Submit button
 document.getElementById('btn-sentence-submit').addEventListener('click', async () => {
+  if (sentenceSubmitPending) return; // F-4: block double-submit
   const word = sentenceWords[sentenceIndex];
   if (!word) return;
   const sentence = document.getElementById('sentence-input').value.trim();
@@ -8391,6 +8414,7 @@ document.getElementById('btn-sentence-submit').addEventListener('click', async (
     return;
   }
 
+  sentenceSubmitPending = true; // F-4: lock until response or error
   document.getElementById('sentence-input').disabled = true;
   document.getElementById('btn-sentence-submit').style.display = 'none';
   document.getElementById('sentence-loading').style.display = 'block';
@@ -8425,10 +8449,14 @@ Rules:
       result = { tier: 'almost', tip: 'Good try! Make sure you used the word in your sentence.' };
     }
 
+    sentenceSubmitPending = false; // F-4: unlock
+    if (!sentenceActive) return;    // F-2: user quit while fetch was running
     document.getElementById('sentence-loading').style.display = 'none';
     showSentenceFeedback(result.tier, result.tip, sentence);
 
   } catch(e) {
+    sentenceSubmitPending = false;
+    if (!sentenceActive) return;    // F-2: user quit during error path too
     document.getElementById('sentence-loading').style.display = 'none';
     document.getElementById('sentence-input').disabled = false;
     document.getElementById('btn-sentence-submit').style.display = 'block';
@@ -8488,6 +8516,7 @@ function showSentenceFeedback(tier, tip, sentence) {
 
 // Try Again
 document.getElementById('btn-sentence-try-again').addEventListener('click', () => {
+  sentenceSubmitPending = false; // F-4: allow re-submit after try again
   document.getElementById('sentence-input').disabled = false;
   document.getElementById('sentence-input').value = '';
   document.getElementById('sentence-input').style.borderColor = 'var(--border)';
@@ -8509,6 +8538,8 @@ function showSentenceComplete() {
 
 // Quit
 document.getElementById('btn-sentence-quit').addEventListener('click', () => {
+  sentenceActive = false;      // F-2: stop any in-flight fetch from updating UI
+  sentenceSubmitPending = false;
   show('screen-spelling');
 });
 
