@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DM</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -8277,10 +8277,20 @@ document.getElementById('btn-sentence-submit').addEventListener('click', async (
   // Content safety check before sending to AI
   const sentenceSafety = checkContentSafety(sentence);
   if (!sentenceSafety.safe) {
-    document.getElementById('sentence-input').style.borderColor = 'var(--coral)';
-    document.getElementById('sentence-char-hint').textContent = '⚠️ Please use kind words in your sentence!';
     document.getElementById('sentence-input').value = '';
-    document.getElementById('sentence-input').focus();
+    document.getElementById('sentence-input').style.borderColor = 'var(--coral)';
+    // Show big Bookie warning in the feedback panel
+    const fb = document.getElementById('sentence-feedback');
+    fb.className = '';
+    fb.style.cssText = 'display:block;margin-top:14px;border-radius:16px;padding:20px;text-align:center;background:linear-gradient(135deg,#fff0f0,#ffe5e5);border:3px solid var(--coral);';
+    document.getElementById('sentence-feedback-icon').textContent = '🦉';
+    document.getElementById('sentence-feedback-tier').textContent = 'Oops! Kind words only!';
+    document.getElementById('sentence-feedback-tier').style.color = '#e74c3c';
+    document.getElementById('sentence-feedback-tip').textContent = 'Bookie only reads kind sentences. Try again with nice words! 😊';
+    document.getElementById('btn-sentence-try-again').style.display = 'inline-flex';
+    document.getElementById('btn-sentence-submit').style.display = 'none';
+    document.getElementById('sentence-nav').style.display = 'none';
+    document.getElementById('sentence-char-hint').textContent = '';
     return;
   }
 
