@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EF</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EG</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1617,7 +1617,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div style="font-size:2.5rem;margin-bottom:4px;">📸</div>
       <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Upload a Reading Passage</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Take a photo or type it in!</p>
-      <input type="file" id="host-passage-file" accept="image/*" style="display:none;">
+      <input type="file" id="host-passage-file" accept="image/*,.heic,.heif" style="display:none;">
       <button class="btn-main btn-purple" id="btn-upload-passage" style="font-size:1.1rem;margin-bottom:8px;">📷 Take Photo or Upload</button>
       <div id="host-passage-status" style="display:none;text-align:center;margin:8px 0;font-weight:700;color:var(--muted);"></div>
       <div style="text-align:center;color:#7A8A9A;font-weight:700;font-size:0.85rem;margin:12px 0 8px;">— or type it in —</div>
@@ -2656,7 +2656,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EF</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EG</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4429,7 +4429,31 @@ async function processUploadedFile(file) {
     if (!data.text) throw new Error('No text found in PDF');
     rawText = data.text.trim();
 
-  // 3) Images — compress and send to OCR (existing flow)
+  // 3) HEIC/HEIF — send raw bytes; Cloud Function converts with heic-convert server-side
+  } else if (name.endsWith('.heic') || name.endsWith('.heif') || type === 'image/heic' || type === 'image/heif') {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const bytes = new Uint8Array(reader.result);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+        resolve(btoa(binary));
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+
+    const response = await fetch(CF_OCR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/heic' })
+    });
+    if (!response.ok) throw new Error('Scan failed: ' + response.status);
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found in image');
+    rawText = data.text.trim();
+
+  // 4) Images — compress and send to OCR (existing flow)
   } else {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();

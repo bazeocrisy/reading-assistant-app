@@ -1,7 +1,7 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const {defineSecret} = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
-const sharp = require("sharp");
+const heicConvert = require("heic-convert");
 
 const anthropicKey = defineSecret("ANTHROPIC_API_KEY");
 
@@ -65,7 +65,7 @@ exports.generateStory = onRequest(
 
 // ── Extract Text from Image (OCR via Claude Vision) ──────
 exports.extractText = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "512MiB"},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -82,8 +82,8 @@ exports.extractText = onRequest(
       let finalMediaType = mediaType || "image/jpeg";
       if (finalMediaType === "image/heic" || finalMediaType === "image/heif") {
         const inputBuffer = Buffer.from(imageBase64, "base64");
-        const jpegBuffer = await sharp(inputBuffer).jpeg({ quality: 85 }).toBuffer();
-        finalBase64 = jpegBuffer.toString("base64");
+        const jpegBuffer = await heicConvert({ buffer: inputBuffer, format: "JPEG", quality: 0.85 });
+        finalBase64 = Buffer.from(jpegBuffer).toString("base64");
         finalMediaType = "image/jpeg";
         logger.info("Converted HEIC to JPEG for Claude vision");
       }      const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -140,7 +140,7 @@ exports.extractText = onRequest(
 
 // ── Extract Spelling Words from Image (OCR + AI parsing) ──
 exports.extractSpellingWords = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "512MiB"},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -157,8 +157,8 @@ exports.extractSpellingWords = onRequest(
       let finalMediaType = mediaType || "image/jpeg";
       if (finalMediaType === "image/heic" || finalMediaType === "image/heif") {
         const inputBuffer = Buffer.from(imageBase64, "base64");
-        const jpegBuffer = await sharp(inputBuffer).jpeg({ quality: 85 }).toBuffer();
-        finalBase64 = jpegBuffer.toString("base64");
+        const jpegBuffer = await heicConvert({ buffer: inputBuffer, format: "JPEG", quality: 0.85 });
+        finalBase64 = Buffer.from(jpegBuffer).toString("base64");
         finalMediaType = "image/jpeg";
         logger.info("Converted HEIC to JPEG for Claude vision");
       }      const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -201,6 +201,7 @@ Important:
 - Red words / sight words / tricky words should have isRedWord: true
 - Preserve the exact spelling from the image
 - Do NOT include titles, headers, or instructions — only the actual word list items
+- If a word has a line through it (strikethrough), still include it — read the word underneath the line carefully
 - If the image is blank, black, unreadable, blurry, or contains no visible words, return exactly: []
 - Return ONLY the JSON array, nothing else`,
               },
