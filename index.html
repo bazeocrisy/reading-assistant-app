@@ -1222,7 +1222,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DG</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DJ</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2594,7 +2594,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DG</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DJ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6749,6 +6749,9 @@ function loadSightWordSetFromWords(source, grade, selectedEntries) {
   const gradeNames = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade' };
   const loadingEl = document.getElementById('spelling-loading');
 
+  // Sync S.grade so GRADE_SPEED_DEFAULTS picks up the right speed
+  S.grade = grade;
+
   show('screen-spelling');
   loadingEl.style.display = 'block';
   document.getElementById('spelling-word-list').innerHTML = '';
@@ -6844,7 +6847,7 @@ document.getElementById('btn-spelling-new').addEventListener('click', () => {
   if (d.spellingLists && d.spellingLists.length > 0) {
     existingBtn.style.display = 'block';
     const latest = d.spellingLists[d.spellingLists.length - 1];
-    existingBtn.querySelector('.kid-action-label').textContent = `View My Current Words (${latest.words.length})`;
+    existingBtn.querySelector('.spell-existing-count').textContent = `${latest.words.length} word${latest.words.length !== 1 ? 's' : ''} saved`;
   } else {
     existingBtn.style.display = 'none';
   }
@@ -6990,10 +6993,12 @@ function renderSpellingWords(list) {
   // Show word count
   document.getElementById('spelling-word-count').textContent = list.words.length;
 
-  // Show date
-  const d = new Date(list.date);
-  const options = { month: 'long', day: 'numeric', year: 'numeric' };
-  weekLabel.textContent = `Uploaded ${d.toLocaleDateString('en-US', options)}`;
+  // Show date — only use "Uploaded" label for user-uploaded lists (not Dolch/Fry)
+  if (!weekLabel.textContent) {
+    const d = new Date(list.date);
+    const options = { month: 'long', day: 'numeric', year: 'numeric' };
+    weekLabel.textContent = `Uploaded ${d.toLocaleDateString('en-US', options)}`;
+  }
 
   // Render word cards
   listEl.innerHTML = '';
@@ -7073,6 +7078,7 @@ function renderSpellingWords(list) {
       const data = getData();
       const savedList = data.spellingLists.find(l => l.id === list.id);
       if (savedList) {
+        // Saved list (user-uploaded) — persist change
         savedList.words = savedList.words.filter(sw => sw.word !== w.word);
         saveData(data);
         list.words = savedList.words;
@@ -7082,6 +7088,17 @@ function renderSpellingWords(list) {
           renderSpellingWords({ words: [], id: list.id, date: list.date });
         } else {
           renderSpellingWords(savedList);
+        }
+      } else {
+        // In-memory list (Dolch/Fry) — remove from currentSpellingList only
+        list.words = list.words.filter(sw => sw.word !== w.word);
+        if (currentSpellingList && currentSpellingList.id === list.id) {
+          currentSpellingList.words = list.words;
+        }
+        if (list.words.length === 0) {
+          renderSpellingWords({ words: [], id: list.id, date: list.date });
+        } else {
+          renderSpellingWords(list);
         }
       }
     });
@@ -7454,7 +7471,7 @@ async function sayWordForPractice(word) {
     if (data.audioBase64) {
       if (dictAudio) { dictAudio.pause(); }
       dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-      dictAudio.playbackRate = 0.72;
+      dictAudio.playbackRate = S.spellingSpeed || S.speed || 0.9;
       dictAudio.volume = 1.0;
       dictAudio.play();
       return;
@@ -10000,7 +10017,7 @@ function openSpellingStudyMode() {
   const cache = getDictCache();
 
   currentSpellingList.words.forEach((w, i) => {
-    const cacheKey = `${w.word}_${currentSpellingList.grade || '2'}`;
+    const cacheKey = `${w.word}_${currentSpellingList.grade || S.grade || '2'}`;
     const cachedDef = cache[cacheKey];
 
     const card = document.createElement('div');
@@ -10019,8 +10036,12 @@ function openSpellingStudyMode() {
     `;
 
     card.addEventListener('click', () => {
-      // Show definition popup (which auto-reads the word + definition)
-      showDictionaryPopup(w.word, -1);
+      // Use rich popup for Dolch/Fry words, standard dict popup for others
+      if (w.sightData) {
+        showSightWordPopup(w.sightData);
+      } else {
+        showDictionaryPopup(w.word, -1);
+      }
     });
 
     listEl.appendChild(card);
