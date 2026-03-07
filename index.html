@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DQ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DR</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DQ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DR</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7612,7 +7612,38 @@ async function sayWordForPractice(word) {
 }
 
 // ── Smart Distractor Generation (look-alike words) ──────
+// Curated confusables for short Dolch/Fry words where the distractor engine fails
+const SHORT_WORD_CONFUSABLES = {
+  'a':['an','at','as'], 'i':['in','it','if'],
+  'an':['and','am','in'], 'at':['as','an','it'], 'in':['is','it','an'],
+  'is':['it','in','if'], 'it':['is','in','at'], 'if':['is','it','in'],
+  'am':['an','as','and'], 'as':['at','an','is'], 'be':['by','me','he'],
+  'by':['be','my','buy'], 'do':['go','to','so'], 'go':['do','so','to'],
+  'he':['me','be','she'], 'me':['he','be','my'], 'my':['me','by','may'],
+  'no':['not','now','on'], 'of':['or','off','on'], 'on':['or','one','in'],
+  'or':['of','on','our'], 'so':['do','go','to'], 'to':['do','go','too'],
+  'up':['us','use','cup'], 'us':['up','use','as'], 'we':['me','be','he'],
+  'and':['an','end','ant'], 'are':['art','arm','ore'], 'but':['cut','put','bus'],
+  'can':['ran','man','cap'], 'did':['dig','dim','lid'], 'for':['far','fur','form'],
+  'had':['has','hat','bad'], 'has':['had','was','hat'], 'her':['here','him','his'],
+  'him':['his','her','hit'], 'his':['him','hit','this'], 'how':['now','show','who'],
+  'its':['it','sits','bits'], 'let':['set','get','led'], 'may':['say','day','way'],
+  'not':['note','nor','got'], 'now':['how','low','know'], 'old':['told','gold','cold'],
+  'one':['once','none','done'], 'our':['out','or','hour'], 'out':['our','oat','cut'],
+  'own':['on','owe','won'], 'put':['but','cut','pun'], 'ran':['run','can','pan'],
+  'run':['ran','sun','fun'], 'say':['may','pay','sad'], 'see':['set','sea','bee'],
+  'she':['the','he','shed'], 'the':['they','then','thee'], 'too':['to','top','tool'],
+  'two':['to','too','twin'], 'use':['us','used','fuse'], 'was':['has','as','saw'],
+  'who':['how','what','whose'], 'why':['way','what','who'], 'yes':['yet','set','yell'],
+  'yet':['yes','get','set'], 'you':['your','they','your'],
+};
+
 function generateSmartChoices(correctWord) {
+  // For short words, use the curated confusables table for meaningful distractors
+  if (SHORT_WORD_CONFUSABLES[correctWord]) {
+    return shuffleArray([correctWord, ...SHORT_WORD_CONFUSABLES[correctWord]]);
+  }
+
   const distractors = new Set();
   let attempts = 0;
 
