@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DS</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DT</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DS</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DT</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6899,7 +6899,7 @@ document.getElementById('btn-spell-type-go').addEventListener('click', () => {
     return;
   }
   document.getElementById('spell-type-textarea').style.borderColor = 'var(--border)';
-  const words = raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+  const words = [...new Set(raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0))]; // L-1: dedup
   if (words.length === 0) {
     document.getElementById('spell-type-textarea').style.borderColor = 'var(--coral)';
     return;
@@ -7083,7 +7083,7 @@ function renderSpellingWords(list) {
   if (spellControls) {
     spellControls.style.display = list.words.length > 0 ? 'block' : 'none';
     const gradeSpeed = (typeof GRADE_SPEED_DEFAULTS !== 'undefined')
-      ? (GRADE_SPEED_DEFAULTS[S.grade] || 0.9) : 0.9;
+      ? (GRADE_SPEED_DEFAULTS[list.grade || S.grade] || 0.9) : 0.9; // L-4: prefer list.grade
     const slider = document.getElementById('spell-list-speed-slider');
     const display = document.getElementById('spell-list-speed-display');
     if (slider) slider.value = gradeSpeed;
@@ -7235,8 +7235,20 @@ function renderSpellingWords(list) {
     listEl.appendChild(card);
 
     // Queue cards that need definitions
-    if (!definition) {
+    // L-2: Dolch/Fry words already have sightData.definition — no need to batch-fetch
+    if (!definition && !w.sightData) {
       cardsNeedingDefs.push({ word: w.word, card });
+    } else if (!definition && w.sightData && w.sightData.definition) {
+      // Use the built-in definition immediately and cache it
+      const defEl = card.querySelector('.spelling-word-def');
+      if (defEl) {
+        defEl.style.fontStyle = 'normal';
+        defEl.textContent = w.sightData.definition;
+      }
+      const cache = getDictCache();
+      const cacheKey = `${w.word}_${S.grade}`;
+      cache[cacheKey] = w.sightData.definition;
+      saveDictCache(cache);
     }
   });
 
@@ -8000,8 +8012,9 @@ function showPracticeResults() {
 
 // Results screen buttons
 document.getElementById('btn-spell-retry-missed').addEventListener('click', () => {
-  const missedWordNames = practiceResults.filter(r => !r.correct).map(r => r.word);
-  const missedWordObjects = currentSpellingList.words.filter(w => missedWordNames.includes(w.word));
+  const missedWordNames = [...new Set(practiceResults.filter(r => !r.correct).map(r => r.word))]; // L-3: dedup names
+  const missedWordObjects = practiceSourceWords.filter(w => missedWordNames.includes(w.word)); // L-3: use source, not mutated list
+  if (missedWordObjects.length === 0) return; // L-3: guard empty
   startSpellingPractice(missedWordObjects);
 });
 
