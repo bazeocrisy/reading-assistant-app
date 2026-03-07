@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EQ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ER</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2669,7 +2669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EQ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ER</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7486,6 +7486,7 @@ async function fetchDefinitionsBatch(queue) {
 
 // ── Spelling Word Picker ─────────────────────────────────
 let spellingPickedWords = [];
+let spellingPickerSource = []; // S-2 fix: snapshot of words at picker open time
 let spellingPracticeMode = 'practice'; // 'practice' or 'test' (future)
 
 document.getElementById('btn-spelling-practice').addEventListener('click', () => {
@@ -7496,6 +7497,7 @@ document.getElementById('btn-spelling-practice').addEventListener('click', () =>
 
 function openSpellingPicker() {
   spellingPickedWords = [];
+  spellingPickerSource = [...currentSpellingList.words]; // S-2 fix: snapshot before render
   const listEl = document.getElementById('spell-picker-list');
   listEl.innerHTML = '';
 
@@ -7516,7 +7518,7 @@ function openSpellingPicker() {
     b.classList.toggle('sel-voice', b.dataset.voice === S.voiceGender);
   });
 
-  currentSpellingList.words.forEach((w, idx) => {
+  spellingPickerSource.forEach((w, idx) => {
     const row = document.createElement('div');
     row.className = 'spell-picker-word';
     row.dataset.idx = idx;
@@ -7564,13 +7566,13 @@ function updatePickerCount() {
 
 function updateSelectAllBtn() {
   const btn = document.getElementById('btn-spell-select-all');
-  const allSelected = spellingPickedWords.length === currentSpellingList.words.length;
+  const allSelected = spellingPickedWords.length === spellingPickerSource.length; // S-2 fix
   btn.classList.toggle('all-selected', allSelected);
   btn.textContent = allSelected ? '✓ All Selected' : 'Select All';
 }
 
 document.getElementById('btn-spell-select-all').addEventListener('click', () => {
-  const allSelected = spellingPickedWords.length === currentSpellingList.words.length;
+  const allSelected = spellingPickedWords.length === spellingPickerSource.length; // S-2 fix
   const rows = document.querySelectorAll('#spell-picker-list .spell-picker-word');
 
   if (allSelected) {
@@ -7582,7 +7584,7 @@ document.getElementById('btn-spell-select-all').addEventListener('click', () => 
     });
   } else {
     // Select all
-    spellingPickedWords = currentSpellingList.words.map((_, i) => i);
+    spellingPickedWords = spellingPickerSource.map((_, i) => i); // S-2 fix
     rows.forEach(row => {
       row.classList.add('picked');
       row.querySelector('.spell-picker-check').textContent = '✓';
@@ -7640,7 +7642,7 @@ if (spellListSlider) {
 
 document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
   if (spellingPickedWords.length < 1) return;
-  const selectedWords = spellingPickedWords.map(i => currentSpellingList.words[i]);
+  const selectedWords = spellingPickedWords.map(i => spellingPickerSource[i]); // S-2 fix
   if (spellingPracticeMode === 'quiz') {
     startSpellingQuiz(selectedWords);
   } else if (spellingPracticeMode === 'games') {
@@ -7684,7 +7686,7 @@ function showPracticeQuestion() {
       // Move to round 2: fill-in-the-blank
       practiceRound = 2;
       practiceIndex = 0;
-      practiceWords = shuffleArray([...practiceWords]); // reshuffle for round 2
+      practiceWords = shuffleArray([...practiceSourceWords]); // S-3 fix: reshuffle from original source, not Round 1 result
       showPracticeQuestion();
       return;
     } else {
@@ -8355,6 +8357,7 @@ function submitQuizAnswer() {
     if (savedWord) {
       savedWord.practiced = (savedWord.practiced || 0) + 1;
       if (isCorrect) savedWord.mastered = true;
+      else savedWord.mastered = false; // S-7 fix: incorrect quiz answer resets mastery for accurate grant reporting
     }
     saveData(d);
   }
