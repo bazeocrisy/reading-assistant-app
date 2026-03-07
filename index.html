@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DU</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6783,6 +6783,7 @@ document.getElementById('btn-spell-source-existing').addEventListener('click', (
   const d = getData();
   if (d.spellingLists && d.spellingLists.length > 0) {
     currentSpellingList = d.spellingLists[d.spellingLists.length - 1];
+    document.getElementById('spelling-week-label').textContent = ''; // U-1: clear stale label before render
     renderSpellingWords(currentSpellingList);
     show('screen-spelling');
   }
@@ -8322,7 +8323,7 @@ function showSentenceQuestion() {
 
   // Progress
   document.getElementById('sentence-progress-label').textContent = `${sentenceIndex + 1} / ${total}`;
-  document.getElementById('sentence-progress-bar').style.width = `${(sentenceIndex / total) * 100}%`;
+  document.getElementById('sentence-progress-bar').style.width = `${((sentenceIndex + 1) / total) * 100}%`; // U-3: start at >0% on word 1
 
   // Word
   document.getElementById('sentence-target-word').textContent = word.word;
@@ -8337,9 +8338,16 @@ function showSentenceQuestion() {
   document.getElementById('sentence-loading').style.display = 'none';
   document.getElementById('sentence-hint-box').style.display = 'none';
   document.getElementById('sentence-hint-text').textContent = '';
-  document.getElementById('btn-sentence-hint').style.display = 'inline-flex';
-  document.getElementById('btn-sentence-hint').textContent = '💡 Give Me a Hint';
-  document.getElementById('btn-sentence-hint').disabled = false;
+  // U-4: if this word already has a cached hint, show it immediately
+  if (sentenceHintCache[word.word]) {
+    document.getElementById('btn-sentence-hint').style.display = 'none';
+    document.getElementById('sentence-hint-text').textContent = sentenceHintCache[word.word];
+    document.getElementById('sentence-hint-box').style.display = 'block';
+  } else {
+    document.getElementById('btn-sentence-hint').style.display = 'inline-flex';
+    document.getElementById('btn-sentence-hint').textContent = '💡 Give Me a Hint';
+    document.getElementById('btn-sentence-hint').disabled = false;
+  }
   document.getElementById('btn-sentence-submit').style.display = 'block';
   document.getElementById('btn-sentence-try-again').style.display = 'none';
   document.getElementById('sentence-nav').style.display = 'none';
