@@ -591,6 +591,9 @@ body.bedtime .spell-select-all.all-selected { background: #8a6a3a; color: #fff; 
 .spell-practice-hear:active { transform: scale(0.95); }
 .spell-practice-hint { font-size: 0.88rem; font-weight: 800; color: var(--muted); margin-top: 8px; }
 .spell-practice-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+.sentence-feedback-perfect { background: linear-gradient(135deg,#EFFFF4,#d4f8e8); border: 2.5px solid var(--green); }
+.sentence-feedback-almost  { background: linear-gradient(135deg,#FFFBE6,#fff3cd); border: 2.5px solid #FFD93D; }
+.sentence-feedback-tryagain{ background: linear-gradient(135deg,#EEF4FF,#dce8ff); border: 2.5px solid #74b9ff; }
 .spell-choice-btn { padding: 16px 12px; border-radius: 16px; border: 3px solid var(--border); background: var(--section); font-family: 'Fredoka', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); cursor: pointer; transition: all 0.2s; text-align: center; min-height: 56px; display: flex; align-items: center; justify-content: center; }
 .spell-choice-btn:active { transform: scale(0.96); }
 .spell-choice-btn.correct { border-color: var(--green); background: #EFFFF4; color: #1B7A3E; animation: choicePop 0.3s ease; }
@@ -1222,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DJ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DK</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1976,6 +1979,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="btn-main btn-purple" id="btn-spelling-practice" style="font-size:0.9rem;">🎯 Let's Practice!</button>
         <button class="btn-main btn-coral" id="btn-spelling-quiz" style="font-size:0.9rem;">📝 Test Me!</button>
         <button class="btn-main btn-yellow" id="btn-spelling-games" style="font-size:0.9rem;">🎮 Play a Game!</button>
+        <button class="btn-main btn-teal" id="btn-spelling-sentence" style="font-size:0.9rem;background:linear-gradient(135deg,#00b894,#00cec9);">✏️ Write a Sentence!</button>
         <button id="btn-spelling-done" style="display:none;"></button>
       </div>
     </div>
@@ -2048,6 +2052,63 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <button class="btn-main btn-coral" id="btn-spell-take-quiz" style="font-size:1rem;margin-top:10px;">📝 Take Quiz Now</button>
       <button class="btn-main btn-green" id="btn-spell-retry-all" style="font-size:1rem;margin-top:10px;">🎯 Practice Again</button>
       <button class="btn-main btn-outline" id="btn-spell-results-done" style="display:none;">← Back to Words</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Write a Sentence -->
+  <div class="screen" id="screen-spell-sentence">
+    <div class="card">
+      <!-- Progress bar -->
+      <div class="spell-practice-progress">
+        <div class="spell-practice-label" id="sentence-progress-label">1 / 5</div>
+        <div class="spell-practice-bar-wrap"><div class="spell-practice-bar" id="sentence-progress-bar" style="width:0%"></div></div>
+      </div>
+
+      <!-- Word display -->
+      <div style="text-align:center;margin:14px 0 8px;">
+        <div style="font-size:0.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Write a sentence using:</div>
+        <div id="sentence-target-word" style="font-size:2.2rem;font-weight:900;color:var(--purple);font-family:'Fredoka',sans-serif;"></div>
+        <button id="btn-sentence-hear" style="margin-top:6px;background:none;border:none;font-size:1.6rem;cursor:pointer;" title="Hear the word" aria-label="Hear the word">🔊</button>
+      </div>
+
+      <!-- Hint button + hint reveal -->
+      <div style="text-align:center;margin-bottom:12px;">
+        <button class="btn-main btn-outline" id="btn-sentence-hint" style="font-size:0.85rem;padding:8px 20px;width:auto;">💡 Give Me a Hint</button>
+        <div id="sentence-hint-box" style="display:none;margin-top:10px;background:linear-gradient(135deg,#fff9e6,#fff3cd);border:2px solid #FFD93D;border-radius:14px;padding:12px 16px;text-align:left;">
+          <div style="font-size:0.72rem;font-weight:800;color:#b8860b;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">💡 Bookie's Example:</div>
+          <div id="sentence-hint-text" style="font-size:0.95rem;font-weight:700;color:var(--ink);font-style:italic;"></div>
+        </div>
+      </div>
+
+      <!-- Text input -->
+      <textarea id="sentence-input" rows="3"
+        style="width:100%;border:2.5px solid var(--border);border-radius:16px;padding:14px;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:700;color:var(--ink);resize:none;background:var(--section);box-sizing:border-box;"
+        placeholder="Type your sentence here..." autocapitalize="sentences" spellcheck="false"></textarea>
+      <div id="sentence-char-hint" style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:3px;text-align:right;"></div>
+
+      <!-- Submit button -->
+      <button class="btn-main btn-green" id="btn-sentence-submit" style="font-size:1.05rem;margin-top:10px;">✅ Check My Sentence!</button>
+
+      <!-- Feedback panel (hidden until AI responds) -->
+      <div id="sentence-feedback" style="display:none;margin-top:14px;border-radius:16px;padding:16px;text-align:center;">
+        <div id="sentence-feedback-icon" style="font-size:2.2rem;margin-bottom:6px;"></div>
+        <div id="sentence-feedback-tier" style="font-size:1.1rem;font-weight:900;margin-bottom:6px;"></div>
+        <div id="sentence-feedback-tip" style="font-size:0.9rem;font-weight:700;color:var(--ink);margin-bottom:10px;line-height:1.5;"></div>
+        <button class="btn-main btn-outline" id="btn-sentence-try-again" style="font-size:0.9rem;width:auto;padding:10px 24px;display:none;">🔄 Try Again</button>
+      </div>
+
+      <!-- Loading state -->
+      <div id="sentence-loading" style="display:none;text-align:center;padding:18px 0;">
+        <div class="spin-circle" style="margin:0 auto 10px;width:32px;height:32px;border-width:4px;"></div>
+        <p style="font-weight:800;color:var(--muted);font-size:0.9rem;">Bookie is reading your sentence... 🦉</p>
+      </div>
+
+      <!-- Next / Done buttons -->
+      <div id="sentence-nav" style="display:none;margin-top:10px;display:none;">
+        <button class="btn-main btn-green" id="btn-sentence-next" style="font-size:1.05rem;">Next Word →</button>
+      </div>
+
+      <button class="btn-main btn-coral" id="btn-sentence-quit" style="font-size:0.85rem;margin-top:10px;display:none;">← Quit</button>
     </div>
   </div>
 
@@ -2594,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DJ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DK</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7217,6 +7278,8 @@ function openSpellingPicker() {
     pickerTitle.textContent = '📝 Which words do you want to be quizzed on?';
   } else if (spellingPracticeMode === 'games') {
     pickerTitle.textContent = '🎮 Which words do you want to play with?';
+  } else if (spellingPracticeMode === 'sentence') {
+    pickerTitle.textContent = '✏️ Which words do you want to write sentences for?';
   } else {
     pickerTitle.textContent = '🎯 Which words do you want to practice?';
   }
@@ -7357,6 +7420,8 @@ document.getElementById('btn-spell-picker-go').addEventListener('click', () => {
     gameSelectedWords = selectedWords;
     document.getElementById('game-picker-count').textContent = `Playing with ${selectedWords.length} word${selectedWords.length !== 1 ? 's' : ''}`;
     show('screen-game-picker');
+  } else if (spellingPracticeMode === 'sentence') {
+    startSentenceMode(selectedWords);
   } else {
     startSpellingPractice(selectedWords);
   }
@@ -8098,6 +8163,236 @@ document.getElementById('btn-spelling-games').addEventListener('click', () => {
   if (!currentSpellingList || !currentSpellingList.words.length) return;
   spellingPracticeMode = 'games';
   openSpellingPicker();
+});
+
+// ── Write a Sentence Mode ────────────────────────────────
+document.getElementById('btn-spelling-sentence').addEventListener('click', () => {
+  if (!currentSpellingList || !currentSpellingList.words.length) return;
+  spellingPracticeMode = 'sentence';
+  openSpellingPicker();
+});
+
+let sentenceWords = [];
+let sentenceIndex = 0;
+let sentenceHintCache = {}; // word → example sentence from AI
+
+async function startSentenceMode(words) {
+  sentenceWords = words;
+  sentenceIndex = 0;
+  sentenceHintCache = {};
+  SCREEN_BACK_MAP['screen-spell-sentence'] = ['← Quit', 'screen-spelling'];
+  showSentenceQuestion();
+  show('screen-spell-sentence');
+  document.getElementById('btn-sentence-quit').style.display = 'block';
+}
+
+function showSentenceQuestion() {
+  const word = sentenceWords[sentenceIndex];
+  const total = sentenceWords.length;
+
+  // Progress
+  document.getElementById('sentence-progress-label').textContent = `${sentenceIndex + 1} / ${total}`;
+  document.getElementById('sentence-progress-bar').style.width = `${(sentenceIndex / total) * 100}%`;
+
+  // Word
+  document.getElementById('sentence-target-word').textContent = word.word;
+
+  // Reset UI
+  document.getElementById('sentence-input').value = '';
+  document.getElementById('sentence-input').style.borderColor = 'var(--border)';
+  document.getElementById('sentence-input').disabled = false;
+  document.getElementById('sentence-feedback').style.display = 'none';
+  document.getElementById('sentence-loading').style.display = 'none';
+  document.getElementById('sentence-hint-box').style.display = 'none';
+  document.getElementById('sentence-hint-text').textContent = '';
+  document.getElementById('btn-sentence-hint').style.display = 'inline-flex';
+  document.getElementById('btn-sentence-hint').textContent = '💡 Give Me a Hint';
+  document.getElementById('btn-sentence-hint').disabled = false;
+  document.getElementById('btn-sentence-submit').style.display = 'block';
+  document.getElementById('btn-sentence-try-again').style.display = 'none';
+  document.getElementById('sentence-nav').style.display = 'none';
+  document.getElementById('sentence-char-hint').textContent = '';
+
+  // Auto-play word
+  setTimeout(() => sayWordForPractice(word.word), 300);
+}
+
+// Hear button
+document.getElementById('btn-sentence-hear').addEventListener('click', () => {
+  if (sentenceWords[sentenceIndex]) sayWordForPractice(sentenceWords[sentenceIndex].word);
+});
+
+// Hint button — fetch or show cached example sentence
+document.getElementById('btn-sentence-hint').addEventListener('click', async () => {
+  const word = sentenceWords[sentenceIndex];
+  if (!word) return;
+  const btn = document.getElementById('btn-sentence-hint');
+  btn.disabled = true;
+  btn.textContent = '💡 Loading hint...';
+
+  if (sentenceHintCache[word.word]) {
+    document.getElementById('sentence-hint-text').textContent = sentenceHintCache[word.word];
+    document.getElementById('sentence-hint-box').style.display = 'block';
+    btn.style.display = 'none';
+    return;
+  }
+
+  try {
+    const gradeLabel = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st grade', '2': '2nd grade', '3': '3rd grade' }[S.grade] || '2nd grade';
+    const prompt = `Write ONE simple example sentence for a ${gradeLabel} child using the word "${word.word}". The sentence should be easy to understand and age-appropriate. Return ONLY the sentence, nothing else.`;
+    const res = await fetch(CF_STORY, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grade: gradeLabel, topic: 'example sentence', wordCount: 20, instructions: prompt })
+    });
+    const data = await res.json();
+    const example = (data.story || '').trim().replace(/^["']+|["']+$/g, '');
+    sentenceHintCache[word.word] = example || `I can use the word ${word.word} today.`;
+    document.getElementById('sentence-hint-text').textContent = sentenceHintCache[word.word];
+    document.getElementById('sentence-hint-box').style.display = 'block';
+    btn.style.display = 'none';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '💡 Give Me a Hint';
+  }
+});
+
+// Live char hint
+document.getElementById('sentence-input').addEventListener('input', () => {
+  const val = document.getElementById('sentence-input').value.trim();
+  const hint = document.getElementById('sentence-char-hint');
+  hint.textContent = val.length < 5 ? 'Keep going! Write a full sentence.' : '';
+});
+
+// Submit button
+document.getElementById('btn-sentence-submit').addEventListener('click', async () => {
+  const word = sentenceWords[sentenceIndex];
+  if (!word) return;
+  const sentence = document.getElementById('sentence-input').value.trim();
+  if (!sentence || sentence.length < 4) {
+    document.getElementById('sentence-input').style.borderColor = 'var(--coral)';
+    document.getElementById('sentence-char-hint').textContent = 'Please write a full sentence first!';
+    return;
+  }
+
+  document.getElementById('sentence-input').disabled = true;
+  document.getElementById('btn-sentence-submit').style.display = 'none';
+  document.getElementById('sentence-loading').style.display = 'block';
+  document.getElementById('sentence-feedback').style.display = 'none';
+
+  try {
+    const gradeLabel = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st grade', '2': '2nd grade', '3': '3rd grade' }[S.grade] || '2nd grade';
+    const prompt = `You are a friendly reading tutor for a ${gradeLabel} child. The child was asked to write a sentence using the word "${word.word}". Their sentence is: "${sentence}"
+
+Check their sentence and respond with ONLY a valid JSON object (no markdown, no backticks) like this:
+{"tier":"perfect","tip":"Your message here."}
+
+Rules:
+- "tier" must be exactly one of: "perfect", "almost", "tryagain"
+- Use "perfect" if the word is used correctly and the sentence makes sense
+- Use "almost" if the word is present but used slightly incorrectly, OR if the sentence is grammatically off but the effort is good
+- Use "tryagain" if the word is missing OR the sentence doesn't make sense
+- "tip" should be one warm, encouraging sentence (max 20 words) appropriate for a ${gradeLabel} child. Be kind and specific.
+- For "perfect": celebrate and say something great about their sentence
+- For "almost": point out what was close and give a small nudge
+- For "tryagain": gently encourage and give a clear hint without giving the answer away`;
+
+    const res = await fetch(CF_STORY, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grade: gradeLabel, topic: 'sentence check', wordCount: 60, instructions: prompt })
+    });
+    const data = await res.json();
+    const raw = (data.story || '').trim().replace(/```json|```/g, '').trim();
+    let result;
+    try { result = JSON.parse(raw); } catch(e) {
+      // Fallback if JSON parse fails
+      result = { tier: 'almost', tip: 'Good try! Make sure you used the word in your sentence.' };
+    }
+
+    document.getElementById('sentence-loading').style.display = 'none';
+    showSentenceFeedback(result.tier, result.tip, sentence);
+
+  } catch(e) {
+    document.getElementById('sentence-loading').style.display = 'none';
+    document.getElementById('sentence-input').disabled = false;
+    document.getElementById('btn-sentence-submit').style.display = 'block';
+    document.getElementById('sentence-char-hint').textContent = 'Something went wrong — please try again.';
+  }
+});
+
+function showSentenceFeedback(tier, tip, sentence) {
+  const fb = document.getElementById('sentence-feedback');
+  const icon = document.getElementById('sentence-feedback-icon');
+  const tierEl = document.getElementById('sentence-feedback-tier');
+  const tipEl = document.getElementById('sentence-feedback-tip');
+  const tryAgainBtn = document.getElementById('btn-sentence-try-again');
+  const navEl = document.getElementById('sentence-nav');
+
+  // Remove old tier classes
+  fb.classList.remove('sentence-feedback-perfect','sentence-feedback-almost','sentence-feedback-tryagain');
+
+  if (tier === 'perfect') {
+    fb.classList.add('sentence-feedback-perfect');
+    icon.textContent = '🌟';
+    tierEl.textContent = 'Amazing sentence!';
+    tierEl.style.color = '#1B7A3E';
+    // Read sentence back on perfect
+    setTimeout(() => sayWordForPractice(sentence), 400);
+  } else if (tier === 'almost') {
+    fb.classList.add('sentence-feedback-almost');
+    icon.textContent = '💛';
+    tierEl.textContent = 'So close!';
+    tierEl.style.color = '#b8860b';
+    tryAgainBtn.style.display = 'inline-flex';
+  } else {
+    fb.classList.add('sentence-feedback-tryagain');
+    icon.textContent = '💙';
+    tierEl.textContent = 'Give it another try!';
+    tierEl.style.color = '#2980b9';
+    tryAgainBtn.style.display = 'inline-flex';
+  }
+
+  tipEl.textContent = tip;
+  fb.style.display = 'block';
+
+  // Show Next / Done button
+  const isLast = sentenceIndex >= sentenceWords.length - 1;
+  navEl.style.display = 'block';
+  const nextBtn = document.getElementById('btn-sentence-next');
+  nextBtn.textContent = isLast ? '🎉 All Done!' : 'Next Word →';
+  nextBtn.onclick = () => {
+    if (isLast) {
+      showSentenceComplete();
+    } else {
+      sentenceIndex++;
+      showSentenceQuestion();
+    }
+  };
+}
+
+// Try Again
+document.getElementById('btn-sentence-try-again').addEventListener('click', () => {
+  document.getElementById('sentence-input').disabled = false;
+  document.getElementById('sentence-input').value = '';
+  document.getElementById('sentence-input').style.borderColor = 'var(--border)';
+  document.getElementById('sentence-feedback').style.display = 'none';
+  document.getElementById('btn-sentence-submit').style.display = 'block';
+  document.getElementById('btn-sentence-try-again').style.display = 'none';
+  document.getElementById('sentence-nav').style.display = 'none';
+  document.getElementById('sentence-input').focus();
+});
+
+function showSentenceComplete() {
+  showAppModal({
+    icon: '🌟',
+    title: 'Sentence Star!',
+    message: `You wrote sentences for all ${sentenceWords.length} word${sentenceWords.length !== 1 ? 's' : ''}! Bookie is so proud of you! 🦉`,
+    buttons: [{ label: '← Back to Words', class: 'modal-green', action: () => show('screen-spelling') }]
+  });
+}
+
+// Quit
+document.getElementById('btn-sentence-quit').addEventListener('click', () => {
+  show('screen-spelling');
 });
 
 // Game picker buttons
@@ -9794,6 +10089,7 @@ const SCREEN_BACK_MAP = {
   'screen-spell-picker': ['← Back', 'screen-spelling'],
   'screen-spell-practice': ['← Quit', 'screen-spelling'],
   'screen-spell-results': ['← Back', 'screen-spelling'],
+  'screen-spell-sentence': ['← Quit', 'screen-spelling'],
   'screen-quiz-countdown': ['← Quit', 'screen-spelling'],
   'screen-quiz': ['← Quit', 'screen-spelling'],
   'screen-quiz-results': ['← Back', 'screen-spelling'],
