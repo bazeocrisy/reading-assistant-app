@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DU</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DV</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DU</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DV</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3164,6 +3164,12 @@ const BLOCKED_REGEX = new RegExp(
  * Check text for inappropriate content.
  * Returns { safe: true } or { safe: false, reason: string }
  */
+// I-1: HTML escape helper — prevents XSS when interpolating user word data into innerHTML
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function checkContentSafety(text) {
   if (!text || typeof text !== 'string') return { safe: true };
   const match = text.match(BLOCKED_REGEX);
@@ -6661,14 +6667,23 @@ let sightGroupGrade = '';  // grade key
 const GRADE_ICONS = { prek: '🧸', k: '🎨', '1': '⭐', '2': '🚀', '3': '🔥' };
 const GRADE_NAMES = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade' };
 
+// P-2: in-memory cache so dolch.json / fry.json are only fetched once per session
+const _sightJsonCache = {};
+
 document.querySelectorAll('.sight-grade-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const grade = btn.dataset.grade;
     const source = spellingWordSource;
     try {
-      const res = await fetch(`./${source}.json`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      let json;
+      if (_sightJsonCache[source]) {
+        json = _sightJsonCache[source]; // P-2: use cached JSON
+      } else {
+        const res = await fetch(`./${source}.json`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        json = await res.json();
+        _sightJsonCache[source] = json; // P-2: cache for this session
+      }
       const gradeWords = json[grade];
       if (!gradeWords || gradeWords.length === 0) throw new Error('no words for grade');
       sightGroupWords = gradeWords;
@@ -7985,13 +8000,13 @@ function showPracticeResults() {
     ${mcResults.map(r => `
       <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
         <span>${r.correct ? '✅' : '❌'}</span>
-        <span>${r.word}</span>
+        <span>${escapeHtml(r.word)}</span>
       </div>`).join('')}
     <div style="font-weight:800;font-size:0.85rem;color:#C47000;margin:12px 0 4px;">Spell It Out: ${fillCorrect}/${fillResults.length}</div>
     ${fillResults.map(r => `
       <div class="spell-result-item ${r.correct ? 'got-right' : 'got-wrong'}">
         <span>${r.correct ? '✅' : '❌'}</span>
-        <span>${r.word}</span>
+        <span>${escapeHtml(r.word)}</span>
       </div>`).join('')}
   `;
 
@@ -10491,11 +10506,11 @@ function openSpellingStudyMode() {
       <div class="spell-study-num">${i + 1}</div>
       <div style="flex:1;">
         <div>
-          <span class="spell-study-word">${w.word}</span>
+          <span class="spell-study-word">${escapeHtml(w.word)}</span>
           ${w.isRedWord ? '<span class="spell-study-badge">Tricky</span>' : ''}
         </div>
-        <div class="spell-study-syllables">${w.syllables || w.word}</div>
-        <div class="spell-study-def">${cachedDef || 'Tap to hear & learn'}</div>
+        <div class="spell-study-syllables">${escapeHtml(w.syllables || w.word)}</div>
+        <div class="spell-study-def">${escapeHtml(cachedDef) || 'Tap to hear & learn'}</div>
       </div>
       <div class="spell-study-speaker">🔊</div>
     `;
