@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ReadUp! — Transforming Youth Inc.</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.js"></script>
 <style>
   :root {
     /* ── Kid-First Warm Palette ── */
@@ -1225,7 +1226,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ED</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EE</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2656,7 +2657,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ED</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EE</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2880,13 +2881,36 @@ async function readUploadedFile(file) {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     } else if (isHeic) {
-      // HEIC/HEIF: browsers can't decode these on canvas — send raw bytes to Claude vision API
-      // Claude's API accepts image/heic natively
-      reader.onload = () => {
-        const bytes = new Uint8Array(reader.result);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-        resolve({ fileBase64: btoa(binary), mediaType: 'image/heic', isImage: true });
+      // HEIC/HEIF: convert to JPEG in-browser using heic2any before sending to Claude.
+      // Claude's vision API only accepts jpeg/png/gif/webp — it rejects image/heic.
+      reader.onload = async () => {
+        try {
+          const heic2anyFn = window.heic2any;
+          if (!heic2anyFn) throw new Error('HEIC converter not loaded');
+          const blob = new Blob([reader.result], { type: 'image/heic' });
+          const jpegBlob = await heic2anyFn({ blob, toType: 'image/jpeg', quality: 0.85 });
+          const converted = Array.isArray(jpegBlob) ? jpegBlob[0] : jpegBlob;
+          // Compress via canvas (same path as normal images)
+          const url = URL.createObjectURL(converted);
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const maxDim = 1600;
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+              else       { w = Math.round(w * maxDim / h); h = maxDim; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve({ fileBase64: canvas.toDataURL('image/jpeg', 0.85).split(',')[1], mediaType: 'image/jpeg', isImage: true });
+          };
+          img.onerror = reject;
+          img.src = url;
+        } catch (heicErr) {
+          reject(new Error('HEIC conversion failed: ' + heicErr.message));
+        }
       };
       reader.onerror = reject;
       reader.readAsArrayBuffer(file);
@@ -7087,11 +7111,12 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
   } catch (err) {
     console.error('Spelling extraction error:', err);
     document.getElementById('spelling-loading').style.display = 'none';
+    const isHeicErr = err.message && err.message.includes('HEIC');
     document.getElementById('spelling-word-list').innerHTML = `
       <div style="text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
-        <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo, or type your words instead.</p>
+        <p style="font-weight:800;color:#e74c3c;font-size:1rem;">${isHeicErr ? "Couldn't open that iPhone photo" : "Couldn't read those words"}</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">${isHeicErr ? "Try converting the photo to JPEG first, or type your words instead." : "Try again with a clearer photo, or type your words instead."}</p>
         <button class="btn-main" id="btn-spelling-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 Try Again</button>
       </div>`;
     document.getElementById('btn-spelling-retry-error').onclick = triggerSpellingUpload; // I-A fix: onclick overwrites itself, no stacking
