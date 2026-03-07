@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EK</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EL</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2667,7 +2667,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EK</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EL</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2820,6 +2820,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import heic2any from "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyCIiKxtE5YV8GV0Fk3HEAO46rEGKEuFfFc",
@@ -2843,34 +2844,55 @@ const CF_DOC = `${CF_BASE}/extractDocument`;
 
 // ── Shared file-type router ───────────────────────────────────
 // Returns { fileBase64, mediaType, isImage } for any uploaded file.
-// Handles: images, PDF, DOCX, DOC, TXT.
+// Handles: images (incl. HEIC), PDF, DOCX, DOC, TXT.
+// UNIFIED IMAGE PIPELINE: HEIC → heic2any browser convert → JPEG → canvas resize → OCR
 async function readUploadedFile(file) {
   const name = file.name.toLowerCase();
   const type = file.type;
 
+  // Size guard — prevent browser OOM on very large files
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error('Image too large. Please upload an image under 10MB.');
+  }
+
+  // HEIC detection (iOS cameras often report empty type)
+  const isHeic = type === 'image/heic' || type === 'image/heif' ||
+                 name.endsWith('.heic') || name.endsWith('.heif');
+
+  // Convert HEIC → JPEG blob in-browser BEFORE anything else
+  if (isHeic) {
+    try {
+      const jpegBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+      file = new File([jpegBlob], 'converted.jpg', { type: 'image/jpeg' });
+    } catch (e) {
+      throw new Error('Could not convert HEIC image. Try saving as JPG first.');
+    }
+  }
+
+  // Re-read type/name after possible conversion
+  const finalName = file.name.toLowerCase();
+  const finalType = file.type;
+
   // Determine media type
-  let mediaType = type;
-  // HEIC/HEIF: iOS cameras produce these; browsers often report empty type
-  if (name.endsWith('.heic') || name.endsWith('.heif')) mediaType = 'image/heic';
-  else if (!mediaType || mediaType === 'application/octet-stream') {
-    if (name.endsWith('.pdf'))  mediaType = 'application/pdf';
-    else if (name.endsWith('.docx')) mediaType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    else if (name.endsWith('.doc'))  mediaType = 'application/msword';
-    else if (name.endsWith('.txt'))  mediaType = 'text/plain';
+  let mediaType = finalType;
+  if (!mediaType || mediaType === 'application/octet-stream') {
+    if (finalName.endsWith('.pdf'))  mediaType = 'application/pdf';
+    else if (finalName.endsWith('.docx')) mediaType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    else if (finalName.endsWith('.doc'))  mediaType = 'application/msword';
+    else if (finalName.endsWith('.txt'))  mediaType = 'text/plain';
     else mediaType = 'image/jpeg';
   }
 
   const isImage = mediaType.startsWith('image/');
-  const isHeic  = mediaType === 'image/heic' || mediaType === 'image/heif';
   const isPdf   = mediaType === 'application/pdf';
   const isDoc   = mediaType.includes('word') || mediaType === 'application/msword';
-  const isTxt   = mediaType === 'text/plain' || name.endsWith('.txt');
+  const isTxt   = mediaType === 'text/plain' || finalName.endsWith('.txt');
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    if (isImage && !isHeic) {
-      // Standard images: compress via canvas for smaller payload
+    if (isImage) {
+      // ALL images (JPG, PNG, WebP — HEIC already converted above): compress via canvas
       reader.onload = () => {
         const img = new Image();
         img.onload = () => {
@@ -2890,17 +2912,6 @@ async function readUploadedFile(file) {
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
-    } else if (isHeic) {
-      // HEIC/HEIF: browsers can't decode these natively. Send raw bytes to the Cloud Function
-      // which uses sharp (server-side) to convert to JPEG before passing to Claude vision.
-      reader.onload = () => {
-        const bytes = new Uint8Array(reader.result);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-        resolve({ fileBase64: btoa(binary), mediaType: 'image/heic', isImage: true });
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
     } else {
       // Non-image: read as ArrayBuffer, convert to base64
       reader.onload = () => {
@@ -4475,6 +4486,24 @@ document.getElementById('btn-use-spelling').addEventListener('click', async () =
 const UPLOAD_WORD_LIMIT = 500;
 
 async function processUploadedFile(file) {
+  // Size guard
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error('Image too large. Please upload an image under 10MB.');
+  }
+
+  // HEIC → JPEG conversion in-browser before anything else
+  const isHeicFile = file.type === 'image/heic' || file.type === 'image/heif' ||
+                     file.name.toLowerCase().endsWith('.heic') ||
+                     file.name.toLowerCase().endsWith('.heif');
+  if (isHeicFile) {
+    try {
+      const jpegBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+      file = new File([jpegBlob], 'converted.jpg', { type: 'image/jpeg' });
+    } catch (e) {
+      throw new Error('Could not convert HEIC image. Try saving as JPG first.');
+    }
+  }
+
   const name = (file.name || '').toLowerCase();
   const type = (file.type || '').toLowerCase();
   let rawText = '';
@@ -4510,31 +4539,7 @@ async function processUploadedFile(file) {
     if (!data.text) throw new Error('No text found in PDF');
     rawText = data.text.trim();
 
-  // 3) HEIC/HEIF — send raw bytes; Cloud Function converts with heic-convert server-side
-  } else if (name.endsWith('.heic') || name.endsWith('.heif') || type === 'image/heic' || type === 'image/heif') {
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const bytes = new Uint8Array(reader.result);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-        resolve(btoa(binary));
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    });
-
-    const response = await fetch(CF_OCR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'image/heic' })
-    });
-    if (!response.ok) throw new Error('Scan failed: ' + response.status);
-    const data = await response.json();
-    if (!data.text) throw new Error('No text found in image');
-    rawText = data.text.trim();
-
-  // 4) Images — compress and send to OCR (existing flow)
+  // 3) Images (JPG, PNG, WebP, HEIC) — unified pipeline: HEIC converted in-browser first
   } else {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
