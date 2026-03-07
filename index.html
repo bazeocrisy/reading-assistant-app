@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EG</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EH</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2490,6 +2490,15 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 500 words from a document, email, or website</p>
 
+      <!-- Saved passage section — shown only when a passage exists in storage -->
+      <div id="own-saved-passage-area" style="display:none;margin-top:4px;">
+        <div style="border-top:2px dashed var(--border);margin:12px 0 14px;"></div>
+        <p style="font-weight:800;color:var(--muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📖 Saved Passage</p>
+        <div id="own-saved-passage-title" style="font-weight:800;font-size:0.95rem;color:var(--ink);margin-bottom:10px;"></div>
+        <button class="btn-main btn-green" id="btn-own-continue" style="font-size:0.95rem;margin-bottom:8px;">📖 Continue My Passage</button>
+        <button class="btn-main" id="btn-own-clear-passage" style="font-size:0.88rem;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;grid-column:1/-1;">🗑️ Clear Passage</button>
+      </div>
+
       <button class="btn-main btn-outline" id="btn-own-source-back" style="display:none;">← Back Home</button>
     </div>
   </div>
@@ -2656,7 +2665,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EG</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EH</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4075,6 +4084,13 @@ document.getElementById('btn-own-scan').addEventListener('click', () => {
   document.getElementById('scan-file-input').click();
 });
 
+// Refresh saved passage section whenever screen-own-source is shown
+const _ownSourceObserver = new MutationObserver(() => {
+  const el = document.getElementById('screen-own-source');
+  if (el && el.classList.contains('active')) refreshOwnSourceScreen();
+});
+_ownSourceObserver.observe(document.getElementById('screen-own-source'), { attributes: true, attributeFilter: ['class'] });
+
 // Own Reading: Source picker — Paste
 document.getElementById('btn-own-paste').addEventListener('click', () => {
   document.getElementById('own-paste-textarea').value = '';
@@ -4087,6 +4103,57 @@ document.getElementById('btn-own-paste').addEventListener('click', () => {
 // Own Reading: Source picker — Back
 document.getElementById('btn-own-source-back').addEventListener('click', () => {
   show('screen-pick');
+});
+
+// Show/hide saved passage area on screen-own-source
+function refreshOwnSourceScreen() {
+  const d = getData();
+  const area = document.getElementById('own-saved-passage-area');
+  const titleEl = document.getElementById('own-saved-passage-title');
+  if (d.ownPassage && d.ownPassage.text) {
+    const wordCount = d.ownPassage.text.split(/\s+/).length;
+    titleEl.textContent = (d.ownPassage.title || '📄 My Passage') + ' — ' + wordCount + ' words';
+    area.style.display = 'block';
+  } else {
+    area.style.display = 'none';
+  }
+}
+
+// Continue saved passage
+document.getElementById('btn-own-continue').addEventListener('click', () => {
+  const d = getData();
+  if (!d.ownPassage || !d.ownPassage.text) return;
+  S.isRace = false; S.myRole = null; S.isAIStory = false;
+  S.story = d.ownPassage.text;
+  S.storyTitle = d.ownPassage.title || '📄 My Passage';
+  S.category = 'scanned';
+  S.wordTarget = S.story.split(/\s+/).length;
+  recordStoryStart();
+  show('screen-read');
+  renderStory(S.storyTitle, S.story);
+  setupReadScreen();
+});
+
+// Clear saved passage
+document.getElementById('btn-own-clear-passage').addEventListener('click', () => {
+  showAppModal({
+    icon: '🗑️',
+    title: 'Clear Passage?',
+    message: 'This will remove your saved reading passage.',
+    buttons: [
+      {
+        label: '✅ Yes, Clear It',
+        class: 'modal-red',
+        action: () => {
+          const d = getData();
+          delete d.ownPassage;
+          saveData(d);
+          refreshOwnSourceScreen();
+        }
+      },
+      { label: '↩️ Cancel', class: 'modal-purple', action: () => {} }
+    ]
+  });
 });
 
 // Own Reading: Paste — live word count
@@ -4143,6 +4210,10 @@ document.getElementById('btn-own-paste-go').addEventListener('click', () => {
   S.category = 'pasted';
   S.wordTarget = text.split(/\s+/).length;
 
+  // Save passage to localStorage for "Continue" button
+  const _pd = getData(); _pd.ownPassage = { text: S.story, title: S.storyTitle }; saveData(_pd);
+  refreshOwnSourceScreen();
+
   recordStoryStart();
   show('screen-read');
   renderStory(S.storyTitle, S.story);
@@ -4176,6 +4247,10 @@ document.getElementById('scan-file-input').addEventListener('change', async (e) 
     S.category = 'scanned';
     S.wordTarget = S.story.split(/\s+/).length;
     S.isAIStory = false;
+
+    // Save passage to localStorage for "Continue" button
+    const _d = getData(); _d.ownPassage = { text: S.story, title: S.storyTitle }; saveData(_d);
+    refreshOwnSourceScreen();
 
     // Record in localStorage
     recordStoryStart();
