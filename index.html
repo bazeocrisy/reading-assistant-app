@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DW</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DY</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DW</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3106,6 +3106,14 @@ STORIES.friends = STORIES.friendship;
 
 // ── Helpers ───────────────────────────────────────────────
 function show(id) {
+  // F-C definitive fix: if navigating away from quiz countdown, always kill the interval
+  const prev = document.querySelector('.screen.active');
+  if (prev && prev.id === 'screen-quiz-countdown' && id !== 'screen-quiz-countdown') {
+    if (typeof quizCountdownInterval !== 'undefined' && quizCountdownInterval) {
+      clearInterval(quizCountdownInterval);
+      quizCountdownInterval = null;
+    }
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -10400,9 +10408,14 @@ document.getElementById('bar-back').addEventListener('click', () => {
     stopTTS();
   }
 
-  // Clean up room if backing out of together wizard to home
+  // F-C fix (real): clear quiz countdown interval if backing out during 3-2-1
   const activeScreen = document.querySelector('.screen.active');
   const activeId = activeScreen ? activeScreen.id : '';
+  if (activeId === 'screen-quiz-countdown') {
+    if (quizCountdownInterval) { clearInterval(quizCountdownInterval); quizCountdownInterval = null; }
+  }
+
+  // Clean up room if backing out of together wizard to home
   if (activeId === 'screen-together-room' && target === 'screen-pick') {
     if (S.roomRef) try { remove(S.roomRef); } catch(e) {}
     cleanupRoom();
