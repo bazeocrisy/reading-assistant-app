@@ -65,7 +65,7 @@ exports.generateStory = onRequest(
 
 // ── Extract Text from Image (OCR via Claude Vision) ──────
 exports.extractText = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "512MiB"},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "1GiB", timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -141,7 +141,7 @@ exports.extractText = onRequest(
 
 // ── Extract Spelling Words from Image (OCR + AI parsing) ──
 exports.extractSpellingWords = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "512MiB"},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "1GiB"},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
