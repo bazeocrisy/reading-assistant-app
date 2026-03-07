@@ -121,20 +121,20 @@ exports.extractText = onRequest(
       logger.info("extractText response type:", data.type);
 
       if (data.error) {
-        logger.error("extractText API error:", data.error);
-        return res.status(500).json({error: data.error.message || "API error"});
+        logger.error("extractText API error type:", data.error.type, "message:", data.error.message);
+        return res.status(500).json({error: data.error.message || "API error", errorType: data.error.type});
       }
 
       if (!data.content || !data.content[0] || !data.content[0].text) {
         logger.error("extractText unexpected response:", JSON.stringify(data));
-        return res.status(500).json({error: "Could not extract text"});
+        return res.status(500).json({error: "Could not extract text", raw: JSON.stringify(data).slice(0, 200)});
       }
 
       const text = data.content[0].text.trim();
       res.json({text});
     } catch (error) {
       logger.error("Error extracting text", error);
-      res.status(500).json({error: "Failed to extract text"});
+      res.status(500).json({error: "Failed to extract text", detail: error.message});
     }
   }
 );
