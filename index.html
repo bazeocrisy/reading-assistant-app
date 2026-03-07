@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DM</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DO</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2655,7 +2655,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DM</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DO</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6337,7 +6337,44 @@ function loadData() {
 }
 
 function saveData(d) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(d)); } catch(e) {}
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(d));
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      // Device storage full — try to free space and retry once
+      try {
+        // 1. Trim dict cache down to 100 entries
+        const cache = getDictCache();
+        const keys = Object.keys(cache);
+        if (keys.length > 100) {
+          keys.slice(0, keys.length - 100).forEach(k => delete cache[k]);
+          localStorage.setItem(DICT_CACHE_KEY, JSON.stringify(cache));
+        }
+        // 2. Trim old stories — keep only last 5
+        if (d.stories && d.stories.length > 5) {
+          d.stories = d.stories.slice(-5);
+        }
+        // 3. Trim old spelling lists — keep only last 3
+        if (d.spellingLists && d.spellingLists.length > 3) {
+          d.spellingLists = d.spellingLists.slice(-3);
+        }
+        // Retry save
+        localStorage.setItem(LS_KEY, JSON.stringify(d));
+      } catch(e2) {
+        // Still failing — show a gentle warning once per session
+        if (!window._storagWarnShown) {
+          window._storagWarnShown = true;
+          console.warn('ReadUp storage full:', e2);
+          showAppModal({
+            icon: '📦',
+            title: 'Almost out of space!',
+            message: "Your device is running low on storage. Some progress may not be saved. Ask a parent to free up space on your device.",
+            buttons: [{ label: 'OK', class: 'modal-purple', action: () => {} }]
+          });
+        }
+      }
+    }
+  }
 }
 
 function getData() {
@@ -6620,6 +6657,7 @@ let sightGroupWords = []; // all words for the chosen grade
 let sightGroupSource = ''; // 'dolch' or 'fry'
 let sightGroupGrade = '';  // grade key
 
+
 const GRADE_ICONS = { prek: '🧸', k: '🎨', '1': '⭐', '2': '🚀', '3': '🔥' };
 const GRADE_NAMES = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade' };
 
@@ -6627,21 +6665,24 @@ document.querySelectorAll('.sight-grade-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const grade = btn.dataset.grade;
     const source = spellingWordSource;
-    // Fetch JSON
     try {
       const res = await fetch(`./${source}.json`);
-      if (!res.ok) throw new Error('fetch failed');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       const gradeWords = json[grade];
-      if (!gradeWords || gradeWords.length === 0) throw new Error('no words');
+      if (!gradeWords || gradeWords.length === 0) throw new Error('no words for grade');
       sightGroupWords = gradeWords;
       sightGroupSource = source;
       sightGroupGrade = grade;
       showGroupPicker(source, grade, gradeWords);
     } catch (err) {
+      console.error('Sight word load error:', err);
       showAppModal({ icon: '😕', title: 'Oops!',
-        message: 'Could not load word list. Please try again.',
-        buttons: [{ label: 'OK', class: 'modal-purple', action: () => {} }]
+        message: `Could not load ${source === 'dolch' ? 'Dolch' : 'Fry'} words. Check your internet and try again.`,
+        buttons: [
+          { label: '🔄 Try Again', class: 'modal-green', action: () => btn.click() },
+          { label: 'Cancel', class: 'modal-purple', action: () => {} }
+        ]
       });
     }
   });
