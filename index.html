@@ -1225,7 +1225,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EM</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2667,7 +2667,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2820,7 +2820,17 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import heic2any from "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
+// heic2any loaded lazily on first HEIC upload (avoids blocking module init)
+let heic2any = null;
+async function loadHeic2any() {
+  if (!heic2any) {
+    try {
+      const mod = await import("https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js");
+      heic2any = mod.default || mod;
+    } catch(e) { heic2any = null; }
+  }
+  return heic2any;
+}
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyCIiKxtE5YV8GV0Fk3HEAO46rEGKEuFfFc",
@@ -2861,8 +2871,10 @@ async function readUploadedFile(file) {
 
   // Convert HEIC → JPEG blob in-browser BEFORE anything else
   if (isHeic) {
+    const converter = await loadHeic2any();
+    if (!converter) throw new Error('HEIC converter unavailable. Try saving as JPG first.');
     try {
-      const jpegBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+      const jpegBlob = await converter({ blob: file, toType: 'image/jpeg', quality: 0.9 });
       file = new File([jpegBlob], 'converted.jpg', { type: 'image/jpeg' });
     } catch (e) {
       throw new Error('Could not convert HEIC image. Try saving as JPG first.');
@@ -4496,8 +4508,10 @@ async function processUploadedFile(file) {
                      file.name.toLowerCase().endsWith('.heic') ||
                      file.name.toLowerCase().endsWith('.heif');
   if (isHeicFile) {
+    const converter = await loadHeic2any();
+    if (!converter) throw new Error('HEIC converter unavailable. Try saving as JPG first.');
     try {
-      const jpegBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+      const jpegBlob = await converter({ blob: file, toType: 'image/jpeg', quality: 0.9 });
       file = new File([jpegBlob], 'converted.jpg', { type: 'image/jpeg' });
     } catch (e) {
       throw new Error('Could not convert HEIC image. Try saving as JPG first.');
