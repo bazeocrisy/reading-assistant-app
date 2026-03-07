@@ -182,6 +182,7 @@ Important:
 - Red words / sight words / tricky words should have isRedWord: true
 - Preserve the exact spelling from the image
 - Do NOT include titles, headers, or instructions — only the actual word list items
+- If the image is blank, black, unreadable, blurry, or contains no visible words, return exactly: []
 - Return ONLY the JSON array, nothing else`,
               },
             ],
