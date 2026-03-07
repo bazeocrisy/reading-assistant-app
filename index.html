@@ -1197,7 +1197,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DF</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2554,7 +2554,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DF</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3725,7 +3725,7 @@ document.getElementById('btn-go-story-builder').addEventListener('click', () => 
 document.getElementById('btn-story-builder-back').addEventListener('click', () => show('screen-pick'));
 
 // ── Story Wizard (3-step: Grade → Length → Topic) ────────
-const GRADE_SPEED_DEFAULTS = { prek: 0.7, k: 0.8, "1": 0.9, "2": 0.9, "3": 1.0 };
+const GRADE_SPEED_DEFAULTS = { prek: 0.7, k: 0.8, "1": 0.7, "2": 0.9, "3": 0.9 };
 
 // Step 1: Grade — tap auto-advances to Step 2
 document.querySelectorAll('#screen-wiz-grade .wiz-grade-btn').forEach(btn => {
