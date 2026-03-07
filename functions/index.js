@@ -1,6 +1,7 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const {defineSecret} = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
+const sharp = require("sharp");
 
 const anthropicKey = defineSecret("ANTHROPIC_API_KEY");
 
@@ -76,7 +77,16 @@ exports.extractText = onRequest(
     }
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      // Convert HEIC/HEIF to JPEG — Claude vision API only accepts jpeg/png/gif/webp
+      let finalBase64 = imageBase64;
+      let finalMediaType = mediaType || "image/jpeg";
+      if (finalMediaType === "image/heic" || finalMediaType === "image/heif") {
+        const inputBuffer = Buffer.from(imageBase64, "base64");
+        const jpegBuffer = await sharp(inputBuffer).jpeg({ quality: 85 }).toBuffer();
+        finalBase64 = jpegBuffer.toString("base64");
+        finalMediaType = "image/jpeg";
+        logger.info("Converted HEIC to JPEG for Claude vision");
+      }      const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,8 +103,8 @@ exports.extractText = onRequest(
                 type: "image",
                 source: {
                   type: "base64",
-                  media_type: mediaType || "image/jpeg",
-                  data: imageBase64,
+                  media_type: finalMediaType,
+                  data: finalBase64,
                 },
               },
               {
@@ -142,7 +152,16 @@ exports.extractSpellingWords = onRequest(
     }
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      // Convert HEIC/HEIF to JPEG — Claude vision API only accepts jpeg/png/gif/webp
+      let finalBase64 = imageBase64;
+      let finalMediaType = mediaType || "image/jpeg";
+      if (finalMediaType === "image/heic" || finalMediaType === "image/heif") {
+        const inputBuffer = Buffer.from(imageBase64, "base64");
+        const jpegBuffer = await sharp(inputBuffer).jpeg({ quality: 85 }).toBuffer();
+        finalBase64 = jpegBuffer.toString("base64");
+        finalMediaType = "image/jpeg";
+        logger.info("Converted HEIC to JPEG for Claude vision");
+      }      const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -159,8 +178,8 @@ exports.extractSpellingWords = onRequest(
                 type: "image",
                 source: {
                   type: "base64",
-                  media_type: mediaType || "image/jpeg",
-                  data: imageBase64,
+                  media_type: finalMediaType,
+                  data: finalBase64,
                 },
               },
               {
