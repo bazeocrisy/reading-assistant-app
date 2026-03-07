@@ -173,6 +173,31 @@ header { text-align: center; padding: 24px 0 16px; }
   -webkit-appearance: none;
 }
 .wiz-topic-btn span { font-size: 1.5rem; }
+.group-pick-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border: 3px solid var(--border); border-radius: 16px;
+  background: var(--section); cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.group-pick-card.selected {
+  border-color: var(--green); background: #f0fff4;
+  box-shadow: 0 2px 12px rgba(39,174,96,0.15);
+}
+.group-pick-card:active { transform: scale(0.98); }
+.group-pick-checkbox {
+  width: 28px; height: 28px; border-radius: 8px; border: 3px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0; background: #fff;
+  transition: background 0.15s, border-color 0.15s;
+}
+.group-pick-card.selected .group-pick-checkbox {
+  background: var(--green); border-color: var(--green); color: #fff;
+}
+.group-pick-info { flex: 1; min-width: 0; }
+.group-pick-name { font-size: 1rem; font-weight: 900; color: var(--ink); margin-bottom: 2px; }
+.group-pick-preview { font-size: 0.78rem; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.group-pick-count { font-size: 0.75rem; font-weight: 800; color: var(--muted); flex-shrink: 0; }
 .wiz-topic-btn:active { transform: scale(0.94); }
 .wiz-topic-btn.wiz-picked {
   border-color: var(--purple); box-shadow: 0 4px 14px rgba(155,89,182,0.3);
@@ -1197,7 +1222,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DF</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD DG</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1848,6 +1873,21 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <button class="wiz-grade-btn sight-grade-btn" data-grade="2"    style="background:linear-gradient(135deg,#9B59B6,#8E44AD);"><span style="font-size:1.6rem;">🚀</span><span style="font-size:1.2rem;font-weight:900;">2nd Grade</span></button>
         <button class="wiz-grade-btn sight-grade-btn" data-grade="3"    style="background:linear-gradient(135deg,#E74C3C,#C0392B);"><span style="font-size:1.6rem;">🔥</span><span style="font-size:1.2rem;font-weight:900;">3rd Grade</span></button>
       </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Sight Word Group Picker -->
+  <div class="screen" id="screen-spell-group-pick">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2rem;margin-bottom:4px;" id="group-pick-icon">📖</div>
+      <div class="card-title" style="font-size:1.4rem;margin-bottom:2px;" id="group-pick-title">Pick your groups!</div>
+      <div style="color:var(--muted);font-size:0.83rem;margin-bottom:14px;" id="group-pick-subtitle">Check the groups you want to practice, then tap Start!</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;">
+        <button class="btn-main btn-outline" id="btn-group-select-all" style="font-size:0.9rem;padding:8px 18px;width:auto;">☑️ Select All</button>
+        <button class="btn-main btn-outline" id="btn-group-clear-all" style="font-size:0.9rem;padding:8px 18px;width:auto;">⬜ Clear All</button>
+      </div>
+      <div id="group-pick-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;text-align:left;"></div>
+      <button class="btn-main btn-green" id="btn-group-start" style="font-size:1.1rem;" disabled>🔤 Start Practice →</button>
     </div>
   </div>
 
@@ -2554,7 +2594,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DF</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD DG</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6514,11 +6554,114 @@ document.getElementById('btn-spell-src-fry').addEventListener('click', () => {
   show('screen-spell-grade-pick');
 });
 
-// Grade picker: tap a grade → load sight words
+// Grade picker: tap a grade → show group picker
+let sightGroupWords = []; // all words for the chosen grade
+let sightGroupSource = ''; // 'dolch' or 'fry'
+let sightGroupGrade = '';  // grade key
+
+const GRADE_ICONS = { prek: '🧸', k: '🎨', '1': '⭐', '2': '🚀', '3': '🔥' };
+const GRADE_NAMES = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade' };
+
 document.querySelectorAll('.sight-grade-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    loadSightWordSet(spellingWordSource, btn.dataset.grade);
+  btn.addEventListener('click', async () => {
+    const grade = btn.dataset.grade;
+    const source = spellingWordSource;
+    // Fetch JSON
+    try {
+      const res = await fetch(`./${source}.json`);
+      if (!res.ok) throw new Error('fetch failed');
+      const json = await res.json();
+      const gradeWords = json[grade];
+      if (!gradeWords || gradeWords.length === 0) throw new Error('no words');
+      sightGroupWords = gradeWords;
+      sightGroupSource = source;
+      sightGroupGrade = grade;
+      showGroupPicker(source, grade, gradeWords);
+    } catch (err) {
+      showAppModal({ icon: '😕', title: 'Oops!',
+        message: 'Could not load word list. Please try again.',
+        buttons: [{ label: 'OK', class: 'modal-purple', action: () => {} }]
+      });
+    }
   });
+});
+
+function showGroupPicker(source, grade, words) {
+  const sourceLabel = source === 'dolch' ? '📖 Dolch' : '🌟 Fry';
+  const icon = GRADE_ICONS[grade] || '📖';
+  const gradeName = GRADE_NAMES[grade] || grade;
+  document.getElementById('group-pick-icon').textContent = icon;
+  document.getElementById('group-pick-title').textContent = 'Pick your groups!';
+  document.getElementById('group-pick-subtitle').textContent =
+    `${sourceLabel} · ${gradeName} · ${words.length} words total`;
+
+  const list = document.getElementById('group-pick-list');
+  list.innerHTML = '';
+  const groups = [];
+  for (let i = 0; i < words.length; i += 10) {
+    groups.push(words.slice(i, i + 10));
+  }
+
+  groups.forEach((group, idx) => {
+    const num = idx + 1;
+    const preview = group.slice(0, 3).map(e => e.word).join(', ') + (group.length > 3 ? '…' : '');
+    const card = document.createElement('div');
+    card.className = 'group-pick-card';
+    card.dataset.groupIdx = idx;
+    card.innerHTML = `
+      <div class="group-pick-checkbox">✓</div>
+      <div class="group-pick-info">
+        <div class="group-pick-name">Group ${num}</div>
+        <div class="group-pick-preview">${preview}</div>
+      </div>
+      <div class="group-pick-count">${group.length} words</div>`;
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      updateGroupStartBtn();
+    });
+    list.appendChild(card);
+  });
+
+  updateGroupStartBtn();
+  show('screen-spell-group-pick');
+}
+
+function updateGroupStartBtn() {
+  const selected = document.querySelectorAll('#group-pick-list .group-pick-card.selected').length;
+  const btn = document.getElementById('btn-group-start');
+  btn.disabled = selected === 0;
+  btn.textContent = selected > 0
+    ? `🔤 Start Practice (${selected} group${selected > 1 ? 's' : ''}) →`
+    : '🔤 Start Practice →';
+}
+
+document.getElementById('btn-group-select-all').addEventListener('click', () => {
+  document.querySelectorAll('#group-pick-list .group-pick-card').forEach(c => c.classList.add('selected'));
+  updateGroupStartBtn();
+});
+
+document.getElementById('btn-group-clear-all').addEventListener('click', () => {
+  document.querySelectorAll('#group-pick-list .group-pick-card').forEach(c => c.classList.remove('selected'));
+  updateGroupStartBtn();
+});
+
+document.getElementById('btn-group-start').addEventListener('click', () => {
+  const groups = [];
+  for (let i = 0; i < sightGroupWords.length; i += 10) {
+    groups.push(sightGroupWords.slice(i, i + 10));
+  }
+  const selectedCards = document.querySelectorAll('#group-pick-list .group-pick-card.selected');
+  const merged = [];
+  selectedCards.forEach(card => {
+    const idx = parseInt(card.dataset.groupIdx);
+    merged.push(...groups[idx]);
+  });
+  // Shuffle merged words so groups blend together
+  for (let i = merged.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [merged[i], merged[j]] = [merged[j], merged[i]];
+  }
+  loadSightWordSetFromWords(sightGroupSource, sightGroupGrade, merged);
 });
 
 // My Words: Upload
@@ -6599,6 +6742,41 @@ async function loadSightWordSet(source, grade) {
       buttons: [{ label: 'OK', class: 'modal-purple', action: () => show('screen-spelling-source') }]
     });
   }
+}
+
+// Load sight words from a pre-selected array (used by group picker)
+function loadSightWordSetFromWords(source, grade, selectedEntries) {
+  const gradeNames = { prek: 'Pre-K', k: 'Kindergarten', '1': '1st Grade', '2': '2nd Grade', '3': '3rd Grade' };
+  const loadingEl = document.getElementById('spelling-loading');
+
+  show('screen-spelling');
+  loadingEl.style.display = 'block';
+  document.getElementById('spelling-word-list').innerHTML = '';
+  document.getElementById('spelling-empty').style.display = 'none';
+  document.getElementById('spelling-actions').style.display = 'none';
+  document.getElementById('spelling-count-bar').style.display = 'none';
+  document.getElementById('spelling-controls').style.display = 'none';
+  document.getElementById('spelling-week-label').textContent = '';
+
+  const words = selectedEntries.map(entry => ({
+    word: entry.word,
+    syllables: entry.syllables || entry.word,
+    isRedWord: false,
+    sightData: entry
+  }));
+
+  const sourceLabel = source === 'dolch' ? '📖 Dolch' : '🌟 Fry';
+  const spellingList = {
+    id: `${source}_${grade}_${Date.now()}`,
+    date: new Date().toISOString(),
+    words,
+    label: `${sourceLabel} — ${gradeNames[grade]} (${words.length} words)`
+  };
+
+  currentSpellingList = spellingList;
+  document.getElementById('spelling-week-label').textContent = `${sourceLabel} Words · ${gradeNames[grade]}`;
+  renderSpellingWords(spellingList);
+  loadingEl.style.display = 'none';
 }
 
 // Spelling type screen: live word count
@@ -9593,6 +9771,7 @@ const SCREEN_BACK_MAP = {
   'screen-spelling-source': ['← Back', 'screen-pick'],
   'screen-spelling-mywords': ['← Back', 'screen-spelling-source'],
   'screen-spell-grade-pick': ['← Back', 'screen-spelling-source'],
+  'screen-spell-group-pick': ['← Back', 'screen-spell-grade-pick'],
   'screen-spelling-type': ['← Back', 'screen-spelling-mywords'],
   'screen-spelling': ['← Back', 'screen-spelling-source'],
   'screen-spell-picker': ['← Back', 'screen-spelling'],
