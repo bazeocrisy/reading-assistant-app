@@ -483,26 +483,6 @@ body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5
 .change-pin-row { display: flex; gap: 8px; margin-top: 8px; }
 .change-pin-row input { flex: 1; padding: 10px 14px; border: 2.5px solid var(--border); border-radius: 12px; font-family: 'Fredoka', sans-serif; font-size: 1.2rem; text-align: center; letter-spacing: 6px; outline: none; }
 .change-pin-row input:focus { border-color: var(--purple); }
-/* Dashboard analytics styles */
-.dash-wpm-stat { display:flex;flex-direction:column;align-items:center;background:var(--section);border-radius:16px;padding:14px 10px;flex:1;min-width:0; }
-.dash-wpm-num { font-family:'Fredoka',sans-serif;font-size:2.2rem;font-weight:700;line-height:1; }
-.dash-wpm-label { font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;text-align:center; }
-.dash-wpm-sub { font-size:0.7rem;font-weight:700;margin-top:2px; }
-.dash-wpm-history-entry { display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:10px;background:var(--section);margin-bottom:4px; }
-.dash-grade-btn { padding:7px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Fredoka',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--ink);transition:all 0.15s; }
-.dash-grade-btn.selected { background:var(--purple);color:#fff;border-color:var(--purple); }
-.dash-cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:4px; }
-.dash-cal-day { aspect-ratio:1;border-radius:4px; }
-.dash-cal-label { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:2px; }
-.dash-cal-label span { font-size:0.55rem;font-weight:800;color:var(--muted);text-align:center; }
-.dash-week-bar { display:flex;align-items:flex-end;gap:4px;height:48px;margin-top:4px; }
-.dash-week-col { flex:1;display:flex;flex-direction:column;align-items:center;gap:3px; }
-.dash-week-fill { width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--purple-light),var(--purple));min-height:2px; }
-.dash-week-lbl { font-size:0.6rem;font-weight:800;color:var(--muted); }
-.dash-spell-list-block { background:var(--section);border-radius:12px;padding:12px;margin-bottom:10px; }
-.dash-spell-mastery-bar { height:10px;border-radius:20px;background:var(--border);margin:6px 0 4px;overflow:hidden; }
-.dash-spell-mastery-fill { height:100%;border-radius:20px;background:linear-gradient(90deg,#5CD85A,#27AE60); }
-.dash-profile-badge { display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;font-size:0.72rem;font-weight:800;color:#fff; }
 
 /* Story scroll container — kid-friendly thick scrollbar + no page-scroll conflict */
 /* Story text flows naturally — no inner scroll (prevents iOS double-scroll trap) */
@@ -1247,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ES</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ER</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2689,7 +2669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ES</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ER</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2755,135 +2735,76 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <!-- SCREEN: Parent Dashboard -->
 <div class="screen" id="screen-parent" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;">
   <div class="app">
-
-    <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;">
-      <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);">📊 Progress Dashboard</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);">👤 Parent Dashboard</div>
       <button class="btn-main btn-outline" id="btn-parent-done" aria-label="Close parent dashboard" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
     </div>
 
-    <!-- SECTION 1: Child Profile Banner -->
-    <div class="card" style="background:linear-gradient(135deg,var(--purple-dark),#6C3483);color:#fff;margin-bottom:14px;">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="font-size:3rem;line-height:1;">🦉</div>
-        <div style="flex:1;">
-          <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;" id="dash-child-name">My Reader</div>
-          <div style="font-size:0.82rem;font-weight:700;opacity:0.85;" id="dash-child-grade">Grade · Started</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-family:'Fredoka',sans-serif;font-size:2rem;font-weight:700;line-height:1;" id="dash-streak-num">0</div>
-          <div style="font-size:0.65rem;font-weight:800;opacity:0.8;letter-spacing:1px;">🔥 DAY STREAK</div>
-        </div>
-      </div>
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.2);display:flex;gap:6px;flex-wrap:wrap;" id="dash-profile-badges"></div>
-    </div>
-
-    <!-- SECTION 2: WPM Hero — The Grant Story -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="dash-section-title" style="margin-top:0;">⚡ Reading Fluency (WPM)</div>
-      <div id="dash-wpm-hero"></div>
-      <!-- SVG Chart renders here -->
-      <div id="dash-wpm-chart" style="margin-top:14px;"></div>
-      <div id="dash-wpm-history-list" style="margin-top:10px;"></div>
-    </div>
-
-    <!-- SECTION 3: This Week Snapshot -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="dash-section-title" style="margin-top:0;">📅 This Week</div>
-      <div class="dash-stat-grid" style="grid-template-columns:repeat(4,1fr);">
+    <!-- This Week -->
+    <div class="card">
+      <div class="dash-section-title">📅 This Week</div>
+      <div class="dash-stat-grid">
         <div class="dash-stat"><div class="dash-stat-num" id="week-stories">0</div><div class="dash-stat-label">Stories</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="week-reads">0</div><div class="dash-stat-label">Reads</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="week-mins">0</div><div class="dash-stat-label">Minutes</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="week-rereads">0</div><div class="dash-stat-label">3× Done</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="week-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="week-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
+        <div class="dash-stat"><div class="dash-stat-num" id="week-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
       </div>
-      <!-- Day-of-week activity bar -->
-      <div style="margin-top:12px;" id="dash-week-days"></div>
     </div>
 
-    <!-- SECTION 4: All-Time Engagement -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="dash-section-title" style="margin-top:0;">🏆 All-Time Engagement</div>
-      <div class="dash-stat-grid" style="grid-template-columns:repeat(2,1fr);gap:10px;">
-        <div class="dash-stat"><div class="dash-stat-num" id="all-stories">0</div><div class="dash-stat-label">Total Stories</div></div>
+    <!-- All Time -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">🏆 All Time</div>
+      <div class="dash-stat-grid">
+        <div class="dash-stat"><div class="dash-stat-num" id="all-stories">0</div><div class="dash-stat-label">Stories</div></div>
         <div class="dash-stat"><div class="dash-stat-num" id="all-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
         <div class="dash-stat"><div class="dash-stat-num" id="all-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
         <div class="dash-stat"><div class="dash-stat-num" id="all-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="all-sessions">0</div><div class="dash-stat-label">Active Days</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="all-streak-best">0</div><div class="dash-stat-label">Best Streak</div></div>
       </div>
-      <div style="text-align:center;font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:8px;" id="first-used-label"></div>
+      <div style="text-align:center;font-size:0.78rem;color:var(--muted);font-weight:700;margin-top:4px;" id="first-used-label"></div>
     </div>
 
-    <!-- SECTION 5: 10-Week Activity Calendar -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="dash-section-title" style="margin-top:0;">📆 Activity Calendar <span style="font-size:0.72rem;color:var(--muted);font-weight:700;">(last 10 weeks)</span></div>
-      <div id="dash-calendar"></div>
-      <div style="display:flex;gap:12px;margin-top:8px;align-items:center;">
-        <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:3px;background:var(--border);"></div><span style="font-size:0.7rem;font-weight:700;color:var(--muted);">No activity</span></div>
-        <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:3px;background:#C3E6CB;"></div><span style="font-size:0.7rem;font-weight:700;color:var(--muted);">Active</span></div>
-        <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:3px;background:var(--green);"></div><span style="font-size:0.7rem;font-weight:700;color:var(--muted);">High activity</span></div>
-      </div>
-    </div>
-
-    <!-- SECTION 6: Spelling Mastery -->
-    <div class="card" style="margin-bottom:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div class="dash-section-title" style="margin:0;">📝 Spelling Mastery</div>
-        <button class="btn-main btn-outline" id="btn-clear-spelling" style="width:auto;margin-top:0;padding:6px 14px;font-size:0.8rem;">Clear</button>
-      </div>
-      <div id="dash-spelling-content" style="margin-top:10px;">
-        <p style="font-size:0.78rem;color:var(--muted);font-weight:700;">No spelling lists yet.</p>
-      </div>
-    </div>
-
-    <!-- SECTION 7: Favorite Topics -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="dash-section-title" style="margin-top:0;">❤️ Favorite Topics</div>
+    <!-- Favorite Topics -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">❤️ Favorite Topics</div>
       <div id="topic-bars"></div>
     </div>
 
-    <!-- SECTION 8: Vocabulary / Word Bank -->
-    <div class="card" style="margin-bottom:14px;">
+    <!-- Reading Speed (WPM) -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">⚡ Reading Speed</div>
+      <div id="dash-wpm-content"></div>
+    </div>
+
+    <!-- Word Bank -->
+    <div class="card" style="margin-top:14px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div class="dash-section-title" style="margin:0;">📖 Word Bank</div>
         <button class="btn-main btn-outline" id="btn-clear-words" style="width:auto;margin-top:0;padding:6px 14px;font-size:0.8rem;">Clear</button>
       </div>
-      <p style="font-size:0.75rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">Words your child tapped for help during reading. 🔴 = looked up 3+ times.</p>
-      <div style="display:flex;gap:10px;margin-bottom:10px;">
-        <div class="dash-stat" style="flex:1;"><div class="dash-stat-num" id="dash-wordbank-total">0</div><div class="dash-stat-label">Words Saved</div></div>
-        <div class="dash-stat" style="flex:1;"><div class="dash-stat-num" id="dash-wordbank-needs">0</div><div class="dash-stat-label">Need Practice</div></div>
-      </div>
+      <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">Words your child needed help with. 🔴 = needs more practice.</p>
       <div class="word-bank-list" id="word-bank-display"></div>
     </div>
 
-    <!-- SECTION 9: Settings -->
-    <div class="card" style="margin-bottom:14px;">
-      <div class="dash-section-title" style="margin-top:0;">⚙️ Settings</div>
-
-      <!-- Child profile -->
-      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:6px;">Child's Name:</p>
-      <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <input type="text" id="child-name-input" maxlength="20" placeholder="e.g. Chris" style="flex:1;padding:10px 14px;border:2.5px solid var(--border);border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1.1rem;outline:none;">
-        <button class="btn-main btn-green" id="btn-save-profile" style="width:auto;margin-top:0;padding:10px 18px;font-size:0.9rem;">Save</button>
+    <!-- Spelling Words -->
+    <div class="card" style="margin-top:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="dash-section-title" style="margin:0;">📝 Spelling Words</div>
+        <button class="btn-main btn-outline" id="btn-clear-spelling" style="width:auto;margin-top:0;padding:6px 14px;font-size:0.8rem;">Clear</button>
       </div>
-
-      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:6px;">Child's Grade:</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;" id="dash-grade-picker">
-        <button class="dash-grade-btn" data-grade="prek">Pre-K</button>
-        <button class="dash-grade-btn" data-grade="k">K</button>
-        <button class="dash-grade-btn" data-grade="1">1st</button>
-        <button class="dash-grade-btn" data-grade="2">2nd</button>
-        <button class="dash-grade-btn" data-grade="3">3rd</button>
+      <div id="dash-spelling-content">
+        <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">No spelling lists uploaded yet.</p>
       </div>
-      <div id="profile-save-msg" style="font-size:0.82rem;color:var(--green);font-weight:800;min-height:1.2em;margin-bottom:14px;"></div>
+    </div>
 
+    <!-- Settings -->
+    <div class="card" style="margin-top:14px;">
+      <div class="dash-section-title">⚙️ Settings</div>
       <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:8px;">Change PIN:</p>
       <div class="change-pin-row">
         <input type="password" id="new-pin-input" maxlength="4" placeholder="New PIN" inputmode="numeric">
         <button class="btn-main btn-green" id="btn-save-pin" style="width:auto;margin-top:0;padding:10px 18px;font-size:0.9rem;">Save</button>
       </div>
       <div id="pin-save-msg" style="font-size:0.82rem;color:var(--green);font-weight:800;min-height:1.2em;margin-top:6px;"></div>
-
       <button class="btn-main btn-danger" id="btn-reset-data" style="margin-top:16px;">🗑️ Reset All Data</button>
 
       <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--border);">
@@ -2894,7 +2815,6 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div id="import-export-msg" style="font-size:0.82rem;font-weight:800;min-height:1.2em;margin-top:6px;" aria-live="polite" role="status"></div>
       </div>
     </div>
-
     <div style="height:40px;"></div>
   </div>
 </div>
@@ -3630,7 +3550,9 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   // Normalize text to match exactly how the frontend splits words:
   // Frontend does: body.split(/\n\s*\n/) then para.trim().split(/(\s+)/) keeping \S chunks
   // So we normalize: collapse multiple newlines, trim, collapse whitespace runs
-  const normalizedText = text.replace(/\n\s*\n/g, '\n').trim().replace(/\s+/g, ' ');
+  // Fix ET: flatten ALL newlines to spaces so TTS word count == S.wordEls.length
+  // (scanned passages have single \n per line which was causing word-count drift)
+  const normalizedText = text.replace(/\r?\n/g, ' ').trim().replace(/\s+/g, ' ');
 
   const cacheKey = `${voiceName}:${voiceGender}:${storyHash(normalizedText)}`;
   if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
@@ -6616,9 +6538,6 @@ function getData() {
   if (!d.spellingLists) d.spellingLists = [];
   if (!d.vocabLists) d.vocabLists = [];
   if (!d.weeklyLog) d.weeklyLog = [];
-  if (!d.childName) d.childName = '';
-  if (!d.childGrade) d.childGrade = '2';
-  if (!d.wpmHistory) d.wpmHistory = [];
   return d;
 }
 
@@ -10127,339 +10046,115 @@ document.getElementById('btn-pin-cancel').addEventListener('click', () => {
 function openParentDashboard() {
   const d = getData();
   const now = new Date();
-
-  // ── Grade/name from stored profile ──
-  const childName = d.childName || '';
-  const childGrade = d.childGrade || '2';
-  const gradeLabels = { prek:'Pre-K', k:'Kindergarten', '1':'1st Grade', '2':'2nd Grade', '3':'3rd Grade' };
-  const bench = WPM_BENCHMARKS[childGrade] || WPM_BENCHMARKS['2'];
-
-  // ── Populate profile input fields ──
-  const nameInput = document.getElementById('child-name-input');
-  if (nameInput && !nameInput.value) nameInput.value = childName;
-  document.querySelectorAll('.dash-grade-btn').forEach(b => {
-    b.classList.toggle('selected', b.dataset.grade === childGrade);
-  });
-
-  // ── SECTION 1: Profile Banner ──
-  document.getElementById('dash-child-name').textContent = childName || 'My Reader';
-  const firstDate = d.weeklyLog.length ? d.weeklyLog[0].date : null;
-  const startedStr = firstDate ? `Started ${new Date(firstDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}` : 'Just getting started!';
-  document.getElementById('dash-child-grade').textContent = `${gradeLabels[childGrade] || '2nd Grade'} · ${startedStr}`;
-
-  // Streak calc
-  let streak = 0;
-  const activeDates = new Set(d.weeklyLog.filter(e => (e.totalReads||0)+(e.storiesStarted||0) > 0).map(e => e.date));
-  const checkDate = new Date(now);
-  // Allow streak to count today even if no activity yet today
-  if (!activeDates.has(checkDate.toISOString().slice(0,10))) checkDate.setDate(checkDate.getDate()-1);
-  while (true) {
-    const ds = checkDate.toISOString().slice(0,10);
-    if (!activeDates.has(ds)) break;
-    streak++;
-    checkDate.setDate(checkDate.getDate()-1);
-  }
-  document.getElementById('dash-streak-num').textContent = streak;
-
-  // Best streak calc
-  let bestStreak = 0, curStreak = 0;
-  const sortedDates = [...activeDates].sort();
-  sortedDates.forEach((ds, i) => {
-    if (i === 0) { curStreak = 1; }
-    else {
-      const prev = new Date(sortedDates[i-1]); prev.setDate(prev.getDate()+1);
-      curStreak = prev.toISOString().slice(0,10) === ds ? curStreak+1 : 1;
-    }
-    bestStreak = Math.max(bestStreak, curStreak);
-  });
-
-  // Profile badges
-  const badges = [];
-  if (streak >= 7) badges.push('🔥 7-Day Streak!');
-  if (streak >= 3) badges.push('⭐ On a Roll!');
-  const allRereadsCount = d.stories.filter(s => s.readCount >= 3).length;
-  if (allRereadsCount >= 5) badges.push(`📖 ${allRereadsCount} Stories Mastered`);
-  const allWpmFull = (d.wpmHistory || []);
-  if (allWpmFull.length >= 1) {
-    const latestWpm = allWpmFull[allWpmFull.length-1].wpm;
-    if (latestWpm >= bench.max) badges.push('🏆 At Grade Level!');
-    else if (latestWpm >= bench.min) badges.push('📈 In Target Range');
-  }
-  document.getElementById('dash-profile-badges').innerHTML = badges.length
-    ? badges.map(b => `<span class="dash-profile-badge">${b}</span>`).join('')
-    : `<span class="dash-profile-badge">🚀 Building fluency!</span>`;
-
-  // ── SECTION 2: WPM Hero ──
-  const wpmHeroEl = document.getElementById('dash-wpm-hero');
-  const wpmChartEl = document.getElementById('dash-wpm-chart');
-  const wpmHistoryEl = document.getElementById('dash-wpm-history-list');
-
-  if (allWpmFull.length === 0) {
-    wpmHeroEl.innerHTML = `<p style="color:var(--muted);font-size:0.85rem;font-weight:700;text-align:center;padding:14px 0;">No WPM data yet.<br>Use <strong>🎤 Read It Myself</strong> after a story to start tracking!</p>`;
-    wpmChartEl.innerHTML = '';
-    wpmHistoryEl.innerHTML = '';
-  } else {
-    const latestWpm = allWpmFull[allWpmFull.length-1].wpm;
-    const bestWpm = Math.max(...allWpmFull.map(e=>e.wpm));
-    const avgWpm = Math.round(allWpmFull.reduce((a,e)=>a+e.wpm,0)/allWpmFull.length);
-    const gap = Math.max(0, bench.min - latestWpm);
-    const pct = Math.min(100, Math.round((latestWpm / bench.max) * 100));
-
-    // Color based on progress
-    const wpmColor = latestWpm >= bench.max ? '#27AE60' : latestWpm >= bench.min ? '#F9A825' : '#E74C3C';
-
-    wpmHeroEl.innerHTML = `
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <div class="dash-wpm-stat">
-          <div class="dash-wpm-num" style="color:${wpmColor};">${latestWpm}</div>
-          <div class="dash-wpm-label">Latest WPM</div>
-          <div class="dash-wpm-sub" style="color:${wpmColor};">${latestWpm >= bench.min ? '✅ In range' : `${gap} below goal`}</div>
-        </div>
-        <div class="dash-wpm-stat">
-          <div class="dash-wpm-num" style="color:var(--purple);">${bestWpm}</div>
-          <div class="dash-wpm-label">Personal Best</div>
-        </div>
-        <div class="dash-wpm-stat">
-          <div class="dash-wpm-num" style="color:var(--ink);">${avgWpm}</div>
-          <div class="dash-wpm-label">Average</div>
-        </div>
-      </div>
-      <div style="font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:4px;">
-        DIBELS ${gradeLabels[childGrade]||'2nd Grade'} Benchmark: ${bench.min}–${bench.max} WPM
-      </div>
-      <div style="position:relative;height:22px;background:var(--border);border-radius:20px;overflow:hidden;">
-        <div style="position:absolute;inset:0;background:linear-gradient(90deg,#E74C3C 0%,#F9A825 ${Math.round(bench.min/bench.max*100)}%,#27AE60 100%);opacity:0.25;border-radius:20px;"></div>
-        <div style="position:absolute;top:0;left:0;height:100%;width:${pct}%;background:${wpmColor};border-radius:20px;opacity:0.85;transition:width 0.6s;"></div>
-        <div style="position:absolute;top:0;left:${Math.round(bench.min/bench.max*100)}%;height:100%;width:2px;background:#2C3E50;opacity:0.5;"></div>
-        <div style="position:absolute;top:0;left:0;right:0;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5);">${latestWpm} WPM — ${pct}% of grade goal</div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:0.62rem;font-weight:800;color:var(--muted);margin-top:3px;">
-        <span>0</span><span>Goal: ${bench.min}</span><span>Proficient: ${bench.max}</span>
-      </div>`;
-
-    // SVG line chart
-    if (allWpmFull.length >= 2) {
-      const chartW = 320, chartH = 90, pad = 24;
-      const wpmVals = allWpmFull.map(e=>e.wpm);
-      const minV = Math.min(...wpmVals, bench.min) - 5;
-      const maxV = Math.max(...wpmVals, bench.max) + 5;
-      const xScale = i => pad + (i/(allWpmFull.length-1))*(chartW-pad*2);
-      const yScale = v => chartH - pad/2 - ((v-minV)/(maxV-minV))*(chartH-pad);
-      const pts = allWpmFull.map((e,i)=>`${xScale(i).toFixed(1)},${yScale(e.wpm).toFixed(1)}`).join(' ');
-      const benchY = yScale(bench.min).toFixed(1);
-      const areaPath = `M${xScale(0).toFixed(1)},${chartH} ` +
-        allWpmFull.map((e,i)=>`L${xScale(i).toFixed(1)},${yScale(e.wpm).toFixed(1)}`).join(' ') +
-        ` L${xScale(allWpmFull.length-1).toFixed(1)},${chartH} Z`;
-      wpmChartEl.innerHTML = `
-        <svg viewBox="0 0 ${chartW} ${chartH}" style="width:100%;height:auto;display:block;">
-          <defs>
-            <linearGradient id="wpmGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="${wpmColor}" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="${wpmColor}" stop-opacity="0.02"/>
-            </linearGradient>
-          </defs>
-          <path d="${areaPath}" fill="url(#wpmGrad)"/>
-          <line x1="${pad}" y1="${benchY}" x2="${chartW-pad}" y2="${benchY}" stroke="#F9A825" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>
-          <text x="${chartW-pad-2}" y="${parseFloat(benchY)-3}" font-size="8" fill="#F9A825" text-anchor="end" font-weight="700" font-family="Nunito">DIBELS Goal</text>
-          <polyline points="${pts}" fill="none" stroke="${wpmColor}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-          ${allWpmFull.map((e,i)=>`<circle cx="${xScale(i).toFixed(1)}" cy="${yScale(e.wpm).toFixed(1)}" r="3.5" fill="${wpmColor}" stroke="white" stroke-width="1.5"/>`).join('')}
-          <text x="${xScale(0).toFixed(1)}" y="${chartH}" font-size="8" fill="var(--muted)" text-anchor="middle" font-weight="700" font-family="Nunito">${new Date(allWpmFull[0].date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</text>
-          <text x="${xScale(allWpmFull.length-1).toFixed(1)}" y="${chartH}" font-size="8" fill="var(--muted)" text-anchor="middle" font-weight="700" font-family="Nunito">${new Date(allWpmFull[allWpmFull.length-1].date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</text>
-        </svg>`;
-    } else {
-      wpmChartEl.innerHTML = `<p style="font-size:0.75rem;color:var(--muted);font-weight:700;text-align:center;padding:4px 0;">Complete more timed reads to see your progress chart!</p>`;
-    }
-
-    // WPM history list (last 10)
-    const recent = [...allWpmFull].reverse().slice(0,10);
-    wpmHistoryEl.innerHTML = `
-      <div style="font-size:0.72rem;font-weight:800;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Recent Reads</div>
-      ${recent.map((e,i) => {
-        const isNew = i===0;
-        const c = e.wpm >= bench.max ? '#27AE60' : e.wpm >= bench.min ? '#F9A825' : '#E74C3C';
-        return `<div class="dash-wpm-history-entry">
-          <span style="font-size:0.8rem;font-weight:700;color:var(--muted);">${new Date(e.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
-          <span style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:${c};">${e.wpm} WPM${isNew?' <span style="font-size:0.65rem;background:'+c+';color:#fff;padding:1px 6px;border-radius:6px;margin-left:4px;">LATEST</span>':''}</span>
-          <span style="font-size:0.72rem;font-weight:700;color:var(--muted);">${e.wordCount||'—'} words</span>
-        </div>`;
-      }).join('')}`;
-  }
-
-  // ── SECTION 3: This Week ──
   const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - now.getDay());
-  weekStart.setHours(0,0,0,0);
+  weekStart.setDate(now.getDate() - now.getDay()); // Sunday
+  weekStart.setHours(0, 0, 0, 0);
+
+  // This week stats
   const weekLogs = d.weeklyLog.filter(e => new Date(e.date) >= weekStart);
-  const wkStories = weekLogs.reduce((a,e)=>a+(e.storiesStarted||0),0);
-  const wkReads = weekLogs.reduce((a,e)=>a+(e.totalReads||0),0);
-  const wkMins = weekLogs.reduce((a,e)=>a+(e.minutesEstimated||0),0);
-  const wkRereads = d.stories.filter(s=>{ const lr=new Date(s.lastRead); return lr>=weekStart && s.readCount>=3; }).length;
+  const wkStories = weekLogs.reduce((a, e) => a + (e.storiesStarted || 0), 0);
+  const wkReads = weekLogs.reduce((a, e) => a + (e.totalReads || 0), 0);
+  const wkMins = weekLogs.reduce((a, e) => a + (e.minutesEstimated || 0), 0);
+  const wkRereads = d.stories.filter(s => {
+    const lastRead = new Date(s.lastRead);
+    return lastRead >= weekStart && s.readCount >= 3;
+  }).length;
+
   document.getElementById('week-stories').textContent = wkStories;
   document.getElementById('week-reads').textContent = wkReads;
   document.getElementById('week-mins').textContent = Math.round(wkMins);
   document.getElementById('week-rereads').textContent = wkRereads;
 
-  // Day-of-week mini bars
-  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const dayReads = Array(7).fill(0);
-  weekLogs.forEach(e => {
-    const day = new Date(e.date+'T12:00:00').getDay();
-    dayReads[day] += (e.totalReads||0);
-  });
-  const maxDayReads = Math.max(...dayReads, 1);
-  document.getElementById('dash-week-days').innerHTML = `
-    <div class="dash-week-bar">
-      ${dayReads.map((r,i) => {
-        const isToday = i === now.getDay();
-        const h = Math.max(4, Math.round((r/maxDayReads)*44));
-        return `<div class="dash-week-col">
-          <div class="dash-week-fill" style="height:${h}px;${isToday?'background:linear-gradient(180deg,#FF9F43,#FF6B35);':''}${r===0?'background:var(--border);opacity:0.4;':''}"></div>
-          <div class="dash-week-lbl" style="${isToday?'color:var(--orange);font-weight:900;':''}">${dayNames[i]}</div>
-        </div>`;
-      }).join('')}
-    </div>`;
+  // All time stats
+  const allReads = d.weeklyLog.reduce((a, e) => a + (e.totalReads || 0), 0);
+  const allMins = d.weeklyLog.reduce((a, e) => a + (e.minutesEstimated || 0), 0);
+  const allRereads = d.stories.filter(s => s.readCount >= 3).length;
+  const firstDate = d.weeklyLog.length ? d.weeklyLog[0].date : null;
 
-  // ── SECTION 4: All-Time ──
-  const allReads = d.weeklyLog.reduce((a,e)=>a+(e.totalReads||0),0);
-  const allMins = d.weeklyLog.reduce((a,e)=>a+(e.minutesEstimated||0),0);
-  const allRereads = d.stories.filter(s=>s.readCount>=3).length;
-  const allActiveDays = d.weeklyLog.filter(e=>(e.totalReads||0)+(e.storiesStarted||0)>0).length;
   document.getElementById('all-stories').textContent = d.stories.length;
   document.getElementById('all-reads').textContent = allReads;
   document.getElementById('all-mins').textContent = Math.round(allMins);
   document.getElementById('all-rereads').textContent = allRereads;
-  document.getElementById('all-sessions').textContent = allActiveDays;
-  document.getElementById('all-streak-best').textContent = bestStreak;
-  document.getElementById('first-used-label').textContent = firstDate
-    ? `Using ReadUp! since ${new Date(firstDate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`
-    : '';
+  document.getElementById('first-used-label').textContent = firstDate ? `Using ReadUp! since ${firstDate}` : '';
 
-  // ── SECTION 5: Activity Calendar (10 weeks) ──
-  const calEl = document.getElementById('dash-calendar');
-  const calDays = 70; // 10 weeks
-  const calStart = new Date(now);
-  calStart.setDate(calStart.getDate() - calDays + 1);
-  calStart.setHours(0,0,0,0);
+  // Favorite topics bar chart
+  const topicCounts = {};
+  d.stories.forEach(s => { topicCounts[s.topic] = (topicCounts[s.topic] || 0) + s.readCount; });
+  const sortedTopics = Object.entries(topicCounts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const maxCount = sortedTopics[0]?.[1] || 1;
+  const topicBarsEl = document.getElementById('topic-bars');
+  topicBarsEl.innerHTML = sortedTopics.length ? sortedTopics.map(([topic, count]) => `
+    <div class="topic-bar-row">
+      <div class="topic-bar-name">${topic}</div>
+      <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${Math.round(count/maxCount*100)}%"></div></div>
+      <div class="topic-bar-count">${count}</div>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No stories yet!</p>';
 
-  // Build reads-per-day lookup
-  const readsPerDay = {};
-  d.weeklyLog.forEach(e => { readsPerDay[e.date] = (e.totalReads||0)+(e.storiesStarted||0); });
-
-  let calHTML = `<div class="dash-cal-label">${['S','M','T','W','T','F','S'].map(d=>`<span>${d}</span>`).join('')}</div>`;
-  calHTML += '<div class="dash-cal-grid">';
-
-  // Pad start to Sunday
-  const startDow = calStart.getDay();
-  for (let i=0;i<startDow;i++) calHTML += '<div></div>';
-
-  for (let i=0;i<calDays;i++) {
-    const d2 = new Date(calStart); d2.setDate(calStart.getDate()+i);
-    const ds = d2.toISOString().slice(0,10);
-    const val = readsPerDay[ds]||0;
-    const isToday = ds === now.toISOString().slice(0,10);
-    let bg = 'var(--border)';
-    if (val >= 3) bg = 'var(--green)';
-    else if (val >= 1) bg = '#C3E6CB';
-    calHTML += `<div class="dash-cal-day" style="background:${bg};${isToday?'outline:2px solid var(--orange);outline-offset:1px;':''}" title="${ds}: ${val} reads"></div>`;
+  // Reading Speed (WPM)
+  const wpmEl = document.getElementById('dash-wpm-content');
+  const allWpmScores = [];
+  d.stories.forEach(s => {
+    if (s.wpmScores && s.wpmScores.length > 0) {
+      s.wpmScores.forEach(w => allWpmScores.push({ ...w, topic: s.topic, grade: s.grade }));
+    }
+  });
+  if (allWpmScores.length === 0) {
+    wpmEl.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No reading speed data yet. Use "🎤 Read It Myself" after a story!</p>';
+  } else {
+    const latestWpm = allWpmScores[allWpmScores.length - 1].wpm;
+    const bestWpm = Math.max(...allWpmScores.map(s => s.wpm));
+    const avgWpm = Math.round(allWpmScores.reduce((a, s) => a + s.wpm, 0) / allWpmScores.length);
+    wpmEl.innerHTML = `
+      <div class="dash-stat-grid">
+        <div class="dash-stat"><div class="dash-stat-num">${latestWpm}</div><div class="dash-stat-label">Latest WPM</div></div>
+        <div class="dash-stat"><div class="dash-stat-num">${bestWpm}</div><div class="dash-stat-label">Best WPM</div></div>
+        <div class="dash-stat"><div class="dash-stat-num">${avgWpm}</div><div class="dash-stat-label">Average WPM</div></div>
+        <div class="dash-stat"><div class="dash-stat-num">${allWpmScores.length}</div><div class="dash-stat-label">Total Reads</div></div>
+      </div>
+    `;
   }
-  calHTML += '</div>';
-  calEl.innerHTML = calHTML;
 
-  // ── SECTION 6: Spelling Mastery ──
+  // Word bank
+  const wordBankEl = document.getElementById('word-bank-display');
+  const sorted = [...d.wordBank].sort((a,b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+  wordBankEl.innerHTML = sorted.length ? sorted.map(w => `
+    <div class="word-bank-item">
+      <span class="word-bank-word">${w.word}</span>
+      <span style="display:flex;gap:6px;align-items:center;">
+        ${w.count >= 3 ? '<span class="word-bank-flag">needs practice</span>' : ''}
+        <span class="word-bank-count">×${w.count}</span>
+      </span>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No words saved yet!</p>';
+
+  // Spelling Words dashboard
   const spellingEl = document.getElementById('dash-spelling-content');
   if (d.spellingLists && d.spellingLists.length > 0) {
-    const listsToShow = [...d.spellingLists].reverse().slice(0,3);
-    spellingEl.innerHTML = listsToShow.map((list, idx) => {
-      const listDate = new Date(list.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      const total = list.words.length;
-      const practiced = list.words.filter(w=>(w.practiced||0)>0).length;
-      const mastered = list.words.filter(w=>w.mastered).length;
-      const redWords = list.words.filter(w=>w.isRedWord);
-      const redMastered = redWords.filter(w=>w.mastered).length;
-      const masteryPct = total > 0 ? Math.round((mastered/total)*100) : 0;
-      const masteryColor = masteryPct>=80?'#27AE60':masteryPct>=50?'#F9A825':'#E74C3C';
-      return `
-        <div class="dash-spell-list-block">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-weight:800;font-size:0.85rem;">${idx===0?'📋 Current List':'📁 Previous List'} <span style="font-size:0.72rem;color:var(--muted);font-weight:700;">${listDate}</span></div>
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:${masteryColor};">${masteryPct}%</div>
-          </div>
-          <div class="dash-spell-mastery-bar"><div class="dash-spell-mastery-fill" style="width:${masteryPct}%;background:linear-gradient(90deg,${masteryColor},${masteryColor}99);"></div></div>
-          <div style="display:flex;gap:10px;font-size:0.72rem;font-weight:800;color:var(--muted);flex-wrap:wrap;">
-            <span>📝 ${total} words</span>
-            <span>✏️ ${practiced} practiced</span>
-            <span>⭐ ${mastered} mastered</span>
-            ${redWords.length>0?`<span>🔴 ${redMastered}/${redWords.length} tricky words</span>`:''}
-          </div>
-          ${idx===0 ? `
-          <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-            ${list.words.map(w=>{
-              const st = w.mastered?'#27AE60':((w.practiced||0)>0)?'#F9A825':'var(--border)';
-              return `<span style="font-size:0.72rem;font-weight:800;background:${st};color:${w.mastered||((w.practiced||0)>0)?'#fff':'var(--muted)'};padding:3px 8px;border-radius:8px;">${w.word}${w.isRedWord?' 🔴':''}</span>`;
-            }).join('')}
-          </div>` : ''}
-        </div>`;
-    }).join('') + (d.spellingLists.length > 3 ? `<p style="font-size:0.72rem;color:var(--muted);font-weight:700;text-align:center;">${d.spellingLists.length} total lists saved</p>`:'');
+    const latest = d.spellingLists[d.spellingLists.length - 1];
+    const listDate = new Date(latest.date);
+    const dateStr = listDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const practiced = latest.words.filter(w => (w.practiced || 0) > 0).length;
+    spellingEl.innerHTML = `
+      <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 8px;">Latest list: ${dateStr} · ${latest.words.length} words · ${practiced} practiced</p>
+      <div class="word-bank-list">
+        ${latest.words.map(w => `
+          <div class="word-bank-item">
+            <span class="word-bank-word">${w.word}${w.isRedWord ? ' <span style="font-size:0.65rem;background:var(--coral);color:#fff;padding:1px 6px;border-radius:6px;font-weight:800;vertical-align:middle;">TRICKY</span>' : ''}</span>
+            <span style="display:flex;gap:6px;align-items:center;">
+              ${(w.practiced || 0) > 0 ? '<span style="font-size:0.7rem;background:#EFFFF4;border:1.5px solid var(--green);color:#1B7A3E;padding:2px 7px;border-radius:8px;font-weight:800;">practiced</span>' : '<span class="word-bank-flag">not yet</span>'}
+            </span>
+          </div>`).join('')}
+      </div>
+      ${d.spellingLists.length > 1 ? `<p style="font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:8px;">${d.spellingLists.length} total lists saved</p>` : ''}
+    `;
   } else {
-    spellingEl.innerHTML = '<p style="font-size:0.78rem;color:var(--muted);font-weight:700;">No spelling lists uploaded yet.</p>';
+    spellingEl.innerHTML = '<p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">No spelling lists uploaded yet.</p>';
   }
-
-  // ── SECTION 7: Favorite Topics ──
-  const topicCounts = {};
-  d.stories.forEach(s => { topicCounts[s.topic] = (topicCounts[s.topic]||0)+s.readCount; });
-  const sortedTopics = Object.entries(topicCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const maxCount = sortedTopics[0]?.[1]||1;
-  document.getElementById('topic-bars').innerHTML = sortedTopics.length
-    ? sortedTopics.map(([topic,count])=>`
-      <div class="topic-bar-row">
-        <div class="topic-bar-name">${topic}</div>
-        <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${Math.round(count/maxCount*100)}%"></div></div>
-        <div class="topic-bar-count">${count}</div>
-      </div>`).join('')
-    : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No stories yet!</p>';
-
-  // ── SECTION 8: Word Bank ──
-  const sortedBank = [...d.wordBank].sort((a,b)=>new Date(b.lastSeen)-new Date(a.lastSeen));
-  const needsPractice = sortedBank.filter(w=>w.count>=3).length;
-  document.getElementById('dash-wordbank-total').textContent = sortedBank.length;
-  document.getElementById('dash-wordbank-needs').textContent = needsPractice;
-  document.getElementById('word-bank-display').innerHTML = sortedBank.length
-    ? sortedBank.map(w=>`
-      <div class="word-bank-item">
-        <span class="word-bank-word">${w.word}</span>
-        <span style="display:flex;gap:6px;align-items:center;">
-          ${w.count>=3?'<span class="word-bank-flag">needs practice</span>':''}
-          <span class="word-bank-count">×${w.count}</span>
-        </span>
-      </div>`).join('')
-    : '<p style="color:var(--muted);font-size:0.85rem;font-weight:700;">No words saved yet!</p>';
 
   document.getElementById('screen-parent').style.display = 'block';
 }
 
 document.getElementById('btn-parent-done').addEventListener('click', () => {
   document.getElementById('screen-parent').style.display = 'none';
-});
-
-// Child profile — name + grade save
-document.getElementById('btn-save-profile').addEventListener('click', () => {
-  const name = document.getElementById('child-name-input').value.trim();
-  const d = getData();
-  if (name) d.childName = name;
-  saveData(d);
-  document.getElementById('profile-save-msg').textContent = '✅ Profile saved!';
-  setTimeout(() => { document.getElementById('profile-save-msg').textContent = ''; }, 2000);
-  openParentDashboard();
-});
-
-document.querySelectorAll('.dash-grade-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const d = getData();
-    d.childGrade = btn.dataset.grade;
-    saveData(d);
-    document.querySelectorAll('.dash-grade-btn').forEach(b => b.classList.toggle('selected', b.dataset.grade === btn.dataset.grade));
-    openParentDashboard();
-  });
 });
 
 document.getElementById('btn-clear-words').addEventListener('click', async () => {
@@ -10507,7 +10202,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'CL',
+      appBuild: 'ET',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
