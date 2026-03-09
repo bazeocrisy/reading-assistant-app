@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ER</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ES</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2669,7 +2669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ER</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ES</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3408,50 +3408,52 @@ function startHighlightLoop() {
   const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 &&
     ttsWordTimings[0].endMs && ttsWordTimings[0].endMs > 0;
 
-  // KEY FIX: Scale timestamps to match actual audio duration.
-  // ElevenLabs timestamps are based on the raw audio content timeline,
-  // but MP3 encoding adds padding frames that make the file longer.
-  // The browser audio.currentTime progresses across the full file duration
-  // (including padding), while timestamps only cover the speech content.
-  // Without scaling, by mid-passage currentTime is ahead of timestamps
-  // causing the highlight to lag behind the spoken word.
-  let scaledTimings = ttsWordTimings;
-
-  if (timingsAreReal && ttsWordTimings.length > 0 && ttsAudio && ttsAudio.duration) {
-    const audioDurationMs = ttsAudio.duration * 1000;
-    const lastTiming = ttsWordTimings[ttsWordTimings.length - 1];
-    const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
-
-    if (lastTimingMs > 0 && audioDurationMs > lastTimingMs * 1.01) {
-      // Audio file is longer than last timestamp — MP3 padding exists
-      // Scale all timestamps proportionally so they span the full audio duration
-      const scale = audioDurationMs / lastTimingMs;
-      scaledTimings = ttsWordTimings.map(t => ({
-        ...t,
-        startMs: Math.round(t.startMs * scale),
-        endMs: t.endMs ? Math.round(t.endMs * scale) : 0,
-      }));
-      console.log(`TTS sync: scaled timestamps x${scale.toFixed(3)} (audio=${audioDurationMs.toFixed(0)}ms, lastWord=${lastTimingMs}ms)`);
-    }
-  }
+  // Scaling is deferred into the RAF loop so it uses the real, settled audio duration.
+  // Computing it upfront risks using Infinity/NaN (base64 audio not fully decoded yet)
+  // or a stale duration from the previous playback on the reuse/preloaded path.
+  // Once computed with a finite duration it is cached and reused every frame.
+  let scaledTimings = null;
 
   // Small perceptual lead so highlight appears just as word starts
   const AUDIO_OFFSET_MS = 20;
 
   // Verify timing/word count alignment
-  if (timingsAreReal && scaledTimings.length !== S.wordEls.length) {
-    console.warn(`Timing mismatch: ${scaledTimings.length} timings vs ${S.wordEls.length} words`);
+  if (timingsAreReal && ttsWordTimings.length !== S.wordEls.length) {
+    console.warn(`Timing mismatch: ${ttsWordTimings.length} timings vs ${S.wordEls.length} words`);
   }
 
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
+
+    // Compute scaledTimings lazily on the first frame with a real finite duration.
+    // Avoids Infinity/NaN from upfront calculation and works for all audio paths.
+    if (timingsAreReal && !scaledTimings) {
+      const audioDurationMs = ttsAudio.duration * 1000;
+      const lastTiming = ttsWordTimings[ttsWordTimings.length - 1];
+      const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
+      if (isFinite(audioDurationMs) && audioDurationMs > 0) {
+        if (lastTimingMs > 0 && audioDurationMs > lastTimingMs * 1.01) {
+          const scale = audioDurationMs / lastTimingMs;
+          scaledTimings = ttsWordTimings.map(t => ({
+            ...t,
+            startMs: Math.round(t.startMs * scale),
+            endMs: t.endMs ? Math.round(t.endMs * scale) : 0,
+          }));
+          console.log(`TTS sync: scaled x${scale.toFixed(3)} (audio=${audioDurationMs.toFixed(0)}ms, lastWord=${lastTimingMs}ms)`);
+        } else {
+          scaledTimings = ttsWordTimings; // no scaling needed
+          console.log(`TTS sync: no scale (audio=${audioDurationMs.toFixed(0)}ms, lastWord=${lastTimingMs}ms)`);
+        }
+      }
+      // duration not finite yet — skip this frame, try again next
+    }
 
     const rawMs = ttsAudio.currentTime * 1000;
     const nowMs = rawMs + AUDIO_OFFSET_MS;
     const totalMs = (ttsAudio.duration || 1) * 1000;
     let activeIdx = -1;
 
-    if (timingsAreReal && scaledTimings.length > 0) {
+    if (timingsAreReal && scaledTimings && scaledTimings.length > 0) {
       // Binary search for the current word
       let lo = 0, hi = scaledTimings.length - 1;
       while (lo <= hi) {
@@ -3550,9 +3552,7 @@ async function fetchTTSAudio(text, grade, voiceGender) {
   // Normalize text to match exactly how the frontend splits words:
   // Frontend does: body.split(/\n\s*\n/) then para.trim().split(/(\s+)/) keeping \S chunks
   // So we normalize: collapse multiple newlines, trim, collapse whitespace runs
-  // Fix ET: flatten ALL newlines to spaces so TTS word count == S.wordEls.length
-  // (scanned passages have single \n per line which was causing word-count drift)
-  const normalizedText = text.replace(/\r?\n/g, ' ').trim().replace(/\s+/g, ' ');
+  const normalizedText = text.replace(/\n\s*\n/g, '\n').trim().replace(/\s+/g, ' ');
 
   const cacheKey = `${voiceName}:${voiceGender}:${storyHash(normalizedText)}`;
   if (ttsAudioCache.has(cacheKey)) return ttsAudioCache.get(cacheKey);
@@ -10202,7 +10202,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
     const exportData = {
       version: 1,
       exportedAt: new Date().toISOString(),
-      appBuild: 'ET',
+      appBuild: 'CL',
       readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
