@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EV</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EW</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2669,7 +2669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EV</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EW</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3400,24 +3400,18 @@ function startHighlightLoop() {
   stopRAF();
   let lastActiveIdx = -1;
 
-  // Check if Cloud Function timings are real or all zeros (broken)
   const timingsAreReal = ttsWordTimings.length > 1 &&
     ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
 
-  // scaledTimings is computed lazily inside the loop once audio.duration is a valid
-  // finite number. Reading it eagerly at call time often returns NaN on iOS Safari and
-  // some Chrome builds — the browser hasn't finished decoding the MP3 header yet.
-  // That caused the scale factor to never apply, making highlights drift behind the
-  // voice for the whole session.
+  // scaledTimings computed lazily inside the loop — audio.duration is NaN at call time
+  // on iOS Safari and some Chrome builds, so we retry each frame until it's valid.
   let scaledTimings = null;
-
-  // Small perceptual lead so highlight appears just as word starts
   const AUDIO_OFFSET_MS = 20;
 
   function computeScaledTimings() {
     if (!timingsAreReal || !ttsAudio) return ttsWordTimings;
     const dur = ttsAudio.duration;
-    if (!dur || !isFinite(dur) || dur <= 0) return null; // not ready yet — retry next frame
+    if (!dur || !isFinite(dur) || dur <= 0) return null;
     const lastTiming = ttsWordTimings[ttsWordTimings.length - 1];
     const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
     if (lastTimingMs > 0 && dur * 1000 > lastTimingMs * 1.01) {
@@ -3432,7 +3426,6 @@ function startHighlightLoop() {
     return ttsWordTimings;
   }
 
-  // Verify timing/word count alignment
   if (timingsAreReal && ttsWordTimings.length !== S.wordEls.length) {
     console.warn(`Timing mismatch: ${ttsWordTimings.length} timings vs ${S.wordEls.length} words`);
   }
@@ -3440,14 +3433,9 @@ function startHighlightLoop() {
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
 
-    // Lazy-init: keep retrying until audio.duration is a valid finite number.
-    // Takes 1-3 frames on most browsers; fixes the scale-factor race condition.
     if (!scaledTimings) {
       scaledTimings = computeScaledTimings();
-      if (!scaledTimings) {
-        ttsRafId = requestAnimationFrame(loop);
-        return;
-      }
+      if (!scaledTimings) { ttsRafId = requestAnimationFrame(loop); return; }
     }
 
     const rawMs = ttsAudio.currentTime * 1000;
@@ -3456,22 +3444,14 @@ function startHighlightLoop() {
     let activeIdx = -1;
 
     if (timingsAreReal && scaledTimings.length > 0) {
-      // Binary search for the current word
       let lo = 0, hi = scaledTimings.length - 1;
       while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
-        if (scaledTimings[mid].startMs <= nowMs) {
-          activeIdx = mid;
-          lo = mid + 1;
-        } else {
-          hi = mid - 1;
-        }
+        if (scaledTimings[mid].startMs <= nowMs) { activeIdx = mid; lo = mid + 1; }
+        else { hi = mid - 1; }
       }
-      // Clamp to word element count
       if (activeIdx >= S.wordEls.length) activeIdx = S.wordEls.length - 1;
-
     } else {
-      // Fallback: weight by word length for estimated sync
       const wordsCount = S.wordEls.length;
       if (!S._weightedTimings || S._weightedTimings.length !== wordsCount) {
         const wordLengths = S.wordEls.map(el => (el.textContent || '').replace(/[^a-zA-Z]/g, '').length || 1);
@@ -3484,7 +3464,6 @@ function startHighlightLoop() {
         }
       }
       const pctPlayed = rawMs / totalMs;
-      activeIdx = -1;
       for (let i = S._weightedTimings.length - 1; i >= 0; i--) {
         if (S._weightedTimings[i] <= pctPlayed) { activeIdx = i; break; }
       }
@@ -3495,7 +3474,6 @@ function startHighlightLoop() {
       S.wordEls.forEach(w => w.classList.remove('highlight'));
       if (S.wordEls[activeIdx]) {
         S.wordEls[activeIdx].classList.add('highlight');
-        // Scroll within the story container only
         const container = document.getElementById('story-scroll-container');
         const wordEl = S.wordEls[activeIdx];
         if (container) {
@@ -3506,7 +3484,6 @@ function startHighlightLoop() {
           }
         }
       }
-      // Also highlight in reading mode if active
       const rmOverlay = document.getElementById('reading-mode-overlay');
       if (rmOverlay && rmOverlay.classList.contains('active')) {
         const rmWords = rmOverlay.querySelectorAll('#rm-text .word-span');
@@ -3622,14 +3599,13 @@ async function playSpeech(startFromMs) {
     if (timingCount > 0 && displayCount > 0 && timingCount !== displayCount) {
       console.warn(`Reconciling timing mismatch: ${timingCount} timings → ${displayCount} display words`);
       // Fuzzy text-match reconciler: walk both arrays together trying to align by word text.
-      // This keeps drift local to the specific word that changed (e.g. a contraction split)
-      // instead of spreading it evenly across the whole passage like proportional mapping did.
+      // Keeps drift local to the specific word that changed instead of spreading it across
+      // the whole passage like proportional mapping did.
       const cleanWord = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const resampled = [];
       let tIdx = 0;
       for (let i = 0; i < displayCount; i++) {
         const dw = cleanWord(S.wordEls[i]?.textContent);
-        // Look ahead up to 3 timing positions for a text match
         let matched = false;
         for (let ahead = 0; ahead <= 3 && tIdx + ahead < timingCount; ahead++) {
           const tw = cleanWord(rawTimings[tIdx + ahead]?.word);
@@ -3642,19 +3618,17 @@ async function playSpeech(startFromMs) {
           }
         }
         if (!matched) {
-          // Fall back to proportional for this one word
           const ratio = i / Math.max(displayCount - 1, 1);
           const srcIdx = Math.min(Math.round(ratio * (timingCount - 1)), timingCount - 1);
           resampled.push({ word: S.wordEls[i]?.textContent || '', index: i, startMs: rawTimings[srcIdx].startMs, endMs: rawTimings[srcIdx].endMs || 0 });
         }
       }
-      // Enforce monotonically non-decreasing startMs
       for (let i = 1; i < resampled.length; i++) {
         if (resampled[i].startMs <= resampled[i-1].startMs) {
           const prev = resampled[i-1].startMs;
           let next = prev + 50;
           for (let k = i + 1; k < resampled.length; k++) { if (resampled[k].startMs > prev) { next = resampled[k].startMs; break; } }
-          resampled[i].startMs = prev + Math.round((next - prev) / (2));
+          resampled[i].startMs = prev + Math.round((next - prev) / 2);
         }
       }
       ttsWordTimings = resampled;
