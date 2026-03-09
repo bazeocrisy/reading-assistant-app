@@ -3404,47 +3404,51 @@ function startHighlightLoop() {
   const timingsAreReal = ttsWordTimings.length > 1 &&
     ttsWordTimings[Math.floor(ttsWordTimings.length / 2)].startMs > 0;
 
-  // Check if we have endMs (ElevenLabs character alignment gives both start+end)
-  const hasEndMs = timingsAreReal && ttsWordTimings.length > 0 &&
-    ttsWordTimings[0].endMs && ttsWordTimings[0].endMs > 0;
-
-  // KEY FIX: Scale timestamps to match actual audio duration.
-  // ElevenLabs timestamps are based on the raw audio content timeline,
-  // but MP3 encoding adds padding frames that make the file longer.
-  // The browser audio.currentTime progresses across the full file duration
-  // (including padding), while timestamps only cover the speech content.
-  // Without scaling, by mid-passage currentTime is ahead of timestamps
-  // causing the highlight to lag behind the spoken word.
-  let scaledTimings = ttsWordTimings;
-
-  if (timingsAreReal && ttsWordTimings.length > 0 && ttsAudio && ttsAudio.duration) {
-    const audioDurationMs = ttsAudio.duration * 1000;
-    const lastTiming = ttsWordTimings[ttsWordTimings.length - 1];
-    const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
-
-    if (lastTimingMs > 0 && audioDurationMs > lastTimingMs * 1.01) {
-      // Audio file is longer than last timestamp — MP3 padding exists
-      // Scale all timestamps proportionally so they span the full audio duration
-      const scale = audioDurationMs / lastTimingMs;
-      scaledTimings = ttsWordTimings.map(t => ({
-        ...t,
-        startMs: Math.round(t.startMs * scale),
-        endMs: t.endMs ? Math.round(t.endMs * scale) : 0,
-      }));
-      console.log(`TTS sync: scaled timestamps x${scale.toFixed(3)} (audio=${audioDurationMs.toFixed(0)}ms, lastWord=${lastTimingMs}ms)`);
-    }
-  }
+  // scaledTimings is computed lazily inside the loop once audio.duration is a valid
+  // finite number. Reading it eagerly at call time often returns NaN on iOS Safari and
+  // some Chrome builds — the browser hasn't finished decoding the MP3 header yet.
+  // That caused the scale factor to never apply, making highlights drift behind the
+  // voice for the whole session.
+  let scaledTimings = null;
 
   // Small perceptual lead so highlight appears just as word starts
   const AUDIO_OFFSET_MS = 20;
 
+  function computeScaledTimings() {
+    if (!timingsAreReal || !ttsAudio) return ttsWordTimings;
+    const dur = ttsAudio.duration;
+    if (!dur || !isFinite(dur) || dur <= 0) return null; // not ready yet — retry next frame
+    const lastTiming = ttsWordTimings[ttsWordTimings.length - 1];
+    const lastTimingMs = lastTiming.endMs || lastTiming.startMs;
+    if (lastTimingMs > 0 && dur * 1000 > lastTimingMs * 1.01) {
+      const scale = (dur * 1000) / lastTimingMs;
+      console.log(`TTS sync: scaled timestamps x${scale.toFixed(3)} (audio=${(dur*1000).toFixed(0)}ms, lastWord=${lastTimingMs}ms)`);
+      return ttsWordTimings.map(t => ({
+        ...t,
+        startMs: Math.round(t.startMs * scale),
+        endMs: t.endMs ? Math.round(t.endMs * scale) : 0,
+      }));
+    }
+    return ttsWordTimings;
+  }
+
   // Verify timing/word count alignment
-  if (timingsAreReal && scaledTimings.length !== S.wordEls.length) {
-    console.warn(`Timing mismatch: ${scaledTimings.length} timings vs ${S.wordEls.length} words`);
+  if (timingsAreReal && ttsWordTimings.length !== S.wordEls.length) {
+    console.warn(`Timing mismatch: ${ttsWordTimings.length} timings vs ${S.wordEls.length} words`);
   }
 
   function loop() {
     if (!ttsAudio || ttsState !== 'playing') return;
+
+    // Lazy-init: keep retrying until audio.duration is a valid finite number.
+    // Takes 1-3 frames on most browsers; fixes the scale-factor race condition.
+    if (!scaledTimings) {
+      scaledTimings = computeScaledTimings();
+      if (!scaledTimings) {
+        ttsRafId = requestAnimationFrame(loop);
+        return;
+      }
+    }
 
     const rawMs = ttsAudio.currentTime * 1000;
     const nowMs = rawMs + AUDIO_OFFSET_MS;
@@ -3617,29 +3621,40 @@ async function playSpeech(startFromMs) {
 
     if (timingCount > 0 && displayCount > 0 && timingCount !== displayCount) {
       console.warn(`Reconciling timing mismatch: ${timingCount} timings → ${displayCount} display words`);
-      // Strategy: resample timings to match display word count using proportional mapping
+      // Fuzzy text-match reconciler: walk both arrays together trying to align by word text.
+      // This keeps drift local to the specific word that changed (e.g. a contraction split)
+      // instead of spreading it evenly across the whole passage like proportional mapping did.
+      const cleanWord = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const resampled = [];
+      let tIdx = 0;
       for (let i = 0; i < displayCount; i++) {
-        // Map display index to closest timing index proportionally
-        const ratio = i / Math.max(displayCount - 1, 1);
-        const srcIdx = Math.min(Math.round(ratio * (timingCount - 1)), timingCount - 1);
-        const t = rawTimings[srcIdx];
-        resampled.push({
-          word: S.wordEls[i]?.textContent || '',
-          index: i,
-          startMs: t.startMs,
-          endMs: t.endMs || 0
-        });
+        const dw = cleanWord(S.wordEls[i]?.textContent);
+        // Look ahead up to 3 timing positions for a text match
+        let matched = false;
+        for (let ahead = 0; ahead <= 3 && tIdx + ahead < timingCount; ahead++) {
+          const tw = cleanWord(rawTimings[tIdx + ahead]?.word);
+          if (tw === dw || (dw.length > 2 && (tw.startsWith(dw) || dw.startsWith(tw)))) {
+            tIdx += ahead;
+            resampled.push({ word: S.wordEls[i]?.textContent || '', index: i, startMs: rawTimings[tIdx].startMs, endMs: rawTimings[tIdx].endMs || 0 });
+            tIdx++;
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          // Fall back to proportional for this one word
+          const ratio = i / Math.max(displayCount - 1, 1);
+          const srcIdx = Math.min(Math.round(ratio * (timingCount - 1)), timingCount - 1);
+          resampled.push({ word: S.wordEls[i]?.textContent || '', index: i, startMs: rawTimings[srcIdx].startMs, endMs: rawTimings[srcIdx].endMs || 0 });
+        }
       }
-      // Fix startMs so they're monotonically increasing
+      // Enforce monotonically non-decreasing startMs
       for (let i = 1; i < resampled.length; i++) {
-        if (resampled[i].startMs < resampled[i-1].startMs) {
-          // Interpolate between neighbors
+        if (resampled[i].startMs <= resampled[i-1].startMs) {
           const prev = resampled[i-1].startMs;
-          const nextGood = resampled.slice(i+1).find(r => r.startMs > prev);
-          resampled[i].startMs = nextGood
-            ? prev + (nextGood.startMs - prev) / (resampled.indexOf(nextGood) - i + 1)
-            : prev + 50;
+          let next = prev + 50;
+          for (let k = i + 1; k < resampled.length; k++) { if (resampled[k].startMs > prev) { next = resampled[k].startMs; break; } }
+          resampled[i].startMs = prev + Math.round((next - prev) / (2));
         }
       }
       ttsWordTimings = resampled;
@@ -4504,7 +4519,7 @@ async function processUploadedFile(file) {
       reader.readAsText(file);
     });
 
-  // 2) PDF files — send raw base64 to Cloud Function with application/pdf mediaType
+  // 2) PDF files — use CF_DOC (extractDocument) which handles PDFs natively
   } else if (name.endsWith('.pdf') || type === 'application/pdf') {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -4512,14 +4527,37 @@ async function processUploadedFile(file) {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
-    const response = await fetch(CF_OCR, {
+    const response = await fetch(CF_DOC, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, mediaType: 'application/pdf' })
+      body: JSON.stringify({ fileBase64: base64, mediaType: 'application/pdf', mode: 'passage' })
     });
     if (!response.ok) throw new Error('PDF scan failed: ' + response.status);
     const data = await response.json();
     if (!data.text) throw new Error('No text found in PDF');
+    rawText = data.text.trim();
+
+  // 2b) DOCX / DOC — use CF_DOC (extractDocument) which runs mammoth server-side
+  } else if (name.endsWith('.docx') || name.endsWith('.doc') ||
+             type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+             type === 'application/msword') {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const docMediaType = name.endsWith('.docx')
+      ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      : 'application/msword';
+    const response = await fetch(CF_DOC, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileBase64: base64, mediaType: docMediaType, mode: 'passage' })
+    });
+    if (!response.ok) throw new Error('Word document scan failed: ' + response.status);
+    const data = await response.json();
+    if (!data.text) throw new Error('No text found in Word document');
     rawText = data.text.trim();
 
   // 3) HEIC/HEIF — send raw bytes; Cloud Function converts server-side

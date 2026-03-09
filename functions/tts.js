@@ -14,10 +14,8 @@ const sttClient = new SpeechClient();
 // ============================================================
 // ElevenLabs Voice Mapping
 // ============================================================
-// Default premade voices — warm, clear, great for reading aloud
 const ELEVENLABS_VOICES = {
   female: {
-    // Rachel — warm, clear American female (ElevenLabs default)
     default: "21m00Tcm4TlvDq8ikWAM",
     preK: "21m00Tcm4TlvDq8ikWAM",
     K: "21m00Tcm4TlvDq8ikWAM",
@@ -26,7 +24,6 @@ const ELEVENLABS_VOICES = {
     3: "21m00Tcm4TlvDq8ikWAM",
   },
   male: {
-    // Adam — warm, friendly American male
     default: "pNInz6obpgDQGcFmaJgB",
     preK: "pNInz6obpgDQGcFmaJgB",
     K: "pNInz6obpgDQGcFmaJgB",
@@ -40,20 +37,6 @@ const ELEVENLABS_VOICES = {
 // ElevenLabs TTS — Character timestamps → Word timestamps
 // ============================================================
 
-/**
- * Convert ElevenLabs character-level alignment to word-level timings.
- * 
- * ElevenLabs returns: { characters: ["H","e","l","l","o"," ","w","o","r","l","d"],
- *                       character_start_times_seconds: [...],
- *                       character_end_times_seconds: [...] }
- * 
- * IMPORTANT: ElevenLabs normalized_alignment may alter text (expand contractions,
- * change punctuation, normalize numbers like "3" → "three"). So we can NOT assume
- * the character stream matches the original words character-by-character.
- * 
- * Strategy: Build word timings directly from the character stream by splitting on
- * whitespace, then map those "spoken words" to the original input words.
- */
 function charAlignmentToWordTimings(originalWords, alignment) {
   const { characters, character_start_times_seconds, character_end_times_seconds } = alignment;
 
@@ -61,18 +44,14 @@ function charAlignmentToWordTimings(originalWords, alignment) {
     return null;
   }
 
-  // Step 1: Build "spoken words" directly from the character stream
-  // Each spoken word = contiguous non-whitespace characters
   const spokenWords = [];
   let i = 0;
   while (i < characters.length) {
-    // Skip whitespace
     while (i < characters.length && (characters[i] === " " || characters[i] === "\n" || characters[i] === "\t")) {
       i++;
     }
     if (i >= characters.length) break;
 
-    // Collect non-whitespace characters into a word
     const wordStart = i;
     while (i < characters.length && characters[i] !== " " && characters[i] !== "\n" && characters[i] !== "\t") {
       i++;
@@ -90,10 +69,8 @@ function charAlignmentToWordTimings(originalWords, alignment) {
 
   console.log(`ElevenLabs: ${spokenWords.length} spoken words from ${characters.length} characters, ${originalWords.length} original words`);
 
-  // Helper: strip punctuation for comparison
   const clean = s => s.toLowerCase().replace(/[^a-z0-9']/g, '');
 
-  // Step 2: If counts match exactly, do 1:1 mapping
   if (spokenWords.length === originalWords.length) {
     return originalWords.map((word, idx) => ({
       word,
@@ -103,23 +80,12 @@ function charAlignmentToWordTimings(originalWords, alignment) {
     }));
   }
 
-  // Step 3: Counts don't match — ElevenLabs expanded contractions, split hyphenated
-  // words, or merged tokens differently. Use fuzzy forward-scan matching to align
-  // each original word to its best spoken-word candidate.
-  //
-  // Strategy: walk both arrays together. For each original word, find the closest
-  // spoken word starting from where we left off. If the spoken word matches (after
-  // stripping punctuation), advance both pointers 1:1. If ElevenLabs produced extra
-  // spoken tokens (e.g. "don't" → "don" + "t"), merge their timings. If a spoken
-  // token is skipped, carry forward the last known timestamp.
-
   const wordTimings = [];
   let spokenIdx = 0;
 
   for (let w = 0; w < originalWords.length; w++) {
     const origClean = clean(originalWords[w]);
 
-    // Look ahead up to 4 positions for a matching spoken word
     let matchIdx = -1;
     for (let lookahead = 0; lookahead <= 4 && spokenIdx + lookahead < spokenWords.length; lookahead++) {
       if (clean(spokenWords[spokenIdx + lookahead].text) === origClean) {
@@ -129,7 +95,6 @@ function charAlignmentToWordTimings(originalWords, alignment) {
     }
 
     if (matchIdx >= 0) {
-      // Exact match found — use its timing directly
       wordTimings.push({
         word: originalWords[w],
         index: w,
@@ -138,24 +103,17 @@ function charAlignmentToWordTimings(originalWords, alignment) {
       });
       spokenIdx = matchIdx + 1;
     } else {
-      // No exact match — ElevenLabs may have split this word (e.g. "don't" → "don"+"t")
-      // or transformed it. Merge all consecutive spoken tokens whose combined text
-      // equals the original word (after punctuation strip).
       let merged = '';
-      let mergeStart = spokenIdx;
-      let mergeEnd = spokenIdx;
-      let mergeEndMs = 0;
       let mergeStartMs = spokenIdx < spokenWords.length ? spokenWords[spokenIdx].startMs : (wordTimings.length > 0 ? wordTimings[wordTimings.length - 1].endMs : 0);
+      let mergeEndMs = 0;
 
       while (spokenIdx < spokenWords.length && merged.length < origClean.length + 4) {
         merged += clean(spokenWords[spokenIdx].text);
         mergeEndMs = spokenWords[spokenIdx].endMs;
-        mergeEnd = spokenIdx;
         spokenIdx++;
         if (merged === origClean || merged.startsWith(origClean)) break;
       }
 
-      // Use the merged span, or fall back to last known timing if nothing useful
       const fallbackMs = wordTimings.length > 0 ? wordTimings[wordTimings.length - 1].endMs : 0;
       wordTimings.push({
         word: originalWords[w],
@@ -165,14 +123,11 @@ function charAlignmentToWordTimings(originalWords, alignment) {
       });
     }
 
-    // Safety: don't let spokenIdx go past the end
     if (spokenIdx >= spokenWords.length) spokenIdx = spokenWords.length - 1;
   }
 
-  // Ensure startMs is strictly monotonically increasing
   for (let w = 1; w < wordTimings.length; w++) {
     if (wordTimings[w].startMs <= wordTimings[w - 1].startMs) {
-      // Interpolate between the previous real value and the next real value ahead
       const prev = wordTimings[w - 1].startMs;
       let nextReal = prev + 50;
       for (let k = w + 1; k < wordTimings.length; k++) {
@@ -190,16 +145,9 @@ function charAlignmentToWordTimings(originalWords, alignment) {
   return wordTimings;
 }
 
-/**
- * Call ElevenLabs TTS with timestamps API.
- * Returns { audioBase64, audioFormat, wordTimings, totalWords, voiceUsed, alignmentMethod }.
- */
 async function elevenLabsTTS(text, voiceId, grade) {
   const apiKey = elevenlabsApiKey.value();
-
-  // Use Flash v2.5 for lower latency and half-price credits on Creator plan
   const modelId = "eleven_flash_v2_5";
-
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`;
 
   const response = await fetch(url, {
@@ -227,32 +175,26 @@ async function elevenLabsTTS(text, voiceId, grade) {
   }
 
   const data = await response.json();
-
-  // Convert character-level alignment to word-level timings
   const words = text.trim().split(/\s+/);
 
-  // Prefer raw alignment (matches original text more closely).
-  // normalized_alignment expands contractions/numbers which causes word count drift.
-  // Our new charAlignmentToWordTimings handles mismatches via proportional mapping.
   const rawAlignment = data.alignment;
   const normAlignment = data.normalized_alignment;
-  
-  // Pick whichever alignment's word count is closer to our input word count
+
   let alignment = rawAlignment || normAlignment;
   if (rawAlignment && normAlignment) {
     const rawChars = rawAlignment.characters || [];
     const normChars = normAlignment.characters || [];
-    const rawWordCount = rawChars.filter((c, i) => 
+    const rawWordCount = rawChars.filter((c, i) =>
       c !== ' ' && c !== '\n' && (i === 0 || rawChars[i-1] === ' ' || rawChars[i-1] === '\n')
     ).length;
-    const normWordCount = normChars.filter((c, i) => 
+    const normWordCount = normChars.filter((c, i) =>
       c !== ' ' && c !== '\n' && (i === 0 || normChars[i-1] === ' ' || normChars[i-1] === '\n')
     ).length;
-    
+
     const rawDiff = Math.abs(rawWordCount - words.length);
     const normDiff = Math.abs(normWordCount - words.length);
     alignment = rawDiff <= normDiff ? rawAlignment : normAlignment;
-    
+
     console.log(`ElevenLabs alignment choice: raw=${rawWordCount} words, normalized=${normWordCount} words, input=${words.length} words → using ${rawDiff <= normDiff ? 'raw' : 'normalized'}`);
   }
 
@@ -265,7 +207,6 @@ async function elevenLabsTTS(text, voiceId, grade) {
     }
   }
 
-  // Fallback: even distribution if alignment somehow fails
   if (!wordTimings) {
     console.log("ElevenLabs: No alignment data, using even distribution");
     const estimatedDurationMs = words.length * 350;
@@ -288,7 +229,7 @@ async function elevenLabsTTS(text, voiceId, grade) {
 }
 
 // ============================================================
-// Google Cloud TTS fallback (existing code)
+// Google Cloud TTS fallback
 // ============================================================
 
 function createWavBuffer(pcmBuffer, sampleRate, numChannels, bitsPerSample) {
@@ -399,18 +340,12 @@ exports.synthesizeSpeech = onRequest(
       if (!text || typeof text !== "string") return res.status(400).json({ error: "text is required" });
       if (text.length > 5000) return res.status(400).json({ error: "text too long" });
 
-      // Determine which engine to use
-      // Default to ElevenLabs; fall back to Google if explicitly requested or if ElevenLabs fails
       const useElevenLabs = ttsEngine !== "google" && elevenlabsApiKey.value();
 
       try {
         if (useElevenLabs) {
-          // Resolve ElevenLabs voice ID
           const gender = voiceGender === "male" ? "male" : "female";
           const gradeKey = grade === 0 ? "preK" : grade <= 3 ? String(grade) : "default";
-          
-          // The frontend sends Google voice names like "en-US-Wavenet-F"
-          // Only use voiceName as ElevenLabs ID if it looks like one (no dashes, alphanumeric)
           const isElevenLabsId = voiceName && voiceName.length > 10 && !voiceName.includes("-");
           const voiceId = isElevenLabsId
             ? voiceName
@@ -423,10 +358,8 @@ exports.synthesizeSpeech = onRequest(
         }
       } catch (err) {
         console.error("ElevenLabs TTS failed, falling back to Google:", err.message);
-        // Fall through to Google TTS
       }
 
-      // Google TTS fallback
       try {
         console.log("Using Google TTS fallback");
         const result = await googleTTS(text, grade, voiceName);

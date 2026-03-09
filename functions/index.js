@@ -65,7 +65,7 @@ exports.generateStory = onRequest(
 
 // ── Extract Text from Image (OCR via Claude Vision) ──────
 exports.extractText = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "1GiB", timeoutSeconds: 120},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "512MiB", timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -141,7 +141,7 @@ exports.extractText = onRequest(
 
 // ── Extract Spelling Words from Image (OCR + AI parsing) ──
 exports.extractSpellingWords = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "1GiB"},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "512MiB"},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -344,7 +344,8 @@ exports.extractDocument = onRequest(
       return res.status(400).json({error: "No file provided"});
     }
 
-    const isSpelling = mode !== "vocab";
+    const isPassage = mode === "passage";
+    const isSpelling = !isPassage && mode !== "vocab";
     const gradeNames = {
       "prek": "Pre-K (age 3-4)", "k": "Kindergarten (age 5-6)",
       "1": "1st grade (age 6-7)", "2": "2nd grade (age 7-8)", "3": "3rd grade (age 8-9)",
@@ -353,6 +354,8 @@ exports.extractDocument = onRequest(
 
     try {
       let messageContent;
+
+      const passagePrompt = `Read every word from this document exactly as written. Return ONLY the plain text content, nothing else. No descriptions, no commentary. Just the exact words as they appear, preserving paragraph breaks with a blank line between paragraphs.`;
 
       if (mediaType === "application/pdf") {
         // PDF — Claude supports natively via document source type
@@ -379,7 +382,7 @@ Do NOT include titles, headers, directions, page numbers, or teacher instruction
               data: fileBase64,
             },
           },
-          {type: "text", text: isSpelling ? spellPrompt : vocabPrompt},
+          {type: "text", text: isPassage ? passagePrompt : (isSpelling ? spellPrompt : vocabPrompt)},
         ];
 
       } else if (
@@ -403,6 +406,9 @@ Do NOT include titles, headers, directions, page numbers, or teacher instruction
           return res.status(400).json({error: "Could not read Word document"});
         }
 
+        // Passage mode: mammoth already extracted the plain text — return it directly
+        if (isPassage) return res.status(200).json({text: plainText.trim()});
+
         const spellPrompt = `Here is text from a child's spelling word list document:\n\n${plainText}\n\nExtract EVERY spelling word.
 For each word provide: word, syllable breakdown with dots, whether it is a red/tricky/sight word.
 Return ONLY a valid JSON array, no markdown, no backticks:
@@ -423,6 +429,9 @@ Do NOT include titles, headers, directions, or teacher instructions.`;
       } else {
         // Plain text file — decode and send directly
         const plainText = Buffer.from(fileBase64, "base64").toString("utf-8");
+
+        // Passage mode: plain text is already what we need — return it directly
+        if (isPassage) return res.status(200).json({text: plainText.trim()});
 
         const spellPrompt = `Here is text from a child's spelling word list:\n\n${plainText}\n\nExtract EVERY spelling word.
 Return ONLY a valid JSON array, no markdown, no backticks:
@@ -467,6 +476,12 @@ Return ONLY a valid JSON array, no markdown, no backticks:
       }
 
       let rawText = data.content[0].text.trim();
+
+      // Passage mode: Claude returned plain text, not JSON
+      if (isPassage) {
+        return res.status(200).json({text: rawText});
+      }
+
       rawText = rawText.replace(/^```json?\s*/i, "").replace(/\s*```$/i, "").trim();
 
       try {
