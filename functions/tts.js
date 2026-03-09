@@ -77,7 +77,7 @@ function charAlignmentToWordTimings(originalWords, alignment) {
     while (i < characters.length && characters[i] !== " " && characters[i] !== "\n" && characters[i] !== "\t") {
       i++;
     }
-    const wordEnd = i - 1; // last non-whitespace char index
+    const wordEnd = i - 1;
 
     spokenWords.push({
       text: characters.slice(wordStart, i).join(''),
@@ -90,8 +90,10 @@ function charAlignmentToWordTimings(originalWords, alignment) {
 
   console.log(`ElevenLabs: ${spokenWords.length} spoken words from ${characters.length} characters, ${originalWords.length} original words`);
 
-  // Step 2: Map spoken words to original words
-  // If counts match, it's a 1:1 mapping
+  // Helper: strip punctuation for comparison
+  const clean = s => s.toLowerCase().replace(/[^a-z0-9']/g, '');
+
+  // Step 2: If counts match exactly, do 1:1 mapping
   if (spokenWords.length === originalWords.length) {
     return originalWords.map((word, idx) => ({
       word,
@@ -101,35 +103,89 @@ function charAlignmentToWordTimings(originalWords, alignment) {
     }));
   }
 
-  // Step 3: Counts don't match (ElevenLabs expanded/contracted text)
-  // Use proportional mapping: distribute spoken word timings across original words
+  // Step 3: Counts don't match — ElevenLabs expanded contractions, split hyphenated
+  // words, or merged tokens differently. Use fuzzy forward-scan matching to align
+  // each original word to its best spoken-word candidate.
+  //
+  // Strategy: walk both arrays together. For each original word, find the closest
+  // spoken word starting from where we left off. If the spoken word matches (after
+  // stripping punctuation), advance both pointers 1:1. If ElevenLabs produced extra
+  // spoken tokens (e.g. "don't" → "don" + "t"), merge their timings. If a spoken
+  // token is skipped, carry forward the last known timestamp.
+
   const wordTimings = [];
+  let spokenIdx = 0;
+
   for (let w = 0; w < originalWords.length; w++) {
-    // Map original word index to spoken word index proportionally
-    const ratio = originalWords.length <= 1 ? 0 : w / (originalWords.length - 1);
-    const spokenIdx = Math.min(
-      Math.round(ratio * (spokenWords.length - 1)),
-      spokenWords.length - 1
-    );
-    wordTimings.push({
-      word: originalWords[w],
-      index: w,
-      startMs: spokenWords[spokenIdx].startMs,
-      endMs: spokenWords[spokenIdx].endMs,
-    });
+    const origClean = clean(originalWords[w]);
+
+    // Look ahead up to 4 positions for a matching spoken word
+    let matchIdx = -1;
+    for (let lookahead = 0; lookahead <= 4 && spokenIdx + lookahead < spokenWords.length; lookahead++) {
+      if (clean(spokenWords[spokenIdx + lookahead].text) === origClean) {
+        matchIdx = spokenIdx + lookahead;
+        break;
+      }
+    }
+
+    if (matchIdx >= 0) {
+      // Exact match found — use its timing directly
+      wordTimings.push({
+        word: originalWords[w],
+        index: w,
+        startMs: spokenWords[matchIdx].startMs,
+        endMs: spokenWords[matchIdx].endMs,
+      });
+      spokenIdx = matchIdx + 1;
+    } else {
+      // No exact match — ElevenLabs may have split this word (e.g. "don't" → "don"+"t")
+      // or transformed it. Merge all consecutive spoken tokens whose combined text
+      // equals the original word (after punctuation strip).
+      let merged = '';
+      let mergeStart = spokenIdx;
+      let mergeEnd = spokenIdx;
+      let mergeEndMs = 0;
+      let mergeStartMs = spokenIdx < spokenWords.length ? spokenWords[spokenIdx].startMs : (wordTimings.length > 0 ? wordTimings[wordTimings.length - 1].endMs : 0);
+
+      while (spokenIdx < spokenWords.length && merged.length < origClean.length + 4) {
+        merged += clean(spokenWords[spokenIdx].text);
+        mergeEndMs = spokenWords[spokenIdx].endMs;
+        mergeEnd = spokenIdx;
+        spokenIdx++;
+        if (merged === origClean || merged.startsWith(origClean)) break;
+      }
+
+      // Use the merged span, or fall back to last known timing if nothing useful
+      const fallbackMs = wordTimings.length > 0 ? wordTimings[wordTimings.length - 1].endMs : 0;
+      wordTimings.push({
+        word: originalWords[w],
+        index: w,
+        startMs: mergeStartMs || fallbackMs,
+        endMs: mergeEndMs || fallbackMs + 50,
+      });
+    }
+
+    // Safety: don't let spokenIdx go past the end
+    if (spokenIdx >= spokenWords.length) spokenIdx = spokenWords.length - 1;
   }
 
-  // Ensure startMs is monotonically non-decreasing
+  // Ensure startMs is strictly monotonically increasing
   for (let w = 1; w < wordTimings.length; w++) {
-    if (wordTimings[w].startMs < wordTimings[w - 1].startMs) {
-      wordTimings[w].startMs = wordTimings[w - 1].startMs;
+    if (wordTimings[w].startMs <= wordTimings[w - 1].startMs) {
+      // Interpolate between the previous real value and the next real value ahead
+      const prev = wordTimings[w - 1].startMs;
+      let nextReal = prev + 50;
+      for (let k = w + 1; k < wordTimings.length; k++) {
+        if (wordTimings[k].startMs > prev) { nextReal = wordTimings[k].startMs; break; }
+      }
+      wordTimings[w].startMs = prev + Math.round((nextReal - prev) / 2);
     }
     if (wordTimings[w].endMs < wordTimings[w].startMs) {
       wordTimings[w].endMs = wordTimings[w].startMs + 50;
     }
   }
 
-  console.log(`ElevenLabs: mapped ${spokenWords.length} spoken → ${wordTimings.length} original words (proportional)`);
+  console.log(`ElevenLabs: mapped ${spokenWords.length} spoken → ${wordTimings.length} original words (fuzzy match)`);
 
   return wordTimings;
 }
