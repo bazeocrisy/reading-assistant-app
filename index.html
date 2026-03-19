@@ -1654,7 +1654,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GI</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GJ</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -3127,7 +3127,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GI</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GJ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7421,6 +7421,15 @@ function updateMyReadingsBadge() {
   if (badge) badge.textContent = passages.length + (passages.length === 1 ? ' passage' : ' passages');
 }
 
+function savePassageTitle(passageId, newTitle) {
+  if (!newTitle.trim()) return;
+  const d = getData();
+  const entry = (d.timedPassages || []).find(p => p.id === passageId);
+  if (!entry) return;
+  entry.title = newTitle.trim();
+  saveData(d);
+}
+
 function renderMyReadings() {
   const d = getData();
   const passages = (d.timedPassages || []).filter(p => !p.deleted);
@@ -7444,13 +7453,19 @@ function renderMyReadings() {
     const dateStr = lastAttempt ? lastAttempt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
     const sourceIcon = p.source === 'ai' ? '✨' : '📄';
     const readCount = attempts.length;
+    const displayTitle = p.title || 'Reading Passage';
 
     const card = document.createElement('div');
     card.style.cssText = 'background:var(--section);border-radius:16px;padding:14px 16px;border:2px solid var(--border);';
     card.innerHTML = `
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;">
-        <div style="flex:1;">
-          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;">${sourceIcon} ${p.title || 'Reading Passage'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:1rem;">${sourceIcon}</span>
+            <span class="passage-title-display" data-id="${p.id}" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayTitle}</span>
+            <button class="btn-edit-title" data-id="${p.id}" style="background:none;border:none;cursor:pointer;font-size:0.85rem;padding:2px 4px;color:var(--muted);flex-shrink:0;" title="Rename">✏️</button>
+          </div>
+          <input class="passage-title-input" data-id="${p.id}" type="text" value="${displayTitle}" style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;margin-top:2px;outline:none;" maxlength="50">
           <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-top:3px;">
             ${readCount} read${readCount !== 1 ? 's' : ''} ${dateStr ? '· Last read ' + dateStr : ''}
           </div>
@@ -7463,6 +7478,39 @@ function renderMyReadings() {
       <button data-passage-id="${p.id}" class="btn-read-again btn-main" style="width:100%;font-size:1rem;padding:12px;background:linear-gradient(135deg,#F9A825,#FF6B35);border:none;border-radius:12px;color:white;font-family:'Fredoka',sans-serif;font-weight:700;cursor:pointer;">⏱ Read Again</button>
     `;
     list.appendChild(card);
+  });
+
+  // Wire up edit title buttons
+  list.querySelectorAll('.btn-edit-title').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const card = btn.closest('div[style]');
+      const display = card.querySelector(`.passage-title-display[data-id="${id}"]`);
+      const input = card.querySelector(`.passage-title-input[data-id="${id}"]`);
+      display.style.display = 'none';
+      btn.style.display = 'none';
+      input.style.display = 'block';
+      input.focus();
+      input.select();
+    });
+  });
+
+  // Save on Enter or blur
+  list.querySelectorAll('.passage-title-input').forEach(input => {
+    const finishEdit = () => {
+      const id = input.dataset.id;
+      const newTitle = input.value.trim() || 'Reading Passage';
+      const card = input.closest('div[style]');
+      const display = card.querySelector(`.passage-title-display[data-id="${id}"]`);
+      const editBtn = card.querySelector(`.btn-edit-title[data-id="${id}"]`);
+      display.textContent = newTitle;
+      display.style.display = '';
+      editBtn.style.display = '';
+      input.style.display = 'none';
+      savePassageTitle(id, newTitle);
+    };
+    input.addEventListener('blur', finishEdit);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
   });
 
   // Wire up Read Again buttons
