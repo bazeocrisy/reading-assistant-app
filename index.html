@@ -1187,254 +1187,213 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 .profile-badge-switch { font-size: 0.7rem; font-weight: 800; color: var(--muted); }
 
 /* ══════════════════════════════════════════════════════════
-   LANDING PAGE
+   LANDING PAGE — FOUNDATION SYSTEM
+   Scoped to #screen-landing — app screens untouched
    ══════════════════════════════════════════════════════════ */
 #screen-landing {
   position: fixed; inset: 0; z-index: 997;
   background: #FFFBF2; overflow-y: auto;
   display: none;
   font-family: 'Nunito', sans-serif;
+  font-size: 16px; line-height: 1.6;
 }
-.lp-hero {
-  background: linear-gradient(160deg,#FFF8E1 0%,#FFFBF0 40%,#FFF3E0 80%);
-  padding: 36px 24px 40px; text-align: center;
+
+/* ── Container ── */
+.lp-container {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
 }
+
+/* ── Typography ── */
+#screen-landing h1 {
+  font-family: 'Fredoka', sans-serif; font-size: 28px;
+  font-weight: 700; color: #2C3E50; line-height: 1.3; margin: 0 0 12px;
+}
+#screen-landing h2 {
+  font-family: 'Fredoka', sans-serif; font-size: 22px;
+  font-weight: 700; color: #2C3E50; line-height: 1.4; margin: 0 0 16px;
+}
+#screen-landing p {
+  font-size: 16px; font-weight: 700; color: #64748B;
+  line-height: 1.6; margin: 0 0 12px;
+}
+
+/* ── Buttons ── */
+#screen-landing .lp-btn-primary {
+  display: inline-block;
+  background: linear-gradient(135deg, #FF9F43, #FF6B35);
+  color: white; border: none; border-radius: 16px;
+  padding: 14px 32px; min-height: 50px; width: 100%;
+  font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700;
+  cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,53,0.4);
+  transition: transform 0.15s;
+}
+#screen-landing .lp-btn-primary:hover { transform: translateY(-2px); }
+#screen-landing .lp-btn-white {
+  display: block; background: white; color: #FF6B35; border: none;
+  border-radius: 16px; padding: 16px 32px; min-height: 50px;
+  font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700;
+  cursor: pointer; width: 100%; max-width: 320px;
+  margin: 0 auto 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* ── NAV ── */
+.lp-nav { background: #FFFBF2; box-shadow: 0 1px 0 rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 10; }
+.lp-nav .lp-container { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; padding-bottom: 14px; }
+.lp-nav-logo { font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 700; color: #FF6B35; letter-spacing: 1px; }
+#lp-nav-links { display: none; gap: 24px; align-items: center; }
+#lp-nav-links a { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; color: #64748B; text-decoration: none; }
+.lp-nav-btns { display: flex; gap: 8px; }
+.lp-nav-btns button { min-height: 38px; padding: 0 16px; font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 10px; }
+
+/* ── HERO ── */
+.lp-hero-wrap { background: linear-gradient(160deg, #FFF8E1, #FFFBF0, #FFF3E0); padding: 48px 0; }
+.lp-hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px; }
 .lp-hero-left { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.lp-quote-mobile { margin: 0 16px 16px; }
-.lp-owl { font-size: 76px; display: block; animation: lpbob 2.5s ease-in-out infinite; }
+.lp-owl { font-size: 80px; display: block; animation: lpbob 2.5s ease-in-out infinite; margin-bottom: 8px; }
 @keyframes lpbob {
   0%,100% { transform: translateY(0) rotate(0deg); }
   45%     { transform: translateY(-12px) rotate(-4deg); }
   65%     { transform: translateY(-8px) rotate(3deg); }
 }
-.lp-logo {
-  font-family: 'Fredoka', sans-serif; font-size: 50px; font-weight: 700;
-  color: #FF6B35; text-shadow: 0 3px 0 #E55D2B; letter-spacing: 2px;
-}
-.lp-h1 {
-  font-family: 'Fredoka', sans-serif; font-size: 23px; font-weight: 700;
-  color: #2C3E50; line-height: 1.3; margin: 14px 0 8px;
-}
-.lp-sub {
-  font-size: 13px; font-weight: 700; color: #64748B;
-  line-height: 1.65; margin-bottom: 24px;
-}
-.lp-btns { display: flex; gap: 10px; justify-content: center; }
-.lp-btn-primary {
-  background: linear-gradient(135deg,#FF9F43,#FF6B35); color: white;
-  border: none; border-radius: 16px; padding: 14px 0;
-  font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700;
-  cursor: pointer; flex: 1; max-width: 190px;
-  box-shadow: 0 6px 18px rgba(255,107,53,0.4);
-}
-.lp-btn-secondary {
-  background: white; color: #FF6B35; border: 2.5px solid #FF6B35;
-  border-radius: 16px; padding: 14px 0;
-  font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700;
-  cursor: pointer; flex: 1; max-width: 190px;
-}
-.lp-urgency { background: #2C3E50; padding: 22px 20px; }
-.lp-urg-quote {
-  font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700;
-  color: white; text-align: center; line-height: 1.5; margin-bottom: 16px;
-}
-.lp-urg-quote span { color: #FFD93D; }
+.lp-logo-text { font-family: 'Fredoka', sans-serif; font-size: 52px; font-weight: 700; color: #FF6B35; text-shadow: 0 3px 0 #E55D2B; letter-spacing: 2px; line-height: 1; margin-bottom: 12px; }
+.lp-h1-text { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; color: #2C3E50; line-height: 1.3; margin-bottom: 8px; }
+.lp-sub-text { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: #FF6B35; margin-bottom: 20px; }
+.lp-btns-wrap { width: 100%; max-width: 320px; }
+.lp-disclaimer { font-size: 12px; font-weight: 800; color: #94A3B8; margin-top: 10px; }
+.lp-quote-right { display: none; }
+.lp-quote-mobile { background: white; border-radius: 20px; padding: 20px 18px; border-left: 5px solid #FF6B35; box-shadow: 0 4px 20px rgba(255,107,53,0.08); }
+
+/* ── SECTIONS ── */
+.lp-section-block { padding: 56px 0; }
+.lp-section-block-alt { padding: 56px 0; background: #FFF8EE; }
+.lp-section-dark { padding: 56px 0; background: #2C3E50; }
+.lp-eyebrow { text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #FF6B35; margin-bottom: 8px; }
+.lp-section-dark .lp-eyebrow { color: #FFD93D; }
+.lp-section-h { font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 700; color: #2C3E50; text-align: center; margin-bottom: 24px; line-height: 1.4; }
+.lp-section-dark .lp-section-h { color: white; }
+
+/* ── URGENCY ── */
+.lp-urgency-wrap { background: #2C3E50; padding: 40px 0; }
+.lp-urg-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700; color: white; text-align: center; line-height: 1.5; margin-bottom: 20px; }
 .lp-stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-.lp-stat { text-align: center; padding: 0 6px; }
-.lp-stat + .lp-stat { border-left: 1px solid rgba(255,255,255,0.12); }
-.lp-stat-n { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; color: #FFD93D; }
-.lp-stat-l { font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.65); margin-top: 3px; line-height: 1.4; }
-.lp-section { padding: 28px 20px; }
-.lp-section-alt { padding: 28px 20px; background: #FFF8EE; }
-.lp-eyebrow {
-  text-align: center; font-size: 10px; font-weight: 800;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: #FF6B35; margin-bottom: 6px;
-}
-.lp-section-h {
-  font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 700;
-  color: #2C3E50; text-align: center; margin-bottom: 18px; line-height: 1.3;
-}
-.lp-prob-cards { display: flex; flex-direction: column; gap: 10px; }
-.lp-prob {
-  display: flex; gap: 14px; align-items: flex-start;
-  padding: 14px 16px; border-radius: 18px;
-}
+.lp-stat-n { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 700; color: #FFD93D; }
+.lp-stat-l { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.65); margin-top: 4px; line-height: 1.4; }
+
+/* ── PROBLEM CARDS ── */
+.lp-prob-cards { display: flex; flex-direction: column; gap: 12px; }
+.lp-prob { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; }
 .lp-p1 { background: #FFF3E8; border-left: 4px solid #FF6B35; }
 .lp-p2 { background: #EEF5FF; border-left: 4px solid #54A0FF; }
 .lp-p3 { background: #F5F0FF; border-left: 4px solid #9B59B6; }
 .lp-prob-ico { font-size: 28px; flex-shrink: 0; }
-.lp-prob-title {
-  font-family: 'Fredoka', sans-serif; font-size: 15px;
-  font-weight: 700; color: #2C3E50; margin-bottom: 2px;
-}
-.lp-prob-text { font-size: 12px; font-weight: 700; color: #64748B; line-height: 1.55; }
-.lp-sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.lp-sol { border-radius: 20px; padding: 16px 14px; text-align: center; }
-.lp-s1 { background: #FFF3E8; border: 2px solid #FFB088; }
-.lp-s2 { background: #EEF5FF; border: 2px solid #A8CEFF; }
-.lp-s3 { background: #F0FFF4; border: 2px solid #9EDBA0; }
-.lp-s4 { background: #F5F0FF; border: 2px solid #C8B4F5; }
-.lp-sol-ico { font-size: 30px; margin-bottom: 6px; display: block; }
-.lp-sol-title {
-  font-family: 'Fredoka', sans-serif; font-size: 14px;
-  font-weight: 700; color: #2C3E50; margin-bottom: 3px;
-}
-.lp-sol-desc { font-size: 11px; font-weight: 700; color: #64748B; line-height: 1.5; }
-.lp-dark { background: #2C3E50; padding: 28px 20px; }
-.lp-dark .lp-eyebrow { color: #FFD93D; }
-.lp-dark .lp-section-h { color: white; margin-bottom: 6px; }
-.lp-dark-sub {
-  font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.65);
-  text-align: center; margin-bottom: 20px; line-height: 1.5;
-}
-.lp-promise-items { display: flex; flex-direction: column; gap: 10px; }
-.lp-promise-item {
-  display: flex; align-items: flex-start; gap: 12px;
-  background: rgba(255,255,255,0.06); border-radius: 16px;
-  padding: 14px 16px; border: 1px solid rgba(255,255,255,0.08);
-}
-.lp-pi-dot {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; flex-shrink: 0;
-}
-.lpd1 { background: #FF6B35; }
-.lpd2 { background: #54A0FF; }
-.lpd3 { background: #5CD85A; }
-.lpd4 { background: #9B59B6; }
-.lp-pi-title {
-  font-family: 'Fredoka', sans-serif; font-size: 15px;
-  font-weight: 700; color: white; margin-bottom: 2px;
-}
-.lp-pi-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.65); line-height: 1.5; }
-.lp-coming {
-  display: block; margin: 18px auto 0;
-  background: rgba(255,211,61,0.15); border: 1.5px solid rgba(255,211,61,0.4);
-  border-radius: 50px; padding: 8px 20px;
-  font-size: 12px; font-weight: 800; color: #FFD93D;
-  text-align: center; width: fit-content;
-}
-.lp-proof-cards { display: flex; flex-direction: column; gap: 12px; }
-.lp-quote-card {
-  background: white; border-radius: 18px;
-  padding: 16px 18px; border: 1.5px solid #F0E6D8;
-}
-.lp-quote-text {
-  font-size: 13px; font-weight: 700; color: #2C3E50;
-  line-height: 1.6; font-style: italic; margin-bottom: 10px;
-}
-.lp-quote-text span { color: #FF6B35; font-style: normal; font-weight: 800; }
-.lp-quote-author { display: flex; align-items: center; gap: 8px; }
-.lp-qa {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; background: #FFF3E8;
-}
-.lp-quote-name { font-size: 12px; font-weight: 800; color: #64748B; }
-.lp-final {
-  background: linear-gradient(135deg,#FF9F43,#FF6B35);
-  padding: 36px 24px; text-align: center;
-}
-.lp-final-owl { font-size: 56px; display: block; margin-bottom: 8px; animation: lpbob 2.5s ease-in-out infinite; }
-.lp-final-h {
-  font-family: 'Fredoka', sans-serif; font-size: 24px;
-  font-weight: 700; color: white; line-height: 1.3;
-  margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.lp-final-sub {
-  font-size: 13px; font-weight: 700;
-  color: rgba(255,255,255,0.92); margin-bottom: 22px; line-height: 1.6;
-}
-.lp-btn-white {
-  display: block; background: white; color: #FF6B35; border: none;
-  border-radius: 16px; padding: 16px;
-  font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700;
-  cursor: pointer; width: 100%; max-width: 300px;
-  margin: 0 auto 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-.lp-np { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.75); }
+.lp-prob-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700; color: #2C3E50; margin-bottom: 4px; }
+.lp-prob-text { font-size: 14px; font-weight: 700; color: #64748B; line-height: 1.6; }
 
-/* ── Landing Page — Desktop Layout (1280px+) ────────────── */
+/* ── SOLUTION CARDS ── */
+.lp-sol-cards { display: flex; flex-direction: column; gap: 14px; }
+.lp-sol-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: white; }
+.lp-sol-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.lp-sol-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700; color: #2C3E50; margin-bottom: 4px; }
+.lp-sol-desc { font-size: 14px; font-weight: 700; color: #64748B; line-height: 1.6; }
+
+/* ── PROMISE ── */
+.lp-promise-items { display: flex; flex-direction: column; gap: 12px; }
+.lp-promise-item { display: flex; align-items: flex-start; gap: 14px; background: rgba(255,255,255,0.06); border-radius: 16px; padding: 16px 18px; border: 1px solid rgba(255,255,255,0.08); }
+.lp-pi-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.lpd1 { background: #FF6B35; } .lpd2 { background: #54A0FF; } .lpd3 { background: #5CD85A; } .lpd4 { background: #9B59B6; }
+.lp-pi-title { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700; color: white; margin-bottom: 2px; }
+.lp-pi-text { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.65); line-height: 1.5; }
+
+/* ── QUOTES ── */
+.lp-proof-cards { display: flex; flex-direction: column; gap: 14px; }
+.lp-quote-card { background: white; border-radius: 18px; padding: 18px 20px; border: 1.5px solid #F0E6D8; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+.lp-quote-text { font-size: 15px; font-weight: 700; color: #2C3E50; line-height: 1.65; margin-bottom: 12px; }
+.lp-quote-text span { color: #FF6B35; font-weight: 800; }
+
+/* ── FINAL CTA ── */
+.lp-final-wrap { background: linear-gradient(135deg, #FF9F43, #FF6B35); padding: 60px 0; text-align: center; }
+.lp-final-h { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.lp-final-sub { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.92); margin-bottom: 28px; line-height: 1.7; }
+.lp-np { font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.75); }
+.lp-coming { display: block; margin: 18px auto 0; background: rgba(255,211,61,0.15); border: 1.5px solid rgba(255,211,61,0.4); border-radius: 50px; padding: 8px 20px; font-size: 12px; font-weight: 800; color: #FFD93D; text-align: center; width: fit-content; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS — scoped to landing page only
+   ══════════════════════════════════════════════════════════ */
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  #screen-landing h1 { font-size: 34px; }
+  #screen-landing h2 { font-size: 26px; }
+  .lp-logo-text { font-size: 60px; }
+  .lp-h1-text { font-size: 30px; }
+  .lp-section-h { font-size: 26px; }
+  .lp-urg-title { font-size: 18px; }
+  .lp-stat-n { font-size: 34px; }
+  .lp-stat-l { font-size: 12px; }
+  .lp-prob-title { font-size: 17px; }
+  .lp-prob-text { font-size: 15px; }
+  .lp-sol-title { font-size: 17px; }
+  .lp-sol-desc { font-size: 15px; }
+  .lp-final-h { font-size: 30px; }
+}
+
+/* Desktop (1280px+) */
 @media (min-width: 1280px) {
-  /* Widen the outer container */
-  #screen-landing > div:first-child {
-    max-width: 1100px !important;
-  }
-
-  /* NAV */
-  #screen-landing .lp-nav-inner {
-    padding: 18px 40px;
-  }
+  #screen-landing { font-size: 18px; }
+  #screen-landing h1 { font-size: 40px; }
+  #screen-landing h2 { font-size: 28px; }
   #lp-nav-links { display: flex !important; }
+  .lp-hero-wrap { padding: 72px 0; }
+  .lp-hero-inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 60px; text-align: left; }
+  .lp-hero-left { align-items: flex-start; text-align: left; }
+  .lp-owl { font-size: 100px; }
+  .lp-logo-text { font-size: 64px; }
+  .lp-h1-text { font-size: 36px; }
+  .lp-sub-text { font-size: 18px; }
+  .lp-btns-wrap { max-width: none; }
+  #screen-landing .lp-btn-primary { width: auto; }
+  .lp-quote-right { display: flex; align-items: center; }
+  .lp-quote-mobile { display: none; }
+  .lp-urgency-wrap { padding: 48px 0; }
+  .lp-urg-title { font-size: 20px; }
+  .lp-stat-n { font-size: 44px; }
+  .lp-stat-l { font-size: 13px; }
+  .lp-prob-cards { flex-direction: row; gap: 20px; }
+  .lp-prob { flex: 1; flex-direction: column; align-items: flex-start; padding: 22px; border-left: none !important; border-top: 4px solid; }
+  .lp-p1 { border-top-color: #FF6B35; } .lp-p2 { border-top-color: #54A0FF; } .lp-p3 { border-top-color: #9B59B6; }
+  .lp-prob-title { font-size: 18px; }
+  .lp-sol-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .lp-sol-icon { width: 52px; height: 52px; font-size: 24px; }
+  .lp-sol-title { font-size: 18px; }
+  .lp-promise-items { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .lp-proof-cards { flex-direction: row; }
+  .lp-quote-card { flex: 1; }
+  .lp-quote-text { font-size: 16px; }
+  .lp-section-h { font-size: 30px; }
+  .lp-section-block { padding: 72px 0; }
+  .lp-section-block-alt { padding: 72px 0; }
+  .lp-section-dark { padding: 72px 0; }
+  .lp-final-wrap { padding: 80px 0; }
+  .lp-final-h { font-size: 38px; }
+  .lp-final-sub { font-size: 18px; }
+  .lp-btn-white { font-size: 20px; max-width: 360px; }
+}
 
-  /* Hero: two columns — left: branding+CTA, right: quote */
-  #screen-landing .lp-hero-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 48px;
-    padding: 64px 48px 72px;
-    text-align: left;
-    min-height: 480px;
-  }
-  #screen-landing .lp-hero-left { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
-  #screen-landing .lp-hero-wrap .lp-owl { font-size: 120px !important; }
-  #screen-landing .lp-hero-wrap .lp-logo-text { font-size: 64px; }
-  #screen-landing .lp-hero-wrap .lp-h1-text { font-size: 34px; text-align: left; }
-  #screen-landing .lp-hero-wrap .lp-sub-text { font-size: 16px; text-align: left; }
-  #screen-landing .lp-hero-wrap .lp-btns-wrap { justify-content: flex-start; }
-  #screen-landing .lp-hero-wrap .lp-btn-primary { font-size: 20px; padding: 16px 40px; max-width: none; flex: none; }
-  #screen-landing .lp-hero-wrap .lp-disclaimer { text-align: left; }
-  #screen-landing .lp-quote-right { display: flex !important; align-items: center; }
-  #screen-landing .lp-quote-mobile { display: none !important; }
-
-  /* Urgency strip — bigger numbers */
-  #screen-landing .lp-urgency-wrap { padding: 40px 48px; }
-  #screen-landing .lp-urgency-wrap .lp-urg-title { font-size: 22px; }
-  #screen-landing .lp-urgency-wrap .lp-stat-n { font-size: 42px; }
-  #screen-landing .lp-urgency-wrap .lp-stat-l { font-size: 13px; }
-
-  /* Problem: 3 cards side by side */
-  #screen-landing .lp-problem-wrap { padding: 48px 48px; }
-  #screen-landing .lp-problem-wrap .lp-section-h { font-size: 30px; }
-  #screen-landing .lp-prob-cards { flex-direction: row !important; gap: 16px; }
-  #screen-landing .lp-prob-cards .lp-prob { flex: 1; flex-direction: column; align-items: flex-start; padding: 20px; border-left: none !important; border-top: 4px solid; border-radius: 20px; }
-  #screen-landing .lp-p1.lp-prob { border-top-color: #FF6B35; }
-  #screen-landing .lp-p2.lp-prob { border-top-color: #54A0FF; }
-  #screen-landing .lp-p3.lp-prob { border-top-color: #9B59B6; }
-  #screen-landing .lp-prob-title { font-size: 17px; }
-  #screen-landing .lp-prob-text { font-size: 14px; }
-
-  /* Solution: bigger cards, 2 columns */
-  #screen-landing .lp-solution-wrap { padding: 48px 48px; }
-  #screen-landing .lp-solution-wrap .lp-section-h { font-size: 30px; }
-  #screen-landing .lp-solution-wrap .lp-sol-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  #screen-landing .lp-sol-cards .lp-sol-card { padding: 20px 18px; }
-  #screen-landing .lp-sol-cards .lp-sol-icon { width: 52px; height: 52px; font-size: 24px; }
-  #screen-landing .lp-sol-cards .lp-sol-title { font-size: 17px; }
-  #screen-landing .lp-sol-cards .lp-sol-desc { font-size: 14px; }
-
-  /* Parent Promise: 2 columns */
-  #screen-landing .lp-promise-wrap { padding: 48px 48px; }
-  #screen-landing .lp-promise-wrap .lp-section-h { font-size: 28px; }
-  #screen-landing .lp-promise-items { display: grid !important; grid-template-columns: 1fr 1fr; gap: 14px; }
-  #screen-landing .lp-promise-item { padding: 18px; }
-  #screen-landing .lp-pi-title { font-size: 17px; }
-  #screen-landing .lp-pi-text { font-size: 13px; }
-
-  /* Testimonials: side by side */
-  #screen-landing .lp-testimonials-wrap { padding: 48px 48px; }
-  #screen-landing .lp-testimonials-wrap .lp-section-h { font-size: 28px; }
-  #screen-landing .lp-proof-cards { flex-direction: row !important; gap: 16px; }
-  #screen-landing .lp-proof-cards .lp-quote-card { flex: 1; }
-  #screen-landing .lp-quote-text { font-size: 16px; }
-
-  /* Final CTA */
-  #screen-landing .lp-final-wrap { padding: 60px 48px; }
-  #screen-landing .lp-final-wrap .lp-final-h { font-size: 36px; }
-  #screen-landing .lp-final-wrap .lp-final-sub { font-size: 16px; }
-  #screen-landing .lp-final-wrap .lp-btn-white { font-size: 22px; padding: 18px; max-width: 360px; }
+/* ── Auth modal: compress on short screens ── */
+@media (max-height: 700px) {
+  #auth-close-btn { position:fixed !important; top:16px !important; right:16px !important; background:rgba(255,255,255,0.9) !important; box-shadow:0 2px 8px rgba(0,0,0,0.15) !important; }
+  #auth-screen > div:last-child { padding: 20px 22px; }
+  #auth-screen .auth-header-owl { font-size: 30px !important; margin-bottom: 2px !important; }
+  #auth-screen .auth-header-logo { font-size: 22px !important; }
+  #auth-screen .auth-header-sub { display: none; }
+  #auth-screen .auth-tab-row { margin-bottom: 14px; }
+  #auth-screen .auth-input-group { margin-bottom: 8px; }
+  #auth-screen .auth-input { padding: 10px 14px; font-size: 0.95rem; }
+  #auth-screen .auth-input-label { margin-bottom: 3px; }
+  #auth-screen .auth-divider { margin: 10px 0; }
+  #auth-screen .btn-google { padding: 10px; }
+  #auth-screen .auth-footer { display: none; }
 }
 
 /* ── Parent Dashboard Tabs ──────────────────────────────── */
@@ -1695,7 +1654,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GG</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GH</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -3148,7 +3107,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GG</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GH</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12401,203 +12360,221 @@ document.addEventListener('keydown', (e) => {
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- HOME / LANDING PAGE (shown to unauthenticated users)   -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div id="screen-landing" style="display:none;position:fixed;inset:0;z-index:997;background:#FFFBF2;font-family:'Nunito',sans-serif;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-  <div style="max-width:500px;margin:0 auto;">
+<!-- LANDING PAGE (shown to unauthenticated users)          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-landing">
 
-    <!-- NAV -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#FFFBF2;box-shadow:0 1px 0 rgba(0,0,0,0.06);">
-      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#FF6B35;letter-spacing:1px;">🦉 ReadUp!</div>
-      <!-- Desktop nav links — shown at 1280px+ via CSS -->
-      <div id="lp-nav-links" style="display:none;gap:24px;align-items:center;">
-        <a onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-how').offsetTop,behavior:'smooth'});" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#64748B;text-decoration:none;cursor:pointer;">How It Works</a>
-        <a onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-parents').offsetTop,behavior:'smooth'});" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#64748B;text-decoration:none;cursor:pointer;">For Parents</a>
-        <a onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-mission').offsetTop,behavior:'smooth'});" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#64748B;text-decoration:none;cursor:pointer;">Our Mission</a>
+  <!-- NAV -->
+  <nav class="lp-nav">
+    <div class="lp-container">
+      <div class="lp-nav-logo">🦉 ReadUp!</div>
+      <div id="lp-nav-links">
+        <a href="#lp-section-problem" onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-problem').offsetTop,behavior:'smooth'});return false;">How It Works</a>
+        <a href="#lp-section-features" onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-features').offsetTop,behavior:'smooth'});return false;">Features</a>
       </div>
-      <div style="display:flex;gap:8px;">
-        <button id="lp-signin-btn" style="background:none;color:#FF6B35;border:2px solid #FF6B35;border-radius:10px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Sign In</button>
-        <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:10px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(255,107,53,0.35);">Get Started</button>
+      <div class="lp-nav-btns">
+        <button id="lp-signin-btn" style="background:none;color:#FF6B35;border:2px solid #FF6B35;">Sign In</button>
+        <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;box-shadow:0 3px 10px rgba(255,107,53,0.35);">Get Started</button>
       </div>
     </div>
+  </nav>
 
-    <!-- HERO -->
-    <div class="lp-hero-wrap" style="background:linear-gradient(160deg,#FFF8E1,#FFFBF0,#FFF3E0);padding:36px 24px 44px;text-align:center;">
-      <!-- LEFT COLUMN: branding + CTA -->
-      <div class="lp-hero-left">
-        <span class="lp-owl" style="font-size:86px;display:block;animation:lpbob 3s ease-in-out infinite;margin-bottom:4px;">🦉</span>
-        <div class="lp-logo-text" style="font-family:'Fredoka',sans-serif;font-size:52px;font-weight:700;color:#FF6B35;text-shadow:0 3px 0 #E55D2B;letter-spacing:2px;line-height:1;">ReadUp!</div>
-        <div class="lp-h1-text" style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#2C3E50;line-height:1.3;margin:16px 0 6px;">"Struggling Readers<br>Don't Fix Themselves."</div>
-        <div class="lp-sub-text" style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:600;color:#FF6B35;margin-bottom:18px;">Bookie can help. Right now.</div>
-        <div class="lp-btns-wrap" style="display:flex;justify-content:center;">
-          <button id="lp-hero-btn" class="lp-btn-primary" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:18px;padding:16px 40px;font-family:'Fredoka',sans-serif;font-size:19px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(255,107,53,0.4);">🚀 Start with Bookie</button>
+  <!-- HERO -->
+  <div class="lp-hero-wrap">
+    <div class="lp-container">
+      <div class="lp-hero-inner">
+        <!-- Left: branding + CTA -->
+        <div class="lp-hero-left">
+          <span class="lp-owl">🦉</span>
+          <div class="lp-logo-text">ReadUp!</div>
+          <div class="lp-h1-text">"Struggling Readers<br>Don't Fix Themselves."</div>
+          <div class="lp-sub-text">Bookie can help. Right now.</div>
+          <div class="lp-btns-wrap">
+            <button id="lp-hero-btn" class="lp-btn-primary">🚀 Start with Bookie</button>
+          </div>
+          <div class="lp-disclaimer">For Pre-K through 3rd Grade · Built by a Nonprofit</div>
+          <div style="font-size:12px;font-weight:800;color:#5CD85A;margin-top:6px;">✅ 100% Free — no credit card, ever</div>
         </div>
-        <div class="lp-disclaimer" style="font-size:11px;font-weight:800;color:#94A3B8;margin-top:10px;">For Pre-K through 3rd Grade · Built by a Nonprofit</div>
-        <div style="font-size:12px;font-weight:800;color:#5CD85A;margin-top:6px;">✅ 100% Free — no credit card, ever</div>
-      </div>
-      <!-- RIGHT COLUMN: quote (hidden on mobile, shown on desktop) -->
-      <div class="lp-quote-right" style="display:none;">
-        <div style="background:white;border-radius:20px;padding:28px 24px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
-          <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;line-height:1.6;margin-bottom:16px;">"My son went from <span style="color:#FF6B35;">39 WPM to 67 WPM</span> in 6 weeks. For the first time, he picked up a book on his own."</div>
-          <div style="font-size:12px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader · ReadUp Early Cohort, 2025</div>
+        <!-- Right: quote (desktop only) -->
+        <div class="lp-quote-right">
+          <div style="background:white;border-radius:20px;padding:28px 24px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
+            <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;line-height:1.6;margin-bottom:16px;">Every child deserves a reading tool that meets them where they are — not where the market thinks they should be.</div>
+            <div style="font-size:12px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Christopher Bazemore, Founder · Transforming Youth, Inc.</div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- EMOTIONAL QUOTE (mobile only — hidden on desktop) -->
-    <div class="lp-quote-mobile" style="background:white;border-radius:20px;padding:20px 18px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
-      <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:#2C3E50;line-height:1.5;margin-bottom:10px;">"My son went from <span style="color:#FF6B35;">39 WPM to 67 WPM</span> in 6 weeks. For the first time, he picked up a book on his own."</div>
-      <div style="font-size:11px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader · ReadUp Early Cohort, 2025</div>
+  <!-- EMOTIONAL QUOTE (mobile only) -->
+  <div class="lp-container">
+    <div class="lp-quote-mobile" style="margin:20px 0;">
+      <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:#2C3E50;line-height:1.5;margin-bottom:10px;">Every child deserves a reading tool that meets them where they are — not where the market thinks they should be.</div>
+      <div style="font-size:11px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Christopher Bazemore, Founder · Transforming Youth, Inc.</div>
     </div>
+  </div>
 
-    <!-- URGENCY STRIP -->
-    <div class="lp-urgency-wrap" style="background:#2C3E50;padding:22px 20px;">
-      <div class="lp-urg-title" style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;color:white;text-align:center;line-height:1.5;margin-bottom:16px;">The research is clear.<br><span style="color:#FFD93D;">3rd grade reading shapes everything that comes next.</span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
+  <!-- URGENCY STRIP -->
+  <div class="lp-urgency-wrap">
+    <div class="lp-container">
+      <div class="lp-urg-title">The research is clear.<br><span style="color:#FFD93D;">3rd grade reading shapes everything that comes next.</span></div>
+      <div class="lp-stat-row">
         <div style="text-align:center;padding:0 6px;">
-          <div class="lp-stat-n" style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FFD93D;">69%</div>
-          <div class="lp-stat-l" style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">of 4th graders read below proficiency — 2 in 5 can't meet even basic level</div>
+          <div class="lp-stat-n">69%</div>
+          <div class="lp-stat-l">of 4th graders read below proficiency</div>
           <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);margin-top:2px;">NAEP, 2024</div>
         </div>
         <div style="text-align:center;padding:0 6px;border-left:1px solid rgba(255,255,255,0.12);">
-          <div class="lp-stat-n" style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FFD93D;">4×</div>
-          <div class="lp-stat-l" style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">more likely to not graduate high school on time</div>
+          <div class="lp-stat-n">4×</div>
+          <div class="lp-stat-l">more likely to not graduate high school on time</div>
           <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);margin-top:2px;">Annie E. Casey Foundation, 2011</div>
         </div>
         <div style="text-align:center;padding:0 6px;border-left:1px solid rgba(255,255,255,0.12);">
-          <div class="lp-stat-n" style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FFD93D;">25M</div>
-          <div class="lp-stat-l" style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">children in the U.S. can't read at grade level</div>
+          <div class="lp-stat-n">25M</div>
+          <div class="lp-stat-l">children in the U.S. can't read at grade level</div>
           <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);margin-top:2px;">NAEP Nation's Report Card</div>
         </div>
       </div>
-      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);text-align:center;margin-top:12px;">
-        Sources: <a href="https://www.nationsreportcard.gov/reports/reading/2024/g4_8/?grade=4" target="_blank" style="color:rgba(255,255,255,0.45);text-decoration:underline;">NAEP 2024 Nation's Report Card</a> · <a href="https://www.aecf.org/resources/double-jeopardy" target="_blank" style="color:rgba(255,255,255,0.45);text-decoration:underline;">Annie E. Casey Foundation</a>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);text-align:center;margin-top:14px;">
+        Sources: <a href="https://www.nationsreportcard.gov/reports/reading/2024/g4_8/?grade=4" target="_blank" style="color:rgba(255,255,255,0.45);text-decoration:underline;">NAEP 2024</a> · <a href="https://www.aecf.org/resources/double-jeopardy" target="_blank" style="color:rgba(255,255,255,0.45);text-decoration:underline;">Annie E. Casey Foundation</a>
       </div>
     </div>
+  </div>
 
-    <!-- PROBLEM -->
-    <div id="lp-section-problem" class="lp-problem-wrap" style="padding:28px 20px;">
-      <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">The reality</div>
-      <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Parents want to help.<br>Life gets in the way.</div>
-      <div class="lp-prob-cards" style="display:flex;flex-direction:column;gap:10px;">
-        <div class="lp-prob lp-p1" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#FFF3E8;border-left:4px solid #FF6B35;">
-          <span class="lp-prob-ico" style="font-size:28px;flex-shrink:0;">⏰</span>
+  <!-- PROBLEM -->
+  <div id="lp-section-problem" class="lp-section-block">
+    <div class="lp-container">
+      <div class="lp-eyebrow">The reality</div>
+      <div class="lp-section-h">Parents want to help.<br>Life gets in the way.</div>
+      <div class="lp-prob-cards">
+        <div class="lp-prob lp-p1">
+          <span class="lp-prob-ico">⏰</span>
           <div>
-            <div class="lp-prob-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Practice gets skipped</div>
-            <div class="lp-prob-text" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Between work, dinner, and homework — reading practice is the first thing that falls through the cracks.</div>
+            <div class="lp-prob-title">Practice gets skipped</div>
+            <div class="lp-prob-text">Between work, dinner, and homework — reading practice is the first thing that falls through the cracks.</div>
           </div>
         </div>
-        <div class="lp-prob lp-p2" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#EEF5FF;border-left:4px solid #54A0FF;">
-          <span class="lp-prob-ico" style="font-size:28px;flex-shrink:0;">📉</span>
+        <div class="lp-prob lp-p2">
+          <span class="lp-prob-ico">📉</span>
           <div>
-            <div class="lp-prob-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">No way to measure progress at home</div>
-            <div class="lp-prob-text" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Parents don't know if their child is improving until the teacher calls.</div>
+            <div class="lp-prob-title">No way to measure progress at home</div>
+            <div class="lp-prob-text">Parents don't know if their child is improving until the teacher calls.</div>
           </div>
         </div>
-        <div class="lp-prob lp-p3" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#F5F0FF;border-left:4px solid #9B59B6;">
-          <span class="lp-prob-ico" style="font-size:28px;flex-shrink:0;">😟</span>
+        <div class="lp-prob lp-p3">
+          <span class="lp-prob-ico">😟</span>
           <div>
-            <div class="lp-prob-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Falling behind quietly</div>
-            <div class="lp-prob-text" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Children who struggle rarely say so. By the time it shows, they're already behind.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SOLUTION -->
-    <div id="lp-section-features" class="lp-solution-wrap" style="padding:28px 20px;background:#FFF8EE;">
-      <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">How ReadUp helps</div>
-      <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Everything your child needs to become a confident reader</div>
-      <div class="lp-sol-cards" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="lp-sol-card" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #FFB088;">
-          <div class="lp-sol-icon" style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✨</div>
-          <div>
-            <div class="lp-sol-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">AI Stories — made just for them</div>
-            <div class="lp-sol-desc" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">A brand new story at your child's exact grade level every session. No two reads are the same.</div>
-          </div>
-        </div>
-        <div class="lp-sol-card" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #A8CEFF;">
-          <div class="lp-sol-icon" style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#54A0FF,#2E86DE);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⏱</div>
-          <div>
-            <div class="lp-sol-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Timed Reading — real scores, real growth</div>
-            <div class="lp-sol-desc" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">The same 60-second fluency test schools use. See your child's WPM improve week by week.</div>
-          </div>
-        </div>
-        <div class="lp-sol-card" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #9EDBA0;">
-          <div class="lp-sol-icon" style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5CD85A,#27AE60);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔤</div>
-          <div>
-            <div class="lp-sol-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Spelling Practice — their actual list</div>
-            <div class="lp-sol-desc" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Upload their school spelling list and Bookie turns it into guided practice, quizzes, and games.</div>
-          </div>
-        </div>
-        <div class="lp-sol-card" style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #C8B4F5;">
-          <div class="lp-sol-icon" style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#9B59B6,#8E44AD);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔊</div>
-          <div>
-            <div class="lp-sol-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Read Together — Bookie reads with them</div>
-            <div class="lp-sol-desc" style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Bookie reads every word aloud with live highlighting — so your child always knows exactly where they are.</div>
+            <div class="lp-prob-title">Falling behind quietly</div>
+            <div class="lp-prob-text">Children who struggle rarely say so. By the time it shows, they're already behind.</div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- PARENT PROMISE -->
-    <div class="lp-promise-wrap" style="background:#2C3E50;padding:28px 20px;">
-      <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FFD93D;margin-bottom:6px;">For parents</div>
-      <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:white;text-align:center;margin-bottom:6px;line-height:1.3;">You'll always know where your child stands</div>
-      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.65);text-align:center;margin-bottom:20px;line-height:1.5;">Your parent dashboard is ready — track progress, assign readings, and see real growth.</div>
-      <div class="lp-promise-items" style="display:flex;flex-direction:column;gap:10px;">
-        <div class="lp-promise-item" style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <div class="lp-pi-dot lpd1" style="width:32px;height:32px;border-radius:50%;background:#FF6B35;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">⚡</div>
+  <!-- SOLUTION -->
+  <div id="lp-section-features" class="lp-section-block-alt">
+    <div class="lp-container">
+      <div class="lp-eyebrow">How ReadUp helps</div>
+      <div class="lp-section-h">Everything your child needs to become a confident reader</div>
+      <div class="lp-sol-cards">
+        <div class="lp-sol-card" style="border:2px solid #FFB088;">
+          <div class="lp-sol-icon" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);">✨</div>
           <div>
-            <div class="lp-pi-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:2px;">Words per minute — every session</div>
-            <div class="lp-pi-text" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;">Track reading speed against grade-level benchmarks week by week</div>
+            <div class="lp-sol-title">AI Stories — made just for them</div>
+            <div class="lp-sol-desc">A brand new story at your child's exact grade level every session. No two reads are the same.</div>
           </div>
         </div>
-        <div class="lp-promise-item" style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <div class="lp-pi-dot lpd2" style="width:32px;height:32px;border-radius:50%;background:#54A0FF;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📖</div>
+        <div class="lp-sol-card" style="border:2px solid #A8CEFF;">
+          <div class="lp-sol-icon" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">⏱</div>
           <div>
-            <div class="lp-pi-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:2px;">Every timed passage saved</div>
-            <div class="lp-pi-text" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;">Reissue any reading passage — let your child retry and beat their score</div>
+            <div class="lp-sol-title">Timed Reading — real scores, real growth</div>
+            <div class="lp-sol-desc">The same 60-second fluency test schools use. See your child's WPM improve week by week.</div>
           </div>
         </div>
-        <div class="lp-promise-item" style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <div class="lp-pi-dot lpd3" style="width:32px;height:32px;border-radius:50%;background:#5CD85A;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">✅</div>
+        <div class="lp-sol-card" style="border:2px solid #9EDBA0;">
+          <div class="lp-sol-icon" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">🔤</div>
           <div>
-            <div class="lp-pi-title" style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:2px;">Assign passages from your dashboard</div>
-            <div class="lp-pi-text" style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;">Send readings to your child — they see them waiting on their home screen</div>
+            <div class="lp-sol-title">Spelling Practice — their actual list</div>
+            <div class="lp-sol-desc">Upload their school spelling list and Bookie turns it into guided practice, quizzes, and games.</div>
+          </div>
+        </div>
+        <div class="lp-sol-card" style="border:2px solid #C8B4F5;">
+          <div class="lp-sol-icon" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">🔊</div>
+          <div>
+            <div class="lp-sol-title">Read Together — Bookie reads with them</div>
+            <div class="lp-sol-desc">Bookie reads every word aloud with live highlighting — so your child always knows exactly where they are.</div>
           </div>
         </div>
       </div>
-      <div style="margin:18px auto 0;background:rgba(90,205,90,0.15);border:1.5px solid rgba(90,205,90,0.4);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#5CD85A;text-align:center;">✅ Parent Dashboard — Live Now</div>
     </div>
+  </div>
 
-    <!-- TESTIMONIALS -->
-    <div class="lp-testimonials-wrap" style="padding:28px 20px;background:#FFFBF2;">
-      <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:6px;">Join our early families</div>
-      <div style="font-size:13px;font-weight:700;color:#64748B;text-align:center;margin-bottom:18px;line-height:1.6;">ReadUp! is in its early days — built by a parent, for parents. Real results are being tracked now. Be part of the story.</div>
-      <div class="lp-proof-cards" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="lp-quote-card" style="background:white;border-radius:20px;padding:18px;border:1.5px solid #F0E6D8;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-          <div style="font-size:28px;margin-bottom:8px;">📈</div>
-          <div class="lp-quote-text" style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;margin-bottom:12px;">We're tracking WPM improvement across our first cohort right now. Early results go directly into grant reports and school partnerships.</div>
+  <!-- PARENT PROMISE -->
+  <div class="lp-section-dark">
+    <div class="lp-container">
+      <div class="lp-eyebrow">For parents</div>
+      <div class="lp-section-h">You'll always know where your child stands</div>
+      <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.65);text-align:center;margin-bottom:24px;line-height:1.6;">Your parent dashboard is live. Here's what you can see right now:</div>
+      <div class="lp-promise-items">
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd1">⚡</div>
+          <div>
+            <div class="lp-pi-title">Words per minute — every session</div>
+            <div class="lp-pi-text">Track reading speed against grade-level benchmarks week by week</div>
+          </div>
+        </div>
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd2">📖</div>
+          <div>
+            <div class="lp-pi-title">Every timed passage saved</div>
+            <div class="lp-pi-text">Reissue any reading passage — let your child retry and beat their score</div>
+          </div>
+        </div>
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd3">✅</div>
+          <div>
+            <div class="lp-pi-title">Assign passages from your dashboard</div>
+            <div class="lp-pi-text">Send readings to your child — they see them waiting on their home screen</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin:20px auto 0;background:rgba(92,216,90,0.2);border:1.5px solid rgba(92,216,90,0.5);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#5CD85A;text-align:center;width:fit-content;">✅ Parent Dashboard — Live Now</div>
+    </div>
+  </div>
+
+  <!-- EARLY FAMILIES -->
+  <div class="lp-section-block">
+    <div class="lp-container">
+      <div class="lp-section-h">Join our early families</div>
+      <div style="font-size:15px;font-weight:700;color:#64748B;text-align:center;margin-bottom:24px;line-height:1.6;">ReadUp! is in its early days — built by a parent, for parents. Real results are being tracked now.</div>
+      <div class="lp-proof-cards">
+        <div class="lp-quote-card">
+          <div style="font-size:28px;margin-bottom:10px;">📈</div>
+          <div class="lp-quote-text">We're tracking WPM improvement across our first cohort right now. Early results go directly into grant reports and school partnerships.</div>
           <div style="font-size:11px;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;">Live data collection — Spring 2025</div>
         </div>
-        <div class="lp-quote-card" style="background:white;border-radius:20px;padding:18px;border:1.5px solid #F0E6D8;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-          <div style="font-size:28px;margin-bottom:8px;">🎯</div>
-          <div class="lp-quote-text" style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;margin-bottom:12px;">Built because Christopher's son Chris reads at 39 WPM. The DIBELS benchmark for 1st grade is 111 WPM. This app exists to close that gap — for every child, not just his.</div>
+        <div class="lp-quote-card">
+          <div style="font-size:28px;margin-bottom:10px;">🎯</div>
+          <div class="lp-quote-text">Built for families who can't afford $15–30/month for tools like Ello or AMIRA. Every feature is free. Every child deserves this.</div>
           <div style="font-size:11px;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;">Transforming Youth, Inc. — Nonprofit 501(c)(3)</div>
         </div>
       </div>
     </div>
-
-    <!-- FINAL CTA -->
-    <div class="lp-final-wrap" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);padding:36px 24px;text-align:center;">
-      <span style="font-size:60px;display:block;margin-bottom:10px;animation:lpbob 3s ease-in-out infinite;">🦉</span>
-      <div class="lp-final-h" style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:white;line-height:1.3;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">Bookie is ready.<br>Is your child?</div>
-      <div class="lp-final-sub" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:24px;line-height:1.7;">Join families who decided their child's reading<br>couldn't wait. Takes 2 minutes to get started.</div>
-      <button id="lp-final-btn" class="lp-btn-white" style="display:block;background:white;color:#FF6B35;border:none;border-radius:18px;padding:16px;font-family:'Fredoka',sans-serif;font-size:20px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin:0 auto 10px;box-shadow:0 8px 28px rgba(0,0,0,0.15);">🚀 Start with Bookie</button>
-      <div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.95);margin-bottom:16px;">✅ 100% Free — no credit card, ever</div>
-      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.8);">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
-    </div>
-
   </div>
+
+  <!-- FINAL CTA -->
+  <div class="lp-final-wrap">
+    <div class="lp-container">
+      <span style="font-size:60px;display:block;margin-bottom:12px;animation:lpbob 3s ease-in-out infinite;">🦉</span>
+      <div class="lp-final-h">Bookie is ready.<br>Is your child?</div>
+      <div class="lp-final-sub">Join families who decided their child's reading<br>couldn't wait. Takes 2 minutes to get started.</div>
+      <button id="lp-final-btn" class="lp-btn-white">🚀 Start with Bookie</button>
+      <div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.95);margin-bottom:16px;">✅ 100% Free — no credit card, ever</div>
+      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.7);">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
