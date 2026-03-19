@@ -1654,7 +1654,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GK</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GL</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -1708,60 +1708,60 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     <input type="file" id="vocab-file-input" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
   </div>
 
-  <!-- BOTTOM SHEET: Practice Reading -->
-  <div id="sheet-practice-reading" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.45);" aria-modal="true">
-    <div style="position:absolute;bottom:0;left:0;right:0;background:var(--card);border-radius:28px 28px 0 0;padding:20px 20px 40px;box-shadow:0 -4px 30px rgba(0,0,0,0.15);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);">
-      <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 18px;"></div>
-      <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:16px;">⏱ Practice Reading</div>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <button id="btn-timed-reading-home" class="kid-action-btn" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);box-shadow:0 6px 18px rgba(142,68,173,0.3);">
-          <span style="font-size:2rem;">⏱</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:white;">Time My Reading</div>
-            <div style="font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.8);">Read and check your speed</div>
-          </div>
-        </button>
-        <button id="btn-scan-page" class="kid-action-btn" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.3);">
-          <span style="font-size:2rem;">📸</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:white;">My Own Reading</div>
-            <div style="font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.8);">Upload a book or passage</div>
-          </div>
-        </button>
-      </div>
+  <!-- SCREEN: Practice Reading category -->
+  <div class="screen" id="sheet-practice-reading">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button id="btn-cat-reading-back" style="background:none;border:none;font-size:1.8rem;cursor:pointer;padding:0;line-height:1;color:var(--ink);">←</button>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">⏱ Practice Reading</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <button id="btn-timed-reading-home" class="kid-action-btn" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);box-shadow:0 8px 24px rgba(142,68,173,0.35);">
+        <span style="font-size:2.4rem;">⏱</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:white;">Time My Reading</div>
+          <div style="font-size:0.88rem;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;">Read and check your speed</div>
+        </div>
+      </button>
+      <button id="btn-scan-page" class="kid-action-btn" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);box-shadow:0 8px 24px rgba(46,134,222,0.35);">
+        <span style="font-size:2.4rem;">📸</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:white;">My Own Reading</div>
+          <div style="font-size:0.88rem;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;">Upload a book or passage</div>
+        </div>
+      </button>
     </div>
   </div>
 
-  <!-- BOTTOM SHEET: Word Work -->
-  <div id="sheet-word-work" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.45);" aria-modal="true">
-    <div style="position:absolute;bottom:0;left:0;right:0;background:var(--card);border-radius:28px 28px 0 0;padding:20px 20px 40px;box-shadow:0 -4px 30px rgba(0,0,0,0.15);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);">
-      <div style="width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 18px;"></div>
-      <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:16px;">✏️ Word Work</div>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <button id="btn-spelling-start" class="kid-action-btn" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 6px 18px rgba(238,90,36,0.3);">
-          <span style="font-size:2rem;">🔤</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:white;">Spelling Words</div>
-            <div style="font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.8);">Practice your spelling list</div>
-          </div>
-        </button>
-        <button id="btn-vocab-start" class="kid-action-btn" style="background:linear-gradient(135deg,#00CEC9,#00838F);box-shadow:0 6px 18px rgba(0,131,143,0.35);">
-          <span style="font-size:2rem;">📚</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:white;">Vocabulary Words</div>
-            <div style="font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.8);">Learn new words</div>
-            <span class="home-wordbank-badge" id="home-vocab-badge" style="background:rgba(255,255,255,0.25);color:#fff;margin-top:2px;"></span>
-          </div>
-        </button>
-        <button id="btn-wordbank-home" class="kid-action-btn" style="background:linear-gradient(135deg,#FFD93D,#F9A825);box-shadow:0 6px 18px rgba(249,168,37,0.3);">
-          <span style="font-size:2rem;">📖</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#5D4037;">My Word Bank</div>
-            <div style="font-size:0.8rem;font-weight:700;color:rgba(93,64,55,0.7);">Words I'm learning</div>
-            <span class="home-wordbank-badge" id="home-wordbank-badge" style="margin-top:2px;"></span>
-          </div>
-        </button>
-      </div>
+  <!-- SCREEN: Word Work category -->
+  <div class="screen" id="sheet-word-work">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button id="btn-cat-words-back" style="background:none;border:none;font-size:1.8rem;cursor:pointer;padding:0;line-height:1;color:var(--ink);">←</button>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">✏️ Word Work</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <button id="btn-spelling-start" class="kid-action-btn" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
+        <span style="font-size:2.4rem;">🔤</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:white;">Spelling Words</div>
+          <div style="font-size:0.88rem;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;">Practice your spelling list</div>
+        </div>
+      </button>
+      <button id="btn-vocab-start" class="kid-action-btn" style="background:linear-gradient(135deg,#00CEC9,#00838F);box-shadow:0 8px 24px rgba(0,131,143,0.35);">
+        <span style="font-size:2.4rem;">📚</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:white;">Vocabulary Words</div>
+          <div style="font-size:0.88rem;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;">Learn new words</div>
+          <span class="home-wordbank-badge" id="home-vocab-badge" style="background:rgba(255,255,255,0.25);color:#fff;margin-top:4px;"></span>
+        </div>
+      </button>
+      <button id="btn-wordbank-home" class="kid-action-btn" style="background:linear-gradient(135deg,#FFD93D,#F9A825);box-shadow:0 8px 24px rgba(249,168,37,0.35);">
+        <span style="font-size:2.4rem;">📖</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:#5D4037;">My Word Bank</div>
+          <div style="font-size:0.88rem;font-weight:700;color:rgba(93,64,55,0.7);margin-top:2px;">Words I'm learning</div>
+          <span class="home-wordbank-badge" id="home-wordbank-badge" style="margin-top:4px;"></span>
+        </div>
+      </button>
     </div>
   </div>
 
@@ -3172,7 +3172,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GK</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GL</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3924,34 +3924,20 @@ lpStyle.textContent = '@keyframes lpbob { 0%,100%{transform:translateY(0) rotate
 document.head.appendChild(lpStyle);
 
 // ── Category buttons on home screen ──────────────────────
-function openSheet(id) {
-  const sheet = document.getElementById(id);
-  if (sheet) sheet.style.display = 'block';
-}
-function closeSheet(id) {
-  const sheet = document.getElementById(id);
-  if (sheet) sheet.style.display = 'none';
-}
+document.getElementById('btn-cat-reading').addEventListener('click', () => show('sheet-practice-reading'));
+document.getElementById('btn-cat-words').addEventListener('click', () => show('sheet-word-work'));
 
-document.getElementById('btn-cat-reading').addEventListener('click', () => openSheet('sheet-practice-reading'));
-document.getElementById('btn-cat-words').addEventListener('click', () => openSheet('sheet-word-work'));
+document.getElementById('btn-cat-reading-back').addEventListener('click', () => show('screen-pick'));
+document.getElementById('btn-cat-words-back').addEventListener('click', () => show('screen-pick'));
 
-// Close sheets when tapping the dark backdrop
-document.getElementById('sheet-practice-reading').addEventListener('click', e => {
-  if (e.target === document.getElementById('sheet-practice-reading')) closeSheet('sheet-practice-reading');
-});
-document.getElementById('sheet-word-work').addEventListener('click', e => {
-  if (e.target === document.getElementById('sheet-word-work')) closeSheet('sheet-word-work');
-});
-
-// Close sheets when any inner button is tapped
+// Close category screens when any inner feature button is tapped
 ['btn-timed-reading-home','btn-scan-page'].forEach(id => {
   const el = document.getElementById(id);
-  if (el) el.addEventListener('click', () => closeSheet('sheet-practice-reading'), true);
+  if (el) el.addEventListener('click', () => show('screen-pick'), true);
 });
 ['btn-spelling-start','btn-vocab-start','btn-wordbank-home'].forEach(id => {
   const el = document.getElementById(id);
-  if (el) el.addEventListener('click', () => closeSheet('sheet-word-work'), true);
+  if (el) el.addEventListener('click', () => show('screen-pick'), true);
 });
 
 // ── My Assignments button on home screen ─────────────────
@@ -7532,13 +7518,15 @@ function renderMyReadings() {
     const displayTitle = p.title || 'Reading Passage';
 
     const card = document.createElement('div');
+    card.className = 'my-readings-card';
+    card.dataset.cardId = p.id;
     card.style.cssText = 'background:var(--section);border-radius:16px;padding:14px 16px;border:2px solid var(--border);';
     card.innerHTML = `
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:1rem;">${sourceIcon}</span>
-            <span class="passage-title-display" data-id="${p.id}" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayTitle}</span>
+            <span class="passage-title-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayTitle}</span>
             <button class="btn-edit-title" data-id="${p.id}" style="background:none;border:none;cursor:pointer;font-size:0.85rem;padding:2px 4px;color:var(--muted);flex-shrink:0;" title="Rename">✏️</button>
           </div>
           <input class="passage-title-input" data-id="${p.id}" type="text" value="${displayTitle}" style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;margin-top:2px;outline:none;" maxlength="50">
@@ -7558,11 +7546,13 @@ function renderMyReadings() {
 
   // Wire up edit title buttons
   list.querySelectorAll('.btn-edit-title').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
       const id = btn.dataset.id;
-      const card = btn.closest('div[style]');
-      const display = card.querySelector(`.passage-title-display[data-id="${id}"]`);
-      const input = card.querySelector(`.passage-title-input[data-id="${id}"]`);
+      const card = document.querySelector(`.my-readings-card[data-card-id="${id}"]`);
+      if (!card) return;
+      const display = card.querySelector('.passage-title-display');
+      const input = card.querySelector('.passage-title-input');
       display.style.display = 'none';
       btn.style.display = 'none';
       input.style.display = 'block';
@@ -7571,22 +7561,27 @@ function renderMyReadings() {
     });
   });
 
-  // Save on Enter or blur
+  // Save on Enter or blur — use mousedown on doc to detect tap-away vs iOS blur race
   list.querySelectorAll('.passage-title-input').forEach(input => {
+    let saving = false;
     const finishEdit = () => {
+      if (saving) return;
+      saving = true;
       const id = input.dataset.id;
+      const card = document.querySelector(`.my-readings-card[data-card-id="${id}"]`);
+      if (!card) return;
       const newTitle = input.value.trim() || 'Reading Passage';
-      const card = input.closest('div[style]');
-      const display = card.querySelector(`.passage-title-display[data-id="${id}"]`);
-      const editBtn = card.querySelector(`.btn-edit-title[data-id="${id}"]`);
+      const display = card.querySelector('.passage-title-display');
+      const editBtn = card.querySelector('.btn-edit-title');
       display.textContent = newTitle;
       display.style.display = '';
-      editBtn.style.display = '';
+      if (editBtn) editBtn.style.display = '';
       input.style.display = 'none';
       savePassageTitle(id, newTitle);
+      setTimeout(() => { saving = false; }, 300);
     };
     input.addEventListener('blur', finishEdit);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); finishEdit(); } });
   });
 
   // Wire up Read Again buttons
