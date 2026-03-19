@@ -1356,7 +1356,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FD</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FE</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2809,7 +2809,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FD</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FE</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3047,17 +3047,8 @@ function pushToCloud() {
     .catch(e => console.warn('Cloud push failed:', e));
 }
 
-// Patch saveData to also push to cloud (debounced 3s to avoid hammering)
+// Cloud push timer — used by saveData below
 let _cloudPushTimer = null;
-const _origSaveData = saveData;
-function saveData(d) {
-  _origSaveData(d);
-  // Debounced cloud push — only if authenticated
-  if (currentUser && currentChildId) {
-    clearTimeout(_cloudPushTimer);
-    _cloudPushTimer = setTimeout(pushToCloud, 3000);
-  }
-}
 
 // ── Auth UI helpers ───────────────────────────────────────
 function showAuthScreen() {
@@ -7196,6 +7187,11 @@ function saveData(d) {
         }
       }
     }
+  }
+  // Debounced cloud sync — runs in background after every save if authenticated
+  if (typeof currentUser !== 'undefined' && currentUser && currentChildId) {
+    clearTimeout(_cloudPushTimer);
+    _cloudPushTimer = setTimeout(pushToCloud, 3000);
   }
 }
 
