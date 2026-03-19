@@ -1523,8 +1523,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   </div>
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
-  <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FT</div>
+  <div class="screen" id="screen-pick">
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FU</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3626,8 +3626,17 @@ document.getElementById('btn-add-child-save').addEventListener('click', async ()
 });
 
 // ── onAuthStateChanged — the main auth entry point ────────
+// Hide splash screen smoothly
+function hideSplash() {
+  const splash = document.getElementById('splash-screen');
+  if (!splash) return;
+  splash.style.opacity = '0';
+  setTimeout(() => { splash.style.display = 'none'; }, 300);
+}
+
 onAuthStateChanged(auth, async (user) => {
   authReady = true;
+  hideSplash();
   if (user) {
     currentUser = user;
     console.log('✅ Signed in:', user.email || user.displayName);
@@ -12222,4 +12231,13 @@ document.addEventListener('keydown', (e) => {
       <button class="btn-main btn-green" id="btn-add-child-save" style="font-size:0.9rem;">✅ Save Profile</button>
     </div>
   </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SPLASH SCREEN — shown during Firebase auth check       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="splash-screen" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.3s ease;">
+  <span style="font-size:90px;animation:lpbob 2s ease-in-out infinite;">🦉</span>
+  <div style="font-family:'Fredoka',sans-serif;font-size:48px;font-weight:700;color:white;text-shadow:0 3px 0 rgba(0,0,0,0.15);letter-spacing:2px;margin-top:8px;">ReadUp!</div>
+  <div style="font-size:13px;font-weight:800;color:rgba(255,255,255,0.8);margin-top:8px;letter-spacing:1px;">Loading...</div>
 </div>
