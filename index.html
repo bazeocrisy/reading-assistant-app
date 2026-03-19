@@ -1524,7 +1524,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FM</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3233,13 +3233,11 @@ function hideLandingPage() {
 }
 
 function showAuthScreen() {
-  // Show landing page behind the modal if not already visible
-  const landing = document.getElementById('screen-landing');
-  if (landing && landing.style.display !== 'block') {
-    landing.style.display = 'block';
-  }
-  // Show auth as modal overlay
+  // Always show landing page behind the modal
+  document.getElementById('screen-landing').style.display = 'block';
+  // Show auth as modal overlay on top
   const authEl = document.getElementById('auth-screen');
+  authEl.style.cssText = authEl.style.cssText.replace('display:none', '');
   authEl.style.display = 'flex';
 }
 
@@ -3568,12 +3566,12 @@ onAuthStateChanged(auth, async (user) => {
     showProfileScreen();
 
   } else {
-    // Not signed in — show auth screen directly
+    // Not signed in — always show landing page first, never auto-open auth modal
     currentUser = null;
     currentChildId = null;
     currentChildProfile = null;
     updateProfileBadge();
-    showAuthScreen();
+    showLandingPage();
   }
 });
 
@@ -11890,7 +11888,7 @@ document.addEventListener('keydown', (e) => {
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- AUTH MODAL — pops over landing page                    -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div id="auth-screen" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
+<div id="auth-screen" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);padding:20px;overflow-y:auto;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:28px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:fadeUp 0.3s ease both;position:relative;">
 
     <!-- Close button -->
