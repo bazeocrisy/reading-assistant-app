@@ -433,6 +433,38 @@ body.bedtime .parent-bar-btn { background: #3a2a1a; border-color: #3a3a5c; color
 body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a; color: #fff; }
 /* Content clears the fixed bar */
 .screen > .card:last-child { margin-bottom: 62px; }
+
+/* ── Desktop: nav moves to top ── */
+@media (min-width: 1280px) {
+  /* Bar flips to top */
+  .parent-bar {
+    top: 0; bottom: auto;
+    border-top: none;
+    border-bottom: 1.5px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 8px 24px;
+    padding-bottom: 8px;
+    justify-content: space-between;
+  }
+  /* App gets top padding instead of bottom */
+  .app {
+    padding-top: calc(56px + 20px) !important;
+    padding-bottom: 24px !important;
+  }
+  /* Word toast repositions to top */
+  .word-toast {
+    bottom: auto !important;
+    top: 70px !important;
+  }
+  /* Screen content no longer needs bottom margin for bar */
+  .screen > .card:last-child { margin-bottom: 0; }
+  /* Bedtime: dark bar at top */
+  body.bedtime .parent-bar {
+    border-bottom-color: #3a3a5c;
+    border-top: none;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+}
 .screen { padding-bottom: 62px; }
 
 /* ── Spelling Study Mode (Fullscreen) ── */
@@ -1669,7 +1701,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GM</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GN</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3187,7 +3219,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GM</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GN</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
