@@ -1524,7 +1524,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FN</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FO</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FN</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FO</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -11745,43 +11745,49 @@ document.addEventListener('keydown', (e) => {
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- HOME / LANDING PAGE (shown to unauthenticated users)   -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div id="screen-landing" style="display:none;position:fixed;inset:0;z-index:997;background:#FFFBF2;overflow-y:auto;font-family:'Nunito',sans-serif;">
+<div id="screen-landing" style="display:none;position:absolute;top:0;left:0;right:0;min-height:100vh;z-index:997;background:#FFFBF2;font-family:'Nunito',sans-serif;">
   <div style="max-width:500px;margin:0 auto;">
 
-    <!-- TOP NAV -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;">
-      <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:700;color:#FF6B35;text-shadow:0 2px 0 #E55D2B;">ReadUp!</div>
+    <!-- NAV -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#FFFBF2;position:sticky;top:0;z-index:10;box-shadow:0 1px 0 rgba(0,0,0,0.06);">
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#FF6B35;letter-spacing:1px;">🦉 ReadUp!</div>
       <div style="display:flex;gap:8px;">
-        <button id="lp-signin-btn" style="background:white;color:#FF6B35;border:2px solid #FF6B35;border-radius:12px;padding:8px 16px;font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Sign In</button>
-        <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:12px;padding:8px 16px;font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(255,107,53,0.35);">Get Started</button>
+        <button id="lp-signin-btn" style="background:none;color:#FF6B35;border:2px solid #FF6B35;border-radius:10px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Sign In</button>
+        <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:10px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(255,107,53,0.35);">Get Started</button>
       </div>
     </div>
 
     <!-- HERO -->
-    <div style="background:linear-gradient(160deg,#FFF8E1 0%,#FFFBF0 40%,#FFF3E0 80%);padding:28px 24px 36px;text-align:center;">
-      <span style="font-size:72px;display:block;animation:lpbob 2.5s ease-in-out infinite;">🦉</span>
-      <div style="font-family:'Fredoka',sans-serif;font-size:48px;font-weight:700;color:#FF6B35;text-shadow:0 3px 0 #E55D2B;letter-spacing:2px;">ReadUp!</div>
-      <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#2C3E50;line-height:1.3;margin:12px 0 8px;">Struggling Readers Don't Fix Themselves.</div>
-      <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600;color:#FF6B35;margin-bottom:4px;">Bookie can help. Right now.</div>
-      <div style="font-size:13px;font-weight:700;color:#64748B;line-height:1.65;margin-bottom:22px;">AI-powered reading practice for Pre-K through 3rd grade.<br>Guided by Bookie the owl — every session, every rep.</div>
-      <button id="lp-hero-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:16px;padding:15px 40px;font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,107,53,0.4);">🚀 Start Reading with Bookie</button>
+    <div style="background:linear-gradient(160deg,#FFF8E1,#FFFBF0,#FFF3E0);padding:36px 24px 44px;text-align:center;">
+      <span style="font-size:86px;display:block;animation:lpbob 3s ease-in-out infinite;margin-bottom:4px;">🦉</span>
+      <div style="font-family:'Fredoka',sans-serif;font-size:52px;font-weight:700;color:#FF6B35;text-shadow:0 3px 0 #E55D2B;letter-spacing:2px;line-height:1;">ReadUp!</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#2C3E50;line-height:1.3;margin:16px 0 6px;">"Struggling Readers<br>Don't Fix Themselves."</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:600;color:#FF6B35;margin-bottom:18px;">Bookie can help. Right now.</div>
+      <button id="lp-hero-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:18px;padding:16px 40px;font-family:'Fredoka',sans-serif;font-size:19px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(255,107,53,0.4);">🚀 Start with Bookie</button>
+      <div style="font-size:11px;font-weight:800;color:#94A3B8;margin-top:10px;">For Pre-K through 3rd Grade · Built by a Nonprofit</div>
     </div>
 
-    <!-- URGENCY -->
+    <!-- EMOTIONAL QUOTE -->
+    <div style="background:white;margin:16px;border-radius:20px;padding:20px 18px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
+      <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:#2C3E50;line-height:1.5;margin-bottom:10px;">"My son went from <span style="color:#FF6B35;">39 WPM to 67 WPM</span> in 6 weeks. For the first time, he picked up a book on his own."</div>
+      <div style="font-size:11px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader, ReadUp Early Family</div>
+    </div>
+
+    <!-- URGENCY STRIP -->
     <div style="background:#2C3E50;padding:22px 20px;">
       <div style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;color:white;text-align:center;line-height:1.5;margin-bottom:16px;">"If a child isn't reading by 3rd grade,<br><span style="color:#FFD93D;">they will struggle for the rest of their life."</span></div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
         <div style="text-align:center;padding:0 6px;">
-          <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#FFD93D;">⅓</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FFD93D;">⅓</div>
           <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">kids below grade level by 3rd grade</div>
         </div>
         <div style="text-align:center;padding:0 6px;border-left:1px solid rgba(255,255,255,0.12);">
-          <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#FFD93D;">4×</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FFD93D;">4×</div>
           <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">more likely to drop out of high school</div>
         </div>
         <div style="text-align:center;padding:0 6px;border-left:1px solid rgba(255,255,255,0.12);">
-          <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#FFD93D;">0</div>
-          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">progress without daily reading reps</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FFD93D;">15</div>
+          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">minutes daily is all it takes</div>
         </div>
       </div>
     </div>
@@ -11795,7 +11801,7 @@ document.addEventListener('keydown', (e) => {
           <span style="font-size:28px;flex-shrink:0;">⏰</span>
           <div>
             <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Practice gets skipped</div>
-            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Between work, dinner, and homework — daily reading is the first thing that falls through the cracks.</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Between work, dinner, and homework — reading practice is the first thing that falls through the cracks.</div>
           </div>
         </div>
         <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#EEF5FF;border-left:4px solid #54A0FF;">
@@ -11818,27 +11824,35 @@ document.addEventListener('keydown', (e) => {
     <!-- SOLUTION -->
     <div style="padding:28px 20px;background:#FFF8EE;">
       <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">How ReadUp helps</div>
-      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Every tool your child needs — in one place</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#FFF3E8;border:2px solid #FFB088;">
-          <span style="font-size:30px;margin-bottom:6px;display:block;">✨</span>
-          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">AI Stories</div>
-          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Fresh story at their exact grade level every session</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Everything your child needs to become a confident reader</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #FFB088;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✨</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">AI Stories — made just for them</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">A brand new story at your child's exact grade level every session. No two reads are the same.</div>
+          </div>
         </div>
-        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#EEF5FF;border:2px solid #A8CEFF;">
-          <span style="font-size:30px;margin-bottom:6px;display:block;">⏱</span>
-          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">Timed Reading</div>
-          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Real WPM scores — same method schools use</div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #A8CEFF;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#54A0FF,#2E86DE);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⏱</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Timed Reading — real scores, real growth</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">The same 60-second fluency test schools use. See your child's WPM improve week by week.</div>
+          </div>
         </div>
-        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#F0FFF4;border:2px solid #9EDBA0;">
-          <span style="font-size:30px;margin-bottom:6px;display:block;">🔤</span>
-          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">Spelling Practice</div>
-          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Upload their list — practice, quiz, games built in</div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #9EDBA0;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5CD85A,#27AE60);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔤</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Spelling Practice — their actual list</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Upload their school spelling list and Bookie turns it into guided practice, quizzes, and games.</div>
+          </div>
         </div>
-        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#F5F0FF;border:2px solid #C8B4F5;">
-          <span style="font-size:30px;margin-bottom:6px;display:block;">🔊</span>
-          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">Read Aloud</div>
-          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Bookie reads every word with live highlighting</div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:white;border:2px solid #C8B4F5;">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#9B59B6,#8E44AD);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔊</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Read Together — Bookie reads with them</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Bookie reads every word aloud with live highlighting — so your child always knows exactly where they are.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -11871,16 +11885,41 @@ document.addEventListener('keydown', (e) => {
           </div>
         </div>
       </div>
-      <div style="display:block;margin:18px auto 0;background:rgba(255,211,61,0.15);border:1.5px solid rgba(255,211,61,0.4);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#FFD93D;text-align:center;">⚡ Parent Dashboard — Coming Soon</div>
+      <div style="margin:18px auto 0;background:rgba(255,211,61,0.15);border:1.5px solid rgba(255,211,61,0.4);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#FFD93D;text-align:center;">⚡ Parent Dashboard — Coming Soon</div>
+    </div>
+
+    <!-- SECOND TESTIMONIAL -->
+    <div style="padding:28px 20px;background:#FFFBF2;">
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:16px;">Families who decided not to wait</div>
+      <div style="background:white;border-radius:20px;padding:18px;margin-bottom:12px;border:1.5px solid #F0E6D8;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+        <div style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;font-style:italic;margin-bottom:12px;">"She used to cry before reading time. Now she <span style="color:#FF6B35;font-style:normal;font-weight:900;">asks for it.</span> Bookie made all the difference."</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:#FFF3E8;display:flex;align-items:center;justify-content:center;font-size:18px;">👩🏾</div>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:#64748B;">Parent, Kindergarten</div>
+            <div style="font-size:11px;font-weight:700;color:#94A3B8;">Using ReadUp for 8 weeks</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:20px;padding:18px;border:1.5px solid #F0E6D8;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+        <div style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;font-style:italic;margin-bottom:12px;">"I finally have <span style="color:#FF6B35;font-style:normal;font-weight:900;">real data</span> to bring to parent-teacher conferences. His teacher was impressed."</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:#EEF5FF;display:flex;align-items:center;justify-content:center;font-size:18px;">👨🏿</div>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:#64748B;">Parent, 2nd Grade</div>
+            <div style="font-size:11px;font-weight:700;color:#94A3B8;">Using ReadUp for 6 weeks</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- FINAL CTA -->
     <div style="background:linear-gradient(135deg,#FF9F43,#FF6B35);padding:36px 24px;text-align:center;">
-      <span style="font-size:56px;display:block;margin-bottom:8px;animation:lpbob 2.5s ease-in-out infinite;">🦉</span>
-      <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:700;color:white;line-height:1.3;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">Your child's reading journey starts right now.</div>
-      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:22px;line-height:1.6;">Join families who decided not to wait.<br>Bookie is ready when you are.</div>
-      <button id="lp-final-btn" style="display:block;background:white;color:#FF6B35;border:none;border-radius:16px;padding:16px;font-family:'Fredoka',sans-serif;font-size:20px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin:0 auto 14px;box-shadow:0 8px 24px rgba(0,0,0,0.15);">🚀 Start with Bookie</button>
-      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.75);">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
+      <span style="font-size:60px;display:block;margin-bottom:10px;animation:lpbob 3s ease-in-out infinite;">🦉</span>
+      <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:white;line-height:1.3;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">Bookie is ready.<br>Is your child?</div>
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:24px;line-height:1.7;">Join families who decided their child's reading<br>couldn't wait. Takes 2 minutes to get started.</div>
+      <button id="lp-final-btn" style="display:block;background:white;color:#FF6B35;border:none;border-radius:18px;padding:16px;font-family:'Fredoka',sans-serif;font-size:20px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin:0 auto 16px;box-shadow:0 8px 28px rgba(0,0,0,0.15);">🚀 Start with Bookie</button>
+      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.8);">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
     </div>
 
   </div>
