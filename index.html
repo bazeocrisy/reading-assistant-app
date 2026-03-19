@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EZ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FA</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2671,7 +2671,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EZ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FA</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3182,15 +3182,41 @@ const BLOCKED_WORDS = [
   // Profanity (common)
   'fuck','shit','damn','ass','bitch','bastard','crap','dick','cock','pussy',
   'whore','slut','piss','fag','nigger','nigga','retard','retarded',
-  // Variations & partial matches
+  // Additional profanity
+  'asshole','bullshit','dumbass','jackass','dipshit','horseshit','motherfucker',
+  'fucker','fucking','shitty','bitchy','cunt','twat','wanker','douche','douchebag',
+  // Spaced-out evasions
   'f u c k','s h i t','b i t c h','a s s h o l e',
+  // Body parts (inappropriate context)
+  'penis','vagina','boob','boobs','butt','butthole','anus','testicle','testicles',
+  'scrotum','vulva','nipple','nipples',
   // Violence
   'kill yourself','suicide','cut yourself','shoot up','bomb threat',
+  'kill','murder','stab','rape','molest','strangle','torture','kidnap','slaughter',
   // Sexual
-  'porn','sex','naked','nude','xxx','hentai','onlyfans',
+  'porn','pornography','sex','naked','nude','xxx','hentai','onlyfans',
+  'masturbate','orgasm','erection','ejaculate','intercourse','fetish','bdsm','bondage',
   // Drugs
   'cocaine','heroin','meth','weed','marijuana','fentanyl',
+  'crack','lsd','ecstasy','mdma','molly','vape','vaping','dope','overdose','junkie',
+  // Hate / slurs
+  'kike','spic','chink','gook','wetback',
 ];
+
+// Normalise text before checking — converts common symbol/number evasions
+// e.g. sh1t -> shit, f@ck -> fuck, a$$ -> ass
+function normaliseForSafety(text) {
+  return text
+    .replace(/1/g, 'i')
+    .replace(/3/g, 'e')
+    .replace(/4/g, 'a')
+    .replace(/0/g, 'o')
+    .replace(/@/g, 'a')
+    .replace(/\$/g, 's')
+    .replace(/!/g, 'i')
+    .replace(/\*/g, '')
+    .replace(/-/g, '');
+}
 
 // Build regex from blocked words (word boundary matching, case insensitive)
 const BLOCKED_REGEX = new RegExp(
@@ -3215,7 +3241,9 @@ function escapeHtml(s) {
 
 function checkContentSafety(text) {
   if (!text || typeof text !== 'string') return { safe: true };
-  const match = text.match(BLOCKED_REGEX);
+  // Check both original text AND normalised version (catches sh1t, f@ck, a$$ etc.)
+  const normalised = normaliseForSafety(text);
+  const match = text.match(BLOCKED_REGEX) || normalised.match(BLOCKED_REGEX);
   if (match) {
     return { safe: false, reason: 'This text contains words that aren\'t appropriate for reading practice.' };
   }
@@ -7240,6 +7268,16 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     }
 
     if (!data.words || data.words.length === 0) throw new Error('No words found');
+
+    // Content safety check on extracted words before loading
+    const extractedWordStr = data.words.map(w => w.word).join(' ');
+    const uploadSafety = checkContentSafety(extractedWordStr);
+    if (!uploadSafety.safe) {
+      document.getElementById('spelling-loading').style.display = 'none';
+      document.getElementById('spelling-empty').style.display = 'block';
+      showAppAlert('🚫', 'Oops!', uploadSafety.reason);
+      return;
+    }
 
     // Build the spelling list object
     const spellingList = {
