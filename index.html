@@ -1146,7 +1146,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   width: 100%; max-width: 360px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.25); animation: fadeUp 0.3s ease;
 }
-.avatar-picker { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.avatar-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; max-height: 280px; overflow-y: auto; padding: 4px; }
+.avatar-section-label { grid-column: 1/-1; font-size: 0.68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 4px 0 0; text-align: left; padding-left: 2px; }
 .avatar-option {
   font-size: 2rem; width: 52px; height: 52px; border-radius: 14px;
   border: 3px solid var(--border); display: flex; align-items: center;
@@ -1168,6 +1169,173 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 .profile-badge-avatar { font-size: 1.4rem; }
 .profile-badge-name { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--purple-deep); }
 .profile-badge-switch { font-size: 0.7rem; font-weight: 800; color: var(--muted); }
+
+/* ══════════════════════════════════════════════════════════
+   LANDING PAGE
+   ══════════════════════════════════════════════════════════ */
+#screen-landing {
+  position: fixed; inset: 0; z-index: 997;
+  background: #FFFBF2; overflow-y: auto;
+  display: none;
+  font-family: 'Nunito', sans-serif;
+}
+.lp-hero {
+  background: linear-gradient(160deg,#FFF8E1 0%,#FFFBF0 40%,#FFF3E0 80%);
+  padding: 36px 24px 40px; text-align: center;
+}
+.lp-owl { font-size: 76px; display: block; animation: lpbob 2.5s ease-in-out infinite; }
+@keyframes lpbob {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  45%     { transform: translateY(-12px) rotate(-4deg); }
+  65%     { transform: translateY(-8px) rotate(3deg); }
+}
+.lp-logo {
+  font-family: 'Fredoka', sans-serif; font-size: 50px; font-weight: 700;
+  color: #FF6B35; text-shadow: 0 3px 0 #E55D2B; letter-spacing: 2px;
+}
+.lp-h1 {
+  font-family: 'Fredoka', sans-serif; font-size: 23px; font-weight: 700;
+  color: #2C3E50; line-height: 1.3; margin: 14px 0 8px;
+}
+.lp-sub {
+  font-size: 13px; font-weight: 700; color: #64748B;
+  line-height: 1.65; margin-bottom: 24px;
+}
+.lp-btns { display: flex; gap: 10px; justify-content: center; }
+.lp-btn-primary {
+  background: linear-gradient(135deg,#FF9F43,#FF6B35); color: white;
+  border: none; border-radius: 16px; padding: 14px 0;
+  font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700;
+  cursor: pointer; flex: 1; max-width: 190px;
+  box-shadow: 0 6px 18px rgba(255,107,53,0.4);
+}
+.lp-btn-secondary {
+  background: white; color: #FF6B35; border: 2.5px solid #FF6B35;
+  border-radius: 16px; padding: 14px 0;
+  font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700;
+  cursor: pointer; flex: 1; max-width: 190px;
+}
+.lp-urgency { background: #2C3E50; padding: 22px 20px; }
+.lp-urg-quote {
+  font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 700;
+  color: white; text-align: center; line-height: 1.5; margin-bottom: 16px;
+}
+.lp-urg-quote span { color: #FFD93D; }
+.lp-stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+.lp-stat { text-align: center; padding: 0 6px; }
+.lp-stat + .lp-stat { border-left: 1px solid rgba(255,255,255,0.12); }
+.lp-stat-n { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; color: #FFD93D; }
+.lp-stat-l { font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.65); margin-top: 3px; line-height: 1.4; }
+.lp-section { padding: 28px 20px; }
+.lp-section-alt { padding: 28px 20px; background: #FFF8EE; }
+.lp-eyebrow {
+  text-align: center; font-size: 10px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: #FF6B35; margin-bottom: 6px;
+}
+.lp-section-h {
+  font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 700;
+  color: #2C3E50; text-align: center; margin-bottom: 18px; line-height: 1.3;
+}
+.lp-prob-cards { display: flex; flex-direction: column; gap: 10px; }
+.lp-prob {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px; border-radius: 18px;
+}
+.lp-p1 { background: #FFF3E8; border-left: 4px solid #FF6B35; }
+.lp-p2 { background: #EEF5FF; border-left: 4px solid #54A0FF; }
+.lp-p3 { background: #F5F0FF; border-left: 4px solid #9B59B6; }
+.lp-prob-ico { font-size: 28px; flex-shrink: 0; }
+.lp-prob-title {
+  font-family: 'Fredoka', sans-serif; font-size: 15px;
+  font-weight: 700; color: #2C3E50; margin-bottom: 2px;
+}
+.lp-prob-text { font-size: 12px; font-weight: 700; color: #64748B; line-height: 1.55; }
+.lp-sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lp-sol { border-radius: 20px; padding: 16px 14px; text-align: center; }
+.lp-s1 { background: #FFF3E8; border: 2px solid #FFB088; }
+.lp-s2 { background: #EEF5FF; border: 2px solid #A8CEFF; }
+.lp-s3 { background: #F0FFF4; border: 2px solid #9EDBA0; }
+.lp-s4 { background: #F5F0FF; border: 2px solid #C8B4F5; }
+.lp-sol-ico { font-size: 30px; margin-bottom: 6px; display: block; }
+.lp-sol-title {
+  font-family: 'Fredoka', sans-serif; font-size: 14px;
+  font-weight: 700; color: #2C3E50; margin-bottom: 3px;
+}
+.lp-sol-desc { font-size: 11px; font-weight: 700; color: #64748B; line-height: 1.5; }
+.lp-dark { background: #2C3E50; padding: 28px 20px; }
+.lp-dark .lp-eyebrow { color: #FFD93D; }
+.lp-dark .lp-section-h { color: white; margin-bottom: 6px; }
+.lp-dark-sub {
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.65);
+  text-align: center; margin-bottom: 20px; line-height: 1.5;
+}
+.lp-promise-items { display: flex; flex-direction: column; gap: 10px; }
+.lp-promise-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(255,255,255,0.06); border-radius: 16px;
+  padding: 14px 16px; border: 1px solid rgba(255,255,255,0.08);
+}
+.lp-pi-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.lpd1 { background: #FF6B35; }
+.lpd2 { background: #54A0FF; }
+.lpd3 { background: #5CD85A; }
+.lpd4 { background: #9B59B6; }
+.lp-pi-title {
+  font-family: 'Fredoka', sans-serif; font-size: 15px;
+  font-weight: 700; color: white; margin-bottom: 2px;
+}
+.lp-pi-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.65); line-height: 1.5; }
+.lp-coming {
+  display: block; margin: 18px auto 0;
+  background: rgba(255,211,61,0.15); border: 1.5px solid rgba(255,211,61,0.4);
+  border-radius: 50px; padding: 8px 20px;
+  font-size: 12px; font-weight: 800; color: #FFD93D;
+  text-align: center; width: fit-content;
+}
+.lp-proof-cards { display: flex; flex-direction: column; gap: 12px; }
+.lp-quote-card {
+  background: white; border-radius: 18px;
+  padding: 16px 18px; border: 1.5px solid #F0E6D8;
+}
+.lp-quote-text {
+  font-size: 13px; font-weight: 700; color: #2C3E50;
+  line-height: 1.6; font-style: italic; margin-bottom: 10px;
+}
+.lp-quote-text span { color: #FF6B35; font-style: normal; font-weight: 800; }
+.lp-quote-author { display: flex; align-items: center; gap: 8px; }
+.lp-qa {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; background: #FFF3E8;
+}
+.lp-quote-name { font-size: 12px; font-weight: 800; color: #64748B; }
+.lp-final {
+  background: linear-gradient(135deg,#FF9F43,#FF6B35);
+  padding: 36px 24px; text-align: center;
+}
+.lp-final-owl { font-size: 56px; display: block; margin-bottom: 8px; animation: lpbob 2.5s ease-in-out infinite; }
+.lp-final-h {
+  font-family: 'Fredoka', sans-serif; font-size: 24px;
+  font-weight: 700; color: white; line-height: 1.3;
+  margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.lp-final-sub {
+  font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.92); margin-bottom: 22px; line-height: 1.6;
+}
+.lp-btn-white {
+  display: block; background: white; color: #FF6B35; border: none;
+  border-radius: 16px; padding: 16px;
+  font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700;
+  cursor: pointer; width: 100%; max-width: 300px;
+  margin: 0 auto 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.lp-np { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.75); }
 </style>
 </head>
 <body>
@@ -1356,7 +1524,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FG</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2809,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FG</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3051,7 +3219,18 @@ function pushToCloud() {
 let _cloudPushTimer = null;
 
 // ── Auth UI helpers ───────────────────────────────────────
+function showLandingPage() {
+  document.getElementById('screen-landing').style.display = 'block';
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('child-profile-screen').style.display = 'none';
+}
+
+function hideLandingPage() {
+  document.getElementById('screen-landing').style.display = 'none';
+}
+
 function showAuthScreen() {
+  hideLandingPage();
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('child-profile-screen').style.display = 'none';
 }
@@ -3272,13 +3451,13 @@ document.getElementById('active-profile-badge').addEventListener('keydown', e =>
 let selectedAvatar = '🦁';
 
 function showAddChildModal() {
-  selectedAvatar = '🦁';
+  selectedAvatar = '🤴🏿';
   document.getElementById('new-child-name').value = '';
   document.getElementById('new-child-grade').value = '1';
   document.getElementById('add-child-error').style.display = 'none';
   // Reset avatar selection
   document.querySelectorAll('.avatar-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.avatar === '🦁');
+    el.classList.toggle('selected', el.dataset.avatar === '🤴🏿');
   });
   document.getElementById('add-child-overlay').style.display = 'flex';
   setTimeout(() => document.getElementById('new-child-name').focus(), 100);
@@ -3369,13 +3548,25 @@ onAuthStateChanged(auth, async (user) => {
     showProfileScreen();
 
   } else {
-    // Not signed in — show auth screen
+    // Not signed in — show landing page first
     currentUser = null;
     currentChildId = null;
     currentChildProfile = null;
     updateProfileBadge();
-    showAuthScreen();
+    showLandingPage();
   }
+});
+
+// ── Landing page button handlers ─────────────────────────
+document.getElementById('lp-btn-get-started').addEventListener('click', () => {
+  showAuthScreen();
+});
+document.getElementById('lp-btn-final').addEventListener('click', () => {
+  showAuthScreen();
+});
+document.getElementById('lp-btn-see-how').addEventListener('click', () => {
+  const target = document.getElementById('lp-section-how');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 // ── Assignments badge on home screen ─────────────────────
@@ -11629,18 +11820,52 @@ document.addEventListener('keydown', (e) => {
     <div class="auth-input-group">
       <label class="auth-input-label">Pick an Avatar</label>
       <div class="avatar-picker" id="avatar-picker">
-        <div class="avatar-option selected" data-avatar="🦁">🦁</div>
+        <!-- Royalty & Heroes -->
+        <div class="avatar-section-label">👑 Royalty &amp; Heroes</div>
+        <div class="avatar-option selected" data-avatar="🤴🏿">🤴🏿</div>
+        <div class="avatar-option" data-avatar="👸🏿">👸🏿</div>
+        <div class="avatar-option" data-avatar="🤴🏾">🤴🏾</div>
+        <div class="avatar-option" data-avatar="👸🏾">👸🏾</div>
+        <div class="avatar-option" data-avatar="🤴🏽">🤴🏽</div>
+        <div class="avatar-option" data-avatar="👸🏽">👸🏽</div>
+        <div class="avatar-option" data-avatar="🦸🏿">🦸🏿</div>
+        <div class="avatar-option" data-avatar="🦸🏾">🦸🏾</div>
+        <div class="avatar-option" data-avatar="🦸🏽">🦸🏽</div>
+        <div class="avatar-option" data-avatar="🧙🏿">🧙🏿</div>
+        <div class="avatar-option" data-avatar="🧙🏾">🧙🏾</div>
+        <div class="avatar-option" data-avatar="🧙🏽">🧙🏽</div>
+        <!-- Big Cats & Bears -->
+        <div class="avatar-section-label">🦁 Big Cats &amp; Bears</div>
+        <div class="avatar-option" data-avatar="🦁">🦁</div>
         <div class="avatar-option" data-avatar="🐯">🐯</div>
+        <div class="avatar-option" data-avatar="🐆">🐆</div>
+        <div class="avatar-option" data-avatar="🐻">🐻</div>
+        <div class="avatar-option" data-avatar="🐻‍❄️">🐻‍❄️</div>
         <div class="avatar-option" data-avatar="🐼">🐼</div>
+        <!-- Cool Animals -->
+        <div class="avatar-section-label">🐾 Cool Animals</div>
         <div class="avatar-option" data-avatar="🦊">🦊</div>
-        <div class="avatar-option" data-avatar="🐨">🐨</div>
-        <div class="avatar-option" data-avatar="🐸">🐸</div>
-        <div class="avatar-option" data-avatar="🦄">🦄</div>
-        <div class="avatar-option" data-avatar="🐙">🐙</div>
+        <div class="avatar-option" data-avatar="🐺">🐺</div>
+        <div class="avatar-option" data-avatar="🦅">🦅</div>
         <div class="avatar-option" data-avatar="🦋">🦋</div>
-        <div class="avatar-option" data-avatar="🌟">🌟</div>
+        <div class="avatar-option" data-avatar="🐬">🐬</div>
+        <div class="avatar-option" data-avatar="🦈">🦈</div>
+        <!-- Girl Power -->
+        <div class="avatar-section-label">💅 Girl Power</div>
+        <div class="avatar-option" data-avatar="👑">👑</div>
+        <div class="avatar-option" data-avatar="🦄">🦄</div>
+        <div class="avatar-option" data-avatar="🧚🏿">🧚🏿</div>
+        <div class="avatar-option" data-avatar="🧚🏾">🧚🏾</div>
+        <div class="avatar-option" data-avatar="🧜🏿">🧜🏿</div>
+        <div class="avatar-option" data-avatar="🧜🏾">🧜🏾</div>
+        <!-- Fun & Games -->
+        <div class="avatar-section-label">🚀 Fun &amp; Games</div>
         <div class="avatar-option" data-avatar="🚀">🚀</div>
+        <div class="avatar-option" data-avatar="⚽">⚽</div>
+        <div class="avatar-option" data-avatar="🏀">🏀</div>
+        <div class="avatar-option" data-avatar="🎮">🎮</div>
         <div class="avatar-option" data-avatar="🎨">🎨</div>
+        <div class="avatar-option" data-avatar="🌟">🌟</div>
       </div>
     </div>
 
@@ -11650,6 +11875,157 @@ document.addEventListener('keydown', (e) => {
       <button class="btn-main btn-outline" id="btn-add-child-cancel" style="font-size:0.9rem;">Cancel</button>
       <button class="btn-main btn-green" id="btn-add-child-save" style="font-size:0.9rem;">✅ Save Profile</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LANDING PAGE — shown to unauthenticated visitors
+     ═══════════════════════════════════════════════════════════ -->
+<div id="screen-landing">
+  <div style="max-width:500px;margin:0 auto;">
+
+    <!-- HERO -->
+    <div class="lp-hero">
+      <span class="lp-owl">🦉</span>
+      <div class="lp-logo">ReadUp!</div>
+      <div class="lp-h1">Help Your Child Become a Confident Reader</div>
+      <div class="lp-sub">AI-powered reading practice for Pre-K through 3rd grade.<br>Guided by Bookie the owl — every session, every rep.</div>
+      <div class="lp-btns">
+        <button class="lp-btn-primary" id="lp-btn-get-started">🚀 Get Started</button>
+        <button class="lp-btn-secondary" id="lp-btn-see-how">👀 See How</button>
+      </div>
+    </div>
+
+    <!-- URGENCY -->
+    <div class="lp-urgency">
+      <div class="lp-urg-quote">"If a child isn't reading by 3rd grade,<br><span>they will struggle for the rest of their life."</span></div>
+      <div class="lp-stat-row">
+        <div class="lp-stat"><div class="lp-stat-n">⅓</div><div class="lp-stat-l">kids below grade level by 3rd grade</div></div>
+        <div class="lp-stat"><div class="lp-stat-n">4×</div><div class="lp-stat-l">more likely to drop out of high school</div></div>
+        <div class="lp-stat"><div class="lp-stat-n">0</div><div class="lp-stat-l">progress without daily reading reps</div></div>
+      </div>
+    </div>
+
+    <!-- PROBLEM -->
+    <div class="lp-section" id="lp-section-how">
+      <div class="lp-eyebrow">The reality</div>
+      <div class="lp-section-h">Parents want to help.<br>Life gets in the way.</div>
+      <div class="lp-prob-cards">
+        <div class="lp-prob lp-p1">
+          <span class="lp-prob-ico">⏰</span>
+          <div>
+            <div class="lp-prob-title">Practice gets skipped</div>
+            <div class="lp-prob-text">Between work, dinner, and homework — daily reading is the first thing that falls through the cracks.</div>
+          </div>
+        </div>
+        <div class="lp-prob lp-p2">
+          <span class="lp-prob-ico">📉</span>
+          <div>
+            <div class="lp-prob-title">No way to measure progress at home</div>
+            <div class="lp-prob-text">Parents don't know if their child is improving until the teacher calls.</div>
+          </div>
+        </div>
+        <div class="lp-prob lp-p3">
+          <span class="lp-prob-ico">😟</span>
+          <div>
+            <div class="lp-prob-title">Falling behind quietly</div>
+            <div class="lp-prob-text">Children who struggle rarely say so. By the time it shows, they're already behind.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOLUTION -->
+    <div class="lp-section-alt">
+      <div class="lp-eyebrow">How ReadUp helps</div>
+      <div class="lp-section-h">Every tool your child needs — in one place</div>
+      <div class="lp-sol-grid">
+        <div class="lp-sol lp-s1">
+          <span class="lp-sol-ico">✨</span>
+          <div class="lp-sol-title">AI Stories</div>
+          <div class="lp-sol-desc">Fresh story at their exact grade level every session</div>
+        </div>
+        <div class="lp-sol lp-s2">
+          <span class="lp-sol-ico">⏱</span>
+          <div class="lp-sol-title">Timed Reading</div>
+          <div class="lp-sol-desc">Real WPM scores — same method schools use</div>
+        </div>
+        <div class="lp-sol lp-s3">
+          <span class="lp-sol-ico">🔤</span>
+          <div class="lp-sol-title">Spelling Practice</div>
+          <div class="lp-sol-desc">Upload their list — practice, quiz, games built in</div>
+        </div>
+        <div class="lp-sol lp-s4">
+          <span class="lp-sol-ico">🔊</span>
+          <div class="lp-sol-title">Read Aloud</div>
+          <div class="lp-sol-desc">Bookie reads every word with live highlighting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARENT PROMISE -->
+    <div class="lp-dark">
+      <div class="lp-eyebrow">For parents</div>
+      <div class="lp-section-h">You'll always know where your child stands</div>
+      <div class="lp-dark-sub">A full parent dashboard is coming — here's exactly what you'll see:</div>
+      <div class="lp-promise-items">
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd1">⚡</div>
+          <div>
+            <div class="lp-pi-title">Words per minute — every session</div>
+            <div class="lp-pi-text">Track reading speed against grade-level benchmarks week by week</div>
+          </div>
+        </div>
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd2">📖</div>
+          <div>
+            <div class="lp-pi-title">Every timed passage saved</div>
+            <div class="lp-pi-text">Reissue any reading passage — let your child retry and beat their score</div>
+          </div>
+        </div>
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd3">✅</div>
+          <div>
+            <div class="lp-pi-title">Assign passages from your dashboard</div>
+            <div class="lp-pi-text">Send readings to your child — they see them waiting on their home screen</div>
+          </div>
+        </div>
+        <div class="lp-promise-item">
+          <div class="lp-pi-dot lpd4">📤</div>
+          <div>
+            <div class="lp-pi-title">Export progress reports</div>
+            <div class="lp-pi-text">Share detailed reports with teachers, tutors, and schools</div>
+          </div>
+        </div>
+      </div>
+      <div class="lp-coming">⚡ Parent Dashboard — Coming Soon</div>
+    </div>
+
+    <!-- SOCIAL PROOF -->
+    <div class="lp-section">
+      <div class="lp-eyebrow">Early families</div>
+      <div class="lp-section-h">Real kids. Real progress.</div>
+      <div class="lp-proof-cards">
+        <div class="lp-quote-card">
+          <div class="lp-quote-text">"My son went from <span>39 WPM to 67 WPM</span> in 6 weeks. I can actually see the improvement now."</div>
+          <div class="lp-quote-author"><div class="lp-qa">👩🏾</div><div class="lp-quote-name">Parent, 1st Grade</div></div>
+        </div>
+        <div class="lp-quote-card">
+          <div class="lp-quote-text">"She asks to read now. She <span>never</span> asked before ReadUp. Bookie made reading feel like play."</div>
+          <div class="lp-quote-author"><div class="lp-qa">👨🏿</div><div class="lp-quote-name">Parent, Kindergarten</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINAL CTA -->
+    <div class="lp-final">
+      <span class="lp-final-owl">🦉</span>
+      <div class="lp-final-h">Your child's reading journey starts right now.</div>
+      <div class="lp-final-sub">Join families who decided not to wait.<br>Bookie is ready when you are.</div>
+      <button class="lp-btn-white" id="lp-btn-final">🚀 Start with Bookie</button>
+      <div class="lp-np">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
+    </div>
+
   </div>
 </div>
 </body>
