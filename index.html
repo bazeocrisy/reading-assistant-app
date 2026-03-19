@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EY</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EZ</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1861,6 +1861,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
             <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Type or paste your spelling words</div>
           </div>
         </button>
+        <!-- Clear All Words — only shown when a list exists -->
+        <button class="btn-main" id="btn-mywords-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:6px;">🗑️ Clear All My Words</button>
       </div>
     </div>
   </div>
@@ -2669,7 +2671,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EY</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EZ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6795,12 +6797,15 @@ document.getElementById('btn-spelling-start').addEventListener('click', () => {
 document.getElementById('btn-spell-src-mywords').addEventListener('click', () => {
   const d = getData();
   const existingBtn = document.getElementById('btn-spell-source-existing');
+  const clearAllBtn = document.getElementById('btn-mywords-clear-all');
   if (d.spellingLists && d.spellingLists.length > 0) {
     existingBtn.style.display = 'flex';
     const latest = d.spellingLists[d.spellingLists.length - 1];
     existingBtn.querySelector('.spell-existing-count').textContent = `${latest.words.length} word${latest.words.length !== 1 ? 's' : ''} saved`;
+    clearAllBtn.style.display = 'block';
   } else {
     existingBtn.style.display = 'none';
+    clearAllBtn.style.display = 'none';
   }
   show('screen-spelling-mywords');
 });
@@ -6970,6 +6975,35 @@ document.getElementById('btn-spell-source-existing').addEventListener('click', (
   }
 });
 
+// My Words: Clear All Words button
+document.getElementById('btn-mywords-clear-all').addEventListener('click', () => {
+  showAppModal({
+    icon: '🗑️',
+    title: 'Clear All My Words?',
+    message: 'This will remove all your saved spelling words. This cannot be undone.',
+    buttons: [
+      {
+        label: '✅ Yes, Clear All',
+        class: 'modal-red',
+        action: () => {
+          const d = getData();
+          d.spellingLists = [];
+          saveData(d);
+          currentSpellingList = null;
+          // Hide both the existing and clear buttons since no words remain
+          document.getElementById('btn-spell-source-existing').style.display = 'none';
+          document.getElementById('btn-mywords-clear-all').style.display = 'none';
+          const t = document.getElementById('word-toast');
+          t.textContent = '🗑️ All spelling words cleared';
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 2000);
+        }
+      },
+      { label: '← Cancel', class: 'modal-outline', action: () => {} }
+    ]
+  });
+});
+
 // Load Dolch or Fry words for a given grade, render as spelling list
 async function loadSightWordSet(source, grade) {
   // Show loading state on grade button
@@ -7137,12 +7171,15 @@ document.getElementById('btn-spelling-new').addEventListener('click', () => {
   // Go to source picker for new words
   const d = getData();
   const existingBtn = document.getElementById('btn-spell-source-existing');
+  const clearAllBtn = document.getElementById('btn-mywords-clear-all');
   if (d.spellingLists && d.spellingLists.length > 0) {
     existingBtn.style.display = 'flex'; // F-3 fix: was 'block', button needs flex for icon layout
     const latest = d.spellingLists[d.spellingLists.length - 1];
     existingBtn.querySelector('.spell-existing-count').textContent = `${latest.words.length} word${latest.words.length !== 1 ? 's' : ''} saved`;
+    clearAllBtn.style.display = 'block';
   } else {
     existingBtn.style.display = 'none';
+    clearAllBtn.style.display = 'none';
   }
   show('screen-spelling-source');
 });
