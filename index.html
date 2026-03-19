@@ -1524,7 +1524,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FS</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FT</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FS</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FT</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3045,7 +3045,10 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="app">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;">
       <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);">👤 Parent Dashboard</div>
-      <button class="btn-main btn-outline" id="btn-parent-done" aria-label="Close parent dashboard" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-main btn-outline" id="btn-dash-signout" aria-label="Sign out" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85rem;color:var(--coral);border-color:var(--coral);">Sign Out</button>
+        <button class="btn-main btn-outline" id="btn-parent-done" aria-label="Close parent dashboard" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
+      </div>
     </div>
 
     <!-- This Week -->
@@ -3130,7 +3133,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 // HEIC images handled server-side by Cloud Function (heic-convert npm package)
 
 const firebaseApp = initializeApp({
@@ -3289,34 +3292,32 @@ document.getElementById('auth-tab-signup').addEventListener('click', () => {
 });
 
 // ── Google Sign In ────────────────────────────────────────
-document.getElementById('btn-google-signin').addEventListener('click', async () => {
-  setAuthError('');
-  try {
-    await signInWithPopup(auth, googleProvider);
-    // onAuthStateChanged handles the rest
-  } catch(e) {
-    if (e.code !== 'auth/popup-closed-by-user') {
-      setAuthError('Google sign-in failed. Please try again.');
-    }
-  }
-});
+// Google sign-in handled above with iOS redirect support
 
 // ── Email Sign In ─────────────────────────────────────────
 document.getElementById('btn-email-signin').addEventListener('click', async () => {
   const email = document.getElementById('signin-email').value.trim();
   const password = document.getElementById('signin-password').value;
+  const btn = document.getElementById('btn-email-signin');
   setAuthError('');
   if (!email || !password) { setAuthError('Please enter your email and password.'); return; }
+  // Loading state
+  btn.disabled = true;
+  btn.textContent = '⏳ Signing in...';
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch(e) {
     const msgs = {
-      'auth/user-not-found': 'No account found with that email.',
-      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/user-not-found': 'No account found with that email. Did you mean to create an account?',
+      'auth/wrong-password': 'Incorrect password. Please try again or reset your password.',
+      'auth/invalid-credential': 'Incorrect email or password. Please try again.',
       'auth/invalid-email': 'Please enter a valid email address.',
-      'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+      'auth/too-many-requests': 'Too many attempts. Please wait a moment or reset your password.',
+      'auth/network-request-failed': 'Network error. Please check your connection and try again.',
     };
     setAuthError(msgs[e.code] || 'Sign-in failed. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Sign In →';
   }
 });
 
@@ -3330,20 +3331,103 @@ document.getElementById('btn-email-signup').addEventListener('click', async () =
   const name = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
+  const btn = document.getElementById('btn-email-signup');
   setAuthError('');
-  if (!name) { setAuthError('Please enter your name.'); return; }
-  if (!email) { setAuthError('Please enter your email.'); return; }
+  if (!name) { setAuthError("Please enter your name."); return; }
+  if (!email) { setAuthError('Please enter your email address.'); return; }
   if (password.length < 6) { setAuthError('Password must be at least 6 characters.'); return; }
+  // Loading state
+  btn.disabled = true;
+  btn.textContent = '⏳ Creating account...';
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(cred.user, { displayName: name });
+    // Send email verification
+    try { await sendEmailVerification(cred.user); } catch(ve) { console.warn('Verification email failed:', ve); }
+    // onAuthStateChanged handles navigation
   } catch(e) {
     const msgs = {
-      'auth/email-already-in-use': 'An account with this email already exists. Try signing in.',
+      'auth/email-already-in-use': 'An account with this email already exists. Try signing in instead.',
       'auth/invalid-email': 'Please enter a valid email address.',
       'auth/weak-password': 'Password must be at least 6 characters.',
+      'auth/network-request-failed': 'Network error. Please check your connection and try again.',
     };
     setAuthError(msgs[e.code] || 'Sign-up failed. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Create Account →';
+  }
+});
+
+// ── Forgot Password ──────────────────────────────────────
+document.getElementById('btn-forgot-password').addEventListener('click', () => {
+  setAuthError('');
+  document.getElementById('auth-form-signin').style.display = 'none';
+  document.getElementById('auth-form-reset').style.display = 'block';
+  document.getElementById('reset-success').style.display = 'none';
+  // Pre-fill email if already typed
+  const email = document.getElementById('signin-email').value.trim();
+  if (email) document.getElementById('reset-email').value = email;
+});
+
+document.getElementById('btn-back-to-signin').addEventListener('click', () => {
+  document.getElementById('auth-form-reset').style.display = 'none';
+  document.getElementById('auth-form-signin').style.display = 'block';
+  setAuthError('');
+});
+
+document.getElementById('btn-send-reset').addEventListener('click', async () => {
+  const email = document.getElementById('reset-email').value.trim();
+  const btn = document.getElementById('btn-send-reset');
+  setAuthError('');
+  if (!email) { setAuthError('Please enter your email address.'); return; }
+  btn.disabled = true;
+  btn.textContent = '⏳ Sending...';
+  try {
+    await sendPasswordResetEmail(auth, email);
+    document.getElementById('reset-success').style.display = 'block';
+    btn.textContent = '✅ Email Sent!';
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': 'No account found with that email address.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+    };
+    setAuthError(msgs[e.code] || 'Could not send reset email. Please try again.');
+    btn.disabled = false;
+    btn.textContent = '📧 Send Reset Email';
+  }
+});
+
+// ── Google Sign In — use redirect on iOS Safari, popup elsewhere ──────────
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+document.getElementById('btn-google-signin').addEventListener('click', async () => {
+  setAuthError('');
+  try {
+    if (isIOS()) {
+      await signInWithRedirect(auth, googleProvider);
+      // onAuthStateChanged handles result after redirect
+    } else {
+      await signInWithPopup(auth, googleProvider);
+    }
+  } catch(e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      setAuthError('Google sign-in failed. Please try again.');
+    }
+  }
+});
+
+// Handle redirect result on page load (for iOS Google sign-in)
+getRedirectResult(auth).then(result => {
+  if (result?.user) {
+    console.log('✅ Google redirect sign-in success:', result.user.email);
+  }
+}).catch(e => {
+  if (e.code && e.code !== 'auth/no-current-user') {
+    console.warn('Redirect result error:', e.code);
   }
 });
 
@@ -11142,6 +11226,20 @@ document.getElementById('btn-parent-done').addEventListener('click', () => {
   document.getElementById('screen-parent').style.display = 'none';
 });
 
+// Sign out from parent dashboard
+const btnDashSignOut = document.getElementById('btn-dash-signout');
+if (btnDashSignOut) {
+  btnDashSignOut.addEventListener('click', async () => {
+    const yes = await showAppConfirm('👋', 'Sign Out?', 'You will need to sign in again next time.', '✅ Sign Out', '← Stay');
+    if (!yes) return;
+    currentUser = null; currentChildId = null; currentChildProfile = null;
+    localStorage.removeItem('readup_active_child');
+    updateProfileBadge();
+    document.getElementById('screen-parent').style.display = 'none';
+    await signOut(auth);
+  });
+}
+
 document.getElementById('btn-clear-words').addEventListener('click', async () => {
   const yes = await showAppConfirm('🗑️', 'Clear Word Bank?', 'This will remove all your saved words.', '🗑️ Clear Words', '← Keep Words');
   if (!yes) return;
@@ -11978,10 +12076,29 @@ document.addEventListener('keydown', (e) => {
         <input type="email" class="auth-input" id="signin-email" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="auth-input-group">
-        <label class="auth-input-label">Password</label>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label class="auth-input-label" style="margin-bottom:0;">Password</label>
+          <button id="btn-forgot-password" style="background:none;border:none;color:#FF6B35;font-size:0.78rem;font-weight:800;cursor:pointer;padding:0;font-family:'Nunito',sans-serif;">Forgot password?</button>
+        </div>
         <input type="password" class="auth-input" id="signin-password" placeholder="Your password" autocomplete="current-password">
       </div>
       <button class="btn-main" id="btn-email-signin" style="margin-top:4px;">Sign In →</button>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="auth-form-reset" style="display:none;">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="font-size:28px;margin-bottom:6px;">🔑</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;color:#2C3E50;">Reset Your Password</div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;margin-top:4px;">Enter your email and we'll send you a reset link.</div>
+      </div>
+      <div class="auth-input-group">
+        <label class="auth-input-label">Email Address</label>
+        <input type="email" class="auth-input" id="reset-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div id="reset-success" style="display:none;background:#EFFFF4;border:2px solid #5CD85A;border-radius:12px;padding:10px 14px;color:#1B7A3E;font-weight:700;font-size:0.85rem;margin-bottom:10px;">✅ Reset email sent! Check your inbox.</div>
+      <button class="btn-main btn-green" id="btn-send-reset" style="margin-top:4px;">📧 Send Reset Email</button>
+      <button id="btn-back-to-signin" style="width:100%;background:none;border:none;color:#64748B;font-size:0.85rem;font-weight:800;cursor:pointer;margin-top:10px;font-family:'Nunito',sans-serif;">← Back to Sign In</button>
     </div>
 
     <!-- Sign Up Form -->
@@ -11999,6 +12116,7 @@ document.addEventListener('keydown', (e) => {
         <input type="password" class="auth-input" id="signup-password" placeholder="Create a password" autocomplete="new-password">
       </div>
       <button class="btn-main btn-green" id="btn-email-signup" style="margin-top:4px;">Create Account →</button>
+      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-align:center;margin-top:8px;">A verification email will be sent to confirm your address.</div>
     </div>
 
     <div style="text-align:center;margin-top:14px;font-size:11px;font-weight:700;color:#64748B;">
