@@ -265,6 +265,21 @@ header { text-align: center; padding: 24px 0 16px; }
 }
 .btn-outline:hover { background: var(--purple-soft) !important; transform: translateY(-2px); }
 
+/* ── BACK button — colorful, teaches kids navigation + spelling ── */
+.btn-back-nav {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #FF9F43, #FF6B35);
+  color: white; border: none; border-radius: 50px;
+  padding: 8px 18px 8px 12px; font-family: 'Fredoka', sans-serif;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255,107,53,0.35);
+  transition: transform 0.15s; -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+}
+.btn-back-nav:hover { transform: translateY(-2px); }
+.btn-back-nav:active { transform: scale(0.95); }
+.btn-back-nav::before { content: '←'; font-size: 1.1rem; }
+
 .or-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; }
 .or-divider::before, .or-divider::after { content:''; flex:1; height:2px; background: var(--border); border-radius:2px; }
 .or-divider span { font-weight: 800; color: #7A8A9A; font-size: 0.85rem; }
@@ -789,10 +804,10 @@ body.bedtime .btn-rm-listen { background: #8a6a3a; }
 }
 /* ── Home Screen: Hero Button ── */
 .hero-read-btn {
-  width: 100%; border: none; border-radius: 28px; padding: 26px 24px;
-  display: flex; align-items: center; gap: 18px; cursor: pointer;
+  width: 100%; border: none; border-radius: 24px; padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
   background: linear-gradient(135deg, #FF9F43, #FF6B35);
-  box-shadow: 0 10px 30px rgba(255,107,53,0.4);
+  box-shadow: 0 8px 24px rgba(255,107,53,0.4);
   position: relative; overflow: hidden; transition: transform 0.15s;
   -webkit-tap-highlight-color: transparent;
   animation: heroGlow 3s ease-in-out infinite;
@@ -1654,7 +1669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GM</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -1711,7 +1726,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Practice Reading category -->
   <div class="screen" id="sheet-practice-reading">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <button id="btn-cat-reading-back" style="background:none;border:none;font-size:1.8rem;cursor:pointer;padding:0;line-height:1;color:var(--ink);">←</button>
+      <button id="btn-cat-reading-back" class="btn-back-nav">BACK</button>
       <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">⏱ Practice Reading</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px;">
@@ -1735,7 +1750,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Word Work category -->
   <div class="screen" id="sheet-word-work">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <button id="btn-cat-words-back" style="background:none;border:none;font-size:1.8rem;cursor:pointer;padding:0;line-height:1;color:var(--ink);">←</button>
+      <button id="btn-cat-words-back" class="btn-back-nav">BACK</button>
       <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">✏️ Word Work</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px;">
@@ -1769,7 +1784,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-my-readings">
     <div class="card" style="padding:0;overflow:hidden;">
       <div style="display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:2px solid var(--border);">
-        <button id="btn-my-readings-back" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:0;line-height:1;">←</button>
+        <button id="btn-my-readings-back" class="btn-back-nav">BACK</button>
         <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);">📚 My Readings</div>
       </div>
       <div id="my-readings-list" style="padding:14px;display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto;">
@@ -1894,7 +1909,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
       <button id="btn-more-topics" style="display:none;">+ More Topics</button>
       <button class="btn-main" id="btn-generate" style="display:none;">✨ Make My Story!</button>
-      <button class="btn-main btn-outline" id="btn-story-builder-back" style="display:none;">← Back</button>
+      <button class="btn-back-nav" id="btn-story-builder-back" style="display:none;">BACK</button>
       <button id="btn-surprise-me" style="display:none;">🎲 Surprise Me!</button>
     </div>
   </div>
@@ -1928,7 +1943,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         </button>
       </div>
 
-      <button class="btn-main btn-outline" id="btn-together-cancel" style="margin-top:16px;font-size:0.95rem;">← Back Home</button>
+      <button class="btn-back-nav" id="btn-together-cancel" style="margin-top:16px;">BACK</button>
     </div>
   </div>
 </div>
@@ -2008,7 +2023,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <input class="code-input" id="join-code-input" type="text" maxlength="4" placeholder="1234" inputmode="numeric" aria-label="Room code" style="font-size:2rem;text-align:center;letter-spacing:8px;padding:14px;border:3px solid var(--purple);border-radius:16px;">
       <div id="join-error" role="alert" aria-live="assertive" style="background:#FFF0F0;border:2px solid #FF6B6B;border-radius:14px;padding:12px 16px;color:#FF6B6B;font-weight:700;margin-top:10px;display:none;"></div>
       <button class="btn-main btn-green" id="btn-join-room" style="font-size:1.15rem;margin-top:14px;">🚀 Join Room!</button>
-      <button class="btn-main btn-outline" id="btn-back-join" style="display:none;">← Back</button>
+      <button class="btn-back-nav" id="btn-back-join" style="display:none;">BACK</button>
     </div>
   </div>
 
@@ -2507,7 +2522,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="spell-picker-bar">
         <div class="spell-picker-count" id="spell-picker-count">0 words selected</div>
         <button class="btn-main btn-green" id="btn-spell-picker-go" style="font-size:1.1rem;" disabled>Let's Go! 🚀</button>
-        <button class="btn-main btn-outline" id="btn-spell-picker-back" style="display:none;">← Back</button>
+        <button class="btn-back-nav" id="btn-spell-picker-back" style="display:none;">BACK</button>
       </div>
     </div>
   </div>
@@ -2958,7 +2973,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste 250+ words from a document, email, or website</p>
 
-      <button class="btn-main btn-outline" id="btn-timed-source-back" style="display:none;">← Back Home</button>
+      <button class="btn-back-nav" id="btn-timed-source-back" style="display:none;">BACK</button>
     </div>
   </div>
 
@@ -2971,7 +2986,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div id="timed-paste-count" style="text-align:right;font-size:0.78rem;font-weight:800;color:var(--muted);margin-top:4px;">0 words</div>
       <div id="timed-paste-warning" style="display:none;background:#FFF3E8;border:2px solid #FF9F43;border-radius:12px;padding:10px 14px;font-weight:700;font-size:0.82rem;color:#E17055;margin-top:8px;">⚠️ Passage is under 250 words. For accurate timing, longer passages work best.</div>
       <button class="btn-main btn-green" id="btn-timed-paste-go" style="font-size:1.1rem;">Use This Passage →</button>
-      <button class="btn-main btn-outline" id="btn-timed-paste-back" style="display:none;">← Back</button>
+      <button class="btn-back-nav" id="btn-timed-paste-back" style="display:none;">BACK</button>
     </div>
   </div>
 
@@ -3006,7 +3021,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
       <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Paste up to 500 words from a document, email, or website</p>
 
-      <button class="btn-main btn-outline" id="btn-own-source-back" style="display:none;">← Back Home</button>
+      <button class="btn-back-nav" id="btn-own-source-back" style="display:none;">BACK</button>
     </div>
   </div>
 
@@ -3022,7 +3037,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div id="own-paste-count" style="font-size:0.78rem;font-weight:800;color:var(--muted);">0 / 500 words</div>
       </div>
       <button class="btn-main btn-green" id="btn-own-paste-go" style="font-size:1.1rem;margin-top:12px;">Read This Passage →</button>
-      <button class="btn-main btn-outline" id="btn-own-paste-back" style="display:none;">← Back</button>
+      <button class="btn-back-nav" id="btn-own-paste-back" style="display:none;">BACK</button>
     </div>
   </div>
 
@@ -3043,7 +3058,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <p style="margin:0;font-size:0.82rem;color:var(--muted);">💡 This is the same way schools test reading speed!</p>
       </div>
       <button class="btn-main btn-green" id="btn-wpm-start" style="font-size:1.2rem;padding:16px;">I'm Ready! 🚀</button>
-      <button class="btn-main btn-outline" id="btn-wpm-instructions-back" style="display:none;">← Go Back</button>
+      <button class="btn-back-nav" id="btn-wpm-instructions-back" style="display:none;">BACK</button>
     </div>
   </div>
 
@@ -3172,13 +3187,13 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <nav class="parent-bar" id="parent-bar" role="navigation" aria-label="Main navigation">
   <button class="parent-bar-btn bar-btn-home" id="btn-go-home" aria-label="Go to home screen">🏠 Home</button>
-  <button class="parent-bar-btn bar-btn-back" id="bar-back" aria-label="Go back" style="display:none;">← Back</button>
+  <button class="parent-bar-btn bar-btn-back btn-back-nav" id="bar-back" aria-label="Go back" style="display:none;">BACK</button>
   <button class="parent-bar-btn bar-btn-play" id="bar-play" aria-label="Play audio" style="display:none;">▶ Play</button>
   <button class="parent-bar-btn bar-btn-pause" id="bar-pause" aria-label="Pause audio" style="display:none;">⏸ Pause</button>
   <button class="parent-bar-btn bar-btn-stop" id="bar-stop" aria-label="Stop audio" style="display:none;">⏹ Stop</button>
