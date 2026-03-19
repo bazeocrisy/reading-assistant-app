@@ -1702,7 +1702,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GP</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3220,7 +3220,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GP</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -11793,7 +11793,7 @@ function renderTimedReadingsTab(d) {
     chartCard.style.marginBottom = '14px';
     chartCard.innerHTML = `
       <div class="dash-section-title">📈 WPM Over Time</div>
-      <div style="position:relative;height:180px;">
+      <div style="position:relative;height:220px;">
         <canvas id="wpm-trend-chart"></canvas>
       </div>
       <div style="display:flex;align-items:center;gap:16px;margin-top:8px;justify-content:center;flex-wrap:wrap;">
@@ -11803,7 +11803,11 @@ function renderTimedReadingsTab(d) {
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <div style="width:20px;height:2px;background:#27AE60;border-radius:2px;border-top:2px dashed #27AE60;"></div>
-          <span style="font-size:0.7rem;font-weight:800;color:var(--muted);">Grade Goal (${bench.min} WPM)</span>
+          <span style="font-size:0.7rem;font-weight:800;color:var(--muted);">${bench.label} Goal (${bench.min}–${bench.max} WPM)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="width:20px;height:10px;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.4);border-radius:2px;"></div>
+          <span style="font-size:0.7rem;font-weight:800;color:var(--muted);">DIBELS Goal Zone</span>
         </div>
       </div>`;
     container.appendChild(chartCard);
@@ -11818,9 +11822,9 @@ function renderTimedReadingsTab(d) {
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       });
       const data = allAttempts.map(a => a.wpm);
-      const goalLine = allAttempts.map(() => bench.min);
+      const goalMin = allAttempts.map(() => bench.min);
+      const goalMax = allAttempts.map(() => bench.max);
 
-      // Destroy existing chart if any
       if (window._wpmChart) { window._wpmChart.destroy(); }
 
       window._wpmChart = new Chart(ctx, {
@@ -11839,15 +11843,28 @@ function renderTimedReadingsTab(d) {
               pointHoverRadius: 7,
               tension: 0.3,
               fill: true,
+              order: 1,
             },
             {
-              label: 'Grade Goal',
-              data: goalLine,
+              label: bench.label + ' Max',
+              data: goalMax,
+              borderColor: 'rgba(39,174,96,0.5)',
+              borderWidth: 1,
+              borderDash: [3, 3],
+              pointRadius: 0,
+              fill: '+1',
+              backgroundColor: 'rgba(39,174,96,0.12)',
+              order: 3,
+            },
+            {
+              label: bench.label + ' Min',
+              data: goalMin,
               borderColor: '#27AE60',
               borderWidth: 2,
               borderDash: [6, 4],
               pointRadius: 0,
               fill: false,
+              order: 2,
             }
           ]
         },
@@ -11858,16 +11875,29 @@ function renderTimedReadingsTab(d) {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: ctx => ctx.dataset.label === 'WPM' ? ctx.parsed.y + ' WPM' : 'Goal: ' + ctx.parsed.y + ' WPM'
+                label: ctx => {
+                  if (ctx.dataset.label === 'WPM') return ctx.parsed.y + ' WPM';
+                  if (ctx.dataset.label.includes('Min')) return bench.label + ' Min: ' + ctx.parsed.y + ' WPM';
+                  if (ctx.dataset.label.includes('Max')) return bench.label + ' Max: ' + ctx.parsed.y + ' WPM';
+                  return ctx.parsed.y + ' WPM';
+                }
               }
             }
           },
           scales: {
             y: {
               beginAtZero: false,
-              min: Math.max(0, Math.min(...data) - 10),
+              min: Math.max(0, Math.min(...data, bench.min) - 10),
+              max: Math.max(...data, bench.max) + 10,
               grid: { color: 'rgba(0,0,0,0.06)' },
-              ticks: { font: { size: 10, weight: '700' }, color: '#64748B' }
+              ticks: { font: { size: 10, weight: '700' }, color: '#64748B' },
+              title: {
+                display: true,
+                text: gradeLabel + ' DIBELS Goal: ' + bench.min + '–' + bench.max + ' WPM',
+                font: { size: 10, weight: '700' },
+                color: '#27AE60',
+                padding: { bottom: 4 }
+              }
             },
             x: {
               grid: { display: false },
@@ -11885,6 +11915,86 @@ function renderTimedReadingsTab(d) {
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
       script.onload = renderWpmChart;
       document.head.appendChild(script);
+    }
+  }
+
+  // ── Sessions Per Week Bar Chart ───────────────────────────
+  if (allAttempts.length >= 2) {
+    // Group attempts by week
+    const weekMap = {};
+    allAttempts.forEach(a => {
+      const d = new Date(a.date);
+      const monday = new Date(d);
+      monday.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+      const key = monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      weekMap[key] = (weekMap[key] || 0) + 1;
+    });
+    const weekLabels = Object.keys(weekMap);
+    const weekData = Object.values(weekMap);
+
+    if (weekLabels.length >= 1) {
+      const sessionsCard = document.createElement('div');
+      sessionsCard.className = 'card';
+      sessionsCard.style.marginBottom = '14px';
+      sessionsCard.innerHTML = `
+        <div class="dash-section-title">📅 Sessions Per Week</div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-bottom:10px;">How often your child practiced reading</div>
+        <div style="position:relative;height:160px;">
+          <canvas id="wpm-sessions-chart"></canvas>
+        </div>`;
+      container.appendChild(sessionsCard);
+
+      function renderSessionsChart() {
+        const canvas = document.getElementById('wpm-sessions-chart');
+        if (!canvas) return;
+        if (window._sessionsChart) window._sessionsChart.destroy();
+        window._sessionsChart = new Chart(canvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: weekLabels,
+            datasets: [{
+              label: 'Sessions',
+              data: weekData,
+              backgroundColor: weekData.map(v => v >= 4 ? 'rgba(39,174,96,0.8)' : v >= 2 ? 'rgba(249,168,37,0.8)' : 'rgba(255,107,53,0.8)'),
+              borderRadius: 8,
+              borderSkipped: false,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' session' + (ctx.parsed.y !== 1 ? 's' : '') + ' this week' } }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1, font: { size: 10, weight: '700' }, color: '#64748B' },
+                grid: { color: 'rgba(0,0,0,0.06)' },
+                title: { display: true, text: 'Sessions', font: { size: 10, weight: '700' }, color: '#64748B' }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { font: { size: 10, weight: '700' }, color: '#64748B', maxRotation: 0 }
+              }
+            }
+          }
+        });
+      }
+
+      if (window.Chart) {
+        renderSessionsChart();
+      } else {
+        const existing = document.querySelector('script[src*="chart.umd"]');
+        if (existing) { existing.addEventListener('load', renderSessionsChart); }
+        else {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+          script.onload = renderSessionsChart;
+          document.head.appendChild(script);
+        }
+      }
     }
   }
 
