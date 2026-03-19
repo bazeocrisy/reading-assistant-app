@@ -1045,6 +1045,129 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 }
 .story-size-btn:active { transform: scale(0.96); }
 
+
+/* ── Auth Screens ─────────────────────────────────────── */
+.auth-screen {
+  position: fixed; inset: 0; z-index: 999;
+  background: linear-gradient(160deg, #FFF8E1 0%, #FFF3E0 50%, #FFE8D5 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; overflow-y: auto;
+}
+.auth-card {
+  background: white; border-radius: 28px; padding: 32px 28px;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 20px 60px rgba(255,107,53,0.15), 0 4px 20px rgba(0,0,0,0.08);
+  animation: fadeUp 0.4s ease both;
+}
+.auth-logo { text-align: center; margin-bottom: 20px; }
+.auth-logo-text {
+  font-family: 'Fredoka', sans-serif; font-size: 2.8rem; font-weight: 700;
+  color: var(--purple); text-shadow: 0 3px 0 var(--purple-deep);
+  letter-spacing: 2px;
+}
+.auth-subtitle { font-family: 'Fredoka', sans-serif; font-size: 1rem; color: var(--purple-deep); font-weight: 600; font-style: italic; }
+.auth-tab-row { display: flex; gap: 0; margin-bottom: 24px; background: var(--section); border-radius: 14px; padding: 4px; }
+.auth-tab {
+  flex: 1; padding: 10px; border: none; border-radius: 10px;
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem;
+  cursor: pointer; transition: all 0.2s; background: none; color: var(--muted);
+}
+.auth-tab.active { background: white; color: var(--purple); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.auth-input-group { margin-bottom: 14px; }
+.auth-input-label { font-weight: 800; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+.auth-input {
+  width: 100%; padding: 14px 16px; border: 2.5px solid var(--border);
+  border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 1rem;
+  font-weight: 700; color: var(--ink); outline: none; transition: border 0.2s;
+  box-sizing: border-box; background: var(--section);
+}
+.auth-input:focus { border-color: var(--purple); background: white; }
+.auth-error {
+  background: #FFF0F0; border: 2px solid var(--coral); border-radius: 12px;
+  padding: 10px 14px; color: #e74c3c; font-weight: 700; font-size: 0.85rem;
+  margin-bottom: 14px; display: none;
+}
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.auth-divider::before, .auth-divider::after { content:''; flex:1; height:2px; background: var(--border); border-radius:2px; }
+.auth-divider span { font-weight: 800; color: var(--muted); font-size: 0.82rem; }
+.btn-google {
+  width: 100%; padding: 14px; border: 2.5px solid var(--border); border-radius: 14px;
+  background: white; font-family: 'Nunito', sans-serif; font-weight: 800;
+  font-size: 1rem; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: var(--ink);
+}
+.btn-google:hover { border-color: #4285F4; background: #F8F9FF; transform: translateY(-1px); }
+.btn-google:active { transform: scale(0.98); }
+.google-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.auth-footer { text-align: center; margin-top: 16px; font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+
+/* ── Child Profile Selector ──────────────────────────── */
+.child-profile-screen {
+  position: fixed; inset: 0; z-index: 998;
+  background: linear-gradient(160deg, #FFF8E1 0%, #FFF3E0 50%, #FFE8D5 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; overflow-y: auto;
+}
+.child-card {
+  background: white; border-radius: 28px; padding: 28px 24px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 20px 60px rgba(255,107,53,0.15);
+  animation: fadeUp 0.4s ease both;
+}
+.profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+.profile-card {
+  border: 3px solid var(--border); border-radius: 20px; padding: 18px 12px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  background: var(--section); position: relative;
+}
+.profile-card:hover { border-color: var(--purple); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,107,53,0.15); }
+.profile-card:active { transform: scale(0.96); }
+.profile-avatar { font-size: 2.8rem; margin-bottom: 6px; display: block; }
+.profile-name { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+.profile-grade { font-size: 0.72rem; font-weight: 800; color: var(--muted); margin-top: 2px; }
+.profile-add {
+  border: 3px dashed var(--border); border-radius: 20px; padding: 18px 12px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  background: white; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+}
+.profile-add:hover { border-color: var(--purple); background: var(--purple-soft); }
+.profile-add-icon { font-size: 2rem; color: var(--muted); }
+.profile-add-label { font-weight: 800; font-size: 0.82rem; color: var(--muted); }
+
+/* ── Add Child Modal ─────────────────────────────────── */
+.add-child-overlay {
+  position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.add-child-modal {
+  background: white; border-radius: 24px; padding: 28px 24px;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25); animation: fadeUp 0.3s ease;
+}
+.avatar-picker { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.avatar-option {
+  font-size: 2rem; width: 52px; height: 52px; border-radius: 14px;
+  border: 3px solid var(--border); display: flex; align-items: center;
+  justify-content: center; cursor: pointer; transition: all 0.15s;
+  background: var(--section);
+}
+.avatar-option.selected { border-color: var(--purple); background: var(--purple-soft); transform: scale(1.1); }
+.avatar-option:hover { border-color: var(--purple-light); }
+
+/* ── Profile badge in header ─────────────────────────── */
+#active-profile-badge {
+  display: none; align-items: center; gap: 8px;
+  background: var(--purple-soft); border: 2px solid var(--border);
+  border-radius: 50px; padding: 4px 12px 4px 6px;
+  cursor: pointer; transition: all 0.2s; margin: 4px auto;
+  width: fit-content;
+}
+#active-profile-badge:hover { border-color: var(--purple); }
+.profile-badge-avatar { font-size: 1.4rem; }
+.profile-badge-name { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--purple-deep); }
+.profile-badge-switch { font-size: 0.7rem; font-weight: 800; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -1058,6 +1181,12 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <header>
     <div class="logo" style="color:var(--purple);text-shadow:0 3px 0 var(--purple-deep), 0 6px 20px rgba(255,107,53,0.15);letter-spacing:2px;">ReadUp!</div>
     <button class="bedtime-toggle" id="btn-bedtime" title="Bedtime Mode" aria-label="Toggle bedtime mode">🌙</button>
+    <!-- Active child profile badge -->
+    <div id="active-profile-badge" role="button" aria-label="Switch child profile" tabindex="0">
+      <span class="profile-badge-avatar" id="badge-avatar">🦁</span>
+      <span class="profile-badge-name" id="badge-name">Chris</span>
+      <span class="profile-badge-switch">▾ switch</span>
+    </div>
     <!-- Bookie the Book Owl mascot -->
     <div id="mascot-zone" aria-hidden="true" style="display:flex;flex-direction:column;align-items:center;margin:4px 0 0;gap:4px;">
       <div id="bookie-speech" style="background:white;border-radius:20px;padding:10px 18px;font-size:1rem;font-weight:700;color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,0.06);text-align:center;max-width:280px;position:relative;animation:fadeUp 0.4s ease both;">
@@ -1227,7 +1356,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FD</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1276,6 +1405,13 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <span style="font-size:1.4rem;">📖</span>
       <span class="home-wordbank-label">My Word Bank</span>
       <span class="home-wordbank-badge" id="home-wordbank-badge"></span>
+    </button>
+
+    <!-- My Assignments — only shown when parent has assigned something -->
+    <button class="home-wordbank-btn" id="btn-assignments-home" aria-label="My Assignments" style="display:none;background:linear-gradient(135deg,#E74C3C,#C0392B);box-shadow:0 6px 18px rgba(192,57,43,0.3);margin-top:12px;position:relative;">
+      <span style="font-size:1.4rem;">📋</span>
+      <span class="home-wordbank-label" style="color:#fff;">My Assignments</span>
+      <span id="assignments-count-badge" style="margin-left:auto;background:white;color:#E74C3C;border-radius:50px;padding:2px 10px;font-family:'Fredoka',sans-serif;font-size:0.82rem;font-weight:700;"></span>
     </button>
   </div>
 
@@ -2673,7 +2809,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -2826,6 +2962,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 // HEIC images handled server-side by Cloud Function (heic-convert npm package)
 
 const firebaseApp = initializeApp({
@@ -2838,6 +2975,441 @@ const firebaseApp = initializeApp({
   appId: "1:394068331923:web:d00704316cf6ba4b002c66"
 });
 const db = getDatabase(firebaseApp);
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
+// ── Auth State ────────────────────────────────────────────
+let currentUser = null;        // Firebase Auth user
+let currentChildId = null;     // Active child profile ID
+let currentChildProfile = null; // Active child profile data
+let authReady = false;         // True once onAuthStateChanged fires
+
+// ── Firebase user data path helpers ──────────────────────
+function userPath() { return currentUser ? `users/${currentUser.uid}` : null; }
+function childPath() { return (currentUser && currentChildId) ? `users/${currentUser.uid}/children/${currentChildId}` : null; }
+
+// ── Cloud sync helpers ────────────────────────────────────
+// Write child data to Firebase in background (non-blocking)
+function syncToCloud(childData) {
+  const path = childPath();
+  if (!path) return;
+  update(ref(db, path + '/profile'), {
+    name: currentChildProfile?.name || '',
+    grade: currentChildProfile?.grade || '1',
+    avatar: currentChildProfile?.avatar || '🦁',
+    updatedAt: Date.now()
+  }).catch(e => console.warn('Cloud sync failed:', e));
+}
+
+// Pull child data from Firebase and merge into localStorage
+async function pullFromCloud() {
+  const path = childPath();
+  if (!path) return;
+  try {
+    const snap = await get(ref(db, path + '/data'));
+    if (snap.exists()) {
+      const cloudData = snap.val();
+      // Merge: cloud wins for these fields, keep local for session-only fields
+      const local = getData();
+      if (cloudData.stories) local.stories = cloudData.stories;
+      if (cloudData.wordBank) local.wordBank = cloudData.wordBank;
+      if (cloudData.spellingLists) local.spellingLists = cloudData.spellingLists;
+      if (cloudData.vocabLists) local.vocabLists = cloudData.vocabLists;
+      if (cloudData.weeklyLog) local.weeklyLog = cloudData.weeklyLog;
+      if (cloudData.wpmHistory) local.wpmHistory = cloudData.wpmHistory;
+      if (cloudData.timedPassages) local.timedPassages = cloudData.timedPassages;
+      if (cloudData.assignments) local.assignments = cloudData.assignments;
+      saveData(local);
+      console.log('✅ Pulled data from cloud for child:', currentChildProfile?.name);
+    }
+  } catch(e) {
+    console.warn('Cloud pull failed (offline?):', e);
+  }
+}
+
+// Push child data to Firebase (called on key data changes)
+function pushToCloud() {
+  const path = childPath();
+  if (!path) return;
+  const d = getData();
+  const cloudData = {
+    stories: d.stories || [],
+    wordBank: d.wordBank || [],
+    spellingLists: d.spellingLists || [],
+    vocabLists: d.vocabLists || [],
+    weeklyLog: d.weeklyLog || [],
+    wpmHistory: d.wpmHistory || [],
+    timedPassages: d.timedPassages || [],
+    assignments: d.assignments || [],
+    updatedAt: Date.now()
+  };
+  set(ref(db, path + '/data'), cloudData)
+    .catch(e => console.warn('Cloud push failed:', e));
+}
+
+// Patch saveData to also push to cloud (debounced 3s to avoid hammering)
+let _cloudPushTimer = null;
+const _origSaveData = saveData;
+function saveData(d) {
+  _origSaveData(d);
+  // Debounced cloud push — only if authenticated
+  if (currentUser && currentChildId) {
+    clearTimeout(_cloudPushTimer);
+    _cloudPushTimer = setTimeout(pushToCloud, 3000);
+  }
+}
+
+// ── Auth UI helpers ───────────────────────────────────────
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('child-profile-screen').style.display = 'none';
+}
+
+function hideAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'none';
+}
+
+function showProfileScreen() {
+  hideAuthScreen();
+  document.getElementById('child-profile-screen').style.display = 'flex';
+  renderProfileGrid();
+}
+
+function hideProfileScreen() {
+  document.getElementById('child-profile-screen').style.display = 'none';
+}
+
+function setAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+// ── Auth tab switching ────────────────────────────────────
+document.getElementById('auth-tab-signin').addEventListener('click', () => {
+  document.getElementById('auth-tab-signin').classList.add('active');
+  document.getElementById('auth-tab-signup').classList.remove('active');
+  document.getElementById('auth-form-signin').style.display = 'block';
+  document.getElementById('auth-form-signup').style.display = 'none';
+  setAuthError('');
+});
+
+document.getElementById('auth-tab-signup').addEventListener('click', () => {
+  document.getElementById('auth-tab-signup').classList.add('active');
+  document.getElementById('auth-tab-signin').classList.remove('active');
+  document.getElementById('auth-form-signup').style.display = 'block';
+  document.getElementById('auth-form-signin').style.display = 'none';
+  setAuthError('');
+});
+
+// ── Google Sign In ────────────────────────────────────────
+document.getElementById('btn-google-signin').addEventListener('click', async () => {
+  setAuthError('');
+  try {
+    await signInWithPopup(auth, googleProvider);
+    // onAuthStateChanged handles the rest
+  } catch(e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      setAuthError('Google sign-in failed. Please try again.');
+    }
+  }
+});
+
+// ── Email Sign In ─────────────────────────────────────────
+document.getElementById('btn-email-signin').addEventListener('click', async () => {
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  setAuthError('');
+  if (!email || !password) { setAuthError('Please enter your email and password.'); return; }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': 'No account found with that email.',
+      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+    };
+    setAuthError(msgs[e.code] || 'Sign-in failed. Please try again.');
+  }
+});
+
+// Enter key submits sign in
+document.getElementById('signin-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-email-signin').click();
+});
+
+// ── Email Sign Up ─────────────────────────────────────────
+document.getElementById('btn-email-signup').addEventListener('click', async () => {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  setAuthError('');
+  if (!name) { setAuthError('Please enter your name.'); return; }
+  if (!email) { setAuthError('Please enter your email.'); return; }
+  if (password.length < 6) { setAuthError('Password must be at least 6 characters.'); return; }
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: name });
+  } catch(e) {
+    const msgs = {
+      'auth/email-already-in-use': 'An account with this email already exists. Try signing in.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/weak-password': 'Password must be at least 6 characters.',
+    };
+    setAuthError(msgs[e.code] || 'Sign-up failed. Please try again.');
+  }
+});
+
+// ── Sign Out ──────────────────────────────────────────────
+document.getElementById('btn-profile-signout').addEventListener('click', async () => {
+  const yes = await showAppConfirm('👋', 'Sign Out?', 'You will need to sign in again next time.', '✅ Sign Out', '← Stay');
+  if (!yes) return;
+  currentUser = null; currentChildId = null; currentChildProfile = null;
+  localStorage.removeItem('readup_active_child');
+  await signOut(auth);
+  updateProfileBadge();
+  showAuthScreen();
+});
+
+// ── Profile Grid ──────────────────────────────────────────
+async function renderProfileGrid() {
+  const grid = document.getElementById('profile-grid');
+  grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-weight:700;">Loading profiles...</div>';
+
+  if (!currentUser) return;
+
+  // Update welcome name
+  const parentName = currentUser.displayName || 'Parent';
+  document.getElementById('profile-welcome-name').textContent = `Who's reading today?`;
+
+  try {
+    const snap = await get(ref(db, `users/${currentUser.uid}/children`));
+    const children = snap.exists() ? snap.val() : {};
+    const childList = Object.entries(children).map(([id, data]) => ({ id, ...data }));
+
+    grid.innerHTML = '';
+
+    // Render existing child profiles
+    childList.forEach(child => {
+      const card = document.createElement('div');
+      card.className = 'profile-card';
+      card.innerHTML = `
+        <span class="profile-avatar">${child.avatar || '🦁'}</span>
+        <div class="profile-name">${escapeHtml(child.name)}</div>
+        <div class="profile-grade">${{ prek:'Pre-K', k:'Kindergarten', '1':'1st Grade', '2':'2nd Grade', '3':'3rd Grade' }[child.grade] || child.grade}</div>`;
+      card.addEventListener('click', () => selectChildProfile(child));
+      grid.appendChild(card);
+    });
+
+    // Add new child button (max 5)
+    if (childList.length < 5) {
+      const addCard = document.createElement('div');
+      addCard.className = 'profile-add';
+      addCard.innerHTML = `<span class="profile-add-icon">➕</span><span class="profile-add-label">Add Child</span>`;
+      addCard.addEventListener('click', () => showAddChildModal());
+      grid.appendChild(addCard);
+    }
+
+    // If no children yet, auto-show add modal
+    if (childList.length === 0) {
+      setTimeout(showAddChildModal, 400);
+    }
+  } catch(e) {
+    console.error('Failed to load profiles:', e);
+    grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--coral);font-weight:700;">Failed to load profiles. Check your connection.</div>';
+  }
+}
+
+// ── Select a child profile ────────────────────────────────
+async function selectChildProfile(child) {
+  currentChildId = child.id;
+  currentChildProfile = child;
+
+  // Persist active child to localStorage for auto-select next session
+  localStorage.setItem('readup_active_child', JSON.stringify({ uid: currentUser.uid, childId: child.id }));
+
+  // Set grade in app state
+  S.grade = child.grade || '1';
+  S.speed = GRADE_SPEED_DEFAULTS[S.grade] || 0.9;
+  const slider = document.getElementById('speed-slider');
+  const display = document.getElementById('speed-display');
+  if (slider) slider.value = S.speed;
+  if (display) display.textContent = S.speed.toFixed(1) + '×';
+
+  // Pull cloud data for this child
+  await pullFromCloud();
+
+  hideProfileScreen();
+  updateProfileBadge();
+
+  // Show pick screen
+  const d = getData();
+  if (!d.onboardingDone) {
+    document.getElementById('screen-pick').classList.remove('active');
+    document.getElementById('screen-welcome-1').style.display = 'block';
+    document.getElementById('screen-welcome-1').classList.add('active');
+  } else {
+    show('screen-pick');
+  }
+
+  updateHomeStats();
+  updateAssignmentsBadge();
+}
+
+// ── Update profile badge in header ───────────────────────
+function updateProfileBadge() {
+  const badge = document.getElementById('active-profile-badge');
+  if (currentChildProfile) {
+    document.getElementById('badge-avatar').textContent = currentChildProfile.avatar || '🦁';
+    document.getElementById('badge-name').textContent = currentChildProfile.name || 'Reader';
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// Tap profile badge → go back to profile selector
+document.getElementById('active-profile-badge').addEventListener('click', () => {
+  showProfileScreen();
+});
+document.getElementById('active-profile-badge').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') showProfileScreen();
+});
+
+// ── Add Child Modal ───────────────────────────────────────
+let selectedAvatar = '🦁';
+
+function showAddChildModal() {
+  selectedAvatar = '🦁';
+  document.getElementById('new-child-name').value = '';
+  document.getElementById('new-child-grade').value = '1';
+  document.getElementById('add-child-error').style.display = 'none';
+  // Reset avatar selection
+  document.querySelectorAll('.avatar-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.avatar === '🦁');
+  });
+  document.getElementById('add-child-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('new-child-name').focus(), 100);
+}
+
+function hideAddChildModal() {
+  document.getElementById('add-child-overlay').style.display = 'none';
+}
+
+// Avatar picker
+document.querySelectorAll('.avatar-option').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedAvatar = el.dataset.avatar;
+  });
+});
+
+document.getElementById('btn-add-child-cancel').addEventListener('click', () => {
+  hideAddChildModal();
+  // If no children exist yet, sign out since there's nothing to do
+  get(ref(db, `users/${currentUser.uid}/children`)).then(snap => {
+    if (!snap.exists() || Object.keys(snap.val()).length === 0) {
+      signOut(auth);
+      showAuthScreen();
+    }
+  });
+});
+
+document.getElementById('btn-add-child-save').addEventListener('click', async () => {
+  const name = document.getElementById('new-child-name').value.trim();
+  const grade = document.getElementById('new-child-grade').value;
+  const errEl = document.getElementById('add-child-error');
+
+  if (!name) {
+    errEl.textContent = "Please enter the child's name.";
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  try {
+    // Generate a new child ID
+    const childId = 'child_' + Date.now().toString(36);
+    const childData = {
+      id: childId,
+      name,
+      grade,
+      avatar: selectedAvatar,
+      createdAt: Date.now()
+    };
+
+    // Save to Firebase
+    await set(ref(db, `users/${currentUser.uid}/children/${childId}`), childData);
+
+    hideAddChildModal();
+    renderProfileGrid();
+  } catch(e) {
+    errEl.textContent = 'Failed to save profile. Please try again.';
+    errEl.style.display = 'block';
+  }
+});
+
+// ── onAuthStateChanged — the main auth entry point ────────
+onAuthStateChanged(auth, async (user) => {
+  authReady = true;
+  if (user) {
+    currentUser = user;
+    console.log('✅ Signed in:', user.email || user.displayName);
+
+    // Check for previously active child session
+    try {
+      const saved = JSON.parse(localStorage.getItem('readup_active_child') || 'null');
+      if (saved && saved.uid === user.uid && saved.childId) {
+        // Try to restore the child session
+        const snap = await get(ref(db, `users/${user.uid}/children/${saved.childId}`));
+        if (snap.exists()) {
+          const child = { id: saved.childId, ...snap.val() };
+          await selectChildProfile(child);
+          return; // Skip profile screen — go straight to app
+        }
+      }
+    } catch(e) {
+      console.warn('Could not restore child session:', e);
+    }
+
+    // No saved session — show profile picker
+    showProfileScreen();
+
+  } else {
+    // Not signed in — show auth screen
+    currentUser = null;
+    currentChildId = null;
+    currentChildProfile = null;
+    updateProfileBadge();
+    showAuthScreen();
+  }
+});
+
+// ── Assignments badge on home screen ─────────────────────
+function updateAssignmentsBadge() {
+  const d = getData();
+  const pending = (d.assignments || []).filter(a => !a.completedDate);
+  const btn = document.getElementById('btn-assignments-home');
+  const badge = document.getElementById('assignments-count-badge');
+  if (btn) btn.style.display = pending.length > 0 ? 'flex' : 'none';
+  if (badge) badge.textContent = pending.length;
+  // Also show badge on Time My Reading button
+  const timedBtn = document.getElementById('btn-timed-reading-home');
+  if (timedBtn) {
+    const existing = timedBtn.querySelector('.assignment-dot');
+    if (pending.length > 0 && !existing) {
+      const dot = document.createElement('span');
+      dot.className = 'assignment-dot';
+      dot.style.cssText = 'position:absolute;top:8px;right:8px;width:12px;height:12px;background:var(--coral);border-radius:50%;border:2px solid white;';
+      timedBtn.style.position = 'relative';
+      timedBtn.appendChild(dot);
+    } else if (pending.length === 0 && existing) {
+      existing.remove();
+    }
+  }
+}
 
 const CF_BASE = "https://us-central1-readup-transforming-youth.cloudfunctions.net";
 const CF_STORY = `${CF_BASE}/generateStory`;
@@ -6241,21 +6813,70 @@ document.getElementById('btn-wpm-done-early').addEventListener('click', () => {
 
 function saveWPMScore(wpm, seconds, wordCount) {
   const d = getData();
-  // In standalone mode, save to a general WPM history
-  if (wpmStandaloneMode) {
-    if (!d.wpmHistory) d.wpmHistory = [];
-    d.wpmHistory.push({ wpm, seconds: Math.round(seconds), wordCount, grade: S.grade, date: new Date().toISOString() });
-    if (d.wpmHistory.length > 50) d.wpmHistory = d.wpmHistory.slice(-50);
-    saveData(d);
-    return;
+  const passage = wpmPassage || S.story || '';
+  const passageHash = storyHash(passage);
+  const attempt = {
+    date: new Date().toISOString(),
+    wpm,
+    wordsRead: wordCount,
+    seconds: Math.round(seconds),
+    grade: S.grade
+  };
+
+  // Save to timedPassages library — unique passages only, attempts appended
+  if (!d.timedPassages) d.timedPassages = [];
+  let passageEntry = d.timedPassages.find(p => p.id === passageHash);
+  if (!passageEntry) {
+    // New passage — determine title and source
+    let title = '📖 Reading Passage';
+    let source = 'paste';
+    if (S.isAIStory || wpmStandaloneMode) {
+      const TOPIC_NAMES = { animals:'Animals', space:'Space', dinosaurs:'Dinosaurs', ocean:'Ocean', superheroes:'Superheroes', magic:'Magic', sports:'Sports', cooking:'Cooking', friends:'Friends', confidence:'Self-Confidence', blackhistory:'Black History', helpers:'Helpers', nature:'Nature', emotions:'Feelings', trucks:'Trucks', princesses:'Princesses', robots:'Robots', pirates:'Pirates', airplanes:'Airplanes' };
+      title = S.category ? `✨ ${TOPIC_NAMES[S.category] || S.category} Story` : '✨ AI Story';
+      source = 'ai';
+    } else if (S.storyTitle && S.storyTitle.includes('📄')) {
+      title = S.storyTitle;
+      source = 'upload';
+    } else if (S.storyTitle) {
+      title = S.storyTitle;
+    }
+    passageEntry = {
+      id: passageHash,
+      title,
+      text: passage,
+      source,
+      topic: S.category || '',
+      grade: S.grade,
+      wordCount: passage.trim().split(/\s+/).length,
+      createdAt: new Date().toISOString(),
+      attempts: [],
+      assignedBack: false,
+      assignedNote: '',
+      deleted: false
+    };
+    d.timedPassages.unshift(passageEntry); // newest first
+    if (d.timedPassages.length > 50) d.timedPassages = d.timedPassages.slice(0, 50);
   }
-  // Story mode — save to specific story
-  const hash = storyHash(S.story);
-  let entry = d.stories.find(s => s.hash === hash);
-  if (!entry) return;
-  if (!entry.wpmScores) entry.wpmScores = [];
-  entry.wpmScores.push({ wpm, seconds: Math.round(seconds), wordCount, date: new Date().toISOString() });
-  if (entry.wpmScores.length > 10) entry.wpmScores = entry.wpmScores.slice(-10);
+  passageEntry.attempts.push(attempt);
+  if (passageEntry.attempts.length > 20) passageEntry.attempts = passageEntry.attempts.slice(-20);
+  passageEntry.lastAttempt = attempt.date;
+
+  // Also keep legacy wpmHistory for backwards compat
+  if (!d.wpmHistory) d.wpmHistory = [];
+  d.wpmHistory.push({ wpm, seconds: Math.round(seconds), wordCount, grade: S.grade, date: new Date().toISOString() });
+  if (d.wpmHistory.length > 50) d.wpmHistory = d.wpmHistory.slice(-50);
+
+  // Also keep story-mode scores for backwards compat
+  if (!wpmStandaloneMode && S.story) {
+    const hash = storyHash(S.story);
+    let entry = d.stories.find(s => s.hash === hash);
+    if (entry) {
+      if (!entry.wpmScores) entry.wpmScores = [];
+      entry.wpmScores.push({ wpm, seconds: Math.round(seconds), wordCount, date: new Date().toISOString() });
+      if (entry.wpmScores.length > 10) entry.wpmScores = entry.wpmScores.slice(-10);
+    }
+  }
+
   saveData(d);
 }
 
@@ -6587,6 +7208,8 @@ function getData() {
   if (!d.spellingLists) d.spellingLists = [];
   if (!d.vocabLists) d.vocabLists = [];
   if (!d.weeklyLog) d.weeklyLog = [];
+  if (!d.timedPassages) d.timedPassages = [];   // saved timed reading passages
+  if (!d.assignments) d.assignments = [];        // parent-assigned passages
   return d;
 }
 
@@ -10443,28 +11066,19 @@ window.addEventListener('offline', () => {
   setTimeout(() => t.classList.remove('show'), 4000);
 });
 // ── Welcome / Onboarding Flow ─────────────────────────────
-(function initWelcome() {
+// initWelcome is now called from selectChildProfile after auth
+// The welcome screen only shows for new users on first login
+document.getElementById('btn-welcome-go').addEventListener('click', () => {
   const d = getData();
-  if (d.onboardingDone) return; // Already completed — skip
-
-  // Hide pick screen, show welcome splash
-  document.getElementById('screen-pick').classList.remove('active');
-  document.getElementById('screen-welcome-1').style.display = 'block';
-  document.getElementById('screen-welcome-1').classList.add('active');
-
-  // Single "Let's Go!" button — marks onboarding done and enters app
-  document.getElementById('btn-welcome-go').addEventListener('click', () => {
-    const d = getData();
-    d.onboardingDone = true;
-    saveData(d);
-    document.getElementById('btn-welcome-go').style.transform = 'scale(1.08)';
-    setTimeout(() => {
-      document.getElementById('screen-welcome-1').classList.remove('active');
-      document.getElementById('screen-welcome-1').style.display = 'none';
-      show('screen-pick');
-    }, 250);
-  });
-})();
+  d.onboardingDone = true;
+  saveData(d);
+  document.getElementById('btn-welcome-go').style.transform = 'scale(1.08)';
+  setTimeout(() => {
+    document.getElementById('screen-welcome-1').classList.remove('active');
+    document.getElementById('screen-welcome-1').style.display = 'none';
+    show('screen-pick');
+  }, 250);
+});
 
 // ── How it works (footer) ─────────────────────────────────
 const btnShowWelcome = document.getElementById('btn-show-welcome');
@@ -10905,6 +11519,141 @@ document.addEventListener('keydown', (e) => {
     <div class="app-modal-title" id="app-modal-title"></div>
     <div class="app-modal-msg" id="app-modal-msg"></div>
     <div class="app-modal-actions" id="app-modal-actions"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- AUTH SCREEN — Login / Sign Up                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="auth-screen" id="auth-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-text">ReadUp!</div>
+      <div class="auth-subtitle">Built for growing readers 📚</div>
+    </div>
+
+    <!-- Tab row: Sign In / Sign Up -->
+    <div class="auth-tab-row">
+      <button class="auth-tab active" id="auth-tab-signin">Sign In</button>
+      <button class="auth-tab" id="auth-tab-signup">Create Account</button>
+    </div>
+
+    <!-- Error message -->
+    <div class="auth-error" id="auth-error"></div>
+
+    <!-- Google Sign In -->
+    <button class="btn-google" id="btn-google-signin">
+      <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="auth-divider"><span>or</span></div>
+
+    <!-- Email/Password form -->
+    <div id="auth-form-signin">
+      <div class="auth-input-group">
+        <label class="auth-input-label">Email Address</label>
+        <input type="email" class="auth-input" id="signin-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="auth-input-group">
+        <label class="auth-input-label">Password</label>
+        <input type="password" class="auth-input" id="signin-password" placeholder="Your password" autocomplete="current-password">
+      </div>
+      <button class="btn-main" id="btn-email-signin" style="margin-top:4px;">Sign In →</button>
+    </div>
+
+    <div id="auth-form-signup" style="display:none;">
+      <div class="auth-input-group">
+        <label class="auth-input-label">Your Name (Parent)</label>
+        <input type="text" class="auth-input" id="signup-name" placeholder="e.g. Maria Johnson" autocomplete="name">
+      </div>
+      <div class="auth-input-group">
+        <label class="auth-input-label">Email Address</label>
+        <input type="email" class="auth-input" id="signup-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="auth-input-group">
+        <label class="auth-input-label">Password (min 6 characters)</label>
+        <input type="password" class="auth-input" id="signup-password" placeholder="Create a password" autocomplete="new-password">
+      </div>
+      <button class="btn-main btn-green" id="btn-email-signup" style="margin-top:4px;">Create Account →</button>
+    </div>
+
+    <div class="auth-footer">
+      🔒 Your data is private and secure.<br>
+      Built with ❤️ by <strong>Transforming Youth, Inc.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CHILD PROFILE SELECTOR SCREEN                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="child-profile-screen" id="child-profile-screen" style="display:none;">
+  <div class="child-card">
+    <div style="text-align:center;margin-bottom:4px;">
+      <div style="font-size:2rem;margin-bottom:4px;">👋</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);" id="profile-welcome-name">Who's reading today?</div>
+      <div style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap your name to start!</div>
+    </div>
+    <div class="profile-grid" id="profile-grid">
+      <!-- Profiles injected here -->
+    </div>
+    <button class="btn-main btn-outline" id="btn-profile-signout" style="font-size:0.85rem;margin-top:8px;">← Sign Out</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ADD CHILD MODAL                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="add-child-overlay" id="add-child-overlay" style="display:none;">
+  <div class="add-child-modal">
+    <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:16px;text-align:center;">👶 Add a Child Profile</div>
+
+    <div class="auth-input-group">
+      <label class="auth-input-label">Child's Name</label>
+      <input type="text" class="auth-input" id="new-child-name" placeholder="e.g. Chris" autocomplete="off">
+    </div>
+
+    <div class="auth-input-group">
+      <label class="auth-input-label">Grade</label>
+      <select class="auth-input" id="new-child-grade" style="cursor:pointer;">
+        <option value="prek">Pre-K</option>
+        <option value="k">Kindergarten</option>
+        <option value="1" selected>1st Grade</option>
+        <option value="2">2nd Grade</option>
+        <option value="3">3rd Grade</option>
+      </select>
+    </div>
+
+    <div class="auth-input-group">
+      <label class="auth-input-label">Pick an Avatar</label>
+      <div class="avatar-picker" id="avatar-picker">
+        <div class="avatar-option selected" data-avatar="🦁">🦁</div>
+        <div class="avatar-option" data-avatar="🐯">🐯</div>
+        <div class="avatar-option" data-avatar="🐼">🐼</div>
+        <div class="avatar-option" data-avatar="🦊">🦊</div>
+        <div class="avatar-option" data-avatar="🐨">🐨</div>
+        <div class="avatar-option" data-avatar="🐸">🐸</div>
+        <div class="avatar-option" data-avatar="🦄">🦄</div>
+        <div class="avatar-option" data-avatar="🐙">🐙</div>
+        <div class="avatar-option" data-avatar="🦋">🦋</div>
+        <div class="avatar-option" data-avatar="🌟">🌟</div>
+        <div class="avatar-option" data-avatar="🚀">🚀</div>
+        <div class="avatar-option" data-avatar="🎨">🎨</div>
+      </div>
+    </div>
+
+    <div class="auth-error" id="add-child-error"></div>
+
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn-main btn-outline" id="btn-add-child-cancel" style="font-size:0.9rem;">Cancel</button>
+      <button class="btn-main btn-green" id="btn-add-child-save" style="font-size:0.9rem;">✅ Save Profile</button>
+    </div>
   </div>
 </div>
 </body>
