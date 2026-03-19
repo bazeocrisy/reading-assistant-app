@@ -1677,7 +1677,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GA</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GB</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -3130,7 +3130,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GA</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3821,8 +3821,9 @@ function hideSplash() {
 
 onAuthStateChanged(auth, async (user) => {
   authReady = true;
-  hideSplash();
   if (user) {
+    // Logged-in user — hide splash after session resolves
+    hideSplash();
     currentUser = user;
     console.log('✅ Signed in:', user.email || user.displayName);
 
@@ -3846,12 +3847,13 @@ onAuthStateChanged(auth, async (user) => {
     showProfileScreen();
 
   } else {
-    // Not signed in — always show landing page first, never auto-open auth modal
+    // Not signed in — show landing page instantly, no splash wait
     currentUser = null;
     currentChildId = null;
     currentChildProfile = null;
     updateProfileBadge();
     showLandingPage();
+    hideSplash(); // hide splash after landing page is visible — no flicker
   }
 });
 
