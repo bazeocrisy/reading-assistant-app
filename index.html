@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FA</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FB</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2262,6 +2262,8 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="kid-action-icon" aria-hidden="true">📋</div>
         <div class="kid-action-label" id="btn-vocab-source-existing-label">View My Current Words</div>
       </button>
+      <!-- Clear All Vocab Words — only shown when a list exists -->
+      <button class="btn-main" id="btn-vocab-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:6px;">🗑️ Clear All My Vocab Words</button>
     </div>
   </div>
 
@@ -2671,7 +2673,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FA</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -9371,12 +9373,15 @@ function showVocabSourceScreen() {
   const d = getData();
   const existingBtn = document.getElementById('btn-vocab-source-existing');
   const existingLabel = document.getElementById('btn-vocab-source-existing-label');
+  const clearAllBtn = document.getElementById('btn-vocab-clear-all');
   if (d.vocabLists && d.vocabLists.length > 0) {
     existingBtn.style.display = 'flex';
     const latest = d.vocabLists[d.vocabLists.length - 1];
     if (existingLabel) existingLabel.textContent = `View My Current Words (${latest.words.length})`;
+    clearAllBtn.style.display = 'block';
   } else {
     existingBtn.style.display = 'none';
+    clearAllBtn.style.display = 'none';
   }
   show('screen-vocab-source');
 }
@@ -9401,6 +9406,37 @@ document.getElementById('btn-vocab-source-existing').addEventListener('click', (
     renderVocabWords(currentVocabList);
     show('screen-vocab');
   }
+});
+
+// Vocab: Clear All Words button
+document.getElementById('btn-vocab-clear-all').addEventListener('click', () => {
+  showAppModal({
+    icon: '🗑️',
+    title: 'Clear All Vocab Words?',
+    message: 'This will remove all your saved vocabulary words. This cannot be undone.',
+    buttons: [
+      {
+        label: '✅ Yes, Clear All',
+        class: 'modal-red',
+        action: () => {
+          const d = getData();
+          d.vocabLists = [];
+          saveData(d);
+          currentVocabList = null;
+          document.getElementById('btn-vocab-source-existing').style.display = 'none';
+          document.getElementById('btn-vocab-clear-all').style.display = 'none';
+          // Update home badge
+          const badge = document.getElementById('home-vocab-badge');
+          if (badge) badge.style.display = 'none';
+          const t = document.getElementById('word-toast');
+          t.textContent = '🗑️ All vocabulary words cleared';
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 2000);
+        }
+      },
+      { label: '← Cancel', class: 'modal-outline', action: () => {} }
+    ]
+  });
 });
 
 // ── Type screen: live word count ─────────────────────────────
@@ -9556,6 +9592,16 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
     }
 
     if (!extractedWords || extractedWords.length === 0) throw new Error('No words found');
+
+    // Content safety check on extracted words before loading
+    const vocabWordStr = extractedWords.map(w => w.word).join(' ');
+    const vocabUploadSafety = checkContentSafety(vocabWordStr);
+    if (!vocabUploadSafety.safe) {
+      document.getElementById('vocab-loading').style.display = 'none';
+      document.getElementById('vocab-empty').style.display = 'block';
+      showAppAlert('🚫', 'Oops!', vocabUploadSafety.reason);
+      return;
+    }
 
     const vocabList = {
       id: Date.now().toString(36),
