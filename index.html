@@ -1654,7 +1654,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GH</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GI</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1711,6 +1711,26 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <span class="home-wordbank-label" style="color:#fff;">My Assignments</span>
       <span id="assignments-count-badge" style="margin-left:auto;background:white;color:#E74C3C;border-radius:50px;padding:2px 10px;font-family:'Fredoka',sans-serif;font-size:0.82rem;font-weight:700;"></span>
     </button>
+
+    <!-- My Readings — only shown when child has saved passages -->
+    <button class="home-wordbank-btn" id="btn-my-readings-home" aria-label="My Readings" style="display:none;background:linear-gradient(135deg,#F9A825,#FF6B35);box-shadow:0 6px 18px rgba(249,168,37,0.3);margin-top:12px;position:relative;">
+      <span style="font-size:1.4rem;">📚</span>
+      <span class="home-wordbank-label" style="color:#fff;">My Readings</span>
+      <span id="my-readings-count-badge" style="margin-left:auto;background:white;color:#F9A825;border-radius:50px;padding:2px 10px;font-family:'Fredoka',sans-serif;font-size:0.82rem;font-weight:700;"></span>
+    </button>
+  </div>
+
+  <!-- SCREEN: My Readings -->
+  <div class="screen" id="screen-my-readings">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:2px solid var(--border);">
+        <button id="btn-my-readings-back" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:0;line-height:1;">←</button>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);">📚 My Readings</div>
+      </div>
+      <div id="my-readings-list" style="padding:14px;display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto;">
+        <!-- Populated by renderMyReadings() -->
+      </div>
+    </div>
   </div>
 
   <!-- SCREEN: Story Wizard Step 1 — Grade -->
@@ -3107,7 +3127,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GH</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GI</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5140,6 +5160,7 @@ function updateHomeStats() {
       }
     }
   } catch(e) {}
+  updateMyReadingsBadge();
 }
 updateHomeStats();
 document.getElementById('btn-surprise-me').addEventListener('click', () => {
@@ -7365,17 +7386,109 @@ function saveWPMScore(wpm, seconds, wordCount) {
   }
 
   saveData(d);
+  updateMyReadingsBadge();
 }
 
 function getWPMScores() {
   const d = getData();
-  if (wpmStandaloneMode) {
-    return (d.wpmHistory || []).slice(-10);
+  // Always use per-passage attempts for accurate apples-to-apples comparison
+  const passage = wpmPassage || S.story || '';
+  if (passage) {
+    const hash = storyHash(passage);
+    // Check timedPassages first (standalone + story mode)
+    const timedEntry = (d.timedPassages || []).find(p => p.id === hash);
+    if (timedEntry && timedEntry.attempts && timedEntry.attempts.length > 0) {
+      return timedEntry.attempts;
+    }
   }
-  const hash = storyHash(S.story || '');
-  const entry = d.stories.find(s => s.hash === hash);
-  return entry?.wpmScores || [];
+  // Fallback: story-mode scores
+  if (!wpmStandaloneMode && S.story) {
+    const hash = storyHash(S.story || '');
+    const entry = d.stories.find(s => s.hash === hash);
+    return entry?.wpmScores || [];
+  }
+  return [];
 }
+
+// ── My Readings ───────────────────────────────────────────
+
+function updateMyReadingsBadge() {
+  const d = getData();
+  const passages = (d.timedPassages || []).filter(p => !p.deleted);
+  const btn = document.getElementById('btn-my-readings-home');
+  const badge = document.getElementById('my-readings-count-badge');
+  if (btn) btn.style.display = passages.length > 0 ? 'flex' : 'none';
+  if (badge) badge.textContent = passages.length + (passages.length === 1 ? ' passage' : ' passages');
+}
+
+function renderMyReadings() {
+  const d = getData();
+  const passages = (d.timedPassages || []).filter(p => !p.deleted);
+  const list = document.getElementById('my-readings-list');
+  if (!list) return;
+
+  if (passages.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:32px 16px;">
+      <div style="font-size:3rem;margin-bottom:8px;">📖</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:6px;">No readings yet!</div>
+      <div style="font-size:0.9rem;font-weight:700;color:var(--muted);">Finish a timed read and it will show up here.</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  passages.forEach(p => {
+    const attempts = p.attempts || [];
+    const bestWPM = attempts.length ? Math.max(...attempts.map(a => a.wpm)) : 0;
+    const lastAttempt = attempts.length ? new Date(attempts[attempts.length - 1].date) : null;
+    const dateStr = lastAttempt ? lastAttempt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const sourceIcon = p.source === 'ai' ? '✨' : '📄';
+    const readCount = attempts.length;
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--section);border-radius:16px;padding:14px 16px;border:2px solid var(--border);';
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;">${sourceIcon} ${p.title || 'Reading Passage'}</div>
+          <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-top:3px;">
+            ${readCount} read${readCount !== 1 ? 's' : ''} ${dateStr ? '· Last read ' + dateStr : ''}
+          </div>
+        </div>
+        ${bestWPM > 0 ? `<div style="text-align:center;flex-shrink:0;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--purple);line-height:1;">${bestWPM}</div>
+          <div style="font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Best WPM</div>
+        </div>` : ''}
+      </div>
+      <button data-passage-id="${p.id}" class="btn-read-again btn-main" style="width:100%;font-size:1rem;padding:12px;background:linear-gradient(135deg,#F9A825,#FF6B35);border:none;border-radius:12px;color:white;font-family:'Fredoka',sans-serif;font-weight:700;cursor:pointer;">⏱ Read Again</button>
+    `;
+    list.appendChild(card);
+  });
+
+  // Wire up Read Again buttons
+  list.querySelectorAll('.btn-read-again').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const passageId = btn.dataset.passageId;
+      const d = getData();
+      const entry = (d.timedPassages || []).find(p => p.id === passageId);
+      if (!entry) return;
+      wpmPassage = entry.text;
+      wpmStandaloneMode = true;
+      S.grade = entry.grade || S.grade;
+      updateWPMInstructionCount();
+      show('screen-wpm-instructions');
+    });
+  });
+}
+
+document.getElementById('btn-my-readings-home').addEventListener('click', () => {
+  renderMyReadings();
+  show('screen-my-readings');
+});
+
+document.getElementById('btn-my-readings-back').addEventListener('click', () => {
+  show('screen-pick');
+});
 
 function showWPMResults(wpm, wordCount, elapsedSec) {
   // Big number
