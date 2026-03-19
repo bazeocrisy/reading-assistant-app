@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EX</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EY</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2669,7 +2669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EX</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5684,14 +5684,21 @@ async function sayHearItAll(word, definition, sentences, allWordEls) {
 
 
     // Find where sentences start in the timings array by matching
-    // the first word of the first sentence — same robust approach as reading screen reconciliation
+    // the first word of the first sentence — same robust approach as reading screen reconciliation.
+    // IMPORTANT: start scanning AFTER the word+definition prefix tokens, not from index 0.
+    // Otherwise a word like "blue" matches itself at position 0 instead of "Blue sky up."
     let prefixWords = 0;
     if (sentences.length > 0 && rawTimings.length > 0) {
       const firstWord = sentences[0].trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
-      for (let i = 0; i < rawTimings.length; i++) {
+      // Estimate minimum prefix length: word token + "—" token + definition tokens
+      const prefixTokenCount = 1 + 1 + (definition ? definition.trim().split(/\s+/).length : 0);
+      const scanStart = Math.min(prefixTokenCount, rawTimings.length - 1);
+      for (let i = scanStart; i < rawTimings.length; i++) {
         const tw = (rawTimings[i].word || '').toLowerCase().replace(/[^a-z]/g, '');
         if (tw === firstWord) { prefixWords = i; break; }
       }
+      // Fallback: if no match found after prefix, use the prefix token count itself
+      if (prefixWords === 0 && scanStart > 0) prefixWords = scanStart;
     }
 
     // Slice to only the sentence timings
