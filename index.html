@@ -1524,7 +1524,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FI</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FK</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FI</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FK</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3223,19 +3223,32 @@ function showLandingPage() {
   document.getElementById('screen-landing').style.display = 'block';
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('child-profile-screen').style.display = 'none';
+  document.getElementById('screen-welcome-1').style.display = 'none';
+  document.getElementById('screen-welcome-1').classList.remove('active');
 }
 
 function hideLandingPage() {
   document.getElementById('screen-landing').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'none';
 }
 
 function showAuthScreen() {
-  hideLandingPage();
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('child-profile-screen').style.display = 'none';
+  // Show landing page behind the modal if not already visible
+  const landing = document.getElementById('screen-landing');
+  if (landing && landing.style.display !== 'block') {
+    landing.style.display = 'block';
+  }
+  // Show auth as modal overlay
+  const authEl = document.getElementById('auth-screen');
+  authEl.style.display = 'flex';
 }
 
 function hideAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'none';
+}
+
+// Close auth modal and return to landing page
+function closeAuthModal() {
   document.getElementById('auth-screen').style.display = 'none';
 }
 
@@ -3416,15 +3429,17 @@ async function selectChildProfile(child) {
   hideProfileScreen();
   updateProfileBadge();
 
-  // Always go straight to pick screen — onboarding only shown once, skip for returning users
+  // Authenticated users with a profile always go straight to the app
+  // Welcome/onboarding screen is skipped — mark it done so it never re-appears
   const d = getData();
   if (!d.onboardingDone) {
-    document.getElementById('screen-pick').classList.remove('active');
-    document.getElementById('screen-welcome-1').style.display = 'block';
-    document.getElementById('screen-welcome-1').classList.add('active');
-  } else {
-    show('screen-pick');
+    d.onboardingDone = true;
+    saveData(d);
   }
+  // Make sure welcome screen is hidden
+  document.getElementById('screen-welcome-1').style.display = 'none';
+  document.getElementById('screen-welcome-1').classList.remove('active');
+  show('screen-pick');
 
   updateHomeStats();
   updateAssignmentsBadge();
@@ -3551,26 +3566,38 @@ onAuthStateChanged(auth, async (user) => {
     showProfileScreen();
 
   } else {
-    // Not signed in — show landing page first
+    // Not signed in — show auth screen directly
     currentUser = null;
     currentChildId = null;
     currentChildProfile = null;
     updateProfileBadge();
-    showLandingPage();
+    showAuthScreen();
   }
 });
 
 // ── Landing page button handlers ─────────────────────────
-document.getElementById('lp-btn-get-started').addEventListener('click', () => {
-  showAuthScreen();
+// All CTA buttons open the auth modal
+['lp-hero-btn', 'lp-final-btn', 'lp-signin-btn', 'lp-signup-btn'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', () => {
+    // Pre-select the right tab
+    if (id === 'lp-signin-btn') {
+      document.getElementById('auth-tab-signin').click();
+    } else if (id === 'lp-signup-btn') {
+      document.getElementById('auth-tab-signup').click();
+    }
+    showAuthScreen();
+  });
 });
-document.getElementById('lp-btn-final').addEventListener('click', () => {
-  showAuthScreen();
-});
-document.getElementById('lp-btn-see-how').addEventListener('click', () => {
-  const target = document.getElementById('lp-section-how');
-  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
+
+// Close auth modal X button
+const authCloseBtn = document.getElementById('auth-close-btn');
+if (authCloseBtn) authCloseBtn.addEventListener('click', closeAuthModal);
+
+// Add lpbob animation to landing page
+const lpStyle = document.createElement('style');
+lpStyle.textContent = '@keyframes lpbob { 0%,100%{transform:translateY(0) rotate(0deg);} 45%{transform:translateY(-12px) rotate(-4deg);} 65%{transform:translateY(-8px) rotate(3deg);} }';
+document.head.appendChild(lpStyle);
 
 // ── Assignments badge on home screen ─────────────────────
 function updateAssignmentsBadge() {
@@ -11715,23 +11742,175 @@ document.addEventListener('keydown', (e) => {
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- AUTH SCREEN — Login / Sign Up                          -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<div class="auth-screen" id="auth-screen" style="display:none;">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="auth-logo-text">ReadUp!</div>
-      <div class="auth-subtitle">Built for growing readers 📚</div>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- HOME / LANDING PAGE (shown to unauthenticated users)   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-landing" style="display:none;position:fixed;inset:0;z-index:997;background:#FFFBF2;overflow-y:auto;font-family:'Nunito',sans-serif;">
+  <div style="max-width:500px;margin:0 auto;">
+
+    <!-- TOP NAV -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;">
+      <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:700;color:#FF6B35;text-shadow:0 2px 0 #E55D2B;">ReadUp!</div>
+      <div style="display:flex;gap:8px;">
+        <button id="lp-signin-btn" style="background:white;color:#FF6B35;border:2px solid #FF6B35;border-radius:12px;padding:8px 16px;font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Sign In</button>
+        <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:12px;padding:8px 16px;font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(255,107,53,0.35);">Get Started</button>
+      </div>
     </div>
 
-    <!-- Tab row: Sign In / Sign Up -->
+    <!-- HERO -->
+    <div style="background:linear-gradient(160deg,#FFF8E1 0%,#FFFBF0 40%,#FFF3E0 80%);padding:28px 24px 36px;text-align:center;">
+      <span style="font-size:72px;display:block;animation:lpbob 2.5s ease-in-out infinite;">🦉</span>
+      <div style="font-family:'Fredoka',sans-serif;font-size:48px;font-weight:700;color:#FF6B35;text-shadow:0 3px 0 #E55D2B;letter-spacing:2px;">ReadUp!</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;line-height:1.3;margin:12px 0 8px;">Help Your Child Become a Confident Reader</div>
+      <div style="font-size:13px;font-weight:700;color:#64748B;line-height:1.65;margin-bottom:22px;">AI-powered reading practice for Pre-K through 3rd grade.<br>Guided by Bookie the owl — every session, every rep.</div>
+      <button id="lp-hero-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:16px;padding:15px 40px;font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,107,53,0.4);">🚀 Start Reading with Bookie</button>
+    </div>
+
+    <!-- URGENCY -->
+    <div style="background:#2C3E50;padding:22px 20px;">
+      <div style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;color:white;text-align:center;line-height:1.5;margin-bottom:16px;">"If a child isn't reading by 3rd grade,<br><span style="color:#FFD93D;">they will struggle for the rest of their life."</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
+        <div style="text-align:center;padding:0 6px;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#FFD93D;">⅓</div>
+          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">kids below grade level by 3rd grade</div>
+        </div>
+        <div style="text-align:center;padding:0 6px;border-left:1px solid rgba(255,255,255,0.12);">
+          <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#FFD93D;">4×</div>
+          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">more likely to drop out of high school</div>
+        </div>
+        <div style="text-align:center;padding:0 6px;border-left:1px solid rgba(255,255,255,0.12);">
+          <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:#FFD93D;">0</div>
+          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.65);margin-top:3px;line-height:1.4;">progress without daily reading reps</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROBLEM -->
+    <div style="padding:28px 20px;">
+      <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">The reality</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Parents want to help.<br>Life gets in the way.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#FFF3E8;border-left:4px solid #FF6B35;">
+          <span style="font-size:28px;flex-shrink:0;">⏰</span>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Practice gets skipped</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Between work, dinner, and homework — daily reading is the first thing that falls through the cracks.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#EEF5FF;border-left:4px solid #54A0FF;">
+          <span style="font-size:28px;flex-shrink:0;">📉</span>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">No way to measure progress at home</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Parents don't know if their child is improving until the teacher calls.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#F5F0FF;border-left:4px solid #9B59B6;">
+          <span style="font-size:28px;flex-shrink:0;">😟</span>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#2C3E50;margin-bottom:2px;">Falling behind quietly</div>
+            <div style="font-size:12px;font-weight:700;color:#64748B;line-height:1.55;">Children who struggle rarely say so. By the time it shows, they're already behind.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOLUTION -->
+    <div style="padding:28px 20px;background:#FFF8EE;">
+      <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">How ReadUp helps</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Every tool your child needs — in one place</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#FFF3E8;border:2px solid #FFB088;">
+          <span style="font-size:30px;margin-bottom:6px;display:block;">✨</span>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">AI Stories</div>
+          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Fresh story at their exact grade level every session</div>
+        </div>
+        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#EEF5FF;border:2px solid #A8CEFF;">
+          <span style="font-size:30px;margin-bottom:6px;display:block;">⏱</span>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">Timed Reading</div>
+          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Real WPM scores — same method schools use</div>
+        </div>
+        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#F0FFF4;border:2px solid #9EDBA0;">
+          <span style="font-size:30px;margin-bottom:6px;display:block;">🔤</span>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">Spelling Practice</div>
+          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Upload their list — practice, quiz, games built in</div>
+        </div>
+        <div style="border-radius:20px;padding:16px 14px;text-align:center;background:#F5F0FF;border:2px solid #C8B4F5;">
+          <span style="font-size:30px;margin-bottom:6px;display:block;">🔊</span>
+          <div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:700;color:#2C3E50;margin-bottom:3px;">Read Aloud</div>
+          <div style="font-size:11px;font-weight:700;color:#64748B;line-height:1.5;">Bookie reads every word with live highlighting</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARENT PROMISE -->
+    <div style="background:#2C3E50;padding:28px 20px;">
+      <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FFD93D;margin-bottom:6px;">For parents</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:white;text-align:center;margin-bottom:6px;line-height:1.3;">You'll always know where your child stands</div>
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.65);text-align:center;margin-bottom:20px;line-height:1.5;">A full parent dashboard is coming — here's exactly what you'll see:</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#FF6B35;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">⚡</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:2px;">Words per minute — every session</div>
+            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;">Track reading speed against grade-level benchmarks week by week</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#54A0FF;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:2px;">Every timed passage saved</div>
+            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;">Reissue any reading passage — let your child retry and beat their score</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#5CD85A;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">✅</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:2px;">Assign passages from your dashboard</div>
+            <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.65);line-height:1.5;">Send readings to your child — they see them waiting on their home screen</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:block;margin:18px auto 0;background:rgba(255,211,61,0.15);border:1.5px solid rgba(255,211,61,0.4);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#FFD93D;text-align:center;">⚡ Parent Dashboard — Coming Soon</div>
+    </div>
+
+    <!-- FINAL CTA -->
+    <div style="background:linear-gradient(135deg,#FF9F43,#FF6B35);padding:36px 24px;text-align:center;">
+      <span style="font-size:56px;display:block;margin-bottom:8px;animation:lpbob 2.5s ease-in-out infinite;">🦉</span>
+      <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:700;color:white;line-height:1.3;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">Your child's reading journey starts right now.</div>
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:22px;line-height:1.6;">Join families who decided not to wait.<br>Bookie is ready when you are.</div>
+      <button id="lp-final-btn" style="display:block;background:white;color:#FF6B35;border:none;border-radius:16px;padding:16px;font-family:'Fredoka',sans-serif;font-size:20px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin:0 auto 14px;box-shadow:0 8px 24px rgba(0,0,0,0.15);">🚀 Start with Bookie</button>
+      <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.75);">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- AUTH MODAL — pops over landing page                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="auth-screen" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
+  <div style="background:white;border-radius:28px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:fadeUp 0.3s ease both;position:relative;">
+
+    <!-- Close button -->
+    <button id="auth-close-btn" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#64748B;line-height:1;">✕</button>
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:44px;margin-bottom:4px;">🦉</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FF6B35;text-shadow:0 2px 0 #E55D2B;">ReadUp!</div>
+      <div style="font-size:13px;font-weight:700;color:#64748B;margin-top:4px;">Built for growing readers 📚</div>
+    </div>
+
+    <!-- Tabs -->
     <div class="auth-tab-row">
       <button class="auth-tab active" id="auth-tab-signin">Sign In</button>
       <button class="auth-tab" id="auth-tab-signup">Create Account</button>
     </div>
 
-    <!-- Error message -->
+    <!-- Error -->
     <div class="auth-error" id="auth-error"></div>
 
-    <!-- Google Sign In -->
+    <!-- Google -->
     <button class="btn-google" id="btn-google-signin">
       <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -11744,7 +11923,7 @@ document.addEventListener('keydown', (e) => {
 
     <div class="auth-divider"><span>or</span></div>
 
-    <!-- Email/Password form -->
+    <!-- Sign In Form -->
     <div id="auth-form-signin">
       <div class="auth-input-group">
         <label class="auth-input-label">Email Address</label>
@@ -11757,6 +11936,7 @@ document.addEventListener('keydown', (e) => {
       <button class="btn-main" id="btn-email-signin" style="margin-top:4px;">Sign In →</button>
     </div>
 
+    <!-- Sign Up Form -->
     <div id="auth-form-signup" style="display:none;">
       <div class="auth-input-group">
         <label class="auth-input-label">Your Name (Parent)</label>
@@ -11773,16 +11953,13 @@ document.addEventListener('keydown', (e) => {
       <button class="btn-main btn-green" id="btn-email-signup" style="margin-top:4px;">Create Account →</button>
     </div>
 
-    <div class="auth-footer">
+    <div style="text-align:center;margin-top:14px;font-size:11px;font-weight:700;color:#64748B;">
       🔒 Your data is private and secure.<br>
       Built with ❤️ by <strong>Transforming Youth, Inc.</strong>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- CHILD PROFILE SELECTOR SCREEN                         -->
-<!-- ═══════════════════════════════════════════════════════ -->
 <div class="child-profile-screen" id="child-profile-screen" style="display:none;">
   <div class="child-card">
     <div style="text-align:center;margin-bottom:4px;">
@@ -11880,156 +12057,3 @@ document.addEventListener('keydown', (e) => {
     </div>
   </div>
 </div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     LANDING PAGE — shown to unauthenticated visitors
-     ═══════════════════════════════════════════════════════════ -->
-<div id="screen-landing">
-  <div style="max-width:500px;margin:0 auto;">
-
-    <!-- HERO -->
-    <div class="lp-hero">
-      <span class="lp-owl">🦉</span>
-      <div class="lp-logo">ReadUp!</div>
-      <div class="lp-h1">Help Your Child Become a Confident Reader</div>
-      <div class="lp-sub">AI-powered reading practice for Pre-K through 3rd grade.<br>Guided by Bookie the owl — every session, every rep.</div>
-      <div class="lp-btns">
-        <button class="lp-btn-primary" id="lp-btn-get-started">🚀 Get Started</button>
-        <button class="lp-btn-secondary" id="lp-btn-see-how">👀 See How</button>
-      </div>
-    </div>
-
-    <!-- URGENCY -->
-    <div class="lp-urgency">
-      <div class="lp-urg-quote">"If a child isn't reading by 3rd grade,<br><span>they will struggle for the rest of their life."</span></div>
-      <div class="lp-stat-row">
-        <div class="lp-stat"><div class="lp-stat-n">⅓</div><div class="lp-stat-l">kids below grade level by 3rd grade</div></div>
-        <div class="lp-stat"><div class="lp-stat-n">4×</div><div class="lp-stat-l">more likely to drop out of high school</div></div>
-        <div class="lp-stat"><div class="lp-stat-n">0</div><div class="lp-stat-l">progress without daily reading reps</div></div>
-      </div>
-    </div>
-
-    <!-- PROBLEM -->
-    <div class="lp-section" id="lp-section-how">
-      <div class="lp-eyebrow">The reality</div>
-      <div class="lp-section-h">Parents want to help.<br>Life gets in the way.</div>
-      <div class="lp-prob-cards">
-        <div class="lp-prob lp-p1">
-          <span class="lp-prob-ico">⏰</span>
-          <div>
-            <div class="lp-prob-title">Practice gets skipped</div>
-            <div class="lp-prob-text">Between work, dinner, and homework — daily reading is the first thing that falls through the cracks.</div>
-          </div>
-        </div>
-        <div class="lp-prob lp-p2">
-          <span class="lp-prob-ico">📉</span>
-          <div>
-            <div class="lp-prob-title">No way to measure progress at home</div>
-            <div class="lp-prob-text">Parents don't know if their child is improving until the teacher calls.</div>
-          </div>
-        </div>
-        <div class="lp-prob lp-p3">
-          <span class="lp-prob-ico">😟</span>
-          <div>
-            <div class="lp-prob-title">Falling behind quietly</div>
-            <div class="lp-prob-text">Children who struggle rarely say so. By the time it shows, they're already behind.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SOLUTION -->
-    <div class="lp-section-alt">
-      <div class="lp-eyebrow">How ReadUp helps</div>
-      <div class="lp-section-h">Every tool your child needs — in one place</div>
-      <div class="lp-sol-grid">
-        <div class="lp-sol lp-s1">
-          <span class="lp-sol-ico">✨</span>
-          <div class="lp-sol-title">AI Stories</div>
-          <div class="lp-sol-desc">Fresh story at their exact grade level every session</div>
-        </div>
-        <div class="lp-sol lp-s2">
-          <span class="lp-sol-ico">⏱</span>
-          <div class="lp-sol-title">Timed Reading</div>
-          <div class="lp-sol-desc">Real WPM scores — same method schools use</div>
-        </div>
-        <div class="lp-sol lp-s3">
-          <span class="lp-sol-ico">🔤</span>
-          <div class="lp-sol-title">Spelling Practice</div>
-          <div class="lp-sol-desc">Upload their list — practice, quiz, games built in</div>
-        </div>
-        <div class="lp-sol lp-s4">
-          <span class="lp-sol-ico">🔊</span>
-          <div class="lp-sol-title">Read Aloud</div>
-          <div class="lp-sol-desc">Bookie reads every word with live highlighting</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PARENT PROMISE -->
-    <div class="lp-dark">
-      <div class="lp-eyebrow">For parents</div>
-      <div class="lp-section-h">You'll always know where your child stands</div>
-      <div class="lp-dark-sub">A full parent dashboard is coming — here's exactly what you'll see:</div>
-      <div class="lp-promise-items">
-        <div class="lp-promise-item">
-          <div class="lp-pi-dot lpd1">⚡</div>
-          <div>
-            <div class="lp-pi-title">Words per minute — every session</div>
-            <div class="lp-pi-text">Track reading speed against grade-level benchmarks week by week</div>
-          </div>
-        </div>
-        <div class="lp-promise-item">
-          <div class="lp-pi-dot lpd2">📖</div>
-          <div>
-            <div class="lp-pi-title">Every timed passage saved</div>
-            <div class="lp-pi-text">Reissue any reading passage — let your child retry and beat their score</div>
-          </div>
-        </div>
-        <div class="lp-promise-item">
-          <div class="lp-pi-dot lpd3">✅</div>
-          <div>
-            <div class="lp-pi-title">Assign passages from your dashboard</div>
-            <div class="lp-pi-text">Send readings to your child — they see them waiting on their home screen</div>
-          </div>
-        </div>
-        <div class="lp-promise-item">
-          <div class="lp-pi-dot lpd4">📤</div>
-          <div>
-            <div class="lp-pi-title">Export progress reports</div>
-            <div class="lp-pi-text">Share detailed reports with teachers, tutors, and schools</div>
-          </div>
-        </div>
-      </div>
-      <div class="lp-coming">⚡ Parent Dashboard — Coming Soon</div>
-    </div>
-
-    <!-- SOCIAL PROOF -->
-    <div class="lp-section">
-      <div class="lp-eyebrow">Early families</div>
-      <div class="lp-section-h">Real kids. Real progress.</div>
-      <div class="lp-proof-cards">
-        <div class="lp-quote-card">
-          <div class="lp-quote-text">"My son went from <span>39 WPM to 67 WPM</span> in 6 weeks. I can actually see the improvement now."</div>
-          <div class="lp-quote-author"><div class="lp-qa">👩🏾</div><div class="lp-quote-name">Parent, 1st Grade</div></div>
-        </div>
-        <div class="lp-quote-card">
-          <div class="lp-quote-text">"She asks to read now. She <span>never</span> asked before ReadUp. Bookie made reading feel like play."</div>
-          <div class="lp-quote-author"><div class="lp-qa">👨🏿</div><div class="lp-quote-name">Parent, Kindergarten</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FINAL CTA -->
-    <div class="lp-final">
-      <span class="lp-final-owl">🦉</span>
-      <div class="lp-final-h">Your child's reading journey starts right now.</div>
-      <div class="lp-final-sub">Join families who decided not to wait.<br>Bookie is ready when you are.</div>
-      <button class="lp-btn-white" id="lp-btn-final">🚀 Start with Bookie</button>
-      <div class="lp-np">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
-    </div>
-
-  </div>
-</div>
-</body>
-</html>
