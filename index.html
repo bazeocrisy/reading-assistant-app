@@ -1227,7 +1227,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EW</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD EX</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -1872,7 +1872,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">Pick your grade!</div>
       <div id="spell-grade-pick-subtitle" style="color:var(--muted);font-size:0.85rem;margin-bottom:18px;">Tap to load your word list</div>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="wiz-grade-btn sight-grade-btn" data-grade="prek" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);"><span style="font-size:1.6rem;">🧸</span><span style="font-size:1.2rem;font-weight:900;">Pre-K</span></button>
+        <button class="wiz-grade-btn sight-grade-btn" data-grade="prek" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);"><span style="font-size:1.6rem;">🧸</span><div style="text-align:left;"><span style="font-size:1.2rem;font-weight:900;">Pre-K</span><div id="fry-prek-note" style="display:none;font-size:0.7rem;font-weight:700;opacity:0.85;margin-top:2px;">No Pre-K Fry words — Kindergarten list will be used</div></div></button>
         <button class="wiz-grade-btn sight-grade-btn" data-grade="k"    style="background:linear-gradient(135deg,#54A0FF,#2E86DE);"><span style="font-size:1.6rem;">🎨</span><span style="font-size:1.2rem;font-weight:900;">Kindergarten</span></button>
         <button class="wiz-grade-btn sight-grade-btn" data-grade="1"    style="background:linear-gradient(135deg,#5CD85A,#27AE60);"><span style="font-size:1.6rem;">⭐</span><span style="font-size:1.2rem;font-weight:900;">1st Grade</span></button>
         <button class="wiz-grade-btn sight-grade-btn" data-grade="2"    style="background:linear-gradient(135deg,#9B59B6,#8E44AD);"><span style="font-size:1.6rem;">🚀</span><span style="font-size:1.2rem;font-weight:900;">2nd Grade</span></button>
@@ -2669,7 +2669,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EW</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD EX</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -6803,6 +6803,7 @@ document.getElementById('btn-spell-src-dolch').addEventListener('click', () => {
   spellingWordSource = 'dolch';
   document.getElementById('spell-grade-pick-icon').textContent = '📖';
   document.getElementById('spell-grade-pick-subtitle').textContent = 'Dolch sight words — tap your grade!';
+  document.getElementById('fry-prek-note').style.display = 'none';
   show('screen-spell-grade-pick');
 });
 
@@ -6811,6 +6812,7 @@ document.getElementById('btn-spell-src-fry').addEventListener('click', () => {
   spellingWordSource = 'fry';
   document.getElementById('spell-grade-pick-icon').textContent = '🌟';
   document.getElementById('spell-grade-pick-subtitle').textContent = 'Fry words — tap your grade!';
+  document.getElementById('fry-prek-note').style.display = 'block';
   show('screen-spell-grade-pick');
 });
 
@@ -6840,11 +6842,12 @@ document.querySelectorAll('.sight-grade-btn').forEach(btn => {
         json = await res.json();
         _sightJsonCache[source] = json; // P-2: cache for this session
       }
-      const gradeWords = json[grade];
+      const effectiveGrade = (source === 'fry' && grade === 'prek') ? 'k' : grade;
+      const gradeWords = json[effectiveGrade];
       if (!gradeWords || gradeWords.length === 0) throw new Error('no words for grade');
       sightGroupWords = gradeWords;
       sightGroupSource = source;
-      sightGroupGrade = grade;
+      sightGroupGrade = effectiveGrade;
       showGroupPicker(source, grade, gradeWords);
     } catch (err) {
       console.error('Sight word load error:', err);
@@ -6988,7 +6991,9 @@ async function loadSightWordSet(source, grade) {
     }
 
     // JSON is structured as { meta: {...}, prek: [...], k: [...], "1": [...], etc. }
-    const gradeWords = json[grade];
+    // Fry words have no Pre-K tier — fall back to Kindergarten
+    const effectiveGrade = (source === 'fry' && grade === 'prek') ? 'k' : grade;
+    const gradeWords = json[effectiveGrade];
     if (!gradeWords || gradeWords.length === 0) throw new Error(`No ${source} words found for grade ${grade}`);
 
     // Convert to spelling list format — carry full JSON entry for tap popup
