@@ -1524,7 +1524,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen active" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FH</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FI</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +2977,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FH</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FI</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3336,11 +3336,12 @@ document.getElementById('btn-email-signup').addEventListener('click', async () =
 document.getElementById('btn-profile-signout').addEventListener('click', async () => {
   const yes = await showAppConfirm('👋', 'Sign Out?', 'You will need to sign in again next time.', '✅ Sign Out', '← Stay');
   if (!yes) return;
+  // Clear local state first
   currentUser = null; currentChildId = null; currentChildProfile = null;
   localStorage.removeItem('readup_active_child');
-  await signOut(auth);
   updateProfileBadge();
-  showAuthScreen();
+  // Sign out — onAuthStateChanged will fire and show the landing page
+  await signOut(auth);
 });
 
 // ── Profile Grid ──────────────────────────────────────────
