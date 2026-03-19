@@ -1677,7 +1677,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GC</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -3130,7 +3130,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GC</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12587,10 +12587,9 @@ document.addEventListener('keydown', (e) => {
 <!-- AUTH MODAL — pops over landing page                    -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <div id="auth-screen" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);padding:20px;overflow-y:auto;align-items:center;justify-content:center;">
+  <!-- Close button fixed to top-right of overlay, always visible -->
+  <button id="auth-close-btn" style="position:fixed;top:16px;right:16px;background:rgba(255,255,255,0.9);border:none;font-size:20px;cursor:pointer;color:#64748B;line-height:1;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:1000;">✕</button>
   <div style="background:white;border-radius:28px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:fadeUp 0.3s ease both;position:relative;">
-
-    <!-- Close button -->
-    <button id="auth-close-btn" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#64748B;line-height:1;">✕</button>
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:20px;">
