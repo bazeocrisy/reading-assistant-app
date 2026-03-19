@@ -1100,6 +1100,21 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 .btn-google:hover { border-color: #4285F4; background: #F8F9FF; transform: translateY(-1px); }
 .btn-google:active { transform: scale(0.98); }
 .google-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* ── Auth modal: compress on short screens (small iPhones) ── */
+@media (max-height: 700px) {
+  #auth-screen > div:last-child { padding: 20px 22px; }
+  #auth-screen .auth-header-owl { font-size: 30px !important; margin-bottom: 2px !important; }
+  #auth-screen .auth-header-logo { font-size: 22px !important; }
+  #auth-screen .auth-header-sub { display: none; }
+  #auth-screen .auth-tab-row { margin-bottom: 14px; }
+  #auth-screen .auth-input-group { margin-bottom: 8px; }
+  #auth-screen .auth-input { padding: 10px 14px; font-size: 0.95rem; }
+  #auth-screen .auth-input-label { margin-bottom: 3px; }
+  #auth-screen .auth-divider { margin: 10px 0; }
+  #auth-screen .btn-google { padding: 10px; }
+  #auth-screen .auth-footer { display: none; }
+}
 .auth-footer { text-align: center; margin-top: 16px; font-size: 0.78rem; font-weight: 700; color: var(--muted); }
 
 /* ── Child Profile Selector ──────────────────────────── */
@@ -1677,7 +1692,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GD</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -3130,7 +3145,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12593,9 +12608,9 @@ document.addEventListener('keydown', (e) => {
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:44px;margin-bottom:4px;">🦉</div>
-      <div style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FF6B35;text-shadow:0 2px 0 #E55D2B;">ReadUp!</div>
-      <div style="font-size:13px;font-weight:700;color:#64748B;margin-top:4px;">Built for growing readers 📚</div>
+      <div class="auth-header-owl" style="font-size:44px;margin-bottom:4px;">🦉</div>
+      <div class="auth-header-logo" style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:#FF6B35;text-shadow:0 2px 0 #E55D2B;">ReadUp!</div>
+      <div class="auth-header-sub" style="font-size:13px;font-weight:700;color:#64748B;margin-top:4px;">Built for growing readers 📚</div>
     </div>
 
     <!-- Tabs -->
@@ -12670,7 +12685,7 @@ document.addEventListener('keydown', (e) => {
       <div style="font-size:11px;font-weight:700;color:#94A3B8;text-align:center;margin-top:8px;">A verification email will be sent to confirm your address.</div>
     </div>
 
-    <div style="text-align:center;margin-top:14px;font-size:11px;font-weight:700;color:#64748B;">
+    <div class="auth-footer" style="text-align:center;margin-top:14px;font-size:11px;font-weight:700;color:#64748B;">
       🔒 Your data is private and secure.<br>
       Built with ❤️ by <strong>Transforming Youth, Inc.</strong>
     </div>
