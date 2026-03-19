@@ -1103,6 +1103,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
 /* ── Auth modal: compress on short screens (small iPhones) ── */
 @media (max-height: 700px) {
+  #auth-close-btn { position:fixed !important; top:16px !important; right:16px !important; background:rgba(255,255,255,0.9) !important; box-shadow:0 2px 8px rgba(0,0,0,0.15) !important; }
   #auth-screen > div:last-child { padding: 20px 22px; }
   #auth-screen .auth-header-owl { font-size: 30px !important; margin-bottom: 2px !important; }
   #auth-screen .auth-header-logo { font-size: 22px !important; }
@@ -1365,6 +1366,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   #screen-landing .lp-nav-inner {
     padding: 18px 40px;
   }
+  #lp-nav-links { display: flex !important; }
 
   /* Hero: two columns — left: branding+CTA, right: quote */
   #screen-landing .lp-hero-wrap {
@@ -1692,7 +1694,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GD</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GF</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -3145,7 +3147,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GD</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GF</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12404,6 +12406,11 @@ document.addEventListener('keydown', (e) => {
     <!-- NAV -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#FFFBF2;box-shadow:0 1px 0 rgba(0,0,0,0.06);">
       <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#FF6B35;letter-spacing:1px;">🦉 ReadUp!</div>
+      <!-- Desktop nav links -->
+      <div id="lp-nav-links" style="display:none;gap:24px;align-items:center;">
+        <a href="#lp-section-problem" onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-problem').offsetTop,behavior:'smooth'});return false;" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#64748B;text-decoration:none;">How It Works</a>
+        <a href="#lp-section-features" onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-features').offsetTop,behavior:'smooth'});return false;" style="font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#64748B;text-decoration:none;">Features</a>
+      </div>
       <div style="display:flex;gap:8px;">
         <button id="lp-signin-btn" style="background:none;color:#FF6B35;border:2px solid #FF6B35;border-radius:10px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Sign In</button>
         <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:10px;padding:7px 16px;font-family:'Fredoka',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(255,107,53,0.35);">Get Started</button>
@@ -12422,12 +12429,13 @@ document.addEventListener('keydown', (e) => {
           <button id="lp-hero-btn" class="lp-btn-primary" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:18px;padding:16px 40px;font-family:'Fredoka',sans-serif;font-size:19px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(255,107,53,0.4);">🚀 Start with Bookie</button>
         </div>
         <div class="lp-disclaimer" style="font-size:11px;font-weight:800;color:#94A3B8;margin-top:10px;">For Pre-K through 3rd Grade · Built by a Nonprofit</div>
+        <div style="font-size:12px;font-weight:800;color:#5CD85A;margin-top:6px;">✅ 100% Free — no credit card, ever</div>
       </div>
       <!-- RIGHT COLUMN: quote (hidden on mobile, shown on desktop) -->
       <div class="lp-quote-right" style="display:none;">
         <div style="background:white;border-radius:20px;padding:28px 24px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
           <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;line-height:1.6;margin-bottom:16px;">"My son went from <span style="color:#FF6B35;">39 WPM to 67 WPM</span> in 6 weeks. For the first time, he picked up a book on his own."</div>
-          <div style="font-size:12px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader, ReadUp Early Family</div>
+          <div style="font-size:12px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader · ReadUp Early Cohort, 2025</div>
         </div>
       </div>
     </div>
@@ -12435,7 +12443,7 @@ document.addEventListener('keydown', (e) => {
     <!-- EMOTIONAL QUOTE (mobile only — hidden on desktop) -->
     <div class="lp-quote-mobile" style="background:white;border-radius:20px;padding:20px 18px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
       <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:#2C3E50;line-height:1.5;margin-bottom:10px;">"My son went from <span style="color:#FF6B35;">39 WPM to 67 WPM</span> in 6 weeks. For the first time, he picked up a book on his own."</div>
-      <div style="font-size:11px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader, ReadUp Early Family</div>
+      <div style="font-size:11px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Parent of a 1st Grader · ReadUp Early Cohort, 2025</div>
     </div>
 
     <!-- URGENCY STRIP -->
@@ -12464,7 +12472,7 @@ document.addEventListener('keydown', (e) => {
     </div>
 
     <!-- PROBLEM -->
-    <div class="lp-problem-wrap" style="padding:28px 20px;">
+    <div id="lp-section-problem" class="lp-problem-wrap" style="padding:28px 20px;">
       <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">The reality</div>
       <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Parents want to help.<br>Life gets in the way.</div>
       <div class="lp-prob-cards" style="display:flex;flex-direction:column;gap:10px;">
@@ -12493,7 +12501,7 @@ document.addEventListener('keydown', (e) => {
     </div>
 
     <!-- SOLUTION -->
-    <div class="lp-solution-wrap" style="padding:28px 20px;background:#FFF8EE;">
+    <div id="lp-section-features" class="lp-solution-wrap" style="padding:28px 20px;background:#FFF8EE;">
       <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FF6B35;margin-bottom:6px;">How ReadUp helps</div>
       <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:18px;line-height:1.3;">Everything your child needs to become a confident reader</div>
       <div class="lp-sol-cards" style="display:flex;flex-direction:column;gap:12px;">
@@ -12532,7 +12540,7 @@ document.addEventListener('keydown', (e) => {
     <div class="lp-promise-wrap" style="background:#2C3E50;padding:28px 20px;">
       <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#FFD93D;margin-bottom:6px;">For parents</div>
       <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:white;text-align:center;margin-bottom:6px;line-height:1.3;">You'll always know where your child stands</div>
-      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.65);text-align:center;margin-bottom:20px;line-height:1.5;">A full parent dashboard is coming — here's exactly what you'll see:</div>
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.65);text-align:center;margin-bottom:20px;line-height:1.5;">Your parent dashboard is ready — track progress, assign readings, and see real growth.</div>
       <div class="lp-promise-items" style="display:flex;flex-direction:column;gap:10px;">
         <div class="lp-promise-item" style="display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);">
           <div class="lp-pi-dot lpd1" style="width:32px;height:32px;border-radius:50%;background:#FF6B35;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">⚡</div>
@@ -12556,32 +12564,23 @@ document.addEventListener('keydown', (e) => {
           </div>
         </div>
       </div>
-      <div style="margin:18px auto 0;background:rgba(255,211,61,0.15);border:1.5px solid rgba(255,211,61,0.4);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#FFD93D;text-align:center;">⚡ Parent Dashboard — Coming Soon</div>
+      <div style="margin:18px auto 0;background:rgba(90,205,90,0.15);border:1.5px solid rgba(90,205,90,0.4);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:800;color:#5CD85A;text-align:center;">✅ Parent Dashboard — Live Now</div>
     </div>
 
     <!-- TESTIMONIALS -->
     <div class="lp-testimonials-wrap" style="padding:28px 20px;background:#FFFBF2;">
-      <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:16px;">Families who decided not to wait</div>
+      <div class="lp-section-h" style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;text-align:center;margin-bottom:6px;">Join our early families</div>
+      <div style="font-size:13px;font-weight:700;color:#64748B;text-align:center;margin-bottom:18px;line-height:1.6;">ReadUp! is in its early days — built by a parent, for parents. Real results are being tracked now. Be part of the story.</div>
       <div class="lp-proof-cards" style="display:flex;flex-direction:column;gap:12px;">
         <div class="lp-quote-card" style="background:white;border-radius:20px;padding:18px;border:1.5px solid #F0E6D8;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-          <div class="lp-quote-text" style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;font-style:italic;margin-bottom:12px;">"She used to cry before reading time. Now she <span style="color:#FF6B35;font-style:normal;font-weight:900;">asks for it.</span> Bookie made all the difference."</div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:34px;height:34px;border-radius:50%;background:#FFF3E8;display:flex;align-items:center;justify-content:center;font-size:18px;">👩🏾</div>
-            <div>
-              <div style="font-size:12px;font-weight:800;color:#64748B;">Parent, Kindergarten</div>
-              <div style="font-size:11px;font-weight:700;color:#94A3B8;">Using ReadUp for 8 weeks</div>
-            </div>
-          </div>
+          <div style="font-size:28px;margin-bottom:8px;">📈</div>
+          <div class="lp-quote-text" style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;margin-bottom:12px;">We're tracking WPM improvement across our first cohort right now. Early results go directly into grant reports and school partnerships.</div>
+          <div style="font-size:11px;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;">Live data collection — Spring 2025</div>
         </div>
         <div class="lp-quote-card" style="background:white;border-radius:20px;padding:18px;border:1.5px solid #F0E6D8;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-          <div class="lp-quote-text" style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;font-style:italic;margin-bottom:12px;">"I finally have <span style="color:#FF6B35;font-style:normal;font-weight:900;">real data</span> to bring to parent-teacher conferences. His teacher was impressed."</div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:34px;height:34px;border-radius:50%;background:#EEF5FF;display:flex;align-items:center;justify-content:center;font-size:18px;">👨🏿</div>
-            <div>
-              <div style="font-size:12px;font-weight:800;color:#64748B;">Parent, 2nd Grade</div>
-              <div style="font-size:11px;font-weight:700;color:#94A3B8;">Using ReadUp for 6 weeks</div>
-            </div>
-          </div>
+          <div style="font-size:28px;margin-bottom:8px;">🎯</div>
+          <div class="lp-quote-text" style="font-size:14px;font-weight:700;color:#2C3E50;line-height:1.65;margin-bottom:12px;">Built because Christopher's son Chris reads at 39 WPM. The DIBELS benchmark for 1st grade is 111 WPM. This app exists to close that gap — for every child, not just his.</div>
+          <div style="font-size:11px;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;">Transforming Youth, Inc. — Nonprofit 501(c)(3)</div>
         </div>
       </div>
     </div>
@@ -12591,7 +12590,8 @@ document.addEventListener('keydown', (e) => {
       <span style="font-size:60px;display:block;margin-bottom:10px;animation:lpbob 3s ease-in-out infinite;">🦉</span>
       <div class="lp-final-h" style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:700;color:white;line-height:1.3;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">Bookie is ready.<br>Is your child?</div>
       <div class="lp-final-sub" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);margin-bottom:24px;line-height:1.7;">Join families who decided their child's reading<br>couldn't wait. Takes 2 minutes to get started.</div>
-      <button id="lp-final-btn" class="lp-btn-white" style="display:block;background:white;color:#FF6B35;border:none;border-radius:18px;padding:16px;font-family:'Fredoka',sans-serif;font-size:20px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin:0 auto 16px;box-shadow:0 8px 28px rgba(0,0,0,0.15);">🚀 Start with Bookie</button>
+      <button id="lp-final-btn" class="lp-btn-white" style="display:block;background:white;color:#FF6B35;border:none;border-radius:18px;padding:16px;font-family:'Fredoka',sans-serif;font-size:20px;font-weight:700;cursor:pointer;width:100%;max-width:300px;margin:0 auto 10px;box-shadow:0 8px 28px rgba(0,0,0,0.15);">🚀 Start with Bookie</button>
+      <div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.95);margin-bottom:16px;">✅ 100% Free — no credit card, ever</div>
       <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.8);">Transforming Youth, Inc. — Nonprofit 501(c)(3) · No ads · No data selling</div>
     </div>
 
@@ -12602,9 +12602,10 @@ document.addEventListener('keydown', (e) => {
 <!-- AUTH MODAL — pops over landing page                    -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <div id="auth-screen" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);padding:20px;overflow-y:auto;align-items:center;justify-content:center;">
-  <!-- Close button fixed to top-right of overlay, always visible -->
-  <button id="auth-close-btn" style="position:fixed;top:16px;right:16px;background:rgba(255,255,255,0.9);border:none;font-size:20px;cursor:pointer;color:#64748B;line-height:1;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:1000;">✕</button>
   <div style="background:white;border-radius:28px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:fadeUp 0.3s ease both;position:relative;">
+
+    <!-- Close button — absolute inside card on desktop, fixed on short mobile screens -->
+    <button id="auth-close-btn" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#64748B;line-height:1;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1000;">✕</button>
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:20px;">
