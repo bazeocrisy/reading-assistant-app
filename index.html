@@ -1336,6 +1336,77 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   margin: 0 auto 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 .lp-np { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.75); }
+
+/* ── Parent Dashboard Tabs ──────────────────────────────── */
+.dash-tab {
+  flex: 1; padding: 9px 4px; border: none; border-radius: 12px;
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.72rem;
+  cursor: pointer; transition: all 0.2s; background: none; color: var(--muted);
+  white-space: nowrap;
+}
+.dash-tab.active {
+  background: white; color: var(--purple);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.dash-tab-content { animation: fadeUp 0.2s ease both; }
+
+/* ── Reading Cards ──────────────────────────────────────── */
+.reading-card {
+  background: var(--card); border-radius: 18px; padding: 14px 16px;
+  margin-bottom: 12px; border: 1.5px solid var(--border);
+  transition: all 0.2s;
+}
+.reading-card-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 10px;
+}
+.reading-card-title {
+  font-family: 'Fredoka', sans-serif; font-size: 1rem;
+  font-weight: 700; color: var(--ink); flex: 1; line-height: 1.3;
+}
+.reading-card-meta {
+  font-size: 0.72rem; font-weight: 800; color: var(--muted);
+  margin-top: 4px; line-height: 1.5;
+}
+.wpm-badge {
+  font-family: 'Fredoka', sans-serif; font-size: 1.4rem; font-weight: 700;
+  line-height: 1; text-align: center; min-width: 56px;
+}
+.wpm-badge-label {
+  font-size: 0.65rem; font-weight: 800; text-align: center;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;
+}
+.wpm-green { color: #27AE60; }
+.wpm-yellow { color: #F39C12; }
+.wpm-red { color: var(--coral); }
+.reading-card-attempts {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1.5px solid var(--border); display: none;
+}
+.attempt-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.78rem; font-weight: 700;
+}
+.attempt-row:last-child { border-bottom: none; }
+.benchmark-bar-wrap {
+  background: var(--border); border-radius: 20px; height: 8px;
+  overflow: hidden; margin: 8px 0 4px; position: relative;
+}
+.benchmark-bar-fill {
+  height: 100%; border-radius: 20px; transition: width 0.6s ease;
+}
+.benchmark-labels {
+  display: flex; justify-content: space-between;
+  font-size: 0.65rem; font-weight: 800; color: var(--muted);
+}
+.reading-card-actions {
+  display: flex; gap: 8px; margin-top: 10px;
+}
+.dash-child-name-display {
+  font-family: 'Fredoka', sans-serif; font-size: 0.85rem;
+  font-weight: 700; color: var(--purple);
+}
 </style>
 </head>
 <body>
@@ -1524,7 +1595,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FU</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD FV</div>
 
     <!-- HERO: Read a Story (primary CTA) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:24px 24px 22px;">
@@ -2977,7 +3048,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FU</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD FV</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3042,91 +3113,123 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
 <!-- SCREEN: Parent Dashboard -->
 <div class="screen" id="screen-parent" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;">
-  <div class="app">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0 10px;">
-      <div style="font-family:'Fredoka',sans-serif;font-size:1.5rem;font-weight:700;color:var(--purple-dark);">👤 Parent Dashboard</div>
+  <div class="app" style="padding-bottom:40px;">
+
+    <!-- HEADER -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;">
+      <div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--purple-dark);">📊 Parent Dashboard</div>
+        <div id="dash-child-name" style="font-size:0.78rem;font-weight:800;color:var(--muted);margin-top:2px;"></div>
+      </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn-main btn-outline" id="btn-dash-signout" aria-label="Sign out" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85rem;color:var(--coral);border-color:var(--coral);">Sign Out</button>
-        <button class="btn-main btn-outline" id="btn-parent-done" aria-label="Close parent dashboard" style="width:auto;margin-top:0;padding:8px 18px;font-size:0.9rem;">Done</button>
+        <button class="btn-main btn-outline" id="btn-dash-signout" style="width:auto;margin-top:0;padding:7px 12px;font-size:0.8rem;color:var(--coral);border-color:var(--coral);">Sign Out</button>
+        <button class="btn-main btn-outline" id="btn-parent-done" style="width:auto;margin-top:0;padding:7px 14px;font-size:0.85rem;">✕ Close</button>
       </div>
     </div>
 
-    <!-- This Week -->
-    <div class="card">
-      <div class="dash-section-title">📅 This Week</div>
-      <div class="dash-stat-grid">
-        <div class="dash-stat"><div class="dash-stat-num" id="week-stories">0</div><div class="dash-stat-label">Stories</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="week-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="week-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="week-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+    <!-- TAB NAV -->
+    <div style="display:flex;gap:0;background:var(--section);border-radius:16px;padding:4px;margin-bottom:16px;">
+      <button class="dash-tab active" data-tab="overview">📊 Overview</button>
+      <button class="dash-tab" data-tab="readings">⏱ Readings</button>
+      <button class="dash-tab" data-tab="spelling">🔤 Spelling</button>
+      <button class="dash-tab" data-tab="settings">⚙️</button>
+    </div>
+
+    <!-- TAB: OVERVIEW -->
+    <div id="dash-tab-overview" class="dash-tab-content">
+
+      <!-- This Week -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="dash-section-title">📅 This Week</div>
+        <div class="dash-stat-grid">
+          <div class="dash-stat"><div class="dash-stat-num" id="week-stories">0</div><div class="dash-stat-label">Stories</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="week-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="week-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="week-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+        </div>
+      </div>
+
+      <!-- All Time -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="dash-section-title">🏆 All Time</div>
+        <div class="dash-stat-grid">
+          <div class="dash-stat"><div class="dash-stat-num" id="all-stories">0</div><div class="dash-stat-label">Stories</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="all-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="all-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
+          <div class="dash-stat"><div class="dash-stat-num" id="all-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+        </div>
+        <div style="text-align:center;font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:6px;" id="first-used-label"></div>
+      </div>
+
+      <!-- WPM Summary -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="dash-section-title">⚡ Reading Speed (WPM)</div>
+        <div id="dash-wpm-content"></div>
+      </div>
+
+      <!-- Favorite Topics -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="dash-section-title">❤️ Favorite Topics</div>
+        <div id="topic-bars"></div>
+      </div>
+
+      <!-- Word Bank -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="dash-section-title" style="margin:0;">📖 Word Bank</div>
+          <button class="btn-main btn-outline" id="btn-clear-words" style="width:auto;margin-top:0;padding:5px 12px;font-size:0.78rem;">Clear</button>
+        </div>
+        <p style="font-size:0.75rem;color:var(--muted);font-weight:700;margin:6px 0 8px;">Words your child tapped for help. 🔴 = needs more practice.</p>
+        <div class="word-bank-list" id="word-bank-display"></div>
+      </div>
+
+    </div>
+
+    <!-- TAB: TIMED READINGS -->
+    <div id="dash-tab-readings" class="dash-tab-content" style="display:none;">
+      <div id="dash-readings-content">
+        <div style="text-align:center;padding:40px 20px;color:var(--muted);">
+          <div style="font-size:2.5rem;margin-bottom:10px;">⏱</div>
+          <div style="font-weight:800;font-size:1rem;">No timed readings yet</div>
+          <div style="font-size:0.82rem;margin-top:6px;">Complete a Speed Test to see results here</div>
+        </div>
       </div>
     </div>
 
-    <!-- All Time -->
-    <div class="card" style="margin-top:14px;">
-      <div class="dash-section-title">🏆 All Time</div>
-      <div class="dash-stat-grid">
-        <div class="dash-stat"><div class="dash-stat-num" id="all-stories">0</div><div class="dash-stat-label">Stories</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="all-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="all-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
-        <div class="dash-stat"><div class="dash-stat-num" id="all-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
-      </div>
-      <div style="text-align:center;font-size:0.78rem;color:var(--muted);font-weight:700;margin-top:4px;" id="first-used-label"></div>
-    </div>
-
-    <!-- Favorite Topics -->
-    <div class="card" style="margin-top:14px;">
-      <div class="dash-section-title">❤️ Favorite Topics</div>
-      <div id="topic-bars"></div>
-    </div>
-
-    <!-- Reading Speed (WPM) -->
-    <div class="card" style="margin-top:14px;">
-      <div class="dash-section-title">⚡ Reading Speed</div>
-      <div id="dash-wpm-content"></div>
-    </div>
-
-    <!-- Word Bank -->
-    <div class="card" style="margin-top:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div class="dash-section-title" style="margin:0;">📖 Word Bank</div>
-        <button class="btn-main btn-outline" id="btn-clear-words" style="width:auto;margin-top:0;padding:6px 14px;font-size:0.8rem;">Clear</button>
-      </div>
-      <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">Words your child needed help with. 🔴 = needs more practice.</p>
-      <div class="word-bank-list" id="word-bank-display"></div>
-    </div>
-
-    <!-- Spelling Words -->
-    <div class="card" style="margin-top:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div class="dash-section-title" style="margin:0;">📝 Spelling Words</div>
-        <button class="btn-main btn-outline" id="btn-clear-spelling" style="width:auto;margin-top:0;padding:6px 14px;font-size:0.8rem;">Clear</button>
-      </div>
-      <div id="dash-spelling-content">
-        <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">No spelling lists uploaded yet.</p>
+    <!-- TAB: SPELLING -->
+    <div id="dash-tab-spelling" class="dash-tab-content" style="display:none;">
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="dash-section-title" style="margin:0;">📝 Spelling Words</div>
+          <button class="btn-main btn-outline" id="btn-clear-spelling" style="width:auto;margin-top:0;padding:5px 12px;font-size:0.78rem;">Clear</button>
+        </div>
+        <div id="dash-spelling-content">
+          <p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">No spelling lists uploaded yet.</p>
+        </div>
       </div>
     </div>
 
-    <!-- Settings -->
-    <div class="card" style="margin-top:14px;">
-      <div class="dash-section-title">⚙️ Settings</div>
-      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:8px;">Change PIN:</p>
-      <div class="change-pin-row">
-        <input type="password" id="new-pin-input" maxlength="4" placeholder="New PIN" inputmode="numeric">
-        <button class="btn-main btn-green" id="btn-save-pin" style="width:auto;margin-top:0;padding:10px 18px;font-size:0.9rem;">Save</button>
-      </div>
-      <div id="pin-save-msg" style="font-size:0.82rem;color:var(--green);font-weight:800;min-height:1.2em;margin-top:6px;"></div>
-      <button class="btn-main btn-danger" id="btn-reset-data" style="margin-top:16px;">🗑️ Reset All Data</button>
-
-      <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--border);">
-        <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:10px;">Backup & Restore:</p>
-        <button class="btn-main" id="btn-export-data" style="background:var(--purple);color:#fff;margin-top:0;">📤 Export My Data</button>
-        <button class="btn-main" id="btn-import-data" style="background:var(--section);color:var(--ink);border:2px solid var(--border);margin-top:8px;">📥 Import Data Backup</button>
-        <input type="file" id="import-file-input" accept=".json" style="display:none;">
-        <div id="import-export-msg" style="font-size:0.82rem;font-weight:800;min-height:1.2em;margin-top:6px;" aria-live="polite" role="status"></div>
+    <!-- TAB: SETTINGS -->
+    <div id="dash-tab-settings" class="dash-tab-content" style="display:none;">
+      <div class="card" style="margin-bottom:12px;">
+        <div class="dash-section-title">⚙️ Settings</div>
+        <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:8px;">Change PIN:</p>
+        <div class="change-pin-row">
+          <input type="password" id="new-pin-input" maxlength="4" placeholder="New PIN" inputmode="numeric">
+          <button class="btn-main btn-green" id="btn-save-pin" style="width:auto;margin-top:0;padding:10px 18px;font-size:0.9rem;">Save</button>
+        </div>
+        <div id="pin-save-msg" style="font-size:0.82rem;color:var(--green);font-weight:800;min-height:1.2em;margin-top:6px;"></div>
+        <button class="btn-main btn-danger" id="btn-reset-data" style="margin-top:16px;">🗑️ Reset All Data</button>
+        <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--border);">
+          <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin-bottom:10px;">Backup & Restore:</p>
+          <button class="btn-main" id="btn-export-data" style="background:var(--purple);color:#fff;margin-top:0;">📤 Export My Data</button>
+          <button class="btn-main" id="btn-import-data" style="background:var(--section);color:var(--ink);border:2px solid var(--border);margin-top:8px;">📥 Import Data Backup</button>
+          <input type="file" id="import-file-input" accept=".json" style="display:none;">
+          <div id="import-export-msg" style="font-size:0.82rem;font-weight:800;min-height:1.2em;margin-top:6px;" aria-live="polite" role="status"></div>
+        </div>
       </div>
     </div>
-    <div style="height:40px;"></div>
+
   </div>
 </div>
 
@@ -3693,6 +3796,22 @@ if (authCloseBtn) authCloseBtn.addEventListener('click', closeAuthModal);
 const lpStyle = document.createElement('style');
 lpStyle.textContent = '@keyframes lpbob { 0%,100%{transform:translateY(0) rotate(0deg);} 45%{transform:translateY(-12px) rotate(-4deg);} 65%{transform:translateY(-8px) rotate(3deg);} }';
 document.head.appendChild(lpStyle);
+
+// ── My Assignments button on home screen ─────────────────
+document.getElementById('btn-assignments-home').addEventListener('click', () => {
+  const d = getData();
+  const pending = (d.assignments || []).filter(a => !a.completedDate);
+  if (pending.length === 0) return;
+
+  // If only one assignment, load it directly
+  const assignment = pending[0];
+  wpmPassage = assignment.passageText;
+  wpmStandaloneMode = true;
+  S.isAssignment = true;
+  S.currentAssignmentId = assignment.id;
+  updateWPMInstructionCount();
+  show('screen-wpm-instructions');
+});
 
 // ── Assignments badge on home screen ─────────────────────
 function updateAssignmentsBadge() {
@@ -11228,8 +11347,215 @@ function openParentDashboard() {
     spellingEl.innerHTML = '<p style="font-size:0.78rem;color:var(--muted);font-weight:700;margin:6px 0 10px;">No spelling lists uploaded yet.</p>';
   }
 
+  // ── Child name in header ─────────────────────────────────
+  const nameEl = document.getElementById('dash-child-name');
+  if (nameEl && currentChildProfile) {
+    nameEl.textContent = currentChildProfile.name + ' · ' + ({ prek:'Pre-K', k:'Kindergarten', '1':'1st Grade', '2':'2nd Grade', '3':'3rd Grade' }[currentChildProfile.grade] || currentChildProfile.grade);
+  }
+
+  // ── Timed Readings Tab ────────────────────────────────────
+  renderTimedReadingsTab(d);
+
   document.getElementById('screen-parent').style.display = 'block';
+
+  // Reset to overview tab on open
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dash-tab-content').forEach(c => c.style.display = 'none');
+  document.querySelector('.dash-tab[data-tab="overview"]').classList.add('active');
+  document.getElementById('dash-tab-overview').style.display = 'block';
 }
+
+// ── Render Timed Readings Tab ─────────────────────────────
+function renderTimedReadingsTab(d) {
+  const container = document.getElementById('dash-readings-content');
+  if (!container) return;
+  const passages = (d.timedPassages || []).filter(p => !p.deleted);
+
+  if (passages.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;color:var(--muted);">
+        <div style="font-size:2.5rem;margin-bottom:10px;">⏱</div>
+        <div style="font-weight:800;font-size:1rem;">No timed readings yet</div>
+        <div style="font-size:0.82rem;margin-top:6px;">Complete a Speed Test to see results here</div>
+      </div>`;
+    return;
+  }
+
+  // WPM trend summary at top
+  const allAttempts = passages.flatMap(p => p.attempts || []).sort((a,b) => new Date(a.date)-new Date(b.date));
+  const latestWpm = allAttempts.length ? allAttempts[allAttempts.length-1].wpm : 0;
+  const bestWpm = allAttempts.length ? Math.max(...allAttempts.map(a => a.wpm)) : 0;
+  const firstWpm = allAttempts.length ? allAttempts[0].wpm : 0;
+  const improvement = latestWpm - firstWpm;
+  const bench = WPM_BENCHMARKS[currentChildProfile?.grade || '1'] || WPM_BENCHMARKS['1'];
+  const atGoal = latestWpm >= bench.min;
+
+  container.innerHTML = '';
+
+  // Summary card
+  const summaryCard = document.createElement('div');
+  summaryCard.className = 'card';
+  summaryCard.style.marginBottom = '14px';
+  summaryCard.innerHTML = `
+    <div class="dash-section-title">📈 Progress Summary</div>
+    <div class="dash-stat-grid" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:${atGoal ? 'var(--green)' : 'var(--coral)'}">${latestWpm}</div>
+        <div class="dash-stat-label">Latest WPM</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:var(--purple)">${bestWpm}</div>
+        <div class="dash-stat-label">Best WPM</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:${improvement >= 0 ? 'var(--green)' : 'var(--coral)'}">${improvement >= 0 ? '+' : ''}${improvement}</div>
+        <div class="dash-stat-label">Total Growth</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <div style="display:flex;justify-content:space-between;font-size:0.72rem;font-weight:800;color:var(--muted);margin-bottom:4px;">
+        <span>0 WPM</span>
+        <span style="color:var(--purple)">${bench.label}: ${bench.min}–${bench.max} WPM</span>
+        <span>${bench.max}+ WPM</span>
+      </div>
+      <div class="benchmark-bar-wrap">
+        <div class="benchmark-bar-fill" style="width:${Math.min(100, Math.round(latestWpm/bench.max*100))}%;background:${atGoal ? 'var(--green)' : latestWpm >= bench.min * 0.7 ? '#F39C12' : 'var(--coral)'};"></div>
+      </div>
+      <div style="font-size:0.72rem;font-weight:800;text-align:center;margin-top:4px;color:${atGoal ? 'var(--green)' : 'var(--muted)'};">
+        ${atGoal ? '✅ At or above grade level!' : latestWpm > 0 ? `${bench.min - latestWpm} WPM below grade-level goal` : 'Complete a reading to see progress'}
+      </div>
+    </div>
+  `;
+  container.appendChild(summaryCard);
+
+  // Section title
+  const titleEl = document.createElement('div');
+  titleEl.className = 'dash-section-title';
+  titleEl.style.margin = '16px 0 10px';
+  titleEl.textContent = '📚 All Reading Sessions (' + passages.length + ')';
+  container.appendChild(titleEl);
+
+  // Passage cards
+  passages.forEach((p, idx) => {
+    const attempts = p.attempts || [];
+    const latestAttempt = attempts[attempts.length - 1];
+    const bestAttemptWpm = attempts.length ? Math.max(...attempts.map(a => a.wpm)) : 0;
+    const wpm = latestAttempt?.wpm || 0;
+    const bench2 = WPM_BENCHMARKS[p.grade || '1'] || WPM_BENCHMARKS['1'];
+    const wpmClass = wpm >= bench2.min ? 'wpm-green' : wpm >= bench2.min * 0.7 ? 'wpm-yellow' : 'wpm-red';
+    const dateStr = latestAttempt ? new Date(latestAttempt.date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '';
+    const sourceIcon = { ai: '✨', upload: '📄', paste: '✏️' }[p.source] || '📖';
+
+    const card = document.createElement('div');
+    card.className = 'reading-card';
+    card.innerHTML = `
+      <div class="reading-card-header">
+        <div style="flex:1;">
+          <div class="reading-card-title">${sourceIcon} ${escapeHtml(p.title)}</div>
+          <div class="reading-card-meta">
+            ${dateStr} · ${p.wordCount || '?'} words · ${attempts.length} attempt${attempts.length !== 1 ? 's' : ''}
+            ${attempts.length > 1 ? ` · Best: <strong>${bestAttemptWpm} WPM</strong>` : ''}
+          </div>
+        </div>
+        <div style="text-align:center;flex-shrink:0;">
+          <div class="wpm-badge ${wpmClass}">${wpm}</div>
+          <div class="wpm-badge-label ${wpmClass}">WPM</div>
+        </div>
+      </div>
+      <div class="reading-card-attempts" id="attempts-${idx}">
+        ${attempts.map((a, ai) => `
+          <div class="attempt-row">
+            <span style="color:var(--muted);">Attempt ${ai+1} · ${new Date(a.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})}</span>
+            <span style="font-weight:800;color:${a.wpm >= bench2.min ? 'var(--green)' : 'var(--coral)'};">${a.wpm} WPM</span>
+          </div>`).join('')}
+      </div>
+      <div class="reading-card-actions">
+        ${attempts.length > 1 ? `<button class="btn-main btn-outline" onclick="document.getElementById('attempts-${idx}').style.display = document.getElementById('attempts-${idx}').style.display === 'block' ? 'none' : 'block';" style="flex:1;font-size:0.78rem;padding:8px;margin:0;">📋 ${attempts.length} Attempts</button>` : ''}
+        <button class="btn-main" onclick="retryPassageFromDash('${escapeHtml(p.id)}')" style="flex:1;font-size:0.78rem;padding:8px;margin:0;background:var(--purple);color:white;">🔄 Assign to Child</button>
+        <button class="btn-main btn-outline" onclick="deletePassageFromDash('${escapeHtml(p.id)}')" style="width:auto;font-size:0.78rem;padding:8px 10px;margin:0;color:var(--coral);border-color:var(--coral);">🗑️</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ── Assign passage back to child ──────────────────────────
+function retryPassageFromDash(passageId) {
+  const d = getData();
+  const passage = (d.timedPassages || []).find(p => p.id === passageId);
+  if (!passage) return;
+
+  showAppModal({
+    icon: '📋',
+    title: 'Assign to ' + (currentChildProfile?.name || 'Child') + '?',
+    message: '"' + passage.title + '" will appear on their home screen as an assignment.',
+    buttons: [
+      {
+        label: '✅ Assign It',
+        class: 'modal-purple',
+        action: () => {
+          const d2 = getData();
+          if (!d2.assignments) d2.assignments = [];
+          // Remove any existing assignment for same passage
+          d2.assignments = d2.assignments.filter(a => a.passageId !== passageId);
+          d2.assignments.push({
+            id: Date.now().toString(36),
+            passageId,
+            passageText: passage.text,
+            passageTitle: passage.title,
+            assignedDate: new Date().toISOString(),
+            note: '',
+            completedDate: null,
+            wpm: null
+          });
+          saveData(d2);
+          updateAssignmentsBadge();
+          const t = document.getElementById('word-toast');
+          t.textContent = '📋 Assigned to ' + (currentChildProfile?.name || 'child');
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 2000);
+        }
+      },
+      { label: '← Cancel', class: 'modal-outline', action: () => {} }
+    ]
+  });
+}
+
+// ── Delete passage from library ───────────────────────────
+function deletePassageFromDash(passageId) {
+  showAppModal({
+    icon: '🗑️',
+    title: 'Delete This Passage?',
+    message: 'All attempts for this passage will be removed. This cannot be undone.',
+    buttons: [
+      {
+        label: '🗑️ Delete',
+        class: 'modal-red',
+        action: () => {
+          const d = getData();
+          d.timedPassages = (d.timedPassages || []).filter(p => p.id !== passageId);
+          saveData(d);
+          renderTimedReadingsTab(d);
+          const t = document.getElementById('word-toast');
+          t.textContent = '🗑️ Passage deleted';
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 2000);
+        }
+      },
+      { label: '← Cancel', class: 'modal-outline', action: () => {} }
+    ]
+  });
+}
+
+// ── Tab switching ─────────────────────────────────────────
+document.querySelectorAll('.dash-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.dash-tab-content').forEach(c => c.style.display = 'none');
+    tab.classList.add('active');
+    document.getElementById('dash-tab-' + tab.dataset.tab).style.display = 'block';
+  });
+});
 
 document.getElementById('btn-parent-done').addEventListener('click', () => {
   document.getElementById('screen-parent').style.display = 'none';
