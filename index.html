@@ -1769,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HD</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3282,7 +3282,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HD</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -8625,18 +8625,22 @@ function renderSpellingSavedLists() {
     const date = list.date ? new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
 
     const row = document.createElement('div');
-    row.style.cssText = 'background:var(--section);border-radius:14px;padding:12px 14px;border:2px solid var(--border);display:flex;align-items:center;gap:10px;';
+    row.style.cssText = 'background:var(--section);border-radius:14px;padding:12px 14px;border:2px solid var(--border);';
     row.innerHTML = `
-      <div style="flex:1;min-width:0;">
-        <div class="spell-list-label-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
-        <input class="spell-list-label-input" type="text" value="${label.replace(/"/g,'&quot;')}" maxlength="40"
-          style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;outline:none;">
-        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:2px;">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <div style="flex:1;min-width:0;">
+          <div class="spell-list-label-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:2px;">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+        </div>
+        <button class="spell-list-edit-btn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px 6px;color:var(--muted);flex-shrink:0;" title="Rename">✏️</button>
+        <button class="spell-list-delete-btn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px 6px;color:var(--muted);flex-shrink:0;" title="Delete">🗑️</button>
       </div>
-      <button class="spell-list-edit-btn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--muted);" title="Rename">✏️</button>
-      <button class="spell-list-save-btn" style="display:none;background:var(--green);color:white;border:none;border-radius:8px;padding:6px 10px;font-family:'Fredoka',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">✅ Save</button>
-      <button class="spell-list-open-btn btn-main btn-green" style="padding:8px 14px;font-size:0.85rem;flex-shrink:0;">▶ Practice</button>
-      <button class="spell-list-delete-btn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--muted);" title="Delete">🗑️</button>`;
+      <input class="spell-list-label-input" type="text" value="${label.replace(/"/g,'&quot;')}" maxlength="40"
+        style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:6px 10px;width:100%;box-sizing:border-box;outline:none;margin-bottom:6px;">
+      <div style="display:flex;gap:8px;">
+        <button class="spell-list-open-btn btn-main btn-green" style="flex:1;padding:9px 14px;font-size:0.9rem;">▶ Practice</button>
+        <button class="spell-list-save-btn" style="display:none;flex:1;background:var(--green);color:white;border:none;border-radius:12px;padding:9px 14px;font-family:'Fredoka',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;">✅ Save Name</button>
+      </div>`;
 
     // Open list
     row.querySelector('.spell-list-open-btn').addEventListener('click', () => {
@@ -9065,14 +9069,15 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
   if (!file) return;
   e.target.value = '';
 
-  // Show loading state
-  show('screen-spelling');
-  document.getElementById('spelling-word-list').innerHTML = '';
-  document.getElementById('spelling-empty').style.display = 'none';
-  document.getElementById('spelling-loading').style.display = 'block';
-  document.getElementById('spelling-actions').style.display = 'none';
-  document.getElementById('spelling-count-bar').style.display = 'none';
-  document.getElementById('spelling-week-label').textContent = '';
+  // Show loading toast overlay — stay on mywords screen so wizard appears correctly
+  const loadingToast = document.createElement('div');
+  loadingToast.style.cssText = 'position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
+  loadingToast.innerHTML = `<div style="background:var(--card);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3);">
+    <div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div>
+    <div style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);">Reading your word list...</div>
+    <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-top:6px;">This may take a few seconds</div>
+  </div>`;
+  document.body.appendChild(loadingToast);
 
   try {
     const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
@@ -9102,8 +9107,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     const extractedWordStr = data.words.map(w => w.word).join(' ');
     const uploadSafety = checkContentSafety(extractedWordStr);
     if (!uploadSafety.safe) {
-      document.getElementById('spelling-loading').style.display = 'none';
-      document.getElementById('spelling-empty').style.display = 'block';
+      document.body.removeChild(loadingToast);
       showAppAlert('🚫', 'Oops!', uploadSafety.reason);
       return;
     }
@@ -9126,7 +9130,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     };
 
     // Show naming wizard before saving
-    document.getElementById('spelling-loading').style.display = 'none';
+    document.body.removeChild(loadingToast);
     console.log('🔤 Showing spelling naming wizard for', spellingListData.words.length, 'words');
     showSpellingListNamingWizard(spellingListData.words.length, (chosenLabel) => {
       spellingListData.label = chosenLabel;
@@ -9142,15 +9146,8 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
 
   } catch (err) {
     console.error('Spelling extraction error:', err);
-    document.getElementById('spelling-loading').style.display = 'none';
-    document.getElementById('spelling-word-list').innerHTML = `
-      <div style="text-align:center;padding:30px 0;">
-        <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
-        <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">${err.message || 'Unknown error'} — Try again with a clearer photo, or type your words instead.</p>
-        <button class="btn-main" id="btn-spelling-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 Try Again</button>
-      </div>`;
-    document.getElementById('btn-spelling-retry-error').onclick = triggerSpellingUpload; // I-A fix: onclick overwrites itself, no stacking
+    try { document.body.removeChild(loadingToast); } catch(e) {}
+    showAppAlert('😕', 'Couldn\'t read those words', (err.message || 'Unknown error') + ' — Try again with a clearer photo, or type your words instead.');
   }
 });
 
