@@ -421,6 +421,13 @@ header { position: relative; }
 .parent-bar-btn { border: 2px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
+/* Compact on small phones — shrink padding and font so all 5 buttons fit */
+@media (max-width: 430px) {
+  .parent-bar { gap: 5px; padding: 6px 8px; padding-bottom: max(6px, env(safe-area-inset-bottom, 6px)); }
+  .parent-bar-btn { font-size: 0.68rem; padding: 6px 8px; border-radius: 8px; border-width: 1.5px; }
+}
+.parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
+.parent-bar-btn:active { transform: scale(0.95); }
 /* Bar button color classes — explicit so showBarBtn can't lose them */
 .bar-btn-home { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
 .bar-btn-back { background: var(--orange) !important; color: #fff !important; border-color: var(--orange) !important; }
@@ -1762,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GV</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GW</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3281,13 +3288,13 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GV</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GW</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
 <nav class="parent-bar" id="parent-bar" role="navigation" aria-label="Main navigation">
   <button class="parent-bar-btn bar-btn-home" id="btn-go-home" aria-label="Go to home screen">🏠 Home</button>
-  <button class="parent-bar-btn bar-btn-back btn-back-nav" id="bar-back" aria-label="Go back" style="display:none;">BACK</button>
+  <button class="parent-bar-btn bar-btn-back" id="bar-back" aria-label="Go back" style="display:none;">← BACK</button>
   <button class="parent-bar-btn bar-btn-play" id="bar-play" aria-label="Play audio" style="display:none;">▶ Play</button>
   <button class="parent-bar-btn bar-btn-pause" id="bar-pause" aria-label="Pause audio" style="display:none;">⏸ Pause</button>
   <button class="parent-bar-btn bar-btn-stop" id="bar-stop" aria-label="Stop audio" style="display:none;">⏹ Stop</button>
@@ -9909,9 +9916,9 @@ function startSpellingQuiz(words, source) {
   quizSource = source || 'spelling';
   // Update back map so nav bar Quit goes to the right place
   const quitTarget = quizSource === 'vocab' ? 'screen-vocab' : 'screen-spelling';
-  SCREEN_BACK_MAP['screen-quiz-countdown'] = ['← Quit', quitTarget];
-  SCREEN_BACK_MAP['screen-quiz'] = ['← Quit', quitTarget];
-  SCREEN_BACK_MAP['screen-quiz-results'] = ['← Back', quitTarget];
+  SCREEN_BACK_MAP['screen-quiz-countdown'] = ['QUIT', quitTarget];
+  SCREEN_BACK_MAP['screen-quiz'] = ['QUIT', quitTarget];
+  SCREEN_BACK_MAP['screen-quiz-results'] = ['BACK', quitTarget];
   quizWords = shuffleArray([...words]);
   quizIndex = 0;
   quizResults = [];
@@ -10189,7 +10196,7 @@ async function startSentenceMode(words) {
   sentenceHintCache = {};
   sentenceActive = true;
   sentenceSubmitPending = false;
-  SCREEN_BACK_MAP['screen-spell-sentence'] = ['← Quit', 'screen-spelling'];
+  SCREEN_BACK_MAP['screen-spell-sentence'] = ['QUIT', 'screen-spelling'];
   showSentenceQuestion();
   show('screen-spell-sentence');
   document.getElementById('btn-sentence-quit').style.display = 'block';
@@ -10447,12 +10454,12 @@ document.getElementById('btn-sentence-quit').addEventListener('click', () => {
 // Game picker buttons
 document.getElementById('btn-game-wordsearch').addEventListener('click', () => {
   gameSource = 'spelling';
-  SCREEN_BACK_MAP['screen-wordsearch'] = ['← Quit', 'screen-spelling'];
+  SCREEN_BACK_MAP['screen-wordsearch'] = ['QUIT', 'screen-spelling'];
   startWordSearch(gameSelectedWords);
 });
 document.getElementById('btn-game-scramble').addEventListener('click', () => {
   gameSource = 'spelling';
-  SCREEN_BACK_MAP['screen-scramble'] = ['← Quit', 'screen-spelling'];
+  SCREEN_BACK_MAP['screen-scramble'] = ['QUIT', 'screen-spelling'];
   startWordScramble(gameSelectedWords);
 });
 
@@ -11411,8 +11418,8 @@ document.getElementById('btn-vocab-wordsearch').addEventListener('click', () => 
   gameSelectedWords = currentVocabList.words;
   startWordSearch(gameSelectedWords);
   // Update back nav so Quit returns to vocab, not spelling
-  SCREEN_BACK_MAP['screen-wordsearch'] = ['← Quit', 'screen-vocab'];
-  SCREEN_BACK_MAP['screen-scramble'] = ['← Quit', 'screen-vocab'];
+  SCREEN_BACK_MAP['screen-wordsearch'] = ['QUIT', 'screen-vocab'];
+  SCREEN_BACK_MAP['screen-scramble'] = ['QUIT', 'screen-vocab'];
   show('screen-wordsearch');
 });
 
@@ -12608,54 +12615,54 @@ document.addEventListener('keydown', (e) => {
 // Maps screen IDs to their back action: [label, target screen or function]
 const SCREEN_BACK_MAP = {
   'screen-pick': null, // home — no back button
-  'screen-wiz-grade': ['← Back', 'screen-pick'],
-  'screen-wiz-length': ['← Back', 'screen-wiz-grade'],
-  'screen-wiz-topic': ['← Back', 'screen-wiz-length'],
-  'screen-story-builder': ['← Back', 'screen-pick'],
-  'screen-read': ['← Back', 'screen-pick'],
-  'screen-solo-complete': ['← Back', 'screen-pick'],
-  'screen-spelling-source': ['← Back', 'screen-pick'],
-  'screen-spelling-mywords': ['← Back', 'screen-spelling-source'],
-  'screen-spell-grade-pick': ['← Back', 'screen-spelling-source'],
-  'screen-spell-group-pick': ['← Back', 'screen-spell-grade-pick'],
-  'screen-spelling-type': ['← Back', 'screen-spelling-mywords'],
-  'screen-spelling': ['← Back', 'screen-spelling-source'],
-  'screen-spell-picker': ['← Back', 'screen-spelling'],
-  'screen-spell-practice': ['← Quit', 'screen-spelling'],
-  'screen-spell-results': ['← Back', 'screen-spelling'],
-  'screen-spell-sentence': ['← Quit', 'screen-spelling'],
-  'screen-quiz-countdown': ['← Quit', 'screen-spelling'],
-  'screen-quiz': ['← Quit', 'screen-spelling'],
-  'screen-quiz-results': ['← Back', 'screen-spelling'],
-  'screen-game-picker': ['← Back', 'screen-spell-picker'],
-  'screen-wordsearch': ['← Quit', 'screen-spelling'],
-  'screen-scramble': ['← Quit', 'screen-spelling'],
-  'screen-vocab-source': ['← Back', 'screen-pick'],
-  'screen-vocab-type': ['← Back', 'screen-vocab-source'],
-  'screen-vocab': ['← Back', 'screen-vocab-source'],
-  'screen-vocab-study': ['← Back', 'screen-vocab'],
-  'screen-vocab-flashcard': ['← Back', 'screen-vocab'],
-  'screen-vocab-practice': ['← Quit', 'screen-vocab'],
-  'screen-vocab-results': ['← Back', 'screen-vocab'],
-  'screen-wordbank': ['← Back', 'screen-pick'],
-  'screen-timed-grade': ['← Back', 'screen-pick'],
-  'screen-timed-source': ['← Back', 'screen-timed-grade'],
-  'screen-timed-paste': ['← Back', 'screen-timed-source'],
-  'screen-own-source': ['← Back', 'screen-pick'],
-  'screen-own-paste': ['← Back', 'screen-own-source'],
-  'screen-wpm-instructions': ['← Back', 'screen-timed-source'],
+  'screen-wiz-grade': ['BACK', 'screen-pick'],
+  'screen-wiz-length': ['BACK', 'screen-wiz-grade'],
+  'screen-wiz-topic': ['BACK', 'screen-wiz-length'],
+  'screen-story-builder': ['BACK', 'screen-pick'],
+  'screen-read': ['BACK', 'screen-pick'],
+  'screen-solo-complete': ['BACK', 'screen-pick'],
+  'screen-spelling-source': ['BACK', 'screen-pick'],
+  'screen-spelling-mywords': ['BACK', 'screen-spelling-source'],
+  'screen-spell-grade-pick': ['BACK', 'screen-spelling-source'],
+  'screen-spell-group-pick': ['BACK', 'screen-spell-grade-pick'],
+  'screen-spelling-type': ['BACK', 'screen-spelling-mywords'],
+  'screen-spelling': ['BACK', 'screen-spelling-source'],
+  'screen-spell-picker': ['BACK', 'screen-spelling'],
+  'screen-spell-practice': ['QUIT', 'screen-spelling'],
+  'screen-spell-results': ['BACK', 'screen-spelling'],
+  'screen-spell-sentence': ['QUIT', 'screen-spelling'],
+  'screen-quiz-countdown': ['QUIT', 'screen-spelling'],
+  'screen-quiz': ['QUIT', 'screen-spelling'],
+  'screen-quiz-results': ['BACK', 'screen-spelling'],
+  'screen-game-picker': ['BACK', 'screen-spell-picker'],
+  'screen-wordsearch': ['QUIT', 'screen-spelling'],
+  'screen-scramble': ['QUIT', 'screen-spelling'],
+  'screen-vocab-source': ['BACK', 'screen-pick'],
+  'screen-vocab-type': ['BACK', 'screen-vocab-source'],
+  'screen-vocab': ['BACK', 'screen-vocab-source'],
+  'screen-vocab-study': ['BACK', 'screen-vocab'],
+  'screen-vocab-flashcard': ['BACK', 'screen-vocab'],
+  'screen-vocab-practice': ['QUIT', 'screen-vocab'],
+  'screen-vocab-results': ['BACK', 'screen-vocab'],
+  'screen-wordbank': ['BACK', 'screen-pick'],
+  'screen-timed-grade': ['BACK', 'screen-pick'],
+  'screen-timed-source': ['BACK', 'screen-timed-grade'],
+  'screen-timed-paste': ['BACK', 'screen-timed-source'],
+  'screen-own-source': ['BACK', 'screen-pick'],
+  'screen-own-paste': ['BACK', 'screen-own-source'],
+  'screen-wpm-instructions': ['BACK', 'screen-timed-source'],
   'screen-wpm-read': null, // no back during timed reading
   'screen-wpm-tap': null, // no back during tap
-  'screen-wpm-results': ['← Done', 'screen-pick'],
-  'screen-join': ['← Back', 'screen-pick'],
-  'screen-together-room': ['← Cancel', 'screen-pick'],
-  'screen-together-pick': ['← Back', 'screen-together-room'],
-  'screen-together-ai-grade': ['← Back', 'screen-together-pick'],
-  'screen-together-ai-topic': ['← Back', 'screen-together-ai-grade'],
-  'screen-together-upload': ['← Back', 'screen-together-pick'],
-  'screen-together-spelling': ['← Back', 'screen-together-pick'],
-  'screen-waiting-guest': ['← Back', 'screen-pick'],
-  'screen-race-results': ['← Done', 'screen-pick'],
+  'screen-wpm-results': ['DONE', 'screen-pick'],
+  'screen-join': ['BACK', 'screen-pick'],
+  'screen-together-room': ['CANCEL', 'screen-pick'],
+  'screen-together-pick': ['BACK', 'screen-together-room'],
+  'screen-together-ai-grade': ['BACK', 'screen-together-pick'],
+  'screen-together-ai-topic': ['BACK', 'screen-together-ai-grade'],
+  'screen-together-upload': ['BACK', 'screen-together-pick'],
+  'screen-together-spelling': ['BACK', 'screen-together-pick'],
+  'screen-waiting-guest': ['BACK', 'screen-pick'],
+  'screen-race-results': ['DONE', 'screen-pick'],
   'screen-loading': null, // no back during loading
   'screen-countdown': null, // no back during countdown
 };
