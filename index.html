@@ -1285,31 +1285,82 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 }
 
 /* ── NAV ── */
-.lp-nav { background: #FFFBF2; box-shadow: 0 1px 0 rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 10; }
+.lp-nav { background: #1a1a4e; box-shadow: 0 1px 0 rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 10; }
 .lp-nav .lp-container { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; padding-bottom: 14px; }
 .lp-nav-logo { font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 700; color: #FF6B35; letter-spacing: 1px; }
 #lp-nav-links { display: none; gap: 24px; align-items: center; }
-#lp-nav-links a { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; color: #64748B; text-decoration: none; }
+#lp-nav-links a { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.7); text-decoration: none; }
+#lp-nav-links a:hover { color: white; }
 .lp-nav-btns { display: flex; gap: 8px; }
 .lp-nav-btns button { min-height: 38px; padding: 0 16px; font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 10px; }
 
 /* ── HERO ── */
-.lp-hero-wrap { background: linear-gradient(160deg, #FFF8E1, #FFFBF0, #FFF3E0); padding: 48px 0; }
-.lp-hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px; }
+.lp-hero-wrap {
+  background: linear-gradient(135deg, #1a1a4e 0%, #2d1b69 40%, #1a3a6e 100%);
+  padding: 56px 0 48px;
+  position: relative;
+  overflow: hidden;
+}
+/* Floating background circles for depth */
+.lp-hero-wrap::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,107,53,0.15) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.lp-hero-wrap::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(92,216,90,0.1) 0%, transparent 70%);
+  bottom: -80px; left: -80px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.lp-hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0; position: relative; z-index: 1; }
 .lp-hero-left { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.lp-owl { font-size: 80px; display: block; animation: lpbob 2.5s ease-in-out infinite; margin-bottom: 8px; }
+.lp-hero-bookie-wrap { position: relative; display: inline-block; margin-bottom: 16px; }
+/* Floating word bubbles around Bookie */
+.lp-bubble {
+  position: absolute;
+  background: white;
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  animation: lp-float 3s ease-in-out infinite;
+  white-space: nowrap;
+}
+.lp-bubble-1 { top: 10px; left: -70px; color: #FF6B35; animation-delay: 0s; }
+.lp-bubble-2 { top: 40px; right: -75px; color: #9B59B6; animation-delay: 0.6s; }
+.lp-bubble-3 { bottom: 30px; left: -65px; color: #27AE60; animation-delay: 1.2s; }
+.lp-bubble-4 { bottom: 10px; right: -70px; color: #2E86DE; animation-delay: 1.8s; }
+@keyframes lp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.lp-owl { font-size: 90px; display: block; animation: lpbob 2.5s ease-in-out infinite; }
 @keyframes lpbob {
   0%,100% { transform: translateY(0) rotate(0deg); }
   45%     { transform: translateY(-12px) rotate(-4deg); }
   65%     { transform: translateY(-8px) rotate(3deg); }
 }
-.lp-logo-text { font-family: 'Fredoka', sans-serif; font-size: 52px; font-weight: 700; color: #FF6B35; text-shadow: 0 3px 0 #E55D2B; letter-spacing: 2px; line-height: 1; margin-bottom: 12px; }
-.lp-h1-text { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; color: #2C3E50; line-height: 1.3; margin-bottom: 8px; }
-.lp-sub-text { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: #FF6B35; margin-bottom: 20px; }
+.lp-logo-text { font-family: 'Fredoka', sans-serif; font-size: 52px; font-weight: 700; color: #FF6B35; text-shadow: 0 3px 0 #E55D2B; letter-spacing: 2px; line-height: 1; margin-bottom: 10px; }
+.lp-h1-text { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 6px; }
+.lp-sub-text { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; color: #FFD93D; margin-bottom: 20px; }
+/* Three checkmarks */
+.lp-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; align-items: flex-start; width: 100%; max-width: 320px; }
+.lp-check { display: flex; align-items: center; gap: 8px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.92); }
+.lp-check-icon { width: 22px; height: 22px; background: #5CD85A; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
 .lp-btns-wrap { width: 100%; max-width: 320px; }
-.lp-disclaimer { font-size: 12px; font-weight: 800; color: #94A3B8; margin-top: 10px; }
+.lp-disclaimer { font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.5); margin-top: 10px; }
 .lp-quote-right { display: none; }
-.lp-quote-mobile { background: white; border-radius: 20px; padding: 20px 18px; border-left: 5px solid #FF6B35; box-shadow: 0 4px 20px rgba(255,107,53,0.08); }
+.lp-quote-mobile { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 20px 18px; border-left: 5px solid #FF6B35; }
 
 /* ── SECTIONS ── */
 .lp-section-block { padding: 56px 0; }
@@ -1392,15 +1443,23 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   #screen-landing h1 { font-size: 40px; }
   #screen-landing h2 { font-size: 28px; }
   #lp-nav-links { display: flex !important; }
-  .lp-hero-wrap { padding: 72px 0; }
+  .lp-hero-wrap { padding: 80px 0 72px; }
   .lp-hero-inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 60px; text-align: left; }
   .lp-hero-left { align-items: flex-start; text-align: left; }
-  .lp-owl { font-size: 100px; }
+  .lp-hero-bookie-wrap { margin-bottom: 0; }
+  .lp-owl { font-size: 120px; }
+  .lp-bubble { font-size: 16px; }
+  .lp-bubble-1 { left: -90px; }
+  .lp-bubble-2 { right: -95px; }
+  .lp-bubble-3 { left: -85px; }
+  .lp-bubble-4 { right: -90px; }
   .lp-logo-text { font-size: 64px; }
-  .lp-h1-text { font-size: 36px; }
-  .lp-sub-text { font-size: 18px; }
+  .lp-h1-text { font-size: 38px; }
+  .lp-sub-text { font-size: 20px; }
+  .lp-checks { flex-direction: row; flex-wrap: wrap; gap: 12px; max-width: none; }
+  .lp-check { font-size: 15px; }
   .lp-btns-wrap { max-width: none; }
-  #screen-landing .lp-btn-primary { width: auto; }
+  #screen-landing .lp-btn-primary { width: auto; font-size: 20px; padding: 16px 48px; }
   .lp-quote-right { display: flex; align-items: center; }
   .lp-quote-mobile { display: none; }
   .lp-urgency-wrap { padding: 48px 0; }
@@ -1702,7 +1761,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GP</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GQ</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3220,7 +3279,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GP</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GQ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12763,7 +12822,7 @@ document.addEventListener('keydown', (e) => {
         <a href="#lp-section-features" onclick="document.getElementById('screen-landing').scrollTo({top:document.getElementById('lp-section-features').offsetTop,behavior:'smooth'});return false;">Features</a>
       </div>
       <div class="lp-nav-btns">
-        <button id="lp-signin-btn" style="background:none;color:#FF6B35;border:2px solid #FF6B35;">Sign In</button>
+        <button id="lp-signin-btn" style="background:none;color:white;border:2px solid rgba(255,255,255,0.4);">Sign In</button>
         <button id="lp-signup-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;box-shadow:0 3px 10px rgba(255,107,53,0.35);">Get Started</button>
       </div>
     </div>
@@ -12775,32 +12834,70 @@ document.addEventListener('keydown', (e) => {
       <div class="lp-hero-inner">
         <!-- Left: branding + CTA -->
         <div class="lp-hero-left">
-          <span class="lp-owl">🦉</span>
           <div class="lp-logo-text">ReadUp!</div>
-          <div class="lp-h1-text">"Struggling Readers<br>Don't Fix Themselves."</div>
-          <div class="lp-sub-text">Bookie can help. Right now.</div>
+          <div class="lp-h1-text">Watch Your Child Read Faster.<br>Every Single Week.</div>
+          <div class="lp-sub-text">Bookie makes it happen. Right now. 🚀</div>
+          <div class="lp-checks">
+            <div class="lp-check"><div class="lp-check-icon">✓</div>100% Free — always</div>
+            <div class="lp-check"><div class="lp-check-icon">✓</div>WPM tracking every session</div>
+            <div class="lp-check"><div class="lp-check-icon">✓</div>DIBELS-aligned benchmarks</div>
+          </div>
           <div class="lp-btns-wrap">
             <button id="lp-hero-btn" class="lp-btn-primary">🚀 Start with Bookie</button>
           </div>
           <div class="lp-disclaimer">For Pre-K through 3rd Grade · Built by a Nonprofit</div>
-          <div style="font-size:12px;font-weight:800;color:#5CD85A;margin-top:6px;">✅ 100% Free — no credit card, ever</div>
         </div>
-        <!-- Right: quote (desktop only) -->
-        <div class="lp-quote-right">
-          <div style="background:white;border-radius:20px;padding:28px 24px;border-left:5px solid #FF6B35;box-shadow:0 4px 20px rgba(255,107,53,0.08);">
-            <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:700;color:#2C3E50;line-height:1.6;margin-bottom:16px;">Every child deserves a reading tool that meets them where they are — not where the market thinks they should be.</div>
-            <div style="font-size:12px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Christopher Bazemore, Founder · Transforming Youth, Inc.</div>
+        <!-- Right: Bookie illustration with floating word bubbles -->
+        <div class="lp-quote-right" style="justify-content:center;align-items:center;">
+          <div class="lp-hero-bookie-wrap">
+            <!-- Floating word bubbles -->
+            <div class="lp-bubble lp-bubble-1">cat 🐱</div>
+            <div class="lp-bubble lp-bubble-2">read ⭐</div>
+            <div class="lp-bubble lp-bubble-3">fun! 🎉</div>
+            <div class="lp-bubble lp-bubble-4">111 WPM</div>
+            <!-- Big Bookie SVG -->
+            <svg viewBox="0 0 120 130" width="220" height="220" style="filter:drop-shadow(0 12px 40px rgba(0,0,0,0.4));">
+              <ellipse cx="60" cy="124" rx="32" ry="6" fill="#E8C547" opacity="0.3"/>
+              <ellipse cx="60" cy="72" rx="38" ry="42" fill="#FF9F43"/>
+              <ellipse cx="60" cy="74" rx="33" ry="36" fill="#FECA57"/>
+              <ellipse cx="60" cy="82" rx="22" ry="20" fill="#FFF9E6"/>
+              <path d="M32 36 L24 14 L42 30Z" fill="#FF9F43"/>
+              <path d="M88 36 L96 14 L78 30Z" fill="#FF9F43"/>
+              <path d="M34 36 L28 18 L42 31Z" fill="#FECA57"/>
+              <path d="M86 36 L92 18 L78 31Z" fill="#FECA57"/>
+              <circle cx="44" cy="46" r="16" fill="white"/>
+              <circle cx="76" cy="46" r="16" fill="white"/>
+              <circle cx="46" cy="47" r="9" fill="#2C3E50"/>
+              <circle cx="74" cy="47" r="9" fill="#2C3E50"/>
+              <circle cx="48" cy="45" r="4" fill="white"/>
+              <circle cx="76" cy="45" r="4" fill="white"/>
+              <circle cx="44" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+              <circle cx="76" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+              <path d="M58 46 L62 46" stroke="#E55D2B" stroke-width="2.5"/>
+              <path d="M54 56 L60 66 L66 56Z" fill="#FF6B35"/>
+              <path d="M50 68 Q60 78 70 68" fill="none" stroke="#E17055" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="34" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
+              <circle cx="86" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
+              <path d="M18 65 Q10 72 16 82 Q22 78 26 70Z" fill="#FF9F43"/>
+              <path d="M102 65 Q110 72 104 82 Q98 78 94 70Z" fill="#FF9F43"/>
+              <rect x="8" y="72" width="16" height="12" rx="2" fill="#54A0FF" transform="rotate(-10 16 78)"/>
+              <rect x="8" y="72" width="8" height="12" rx="1.5" fill="#2E86DE" transform="rotate(-10 16 78)"/>
+              <ellipse cx="46" cy="112" rx="10" ry="5" fill="#FF6B35"/>
+              <ellipse cx="74" cy="112" rx="10" ry="5" fill="#FF6B35"/>
+            </svg>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- EMOTIONAL QUOTE (mobile only) -->
-  <div class="lp-container">
-    <div class="lp-quote-mobile" style="margin:20px 0;">
-      <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:#2C3E50;line-height:1.5;margin-bottom:10px;">Every child deserves a reading tool that meets them where they are — not where the market thinks they should be.</div>
-      <div style="font-size:11px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;">— Christopher Bazemore, Founder · Transforming Youth, Inc.</div>
+  <!-- MOBILE: Bookie + quote below hero -->
+  <div style="background:linear-gradient(135deg,#1a1a4e,#2d1b69);padding:0 0 24px;">
+    <div class="lp-container">
+      <div class="lp-quote-mobile" style="margin:0;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:700;color:white;line-height:1.5;margin-bottom:10px;">Every child deserves a reading tool that meets them where they are.</div>
+        <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;">— Christopher Bazemore, Founder · Transforming Youth, Inc.</div>
+      </div>
     </div>
   </div>
 
