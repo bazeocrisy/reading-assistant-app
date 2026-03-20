@@ -1769,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HA</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HB</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2449,36 +2449,30 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-spelling-mywords">
     <div class="card" style="text-align:center;">
       <div style="font-size:2.2rem;margin-bottom:4px;">📋</div>
-      <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">My Words</div>
-      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:18px;">How do you want to add your spelling words?</div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <!-- View existing list (if any) -->
-        <button class="wiz-grade-btn" id="btn-spell-source-existing" style="display:none;background:linear-gradient(135deg,#FFD93D,#F9A825);">
-          <span style="font-size:1.6rem;">👀</span>
-          <div style="text-align:left;">
-            <div style="font-size:1.2rem;font-weight:900;">View My Current Words</div>
-            <div class="spell-existing-count" style="font-size:0.75rem;font-weight:700;opacity:0.85;"></div>
-          </div>
-        </button>
-        <!-- Upload -->
-        <button class="wiz-grade-btn" id="btn-spell-source-upload" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">
-          <span style="font-size:1.6rem;">📄</span>
-          <div style="text-align:left;">
-            <div style="font-size:1.2rem;font-weight:900;">Upload a Document</div>
-            <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Photo, PDF, Word doc, or text file</div>
-          </div>
-        </button>
-        <!-- Type -->
-        <button class="wiz-grade-btn" id="btn-spell-source-type" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">
-          <span style="font-size:1.6rem;">✏️</span>
-          <div style="text-align:left;">
-            <div style="font-size:1.2rem;font-weight:900;">Type My Words</div>
-            <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Type or paste your spelling words</div>
-          </div>
-        </button>
-        <!-- Clear All Words — only shown when a list exists -->
-        <button class="btn-main" id="btn-mywords-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:6px;">🗑️ Clear All My Words</button>
-      </div>
+      <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">My Word Lists</div>
+      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Pick a saved list or add new words</div>
+
+      <!-- Saved lists — rendered dynamically -->
+      <div id="spelling-saved-lists" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;text-align:left;"></div>
+
+      <!-- Upload -->
+      <button class="wiz-grade-btn" id="btn-spell-source-upload" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);margin-bottom:8px;">
+        <span style="font-size:1.6rem;">📄</span>
+        <div style="text-align:left;">
+          <div style="font-size:1.2rem;font-weight:900;">Upload a Document</div>
+          <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Photo, PDF, Word doc, or text file</div>
+        </div>
+      </button>
+      <!-- Type -->
+      <button class="wiz-grade-btn" id="btn-spell-source-type" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">
+        <span style="font-size:1.6rem;">✏️</span>
+        <div style="text-align:left;">
+          <div style="font-size:1.2rem;font-weight:900;">Type My Words</div>
+          <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Type or paste your spelling words</div>
+        </div>
+      </button>
+      <!-- Clear All Words — only shown when lists exist -->
+      <button class="btn-main" id="btn-mywords-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:10px;">🗑️ Clear All My Lists</button>
     </div>
   </div>
 
@@ -3288,7 +3282,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HA</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7773,6 +7767,47 @@ function showSaveNamingWizard(defaultName, onSave) {
   });
 }
 
+// ── Spelling list naming wizard ───────────────────────────
+function showSpellingListNamingWizard(wordCount, onSave) {
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const defaultName = `My Spelling List — ${today}`;
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:24px;padding:24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:2rem;margin-bottom:6px;">🔤</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);">Name Your Word List</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-top:4px;">${wordCount} word${wordCount !== 1 ? 's' : ''} ready to practice!</div>
+      </div>
+      <input id="spell-list-name-input" type="text" maxlength="40"
+        style="width:100%;border:2.5px solid var(--purple);border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;outline:none;margin-bottom:10px;"
+        placeholder="Name this list..." value="${defaultName}">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:14px;text-align:center;">e.g. "Week 3 Spelling" or "Ms. Johnson's List"</div>
+      <div style="display:flex;gap:10px;">
+        <button id="spell-list-name-cancel" style="flex:1;background:none;border:2px solid var(--border);border-radius:12px;padding:11px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);cursor:pointer;">Cancel</button>
+        <button id="spell-list-name-save" style="flex:2;background:linear-gradient(135deg,#54A0FF,#2E86DE);color:white;border:none;border-radius:12px;padding:11px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">🔤 Save List</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  const input = overlay.querySelector('#spell-list-name-input');
+  setTimeout(() => { input.focus(); input.select(); }, 100);
+
+  overlay.querySelector('#spell-list-name-cancel').addEventListener('click', () => {
+    document.body.removeChild(overlay);
+  });
+  overlay.querySelector('#spell-list-name-save').addEventListener('click', () => {
+    const name = input.value.trim() || defaultName;
+    document.body.removeChild(overlay);
+    onSave(name);
+  });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { overlay.querySelector('#spell-list-name-save').click(); }
+  });
+}
+
 function savePassageToMyReadings(titleOverride) {
   if (!S.story) return false;
   const d = getData();
@@ -8567,19 +8602,98 @@ document.getElementById('btn-spelling-start').addEventListener('click', () => {
 });
 
 // Source screen: My Words → show mywords sub-screen
-document.getElementById('btn-spell-src-mywords').addEventListener('click', () => {
+function renderSpellingSavedLists() {
   const d = getData();
-  const existingBtn = document.getElementById('btn-spell-source-existing');
+  const lists = d.spellingLists || [];
+  const container = document.getElementById('spelling-saved-lists');
   const clearAllBtn = document.getElementById('btn-mywords-clear-all');
-  if (d.spellingLists && d.spellingLists.length > 0) {
-    existingBtn.style.display = 'flex';
-    const latest = d.spellingLists[d.spellingLists.length - 1];
-    existingBtn.querySelector('.spell-existing-count').textContent = `${latest.words.length} word${latest.words.length !== 1 ? 's' : ''} saved`;
-    clearAllBtn.style.display = 'block';
-  } else {
-    existingBtn.style.display = 'none';
+  container.innerHTML = '';
+
+  if (lists.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:10px 0 4px;color:var(--muted);font-size:0.85rem;font-weight:700;">No saved word lists yet — upload or type words below!</div>';
     clearAllBtn.style.display = 'none';
+    return;
   }
+
+  clearAllBtn.style.display = 'block';
+
+  // Show lists newest first
+  [...lists].reverse().forEach((list, idx) => {
+    const realIdx = lists.length - 1 - idx;
+    const label = list.label || `Word List ${realIdx + 1}`;
+    const wordCount = list.words ? list.words.length : 0;
+    const date = list.date ? new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'background:var(--section);border-radius:14px;padding:12px 14px;border:2px solid var(--border);display:flex;align-items:center;gap:10px;';
+    row.innerHTML = `
+      <div style="flex:1;min-width:0;">
+        <div class="spell-list-label-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+        <input class="spell-list-label-input" type="text" value="${label.replace(/"/g,'&quot;')}" maxlength="40"
+          style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;outline:none;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:2px;">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+      </div>
+      <button class="spell-list-edit-btn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--muted);" title="Rename">✏️</button>
+      <button class="spell-list-save-btn" style="display:none;background:var(--green);color:white;border:none;border-radius:8px;padding:6px 10px;font-family:'Fredoka',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">✅ Save</button>
+      <button class="spell-list-open-btn btn-main btn-green" style="padding:8px 14px;font-size:0.85rem;flex-shrink:0;">▶ Practice</button>
+      <button class="spell-list-delete-btn" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--muted);" title="Delete">🗑️</button>`;
+
+    // Open list
+    row.querySelector('.spell-list-open-btn').addEventListener('click', () => {
+      currentSpellingList = list;
+      document.getElementById('spelling-week-label').textContent = label;
+      renderSpellingWords(list);
+      show('screen-spelling');
+    });
+
+    // Edit label
+    const editBtn = row.querySelector('.spell-list-edit-btn');
+    const labelDisplay = row.querySelector('.spell-list-label-display');
+    const labelInput = row.querySelector('.spell-list-label-input');
+    const saveBtn = row.querySelector('.spell-list-save-btn');
+
+    editBtn.addEventListener('click', () => {
+      labelDisplay.style.display = 'none';
+      editBtn.style.display = 'none';
+      labelInput.style.display = 'block';
+      saveBtn.style.display = 'inline-block';
+      labelInput.focus(); labelInput.select();
+    });
+
+    const doSave = () => {
+      const newLabel = labelInput.value.trim() || label;
+      const d2 = getData();
+      if (d2.spellingLists[realIdx]) d2.spellingLists[realIdx].label = newLabel;
+      saveData(d2);
+      labelDisplay.textContent = newLabel;
+      labelDisplay.style.display = '';
+      editBtn.style.display = '';
+      labelInput.style.display = 'none';
+      saveBtn.style.display = 'none';
+    };
+
+    saveBtn.addEventListener('mousedown', e => e.preventDefault());
+    saveBtn.addEventListener('click', doSave);
+    labelInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doSave(); } });
+    labelInput.addEventListener('blur', () => setTimeout(doSave, 150));
+
+    // Delete list
+    row.querySelector('.spell-list-delete-btn').addEventListener('click', () => {
+      showAppConfirm('🗑️', 'Delete this list?', `"${label}" will be removed.`, '🗑️ Delete', 'Keep It').then(yes => {
+        if (!yes) return;
+        const d2 = getData();
+        d2.spellingLists.splice(realIdx, 1);
+        saveData(d2);
+        renderSpellingSavedLists();
+      });
+    });
+
+    container.appendChild(row);
+  });
+}
+
+document.getElementById('btn-spell-src-mywords').addEventListener('click', () => {
+  renderSpellingSavedLists();
   show('screen-spelling-mywords');
 });
 
@@ -8738,16 +8852,6 @@ document.getElementById('btn-spell-source-type').addEventListener('click', () =>
 });
 
 // My Words: View existing list
-document.getElementById('btn-spell-source-existing').addEventListener('click', () => {
-  const d = getData();
-  if (d.spellingLists && d.spellingLists.length > 0) {
-    currentSpellingList = d.spellingLists[d.spellingLists.length - 1];
-    document.getElementById('spelling-week-label').textContent = ''; // U-1: clear stale label before render
-    renderSpellingWords(currentSpellingList);
-    show('screen-spelling');
-  }
-});
-
 // My Words: Clear All Words button
 document.getElementById('btn-mywords-clear-all').addEventListener('click', () => {
   showAppModal({
@@ -8764,10 +8868,9 @@ document.getElementById('btn-mywords-clear-all').addEventListener('click', () =>
           saveData(d);
           currentSpellingList = null;
           // Hide both the existing and clear buttons since no words remain
-          document.getElementById('btn-spell-source-existing').style.display = 'none';
-          document.getElementById('btn-mywords-clear-all').style.display = 'none';
+          renderSpellingSavedLists();
           const t = document.getElementById('word-toast');
-          t.textContent = '🗑️ All spelling words cleared';
+          t.textContent = '🗑️ All spelling lists cleared';
           t.classList.add('show');
           setTimeout(() => t.classList.remove('show'), 2000);
         }
@@ -8897,43 +9000,36 @@ document.getElementById('btn-spell-type-go').addEventListener('click', () => {
     return;
   }
   document.getElementById('spell-type-textarea').style.borderColor = 'var(--border)';
-  const words = [...new Set(raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0))]; // L-1: dedup
+  const words = [...new Set(raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0))];
   if (words.length === 0) {
     document.getElementById('spell-type-textarea').style.borderColor = 'var(--coral)';
     return;
   }
 
-  // Content safety check on spelling words
   const safety = checkContentSafety(words.join(' '));
-  if (!safety.safe) {
-    showAppAlert('🚫', 'Oops!', safety.reason);
-    return;
-  }
+  if (!safety.safe) { showAppAlert('🚫', 'Oops!', safety.reason); return; }
 
-  // Build spelling list
-  const spellingList = {
-    id: Date.now().toString(36),
-    date: new Date().toISOString(),
-    grade: S.grade || '2',
-    words: words.map((w, i) => ({
-      word: w,
-      syllables: w,
-      isRedWord: false,
-      num: i + 1,
-      practiced: 0,
-      mastered: false
-    }))
-  };
-
-  // Save to localStorage
-  const d = getData();
-  d.spellingLists.push(spellingList);
-  if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
-  saveData(d);
-
-  currentSpellingList = spellingList;
-  renderSpellingWords(spellingList);
-  show('screen-spelling');
+  // Show naming wizard before saving
+  showSpellingListNamingWizard(words.length, (chosenLabel) => {
+    const spellingList = {
+      id: Date.now().toString(36),
+      date: new Date().toISOString(),
+      grade: S.grade || '2',
+      label: chosenLabel,
+      words: words.map((w, i) => ({
+        word: w, syllables: w, isRedWord: false,
+        num: i + 1, practiced: 0, mastered: false
+      }))
+    };
+    const d = getData();
+    d.spellingLists.push(spellingList);
+    if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
+    saveData(d);
+    currentSpellingList = spellingList;
+    document.getElementById('spelling-week-label').textContent = chosenLabel;
+    renderSpellingWords(spellingList);
+    show('screen-spelling');
+  });
 });
 
 document.getElementById('btn-spelling-upload-empty').addEventListener('click', () => {
@@ -8941,20 +9037,8 @@ document.getElementById('btn-spelling-upload-empty').addEventListener('click', (
 });
 
 document.getElementById('btn-spelling-new').addEventListener('click', () => {
-  // Go to source picker for new words
-  const d = getData();
-  const existingBtn = document.getElementById('btn-spell-source-existing');
-  const clearAllBtn = document.getElementById('btn-mywords-clear-all');
-  if (d.spellingLists && d.spellingLists.length > 0) {
-    existingBtn.style.display = 'flex'; // F-3 fix: was 'block', button needs flex for icon layout
-    const latest = d.spellingLists[d.spellingLists.length - 1];
-    existingBtn.querySelector('.spell-existing-count').textContent = `${latest.words.length} word${latest.words.length !== 1 ? 's' : ''} saved`;
-    clearAllBtn.style.display = 'block';
-  } else {
-    existingBtn.style.display = 'none';
-    clearAllBtn.style.display = 'none';
-  }
-  show('screen-spelling-source');
+  renderSpellingSavedLists();
+  show('screen-spelling-mywords');
 });
 
 document.getElementById('btn-spelling-done').addEventListener('click', () => {
@@ -9025,7 +9109,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
     }
 
     // Build the spelling list object
-    const spellingList = {
+    const spellingListData = {
       id: Date.now().toString(36),
       date: new Date().toISOString(),
       grade: S.grade || '2',
@@ -9039,14 +9123,19 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
       }))
     };
 
-    // Save to localStorage — replace existing or push new
-    const d = getData();
-    d.spellingLists.push(spellingList);
-    if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
-    saveData(d);
-
-    currentSpellingList = spellingList;
-    renderSpellingWords(spellingList);
+    // Show naming wizard before saving
+    document.getElementById('spelling-loading').style.display = 'none';
+    showSpellingListNamingWizard(spellingListData.words.length, (chosenLabel) => {
+      spellingListData.label = chosenLabel;
+      const d = getData();
+      d.spellingLists.push(spellingListData);
+      if (d.spellingLists.length > 10) d.spellingLists.splice(0, d.spellingLists.length - 10);
+      saveData(d);
+      currentSpellingList = spellingListData;
+      document.getElementById('spelling-week-label').textContent = chosenLabel;
+      renderSpellingWords(spellingListData);
+      show('screen-spelling');
+    });
 
   } catch (err) {
     console.error('Spelling extraction error:', err);
