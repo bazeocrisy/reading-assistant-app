@@ -1762,7 +1762,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GT</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3280,7 +3280,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GT</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3800,11 +3800,17 @@ async function renderProfileGrid() {
     childList.forEach(child => {
       const card = document.createElement('div');
       card.className = 'profile-card';
+      card.style.position = 'relative';
       card.innerHTML = `
         <span class="profile-avatar">${child.avatar || '🦁'}</span>
         <div class="profile-name">${escapeHtml(child.name)}</div>
-        <div class="profile-grade">${{ prek:'Pre-K', k:'Kindergarten', '1':'1st Grade', '2':'2nd Grade', '3':'3rd Grade' }[child.grade] || child.grade}</div>`;
+        <div class="profile-grade">${{ prek:'Pre-K', k:'Kindergarten', '1':'1st Grade', '2':'2nd Grade', '3':'3rd Grade' }[child.grade] || child.grade}</div>
+        <button class="profile-edit-btn" data-childid="${child.id}" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:2;" title="Edit profile">✏️</button>`;
       card.addEventListener('click', () => selectChildProfile(child));
+      card.querySelector('.profile-edit-btn').addEventListener('click', e => {
+        e.stopPropagation();
+        showAddChildModal(child);
+      });
       grid.appendChild(card);
     });
 
@@ -3864,6 +3870,8 @@ async function selectChildProfile(child) {
 
   updateHomeStats();
   updateAssignmentsBadge();
+  // Immediately show personalized message for this child
+  setTimeout(rotateBookie, 100);
 }
 
 // ── Update profile badge in header ───────────────────────
@@ -3888,21 +3896,33 @@ document.getElementById('active-profile-badge').addEventListener('keydown', e =>
 
 // ── Add Child Modal ───────────────────────────────────────
 let selectedAvatar = '🦁';
+let editingChildId = null; // null = add mode, string = edit mode
 
-function showAddChildModal() {
-  selectedAvatar = '🤴🏿';
-  document.getElementById('new-child-name').value = '';
-  document.getElementById('new-child-grade').value = '1';
+function showAddChildModal(childToEdit = null) {
+  editingChildId = childToEdit ? childToEdit.id : null;
+  const isEdit = !!childToEdit;
+
+  // Update title and button
+  document.querySelector('#add-child-overlay .add-child-modal div:first-child').textContent =
+    isEdit ? '✏️ Edit Profile' : '👶 Add a Child Profile';
+  document.getElementById('btn-add-child-save').textContent = isEdit ? '✅ Save Changes' : '✅ Save Profile';
+
+  // Prefill fields
+  selectedAvatar = childToEdit?.avatar || '🤴🏿';
+  document.getElementById('new-child-name').value = childToEdit?.name || '';
+  document.getElementById('new-child-grade').value = childToEdit?.grade || '1';
   document.getElementById('add-child-error').style.display = 'none';
-  // Reset avatar selection
+
+  // Set avatar selection
   document.querySelectorAll('.avatar-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.avatar === '🤴🏿');
+    el.classList.toggle('selected', el.dataset.avatar === selectedAvatar);
   });
   document.getElementById('add-child-overlay').style.display = 'flex';
   setTimeout(() => document.getElementById('new-child-name').focus(), 100);
 }
 
 function hideAddChildModal() {
+  editingChildId = null;
   document.getElementById('add-child-overlay').style.display = 'none';
 }
 
@@ -3939,18 +3959,25 @@ document.getElementById('btn-add-child-save').addEventListener('click', async ()
   errEl.style.display = 'none';
 
   try {
-    // Generate a new child ID
-    const childId = 'child_' + Date.now().toString(36);
-    const childData = {
-      id: childId,
-      name,
-      grade,
-      avatar: selectedAvatar,
-      createdAt: Date.now()
-    };
-
-    // Save to Firebase
-    await set(ref(db, `users/${currentUser.uid}/children/${childId}`), childData);
+    if (editingChildId) {
+      // EDIT MODE — update existing child in Firebase
+      await update(ref(db, `users/${currentUser.uid}/children/${editingChildId}`), {
+        name,
+        grade,
+        avatar: selectedAvatar,
+      });
+      // If editing the currently active child, update local state
+      if (currentChildId === editingChildId) {
+        currentChildProfile = { ...currentChildProfile, name, grade, avatar: selectedAvatar };
+        S.grade = grade;
+        updateProfileBadge();
+      }
+    } else {
+      // ADD MODE — create new child
+      const childId = 'child_' + Date.now().toString(36);
+      const childData = { id: childId, name, grade, avatar: selectedAvatar, createdAt: Date.now() };
+      await set(ref(db, `users/${currentUser.uid}/children/${childId}`), childData);
+    }
 
     hideAddChildModal();
     renderProfileGrid();
@@ -4550,21 +4577,33 @@ function showAppConfirm(icon, title, message, yesLabel = '✅ Yes', noLabel = '�
 }
 
 // ── Bookie Mascot Speech Bubble ──────────────────────────
-const bookieGreetings = [
-  "Ready to read? Let's go! 🚀",
-  "Hey superstar! What's next? ✨",
-  "Let's learn something awesome! 🌟",
-  "Time for a reading adventure! 📚",
-  "You're getting so good at this! 💪",
-  "I missed you! Let's read! 💛",
-  "Pick one and let's have fun! 🎉",
-  "What should we read today? 📖",
-];
+// Personalized motivational quotes — uses child's first name
+function getBookieMessages() {
+  const name = (currentChildProfile?.name || 'Superstar').split(' ')[0];
+  return [
+    `You are brilliant, ${name}! 🌟 Let's read!`,
+    `${name}, you can do anything you set your mind to! 💪`,
+    `Great readers are made one page at a time, ${name}! 📚`,
+    `You are a reading superstar, ${name}! ⭐`,
+    `${name}, every word you read makes you smarter! 🧠`,
+    `Bookie believes in you, ${name}! 🦉`,
+    `${name}, you've got this! Let's go! 🚀`,
+    `Champions read every day — that's you, ${name}! 🏆`,
+    `${name}, your brain gets stronger every time you read! 💡`,
+    `You are amazing, ${name}! Ready for an adventure? 📖`,
+    `${name}, reading opens every door! 🚪✨`,
+    `Keep going, ${name} — great things are ahead! 🌈`,
+    `${name}, you are smarter than you know! 🌟`,
+    `I missed you, ${name}! Let's read something awesome! 💛`,
+    `${name}, today is a great day to be a reader! 🎉`,
+  ];
+}
 function rotateBookie() {
   const el = document.getElementById('bookie-speech');
   if (!el || !document.getElementById('screen-pick')?.classList.contains('active')) return;
   el.style.animation = 'none'; el.offsetHeight;
-  el.textContent = bookieGreetings[Math.floor(Math.random() * bookieGreetings.length)];
+  const messages = getBookieMessages();
+  el.textContent = messages[Math.floor(Math.random() * messages.length)];
   // Re-add the tail
   const tail = document.createElement('div');
   tail.style.cssText = 'position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white;';
@@ -7977,17 +8016,21 @@ document.getElementById('btn-race-new').addEventListener('click', async () => {
 // ═══════════════════════════════════════════════════════════
 // ── localStorage Engine ──────────────────────────────────
 // ═══════════════════════════════════════════════════════════
-const LS_KEY = 'readup_data';
+const LS_KEY_BASE = 'readup_data';
+// LS_KEY is always child-scoped — each child gets their own isolated data store
+function getLSKey() {
+  return currentChildId ? `${LS_KEY_BASE}_${currentChildId}` : LS_KEY_BASE;
+}
 
 function loadData() {
   try {
-    return JSON.parse(localStorage.getItem(LS_KEY)) || {};
+    return JSON.parse(localStorage.getItem(getLSKey())) || {};
   } catch(e) { return {}; }
 }
 
 function saveData(d) {
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify(d));
+    localStorage.setItem(getLSKey(), JSON.stringify(d));
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.code === 22) {
       // Device storage full — try to free space and retry once
@@ -8008,7 +8051,7 @@ function saveData(d) {
           d.spellingLists = d.spellingLists.slice(-3);
         }
         // Retry save
-        localStorage.setItem(LS_KEY, JSON.stringify(d));
+        localStorage.setItem(getLSKey(), JSON.stringify(d));
       } catch(e2) {
         // Still failing — show a gentle warning once per session
         if (!window._storagWarnShown) {
@@ -8152,6 +8195,8 @@ function showReadComplete(readCount) {
   const msg = document.getElementById('solo-complete-msg');
   const retryBtn = document.getElementById('btn-solo-retry');
   const newBtn = document.getElementById('btn-solo-new');
+  const name = (currentChildProfile?.name || '').split(' ')[0];
+  const nameStr = name ? `, ${name}` : '';
 
   // Animate reread dots
   for (let i = 1; i <= 3; i++) {
@@ -8165,26 +8210,33 @@ function showReadComplete(readCount) {
     }
   }
 
+  const celebrationMessages = [
+    `You are a reading star${nameStr}! ⭐`,
+    `Brilliant work${nameStr}! Keep it up! 🧠`,
+    `${name ? name + ', you' : 'You'} should be so proud! 🏆`,
+    `That's what champions do${nameStr}! 💪`,
+    `Bookie is so proud of you${nameStr}! 🦉`,
+  ];
+  const randomCelebration = celebrationMessages[Math.floor(Math.random() * celebrationMessages.length)];
+
   if (readCount >= 3) {
-    title.textContent = '🌟 Superstar Reader!';
-    msg.innerHTML = `You read this story ${readCount} times!<br><strong style="color:var(--green);">That's how champions read!</strong>`;
+    title.textContent = `🌟 Superstar${name ? ', ' + name : ''}!`;
+    msg.innerHTML = `${randomCelebration}<br><strong style="color:var(--green);">You read this story ${readCount} times — that's how champions read!</strong>`;
     retryBtn.textContent = '🔄 Read Again';
     retryBtn.className = 'btn-main btn-outline';
     newBtn.className = 'btn-main btn-green';
     newBtn.style.marginTop = '0';
     retryBtn.style.marginTop = '10px';
-    // Big confetti burst for 3x!
     setTimeout(() => launchConfetti(80), 300);
   } else {
     const next = readCount + 1;
-    title.textContent = readCount === 1 ? '✅ Nice Job!' : '✅ Getting Better!';
-    msg.innerHTML = `Great readers read stories 3 times!<br><span style="font-size:0.9rem;opacity:0.8;">Ready for read #${next}?</span>`;
+    title.textContent = readCount === 1 ? `✅ Nice Job${nameStr}!` : `✅ Getting Better${nameStr}!`;
+    msg.innerHTML = `${randomCelebration}<br><span style="font-size:0.9rem;opacity:0.8;">Great readers read stories 3 times! Ready for read #${next}?</span>`;
     retryBtn.textContent = `▶ Read #${next} — Let's Go!`;
     retryBtn.className = 'btn-main btn-green';
     retryBtn.style.marginTop = '0';
     newBtn.className = 'btn-main btn-outline';
     newBtn.style.marginTop = '10px';
-    // Small confetti for each read
     setTimeout(() => launchConfetti(25), 300);
   }
   show('screen-solo-complete');
@@ -12237,7 +12289,7 @@ document.getElementById('btn-save-pin').addEventListener('click', () => {
 document.getElementById('btn-reset-data').addEventListener('click', async () => {
   const yes = await showAppConfirm('⚠️', 'Reset ALL Data?', 'This will erase everything — stories, words, spelling lists, and reading history. This cannot be undone!', '⚠️ Reset Everything', '← No, Keep My Data');
   if (!yes) return;
-  localStorage.removeItem(LS_KEY);
+  localStorage.removeItem(getLSKey());
   localStorage.removeItem(DICT_CACHE_KEY);
   openParentDashboard();
   showAppAlert('✅', 'All Done!', 'All data has been reset.');
@@ -12251,7 +12303,7 @@ document.getElementById('btn-export-data').addEventListener('click', () => {
       version: 1,
       exportedAt: new Date().toISOString(),
       appBuild: 'CL',
-      readup_data: JSON.parse(localStorage.getItem(LS_KEY) || '{}'),
+      readup_data: JSON.parse(localStorage.getItem(getLSKey()) || '{}'),
       readup_dict_cache: JSON.parse(localStorage.getItem(DICT_CACHE_KEY) || '{}')
     };
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -12323,7 +12375,7 @@ importFileInput.addEventListener('change', (e) => {
       }
 
       // Apply the import
-      localStorage.setItem(LS_KEY, JSON.stringify(imported.readup_data));
+      localStorage.setItem(getLSKey(), JSON.stringify(imported.readup_data));
       if (imported.readup_dict_cache && typeof imported.readup_dict_cache === 'object') {
         localStorage.setItem(DICT_CACHE_KEY, JSON.stringify(imported.readup_dict_cache));
       }
