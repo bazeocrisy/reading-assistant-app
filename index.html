@@ -1769,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GW</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GX</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2384,7 +2384,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <div class="reread-dot" id="dot-3" aria-hidden="true" style="opacity:0.25;">📖</div>
         </div>
         <button class="btn-main btn-green" id="btn-solo-retry" aria-label="Read this story again" style="font-size:1.2rem;padding:16px;">▶ Read Again</button>
-        <button class="btn-main btn-purple" id="btn-solo-save-reading" aria-label="Save to My Readings" style="margin-top:10px;font-size:1.1rem;">📚 Save to My Readings</button>
+        <button class="btn-main" id="btn-solo-save-reading" aria-label="Save to My Readings" style="margin-top:10px;font-size:1.1rem;background:linear-gradient(135deg,#00CEC9,#00838F);color:white;border:none;">🔖 Save to My Readings</button>
         <button class="btn-main btn-purple" id="btn-solo-wordbank" aria-label="Review my Word Bank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
         <button class="btn-main btn-outline" id="btn-solo-new" aria-label="Start a new story" style="margin-top:10px;">📚 New Story</button>
       </div>
@@ -3288,7 +3288,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GW</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GX</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7802,11 +7802,37 @@ function renderMyReadings() {
       const d = getData();
       const entry = (d.timedPassages || []).find(p => p.id === passageId);
       if (!entry) return;
-      wpmPassage = entry.text;
-      wpmStandaloneMode = true;
-      S.grade = entry.grade || S.grade;
-      updateWPMInstructionCount();
-      show('screen-wpm-instructions');
+
+      // Show wizard — ask Timed or Just Read
+      showAppConfirm(
+        '📖',
+        'How do you want to read?',
+        `"${entry.title || 'This passage'}"`,
+        '⏱ Time My Reading',
+        '📖 Just Read'
+      ).then(timedChoice => {
+        if (timedChoice) {
+          // Timed reading flow
+          wpmPassage = entry.text;
+          wpmStandaloneMode = true;
+          S.grade = entry.grade || S.grade;
+          updateWPMInstructionCount();
+          show('screen-wpm-instructions');
+        } else {
+          // Just read — load into reading screen without timing
+          S.story = entry.text;
+          S.storyTitle = entry.title || '📖 Reading Passage';
+          S.category = entry.topic || 'pasted';
+          S.wordTarget = entry.text.trim().split(/\s+/).length;
+          S.isAIStory = entry.source === 'ai';
+          S.isRace = false; S.myRole = null;
+          wpmStandaloneMode = false;
+          recordStoryStart();
+          renderStory(S.storyTitle, S.story);
+          setupReadScreen();
+          show('screen-read');
+        }
+      });
     });
   });
 }
