@@ -1446,6 +1446,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   .lp-hero-wrap { padding: 80px 0 72px; }
   .lp-hero-inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 60px; text-align: left; }
   .lp-hero-left { align-items: flex-start; text-align: left; }
+  .lp-hero-mobile-photo { display: none; }
   .lp-hero-bookie-wrap { margin-bottom: 0; }
   .lp-owl { font-size: 120px; }
   .lp-bubble { font-size: 16px; }
@@ -1761,7 +1762,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GQ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GR</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3279,7 +3280,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GQ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GR</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12834,6 +12835,10 @@ document.addEventListener('keydown', (e) => {
       <div class="lp-hero-inner">
         <!-- Left: branding + CTA -->
         <div class="lp-hero-left">
+          <!-- Mobile: show photo here -->
+          <div class="lp-hero-mobile-photo" style="width:100%;border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 12px 40px rgba(0,0,0,0.4);">
+            <img src="https://images.pexels.com/photos/6845519/pexels-photo-6845519.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Black boy reading a book in a library" style="width:100%;display:block;" loading="eager">
+          </div>
           <div class="lp-logo-text">ReadUp!</div>
           <div class="lp-h1-text">Watch Your Child Read Faster.<br>Every Single Week.</div>
           <div class="lp-sub-text">Bookie makes it happen. Right now. 🚀</div>
@@ -12847,44 +12852,14 @@ document.addEventListener('keydown', (e) => {
           </div>
           <div class="lp-disclaimer">For Pre-K through 3rd Grade · Built by a Nonprofit</div>
         </div>
-        <!-- Right: Bookie illustration with floating word bubbles -->
+        <!-- Right: Photo (desktop) / hidden on mobile -->
         <div class="lp-quote-right" style="justify-content:center;align-items:center;">
-          <div class="lp-hero-bookie-wrap">
-            <!-- Floating word bubbles -->
-            <div class="lp-bubble lp-bubble-1">cat 🐱</div>
-            <div class="lp-bubble lp-bubble-2">read ⭐</div>
-            <div class="lp-bubble lp-bubble-3">fun! 🎉</div>
-            <div class="lp-bubble lp-bubble-4">111 WPM</div>
-            <!-- Big Bookie SVG -->
-            <svg viewBox="0 0 120 130" width="220" height="220" style="filter:drop-shadow(0 12px 40px rgba(0,0,0,0.4));">
-              <ellipse cx="60" cy="124" rx="32" ry="6" fill="#E8C547" opacity="0.3"/>
-              <ellipse cx="60" cy="72" rx="38" ry="42" fill="#FF9F43"/>
-              <ellipse cx="60" cy="74" rx="33" ry="36" fill="#FECA57"/>
-              <ellipse cx="60" cy="82" rx="22" ry="20" fill="#FFF9E6"/>
-              <path d="M32 36 L24 14 L42 30Z" fill="#FF9F43"/>
-              <path d="M88 36 L96 14 L78 30Z" fill="#FF9F43"/>
-              <path d="M34 36 L28 18 L42 31Z" fill="#FECA57"/>
-              <path d="M86 36 L92 18 L78 31Z" fill="#FECA57"/>
-              <circle cx="44" cy="46" r="16" fill="white"/>
-              <circle cx="76" cy="46" r="16" fill="white"/>
-              <circle cx="46" cy="47" r="9" fill="#2C3E50"/>
-              <circle cx="74" cy="47" r="9" fill="#2C3E50"/>
-              <circle cx="48" cy="45" r="4" fill="white"/>
-              <circle cx="76" cy="45" r="4" fill="white"/>
-              <circle cx="44" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
-              <circle cx="76" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
-              <path d="M58 46 L62 46" stroke="#E55D2B" stroke-width="2.5"/>
-              <path d="M54 56 L60 66 L66 56Z" fill="#FF6B35"/>
-              <path d="M50 68 Q60 78 70 68" fill="none" stroke="#E17055" stroke-width="2.5" stroke-linecap="round"/>
-              <circle cx="34" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
-              <circle cx="86" cy="60" r="7" fill="#FF6B6B" opacity="0.25"/>
-              <path d="M18 65 Q10 72 16 82 Q22 78 26 70Z" fill="#FF9F43"/>
-              <path d="M102 65 Q110 72 104 82 Q98 78 94 70Z" fill="#FF9F43"/>
-              <rect x="8" y="72" width="16" height="12" rx="2" fill="#54A0FF" transform="rotate(-10 16 78)"/>
-              <rect x="8" y="72" width="8" height="12" rx="1.5" fill="#2E86DE" transform="rotate(-10 16 78)"/>
-              <ellipse cx="46" cy="112" rx="10" ry="5" fill="#FF6B35"/>
-              <ellipse cx="74" cy="112" rx="10" ry="5" fill="#FF6B35"/>
-            </svg>
+          <div style="position:relative;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-width:460px;width:100%;">
+            <img src="https://images.pexels.com/photos/6845519/pexels-photo-6845519.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Black boy reading a book in a library" style="width:100%;display:block;border-radius:24px;" loading="eager">
+            <!-- Floating word bubbles over photo -->
+            <div style="position:absolute;top:16px;left:16px;background:white;border-radius:50px;padding:6px 14px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:14px;color:#FF6B35;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:lp-float 3s ease-in-out infinite;">111 WPM ⭐</div>
+            <div style="position:absolute;top:16px;right:16px;background:white;border-radius:50px;padding:6px 14px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:14px;color:#27AE60;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:lp-float 3s ease-in-out infinite 0.8s;">+59 WPM 🚀</div>
+            <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(26,26,78,0.9);border-radius:50px;padding:8px 20px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px;color:white;white-space:nowrap;backdrop-filter:blur(4px);">Photo: Marchalilah / Pexels</div>
           </div>
         </div>
       </div>
