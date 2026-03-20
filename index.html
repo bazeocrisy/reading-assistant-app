@@ -1769,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GX</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GY</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3288,7 +3288,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GX</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3546,6 +3546,7 @@ function pushToCloud() {
   const path = childPath();
   if (!path) return;
   const d = getData();
+  const ts = Date.now();
   const cloudData = {
     stories: d.stories || [],
     wordBank: d.wordBank || [],
@@ -3555,8 +3556,10 @@ function pushToCloud() {
     wpmHistory: d.wpmHistory || [],
     timedPassages: d.timedPassages || [],
     assignments: d.assignments || [],
-    updatedAt: Date.now()
+    updatedAt: ts
   };
+  // Stamp local too so real-time listener skips our own push
+  try { const ld = getData(); ld.updatedAt = ts; localStorage.setItem(getLSKey(), JSON.stringify(ld)); } catch(e) {}
   set(ref(db, path + '/data'), cloudData)
     .catch(e => console.warn('Cloud push failed:', e));
 }
@@ -3859,6 +3862,37 @@ async function selectChildProfile(child) {
 
   // Pull cloud data for this child
   await pullFromCloud();
+
+  // ── Real-time cross-device sync ──────────────────────────
+  // Unsubscribe any previous listener first
+  if (window._childDataUnsub) { try { window._childDataUnsub(); } catch(e) {} }
+  const path = childPath();
+  if (path) {
+    let _firstRun = true;
+    window._childDataUnsub = onValue(ref(db, path + '/data'), snap => {
+      // Skip the first run — pullFromCloud already handled it
+      if (_firstRun) { _firstRun = false; return; }
+      if (!snap.exists()) return;
+      const cloudData = snap.val();
+      const local = getData();
+      // Only overwrite if cloud is newer
+      if (!cloudData.updatedAt || (local.updatedAt && cloudData.updatedAt <= local.updatedAt)) return;
+      if (cloudData.stories) local.stories = cloudData.stories;
+      if (cloudData.wordBank) local.wordBank = cloudData.wordBank;
+      if (cloudData.spellingLists) local.spellingLists = cloudData.spellingLists;
+      if (cloudData.vocabLists) local.vocabLists = cloudData.vocabLists;
+      if (cloudData.weeklyLog) local.weeklyLog = cloudData.weeklyLog;
+      if (cloudData.wpmHistory) local.wpmHistory = cloudData.wpmHistory;
+      if (cloudData.timedPassages) local.timedPassages = cloudData.timedPassages;
+      if (cloudData.assignments) local.assignments = cloudData.assignments;
+      local.updatedAt = cloudData.updatedAt;
+      // Write directly to localStorage without triggering another push
+      try { localStorage.setItem(getLSKey(), JSON.stringify(local)); } catch(e) {}
+      // Refresh any visible UI
+      updateHomeStats();
+      console.log('🔄 Real-time sync applied from another device');
+    });
+  }
 
   hideLandingPage();
   hideProfileScreen();
@@ -7211,17 +7245,34 @@ document.getElementById('btn-solo-wordbank').addEventListener('click', () => {
   openWordBankReview();
 });
 document.getElementById('btn-solo-save-reading').addEventListener('click', () => {
-  const saved = savePassageToMyReadings();
-  const btn = document.getElementById('btn-solo-save-reading');
-  if (saved) {
-    btn.textContent = '✅ Saved to My Readings!';
-    btn.style.background = 'var(--green)';
-    btn.disabled = true;
-    setTimeout(() => { btn.style.display = 'none'; }, 2000);
-  } else {
+  if (!S.story) return;
+  const hash = storyHash(S.story);
+  const d = getData();
+  if ((d.timedPassages || []).some(p => p.id === hash)) {
+    const btn = document.getElementById('btn-solo-save-reading');
     btn.textContent = '✅ Already in My Readings';
     btn.disabled = true;
+    return;
   }
+
+  // Generate a default name
+  const TOPIC_NAMES = { animals:'Animals Story', space:'Space Story', dinosaurs:'Dinosaurs Story', ocean:'Ocean Story', superheroes:'Superheroes Story', magic:'Magic Story', sports:'Sports Story', cooking:'Cooking Story', friends:'Friends Story', confidence:'Self-Confidence Story', blackhistory:'Black History Story', helpers:'Helpers Story', nature:'Nature Story', emotions:'Feelings Story', trucks:'Trucks Story', princesses:'Princesses Story', robots:'Robots Story', pirates:'Pirates Story', airplanes:'Airplanes Story' };
+  const defaultName = S.isAIStory
+    ? (TOPIC_NAMES[S.category] || 'My Story')
+    : (S.storyTitle || 'My Reading Passage');
+
+  // Show naming wizard modal
+  showSaveNamingWizard(defaultName, (chosenName) => {
+    if (!chosenName) return;
+    const saved = savePassageToMyReadings(chosenName);
+    const btn = document.getElementById('btn-solo-save-reading');
+    if (saved) {
+      btn.textContent = '✅ Saved to My Readings!';
+      btn.style.background = 'var(--green)';
+      btn.disabled = true;
+      setTimeout(() => { btn.style.display = 'none'; }, 2000);
+    }
+  });
 });
 document.getElementById('btn-wordbank-home').addEventListener('click', () => {
   openWordBankReview();
@@ -7667,7 +7718,62 @@ function savePassageTitle(passageId, newTitle) {
 }
 
 // Save current story/passage to My Readings without requiring a timed read
-function savePassageToMyReadings() {
+// ── Save to My Readings naming wizard ────────────────────
+function showSaveNamingWizard(defaultName, onSave) {
+  // Build modal overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:24px;padding:24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:2rem;margin-bottom:6px;">🔖</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);">Save to My Readings</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-top:4px;">Give this reading a name you'll remember!</div>
+      </div>
+      <input id="save-name-input" type="text" maxlength="50"
+        style="width:100%;border:2.5px solid var(--purple);border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;outline:none;margin-bottom:10px;"
+        placeholder="Name this reading..." value="${defaultName.replace(/"/g, '&quot;')}">
+      <button id="save-name-bookie-btn" style="width:100%;background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:12px;padding:10px;font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;margin-bottom:14px;">
+        🦉 Let Bookie Name It!
+      </button>
+      <div style="display:flex;gap:10px;">
+        <button id="save-name-cancel-btn" style="flex:1;background:none;border:2px solid var(--border);border-radius:12px;padding:11px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);cursor:pointer;">Cancel</button>
+        <button id="save-name-save-btn" style="flex:2;background:linear-gradient(135deg,#00CEC9,#00838F);color:white;border:none;border-radius:12px;padding:11px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">🔖 Save</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  const input = overlay.querySelector('#save-name-input');
+  setTimeout(() => { input.focus(); input.select(); }, 100);
+
+  // Bookie name generator
+  const bookieNames = [
+    '📖 Reading Adventure', '🌟 My Amazing Story', '🚀 Reading Quest',
+    '💡 My Learning Story', '🎯 Reading Challenge', '✨ Bookie\'s Pick',
+    '🦉 Owl-Approved Read', '🏆 Champion\'s Reading',
+  ];
+  overlay.querySelector('#save-name-bookie-btn').addEventListener('click', () => {
+    input.value = bookieNames[Math.floor(Math.random() * bookieNames.length)];
+    input.focus();
+  });
+
+  overlay.querySelector('#save-name-cancel-btn').addEventListener('click', () => {
+    document.body.removeChild(overlay);
+  });
+
+  overlay.querySelector('#save-name-save-btn').addEventListener('click', () => {
+    const name = input.value.trim() || defaultName;
+    document.body.removeChild(overlay);
+    onSave(name);
+  });
+
+  // Enter key submits
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { overlay.querySelector('#save-name-save-btn').click(); }
+  });
+}
+
+function savePassageToMyReadings(titleOverride) {
   if (!S.story) return false;
   const d = getData();
   if (!d.timedPassages) d.timedPassages = [];
@@ -7675,10 +7781,10 @@ function savePassageToMyReadings() {
   // Already exists — don't duplicate
   if (d.timedPassages.find(p => p.id === hash)) return false;
   const TOPIC_NAMES = { animals:'Animals', space:'Space', dinosaurs:'Dinosaurs', ocean:'Ocean', superheroes:'Superheroes', magic:'Magic', sports:'Sports', cooking:'Cooking', friends:'Friends', confidence:'Self-Confidence', blackhistory:'Black History', helpers:'Helpers', nature:'Nature', emotions:'Feelings', trucks:'Trucks', princesses:'Princesses', robots:'Robots', pirates:'Pirates', airplanes:'Airplanes' };
-  let title = S.storyTitle || '📖 Reading Passage';
+  let title = titleOverride || S.storyTitle || '📖 Reading Passage';
   let source = 'paste';
   if (S.isAIStory) {
-    title = S.category ? `✨ ${TOPIC_NAMES[S.category] || S.category} Story` : '✨ AI Story';
+    title = titleOverride || (S.category ? `✨ ${TOPIC_NAMES[S.category] || S.category} Story` : '✨ AI Story');
     source = 'ai';
   } else if (S.storyTitle && S.storyTitle.includes('📄')) {
     source = 'upload';
