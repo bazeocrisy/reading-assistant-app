@@ -417,8 +417,8 @@ header { position: relative; }
 .word-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── Universal Bottom Nav Bar ── */
-.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; padding-bottom: max(7px, env(safe-area-inset-bottom, 7px)); background: rgba(255,255,255,0.97); border-top: 1.5px solid var(--border); border-radius: 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); }
-.parent-bar-btn { border: 2px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.parent-bar { position: fixed; bottom: 0; left: 0; right: 0; width: auto; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 7px 12px; padding-bottom: max(7px, env(safe-area-inset-bottom, 7px)); background: rgba(255,255,255,0.97); border-top: 1.5px solid var(--border); border-radius: 0; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; box-shadow: 0 -2px 12px rgba(0,0,0,0.06); touch-action: manipulation; }
+.parent-bar-btn { border: 2px solid var(--border); font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; padding: 7px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-appearance: none; }
 .parent-bar-btn:hover { border-color: var(--purple); background: var(--purple); color: #fff; }
 .parent-bar-btn:active { transform: scale(0.95); }
 /* Compact on small phones — shrink padding and font so all 5 buttons fit */
@@ -1769,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GY</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HA</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -1795,10 +1795,10 @@ body.bedtime .read-side-btn { opacity: 0.8; }
         <div class="home-feature-label">Read Together</div>
       </button>
 
-      <!-- Word Work -->
-      <button class="home-feature-card" id="btn-cat-words" aria-label="Word Work" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 6px 18px rgba(238,90,36,0.3);padding:24px 14px 20px;">
+      <!-- Practice Words -->
+      <button class="home-feature-card" id="btn-cat-words" aria-label="Practice Words" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 6px 18px rgba(238,90,36,0.3);padding:24px 14px 20px;">
         <div class="home-feature-emoji" aria-hidden="true">✏️</div>
-        <div class="home-feature-label">Word Work</div>
+        <div class="home-feature-label">Practice Words</div>
       </button>
 
       <!-- My Assignments — always in grid, hidden until assigned -->
@@ -1851,7 +1851,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="sheet-word-work">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
       <button id="btn-cat-words-back" class="btn-back-nav">BACK</button>
-      <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">✏️ Word Work</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">✏️ Practice Words</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px;">
       <button id="btn-spelling-start" class="kid-action-btn" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
@@ -3288,7 +3288,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GY</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HA</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7846,7 +7846,8 @@ function renderMyReadings() {
             <span class="passage-title-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayTitle}</span>
             <button class="btn-edit-title" data-id="${p.id}" style="background:none;border:none;cursor:pointer;font-size:0.85rem;padding:2px 4px;color:var(--muted);flex-shrink:0;" title="Rename">✏️</button>
           </div>
-          <input class="passage-title-input" data-id="${p.id}" type="text" value="${displayTitle}" style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;margin-top:2px;outline:none;" maxlength="50">
+          <input class="passage-title-input" data-id="${p.id}" type="text" value="${displayTitle}" style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;flex:1;box-sizing:border-box;margin-top:2px;outline:none;" maxlength="50">
+          <button class="passage-title-save-btn" data-id="${p.id}" style="display:none;margin-top:2px;margin-left:6px;background:var(--green);color:white;border:none;border-radius:8px;padding:6px 12px;font-family:'Fredoka',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;flex-shrink:0;">✅ Save</button>
           <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-top:3px;">
             ${readCount} read${readCount !== 1 ? 's' : ''} ${dateStr ? '· Last read ' + dateStr : ''}
           </div>
@@ -7870,15 +7871,17 @@ function renderMyReadings() {
       if (!card) return;
       const display = card.querySelector('.passage-title-display');
       const input = card.querySelector('.passage-title-input');
+      const saveBtn = card.querySelector('.passage-title-save-btn');
       display.style.display = 'none';
       btn.style.display = 'none';
       input.style.display = 'block';
+      if (saveBtn) saveBtn.style.display = 'inline-block';
       input.focus();
       input.select();
     });
   });
 
-  // Save on Enter or blur — use mousedown on doc to detect tap-away vs iOS blur race
+  // Save on Enter, blur, or Save button tap
   list.querySelectorAll('.passage-title-input').forEach(input => {
     let saving = false;
     const finishEdit = () => {
@@ -7890,15 +7893,41 @@ function renderMyReadings() {
       const newTitle = input.value.trim() || 'Reading Passage';
       const display = card.querySelector('.passage-title-display');
       const editBtn = card.querySelector('.btn-edit-title');
+      const saveBtn = card.querySelector('.passage-title-save-btn');
       display.textContent = newTitle;
       display.style.display = '';
       if (editBtn) editBtn.style.display = '';
       input.style.display = 'none';
+      if (saveBtn) saveBtn.style.display = 'none';
       savePassageTitle(id, newTitle);
       setTimeout(() => { saving = false; }, 300);
     };
-    input.addEventListener('blur', finishEdit);
+    input.addEventListener('blur', e => {
+      // Don't trigger blur if save button was tapped
+      setTimeout(finishEdit, 150);
+    });
     input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); finishEdit(); } });
+  });
+
+  // Save button tap
+  list.querySelectorAll('.passage-title-save-btn').forEach(saveBtn => {
+    saveBtn.addEventListener('mousedown', e => { e.preventDefault(); }); // prevent blur firing first
+    saveBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = saveBtn.dataset.id;
+      const card = document.querySelector(`.my-readings-card[data-card-id="${id}"]`);
+      if (!card) return;
+      const input = card.querySelector('.passage-title-input');
+      const newTitle = input.value.trim() || 'Reading Passage';
+      const display = card.querySelector('.passage-title-display');
+      const editBtn = card.querySelector('.btn-edit-title');
+      display.textContent = newTitle;
+      display.style.display = '';
+      if (editBtn) editBtn.style.display = '';
+      input.style.display = 'none';
+      saveBtn.style.display = 'none';
+      savePassageTitle(id, newTitle);
+    });
   });
 
   // Wire up Read Again buttons
@@ -12916,7 +12945,13 @@ document.getElementById('btn-bar-settings').addEventListener('click', () => {
   document.getElementById('global-settings-overlay').style.display = 'flex';
 });
 
-// Global settings overlay handlers
+// ── iOS Safari double-tap fix for bottom bar ─────────────
+// Adding a touchstart listener tells iOS the element is interactive,
+// eliminating the 300ms delay that causes the double-tap issue
+['btn-go-home','bar-back','bar-play','bar-pause','bar-stop','btn-bar-settings'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('touchstart', () => {}, { passive: true });
+});
 document.getElementById('btn-global-parent').addEventListener('click', () => {
   document.getElementById('global-settings-overlay').style.display = 'none';
   pinBuffer = '';
