@@ -1762,7 +1762,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD GV</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2377,6 +2377,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <div class="reread-dot" id="dot-3" aria-hidden="true" style="opacity:0.25;">📖</div>
         </div>
         <button class="btn-main btn-green" id="btn-solo-retry" aria-label="Read this story again" style="font-size:1.2rem;padding:16px;">▶ Read Again</button>
+        <button class="btn-main btn-purple" id="btn-solo-save-reading" aria-label="Save to My Readings" style="margin-top:10px;font-size:1.1rem;">📚 Save to My Readings</button>
         <button class="btn-main btn-purple" id="btn-solo-wordbank" aria-label="Review my Word Bank" style="margin-top:10px;font-size:1.1rem;">📖 Word Bank</button>
         <button class="btn-main btn-outline" id="btn-solo-new" aria-label="Start a new story" style="margin-top:10px;">📚 New Story</button>
       </div>
@@ -3280,7 +3281,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD GV</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3910,6 +3911,7 @@ function showAddChildModal(childToEdit = null) {
   // Prefill fields
   selectedAvatar = childToEdit?.avatar || '🤴🏿';
   document.getElementById('new-child-name').value = childToEdit?.name || '';
+  document.getElementById('new-child-nickname').value = childToEdit?.nickname || '';
   document.getElementById('new-child-grade').value = childToEdit?.grade || '1';
   document.getElementById('add-child-error').style.display = 'none';
 
@@ -3948,12 +3950,19 @@ document.getElementById('btn-add-child-cancel').addEventListener('click', () => 
 
 document.getElementById('btn-add-child-save').addEventListener('click', async () => {
   const name = document.getElementById('new-child-name').value.trim();
+  const nickname = document.getElementById('new-child-nickname').value.trim();
   const grade = document.getElementById('new-child-grade').value;
   const errEl = document.getElementById('add-child-error');
 
   if (!name) {
-    errEl.textContent = "Please enter the child's name.";
+    errEl.textContent = "Please enter the child's full name.";
     errEl.style.display = 'block';
+    return;
+  }
+  if (!nickname) {
+    errEl.textContent = "Please enter a nickname — this is what Bookie will call them! ✨";
+    errEl.style.display = 'block';
+    document.getElementById('new-child-nickname').focus();
     return;
   }
   errEl.style.display = 'none';
@@ -3962,20 +3971,18 @@ document.getElementById('btn-add-child-save').addEventListener('click', async ()
     if (editingChildId) {
       // EDIT MODE — update existing child in Firebase
       await update(ref(db, `users/${currentUser.uid}/children/${editingChildId}`), {
-        name,
-        grade,
-        avatar: selectedAvatar,
+        name, nickname, grade, avatar: selectedAvatar,
       });
       // If editing the currently active child, update local state
       if (currentChildId === editingChildId) {
-        currentChildProfile = { ...currentChildProfile, name, grade, avatar: selectedAvatar };
+        currentChildProfile = { ...currentChildProfile, name, nickname, grade, avatar: selectedAvatar };
         S.grade = grade;
         updateProfileBadge();
       }
     } else {
       // ADD MODE — create new child
       const childId = 'child_' + Date.now().toString(36);
-      const childData = { id: childId, name, grade, avatar: selectedAvatar, createdAt: Date.now() };
+      const childData = { id: childId, name, nickname, grade, avatar: selectedAvatar, createdAt: Date.now() };
       await set(ref(db, `users/${currentUser.uid}/children/${childId}`), childData);
     }
 
@@ -4577,9 +4584,9 @@ function showAppConfirm(icon, title, message, yesLabel = '✅ Yes', noLabel = '�
 }
 
 // ── Bookie Mascot Speech Bubble ──────────────────────────
-// Personalized motivational quotes — uses child's first name
+// Personalized motivational quotes — uses child's nickname
 function getBookieMessages() {
-  const name = (currentChildProfile?.name || 'Superstar').split(' ')[0];
+  const name = currentChildProfile?.nickname || (currentChildProfile?.name || 'Superstar').split(' ')[0];
   return [
     `You are brilliant, ${name}! 🌟 Let's read!`,
     `${name}, you can do anything you set your mind to! 💪`,
@@ -7196,6 +7203,19 @@ document.getElementById('btn-solo-new').addEventListener('click', () => {
 document.getElementById('btn-solo-wordbank').addEventListener('click', () => {
   openWordBankReview();
 });
+document.getElementById('btn-solo-save-reading').addEventListener('click', () => {
+  const saved = savePassageToMyReadings();
+  const btn = document.getElementById('btn-solo-save-reading');
+  if (saved) {
+    btn.textContent = '✅ Saved to My Readings!';
+    btn.style.background = 'var(--green)';
+    btn.disabled = true;
+    setTimeout(() => { btn.style.display = 'none'; }, 2000);
+  } else {
+    btn.textContent = '✅ Already in My Readings';
+    btn.disabled = true;
+  }
+});
 document.getElementById('btn-wordbank-home').addEventListener('click', () => {
   openWordBankReview();
 });
@@ -7637,6 +7657,43 @@ function savePassageTitle(passageId, newTitle) {
   if (!entry) return;
   entry.title = newTitle.trim();
   saveData(d);
+}
+
+// Save current story/passage to My Readings without requiring a timed read
+function savePassageToMyReadings() {
+  if (!S.story) return false;
+  const d = getData();
+  if (!d.timedPassages) d.timedPassages = [];
+  const hash = storyHash(S.story);
+  // Already exists — don't duplicate
+  if (d.timedPassages.find(p => p.id === hash)) return false;
+  const TOPIC_NAMES = { animals:'Animals', space:'Space', dinosaurs:'Dinosaurs', ocean:'Ocean', superheroes:'Superheroes', magic:'Magic', sports:'Sports', cooking:'Cooking', friends:'Friends', confidence:'Self-Confidence', blackhistory:'Black History', helpers:'Helpers', nature:'Nature', emotions:'Feelings', trucks:'Trucks', princesses:'Princesses', robots:'Robots', pirates:'Pirates', airplanes:'Airplanes' };
+  let title = S.storyTitle || '📖 Reading Passage';
+  let source = 'paste';
+  if (S.isAIStory) {
+    title = S.category ? `✨ ${TOPIC_NAMES[S.category] || S.category} Story` : '✨ AI Story';
+    source = 'ai';
+  } else if (S.storyTitle && S.storyTitle.includes('📄')) {
+    source = 'upload';
+  }
+  const entry = {
+    id: hash,
+    title,
+    text: S.story,
+    source,
+    topic: S.category || '',
+    grade: S.grade,
+    wordCount: S.story.trim().split(/\s+/).length,
+    createdAt: new Date().toISOString(),
+    attempts: [],
+    assignedBack: false,
+    assignedNote: '',
+    deleted: false
+  };
+  d.timedPassages.unshift(entry);
+  if (d.timedPassages.length > 50) d.timedPassages = d.timedPassages.slice(0, 50);
+  saveData(d);
+  return true;
 }
 
 function renderMyReadings() {
@@ -8195,7 +8252,7 @@ function showReadComplete(readCount) {
   const msg = document.getElementById('solo-complete-msg');
   const retryBtn = document.getElementById('btn-solo-retry');
   const newBtn = document.getElementById('btn-solo-new');
-  const name = (currentChildProfile?.name || '').split(' ')[0];
+  const name = currentChildProfile?.nickname || (currentChildProfile?.name || '').split(' ')[0];
   const nameStr = name ? `, ${name}` : '';
 
   // Animate reread dots
@@ -8239,6 +8296,17 @@ function showReadComplete(readCount) {
     newBtn.style.marginTop = '10px';
     setTimeout(() => launchConfetti(25), 300);
   }
+
+  // Show Save to My Readings only if not already saved
+  const saveBtn = document.getElementById('btn-solo-save-reading');
+  if (saveBtn) {
+    const d = getData();
+    const hash = storyHash(S.story || '');
+    const alreadySaved = (d.timedPassages || []).some(p => p.id === hash);
+    saveBtn.style.display = alreadySaved ? 'none' : 'block';
+    saveBtn.textContent = '📚 Save to My Readings';
+  }
+
   show('screen-solo-complete');
 }
 
@@ -13208,8 +13276,14 @@ document.addEventListener('keydown', (e) => {
     <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:16px;text-align:center;">👶 Add a Child Profile</div>
 
     <div class="auth-input-group">
-      <label class="auth-input-label">Child's Name</label>
-      <input type="text" class="auth-input" id="new-child-name" placeholder="e.g. Chris" autocomplete="off">
+      <label class="auth-input-label">Child's Full Name</label>
+      <input type="text" class="auth-input" id="new-child-name" placeholder="e.g. King Christopher II" autocomplete="off">
+    </div>
+
+    <div class="auth-input-group">
+      <label class="auth-input-label">Nickname <span style="color:var(--coral);">*</span></label>
+      <input type="text" class="auth-input" id="new-child-nickname" placeholder="e.g. Christopher" autocomplete="off" maxlength="20">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:5px;line-height:1.4;">✨ This is the name Bookie will use in the app. Make it what your child likes to be called!</div>
     </div>
 
     <div class="auth-input-group">
