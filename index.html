@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ReadUp! — Transforming Youth Inc.</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&family=Oswald:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -456,7 +457,7 @@ body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a;
   }
   /* App gets top padding instead of bottom */
   .app {
-    padding-top: calc(56px + 20px) !important;
+    padding-top: calc(56px + 16px) !important;
     padding-bottom: 24px !important;
   }
   /* Word toast repositions to top */
@@ -472,6 +473,29 @@ body.bedtime .parent-bar-btn:hover { background: #8a6a3a; border-color: #8a6a3a;
     border-top: none;
     box-shadow: 0 2px 20px rgba(0,0,0,0.3);
   }
+  /* ── Desktop header: horizontal compact layout ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0 8px;
+    gap: 16px;
+  }
+  /* Left side: logo + profile badge stacked */
+  header > .logo { font-size: 2rem !important; margin: 0; }
+  #active-profile-badge { margin: 0; }
+  /* Hide the vertical mascot zone on desktop — show inline mini version */
+  #mascot-zone { display: none !important; }
+  /* Stats bar goes inline on the right */
+  #home-stats-bar {
+    margin-top: 0 !important;
+    gap: 12px !important;
+    flex-shrink: 0;
+  }
+  /* Show desktop mini Bookie */
+  #desktop-bookie-mini { display: flex !important; }
+  /* Bedtime toggle moves inline */
+  .bedtime-toggle { position: static !important; }
 }
 .screen { padding-bottom: 62px; }
 
@@ -1653,6 +1677,30 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div style="width:2px;background:rgba(0,0,0,0.06);border-radius:4px;"></div>
       <div style="text-align:center;"><span style="font-size:1.3rem;">💪</span><div style="font-family:'Fredoka';font-weight:700;font-size:0.95rem;color:#5CD85A;" id="home-words-count">0 words</div></div>
     </div>
+    <!-- Desktop-only: mini Bookie + speech bubble inline -->
+    <div id="desktop-bookie-mini" style="display:none;align-items:center;gap:10px;flex-shrink:0;">
+      <div id="bookie-speech-desktop" style="background:white;border-radius:16px;padding:8px 14px;font-size:0.85rem;font-weight:700;color:var(--ink);box-shadow:0 3px 12px rgba(0,0,0,0.08);max-width:220px;position:relative;">
+        Ready to read! 🚀
+        <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:10px solid white;"></div>
+      </div>
+      <svg viewBox="0 0 120 130" width="60" height="60" style="animation:mascotWiggle 2.5s ease-in-out infinite;flex-shrink:0;">
+        <ellipse cx="60" cy="72" rx="38" ry="42" fill="#FF9F43"/>
+        <ellipse cx="60" cy="74" rx="33" ry="36" fill="#FECA57"/>
+        <ellipse cx="60" cy="82" rx="22" ry="20" fill="#FFF9E6"/>
+        <path d="M32 36 L24 14 L42 30Z" fill="#FF9F43"/>
+        <path d="M88 36 L96 14 L78 30Z" fill="#FF9F43"/>
+        <circle cx="44" cy="46" r="16" fill="white"/>
+        <circle cx="76" cy="46" r="16" fill="white"/>
+        <circle cx="46" cy="47" r="9" fill="#2C3E50"/>
+        <circle cx="74" cy="47" r="9" fill="#2C3E50"/>
+        <circle cx="48" cy="45" r="4" fill="white"/>
+        <circle cx="76" cy="45" r="4" fill="white"/>
+        <circle cx="44" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+        <circle cx="76" cy="46" r="14" fill="none" stroke="#E55D2B" stroke-width="2.5"/>
+        <path d="M54 56 L60 66 L66 56Z" fill="#FF6B35"/>
+        <path d="M50 68 Q60 78 70 68" fill="none" stroke="#E17055" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
   </header>
 
   <!-- SCREEN: Welcome Splash (first time only) -->
@@ -1769,7 +1817,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HF</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3282,7 +3330,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HF</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4642,15 +4690,26 @@ function getBookieMessages() {
 }
 function rotateBookie() {
   const el = document.getElementById('bookie-speech');
-  if (!el || !document.getElementById('screen-pick')?.classList.contains('active')) return;
-  el.style.animation = 'none'; el.offsetHeight;
+  const elDesktop = document.getElementById('bookie-speech-desktop');
   const messages = getBookieMessages();
-  el.textContent = messages[Math.floor(Math.random() * messages.length)];
-  // Re-add the tail
-  const tail = document.createElement('div');
-  tail.style.cssText = 'position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white;';
-  el.appendChild(tail);
-  el.style.animation = 'fadeUp 0.4s ease both';
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+
+  if (el && document.getElementById('screen-pick')?.classList.contains('active')) {
+    el.style.animation = 'none'; el.offsetHeight;
+    el.textContent = msg;
+    const tail = document.createElement('div');
+    tail.style.cssText = 'position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:12px solid white;';
+    el.appendChild(tail);
+    el.style.animation = 'fadeUp 0.4s ease both';
+  }
+
+  if (elDesktop) {
+    elDesktop.textContent = msg;
+    // Re-add the right-pointing tail
+    const tail2 = document.createElement('div');
+    tail2.style.cssText = 'position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:10px solid white;';
+    elDesktop.appendChild(tail2);
+  }
 }
 setInterval(rotateBookie, 5000);
 
@@ -5374,14 +5433,13 @@ function updateHomeStats() {
     let streak = 0;
     if (data.weeklyLog && data.weeklyLog.length > 0) {
       const logDates = new Set(data.weeklyLog.map(e => e.date));
-      const d = new Date(); d.setHours(0,0,0,0);
-      // Check if today or yesterday has activity (allow streak to survive until end of day)
-      const todayStr = d.toISOString().slice(0,10);
-      const yest = new Date(d); yest.setDate(yest.getDate() - 1);
-      const yestStr = yest.toISOString().slice(0,10);
-      let checkDate = logDates.has(todayStr) ? new Date(d) : (logDates.has(yestStr) ? new Date(yest) : null);
+      const now = new Date();
+      const todayStr = today();
+      const yest = new Date(now); yest.setDate(yest.getDate() - 1);
+      const yestStr = localDateStr(yest);
+      let checkDate = logDates.has(todayStr) ? new Date(now) : (logDates.has(yestStr) ? new Date(yest) : null);
       if (checkDate) {
-        while (logDates.has(checkDate.toISOString().slice(0,10))) {
+        while (logDates.has(localDateStr(checkDate))) {
           streak++;
           checkDate.setDate(checkDate.getDate() - 1);
         }
@@ -8361,8 +8419,23 @@ function storyHash(text) {
 // WPM estimates by grade for reading time calc
 const GRADE_WPM = { prek: 20, k: 30, '1': 60, '2': 80, '3': 100 };
 
-// Today's date string
-function today() { return new Date().toISOString().slice(0, 10); }
+// Today's date string — uses LOCAL date, not UTC, so streak is accurate for the child's timezone
+function today() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+// Local date string for any Date object
+function localDateStr(date) {
+  const d = new Date(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 // Get or create today's weekly log entry
 function getTodayLog(d) {
