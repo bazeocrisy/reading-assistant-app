@@ -1769,7 +1769,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HC</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3282,7 +3282,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HC</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -9096,7 +9096,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
       data = await response.json();
     }
 
-    if (!data.words || data.words.length === 0) throw new Error('No words found');
+    if (!data.words || data.words.length === 0) throw new Error('No words found in document');
 
     // Content safety check on extracted words before loading
     const extractedWordStr = data.words.map(w => w.word).join(' ');
@@ -9107,6 +9107,8 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
       showAppAlert('🚫', 'Oops!', uploadSafety.reason);
       return;
     }
+
+    console.log('✅ Spelling extraction succeeded:', data.words.length, 'words');
 
     // Build the spelling list object
     const spellingListData = {
@@ -9125,6 +9127,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
 
     // Show naming wizard before saving
     document.getElementById('spelling-loading').style.display = 'none';
+    console.log('🔤 Showing spelling naming wizard for', spellingListData.words.length, 'words');
     showSpellingListNamingWizard(spellingListData.words.length, (chosenLabel) => {
       spellingListData.label = chosenLabel;
       const d = getData();
@@ -9144,7 +9147,7 @@ document.getElementById('spelling-file-input').addEventListener('change', async 
       <div style="text-align:center;padding:30px 0;">
         <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
         <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try again with a clearer photo, or type your words instead.</p>
+        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">${err.message || 'Unknown error'} — Try again with a clearer photo, or type your words instead.</p>
         <button class="btn-main" id="btn-spelling-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg, #FF8C42, #FF6B6B);">📸 Try Again</button>
       </div>`;
     document.getElementById('btn-spelling-retry-error').onclick = triggerSpellingUpload; // I-A fix: onclick overwrites itself, no stacking
