@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HX</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HY</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3394,7 +3394,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HX</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HY</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4009,13 +4009,35 @@ async function renderProfileGrid() {
       card.style.position = 'relative';
       card.innerHTML = `
         <span class="profile-avatar">${child.avatar || '🦁'}</span>
-        <div class="profile-name">${escapeHtml(child.name)}</div>
+        <div class="profile-name">${escapeHtml(child.nickname || child.name)}</div>
         <div class="profile-grade">${{ prek:'Pre-K', k:'Kindergarten', '1':'1st Grade', '2':'2nd Grade', '3':'3rd Grade' }[child.grade] || child.grade}</div>
-        <button class="profile-edit-btn" data-childid="${child.id}" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:2;" title="Edit profile">✏️</button>`;
+        <button class="profile-edit-btn" data-childid="${child.id}" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:2;" title="Edit profile">✏️</button>
+        <button class="profile-delete-btn" data-childid="${child.id}" style="position:absolute;top:6px;left:6px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);z-index:2;" title="Delete profile">🗑️</button>`;
       card.addEventListener('click', () => selectChildProfile(child));
       card.querySelector('.profile-edit-btn').addEventListener('click', e => {
         e.stopPropagation();
         showAddChildModal(child);
+      });
+      card.querySelector('.profile-delete-btn').addEventListener('click', e => {
+        e.stopPropagation();
+        const displayName = child.nickname || child.name;
+        showAppConfirm('🗑️', 'Delete Profile?', `This will permanently delete ${displayName}'s profile and all their reading data.`, '🗑️ Delete', '← Keep').then(async yes => {
+          if (!yes) return;
+          try {
+            await remove(ref(db, `users/${currentUser.uid}/children/${child.id}`));
+            // Clear localStorage for this child
+            localStorage.removeItem(`readup_data_${child.id}`);
+            // If this was the active child, clear session
+            if (currentChildId === child.id) {
+              currentChildId = null;
+              currentChildProfile = null;
+              localStorage.removeItem('readup_active_child');
+            }
+            renderProfileGrid();
+          } catch(err) {
+            showAppAlert('❌', 'Delete Failed', 'Could not delete profile. Please try again.');
+          }
+        });
       });
       grid.appendChild(card);
     });
@@ -4126,8 +4148,8 @@ async function selectChildProfile(child) {
 function updateProfileBadge() {
   const badge = document.getElementById('active-profile-badge');
   if (currentChildProfile) {
-    document.getElementById('badge-avatar').textContent = currentChildProfile.avatar || '🦁';
-    document.getElementById('badge-name').textContent = currentChildProfile.name || 'Reader';
+    document.getElementById('badge-avatar').textContent = currentChildProfile.avatar || '🦉';
+    document.getElementById('badge-name').textContent = currentChildProfile.nickname || currentChildProfile.name || 'Reader';
     badge.style.display = 'flex';
   } else {
     badge.style.display = 'none';
