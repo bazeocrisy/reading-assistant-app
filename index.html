@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IS</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -1891,25 +1891,25 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </button>
 
       <!-- My Week — full width, hidden until parent publishes a week -->
-      <div id="myweek-home-card" style="display:none;grid-column:1/-1;background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:18px;padding:16px 18px;box-shadow:0 6px 18px rgba(255,107,53,0.35);cursor:pointer;border:none;" onclick="openMyWeekChild()">
+      <div id="myweek-home-card" style="display:none;grid-column:1/-1;background:white;border-radius:18px;padding:16px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.1);cursor:pointer;border:2.5px solid #FF6B35;" onclick="openMyWeekChild()">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="font-size:1.8rem;">📅</div>
+          <div style="width:40px;height:40px;background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📅</div>
           <div style="flex:1;">
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:white;" id="myweek-home-title">My Week</div>
-            <div style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.85);" id="myweek-home-dates"></div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#FF6B35;" id="myweek-home-title">My Week</div>
+            <div style="font-size:0.78rem;font-weight:700;color:var(--muted);" id="myweek-home-dates"></div>
           </div>
-          <div id="myweek-home-progress-badge" style="background:rgba(255,255,255,0.25);border-radius:20px;padding:4px 12px;">
-            <span style="font-size:0.78rem;font-weight:800;color:white;" id="myweek-home-progress-text">0 of 0 done</span>
+          <div id="myweek-home-progress-badge" style="background:#FFF3EE;border:1.5px solid #FF6B35;border-radius:20px;padding:4px 12px;">
+            <span style="font-size:0.78rem;font-weight:800;color:#FF6B35;" id="myweek-home-progress-text">0 of 0 done</span>
           </div>
         </div>
         <div id="myweek-home-checklist" style="display:flex;flex-direction:column;gap:6px;"></div>
-        <div style="margin-top:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;" id="myweek-story-budget-bar">
+        <div style="margin-top:10px;background:#FFF3EE;border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;" id="myweek-story-budget-bar">
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:1rem;">✨</span>
-            <span style="font-size:0.82rem;font-weight:800;color:white;">Stories today</span>
+            <span style="font-size:0.82rem;font-weight:800;color:#FF6B35;">Stories today</span>
           </div>
           <div style="display:flex;gap:5px;" id="myweek-story-dots"></div>
-          <span style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.85);" id="myweek-story-budget-text"></span>
+          <span style="font-size:0.78rem;font-weight:700;color:var(--muted);" id="myweek-story-budget-text"></span>
         </div>
       </div>
 
@@ -3504,7 +3504,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -13070,15 +13070,32 @@ function renderMwWizStep() {
           </div>
         </div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload or type ${nickname}'s spelling words for the week. ${nickname} can practice them anytime and you can assign a test at the end of the week.</p>
+
         ${hasSpelling ? `
           <div style="background:linear-gradient(135deg,#FFF3E8,#FFE8D5);border:2px solid var(--purple);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
             <span style="font-size:1.5rem;">🔤</span>
             <div style="flex:1;">
               <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">${mwWizData.spelling.label}</div>
-              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ Loaded · ${mwWizData.spelling.words.length} words</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ ${mwWizData.spelling.words.length} words loaded!</div>
             </div>
             <button id="mw-change-spelling" style="background:none;border:1.5px solid var(--purple);border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:var(--purple);cursor:pointer;">Change</button>
+          </div>
+          <div style="background:linear-gradient(135deg,#EAF3DE,#D5EDBA);border:2px solid #27AE60;border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+            <div style="font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;color:#1B7A3E;margin-bottom:4px;">✅ Words loaded — what happens next:</div>
+            <ul style="font-size:0.82rem;font-weight:700;color:#27500A;margin:0;padding-left:18px;line-height:1.8;">
+              <li>${nickname} can practice these words anytime</li>
+              <li>On Step 5 you can assign a spelling test</li>
+              <li>Tap <strong>Next →</strong> to continue</li>
+            </ul>
           </div>` : `
+          <div style="background:var(--section);border-radius:12px;padding:12px 14px;margin-bottom:12px;border:1.5px dashed var(--border);">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--muted);line-height:1.8;">
+              <strong style="color:var(--ink);">How it works:</strong><br>
+              1️⃣ Upload a photo or doc of the spelling list — or type words manually<br>
+              2️⃣ Words load automatically<br>
+              3️⃣ Tap <strong>Next →</strong> to continue to vocabulary
+            </div>
+          </div>
           <label for="mw-spelling-file" class="btn-main" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">📸 Upload Spelling List</label>
           <input type="file" id="mw-spelling-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
           <button id="mw-type-spelling" class="btn-main btn-outline" style="margin-bottom:8px;">✏️ Type Words Manually</button>`}
@@ -13105,10 +13122,26 @@ function renderMwWizStep() {
             <span style="font-size:1.5rem;">📚</span>
             <div style="flex:1;">
               <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">${mwWizData.vocab.label}</div>
-              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ Loaded · ${mwWizData.vocab.words.length} words</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ ${mwWizData.vocab.words.length} words loaded!</div>
             </div>
             <button id="mw-change-vocab" style="background:none;border:1.5px solid #00838F;border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:#00838F;cursor:pointer;">Change</button>
+          </div>
+          <div style="background:linear-gradient(135deg,#EAF3DE,#D5EDBA);border:2px solid #27AE60;border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+            <div style="font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;color:#1B7A3E;margin-bottom:4px;">✅ Words loaded — what happens next:</div>
+            <ul style="font-size:0.82rem;font-weight:700;color:#27500A;margin:0;padding-left:18px;line-height:1.8;">
+              <li>${nickname} studies definitions with flashcards</li>
+              <li>On Step 5 you can assign a vocabulary test</li>
+              <li>Tap <strong>Next →</strong> to continue</li>
+            </ul>
           </div>` : `
+          <div style="background:var(--section);border-radius:12px;padding:12px 14px;margin-bottom:12px;border:1.5px dashed var(--border);">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--muted);line-height:1.8;">
+              <strong style="color:var(--ink);">How it works:</strong><br>
+              1️⃣ Upload a photo or doc of the vocab list — or type words manually<br>
+              2️⃣ Words and definitions load automatically<br>
+              3️⃣ Tap <strong>Next →</strong> to continue to tests
+            </div>
+          </div>
           <label for="mw-vocab-file" class="btn-main" style="background:linear-gradient(135deg,#00CEC9,#00838F);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">📸 Upload Vocab List</label>
           <input type="file" id="mw-vocab-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
           <button id="mw-type-vocab" class="btn-main btn-outline" style="margin-bottom:8px;">✏️ Type Words Manually</button>`}
@@ -13193,12 +13226,13 @@ function renderMwWizStep() {
   else if (mwWizStep === 7) {
     const start = mwWizData.startDate ? new Date(mwWizData.startDate + 'T12:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric' }) : '—';
     const end   = mwWizData.endDate   ? new Date(mwWizData.endDate   + 'T12:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric' }) : '—';
-    const parts = [];
-    if (mwWizData.passage) parts.push(`read the "${mwWizData.passage.title || 'passage'}" 3 times${mwWizData.timed ? ' and be timed each read — you\'ll need to sit with them' : ' to build fluency'}`);
-    if (mwWizData.spelling) parts.push(`practice ${mwWizData.spelling.words.length} spelling words${mwWizData.spellingTest ? ` and take a spelling test (up to ${mwWizData.spellingAttempts} attempt${mwWizData.spellingAttempts !== 1 ? 's' : ''} to reach 100%)` : ''}`);
-    if (mwWizData.vocab) parts.push(`study ${mwWizData.vocab.words.length} vocabulary words${mwWizData.vocabTest ? ` and take a vocabulary test (up to ${mwWizData.vocabAttempts} attempt${mwWizData.vocabAttempts !== 1 ? 's' : ''} to reach 100%)` : ''}`);
-    parts.push(`generate up to ${mwWizData.storyBudget} AI ${mwWizData.storyBudget === 1 ? 'story' : 'stories'} per day`);
-    const plainEnglish = `This week ${nickname} will ${parts.join(', ')}. You will automatically receive a full progress report by email at 7PM on ${end} whether or not everything is completed.`;
+    const bullets = [];
+    if (mwWizData.passage) bullets.push(`📖 Read "${mwWizData.passage.title || 'passage'}" 3 times${mwWizData.timed ? ' — timed reads (you must be present)' : ' — build reps, no timer'}`);
+    if (mwWizData.spelling) bullets.push(`🔤 Practice ${mwWizData.spelling.words.length} spelling words${mwWizData.spellingTest ? ` + spelling test (up to ${mwWizData.spellingAttempts} attempt${mwWizData.spellingAttempts !== 1 ? 's' : ''})` : ' — practice only'}`);
+    if (mwWizData.vocab) bullets.push(`📚 Study ${mwWizData.vocab.words.length} vocabulary words${mwWizData.vocabTest ? ` + vocab test (up to ${mwWizData.vocabAttempts} attempt${mwWizData.vocabAttempts !== 1 ? 's' : ''})` : ' — practice only'}`);
+    bullets.push(`✨ Up to ${mwWizData.storyBudget} AI ${mwWizData.storyBudget === 1 ? 'story' : 'stories'} per day — ${nickname} picks the theme`);
+    bullets.push(`📧 Progress report emails automatically at 7PM on ${end}`);
+    const bulletHtml = bullets.map(b => `<li style="padding:3px 0;">${b}</li>`).join('');
     html = `
       <div class="card" style="border:2px solid var(--purple);">
         ${dotsHtml}${stepLabel}
@@ -13211,8 +13245,10 @@ function renderMwWizStep() {
           <div style="display:flex;align-items:center;gap:10px;padding:10px 0;"><span style="font-size:1.2rem;">✨</span><div><div style="font-size:0.88rem;font-weight:700;color:var(--ink);">${mwWizData.storyBudget} AI ${mwWizData.storyBudget === 1 ? 'story' : 'stories'} per day</div><div style="font-size:0.75rem;color:var(--muted);font-weight:700;">${nickname} picks the theme</div></div></div>
         </div>
         <div style="background:var(--purple-soft);border-radius:14px;padding:14px;margin:14px 0;border-left:3px solid var(--purple);">
-          <div style="font-size:0.72rem;font-weight:800;color:var(--purple-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">In plain English</div>
-          <p style="font-size:0.85rem;font-weight:700;color:var(--purple-dark);margin:0;line-height:1.7;">${plainEnglish}</p>
+          <div style="font-size:0.72rem;font-weight:800;color:var(--purple-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📋 Summary</div>
+          <ul style="font-size:0.84rem;font-weight:700;color:var(--purple-dark);margin:0;padding-left:18px;line-height:1;list-style:none;padding-left:0;">
+            ${bulletHtml}
+          </ul>
         </div>
         <button class="btn-main" id="mw-publish" style="font-size:1.1rem;background:linear-gradient(135deg,var(--purple),var(--purple-deep));margin-bottom:10px;">🎯 Publish ${nickname}'s Week!</button>
         <button class="btn-main btn-outline" id="mw-back" style="font-size:0.9rem;">← Go back and make changes</button>
@@ -13471,13 +13507,13 @@ function updateMyWeekHomeCard() {
   const checklistEl = document.getElementById('myweek-home-checklist');
   const items = buildMwChecklistItems(mw);
   checklistEl.innerHTML = items.slice(0, 3).map(item => `
-    <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,${item.done ? '0.15' : '0.2'});border-radius:10px;padding:7px 10px;">
-      <div style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.6);background:${item.done ? 'rgba(255,255,255,0.8)' : 'transparent'};display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">${item.done ? '✓' : ''}</div>
-      <span style="font-size:0.78rem;font-weight:800;color:${item.done ? 'rgba(255,255,255,0.7)' : 'white'};${item.done ? 'text-decoration:line-through;' : ''}flex:1;">${item.label}</span>
-      ${item.wpm ? `<span style="font-size:0.7rem;font-weight:800;color:rgba(255,255,255,0.8);">${item.wpm} WPM</span>` : ''}
+    <div style="display:flex;align-items:center;gap:8px;background:${item.done ? '#EAF3DE' : '#FFF3EE'};border-radius:10px;padding:7px 10px;border:1.5px solid ${item.done ? '#C0DD97' : '#FFD4BA'};">
+      <div style="width:18px;height:18px;border-radius:50%;border:2px solid ${item.done ? '#27AE60' : '#FF9F43'};background:${item.done ? '#27AE60' : 'transparent'};display:flex;align-items:center;justify-content:center;font-size:10px;color:white;flex-shrink:0;">${item.done ? '✓' : ''}</div>
+      <span style="font-size:0.78rem;font-weight:800;color:${item.done ? '#27500A' : 'var(--ink)'};${item.done ? 'text-decoration:line-through;' : ''}flex:1;">${item.label}</span>
+      ${item.wpm ? `<span style="font-size:0.7rem;font-weight:800;color:var(--green);">${item.wpm} WPM</span>` : ''}
     </div>`).join('');
   if (items.length > 3) {
-    checklistEl.innerHTML += `<div style="font-size:0.72rem;font-weight:800;color:rgba(255,255,255,0.75);text-align:center;padding:4px 0;">+${items.length - 3} more tasks →</div>`;
+    checklistEl.innerHTML += `<div style="font-size:0.72rem;font-weight:800;color:#FF6B35;text-align:center;padding:4px 0;">+${items.length - 3} more tasks →</div>`;
   }
 
   // Story budget dots
@@ -13486,7 +13522,7 @@ function updateMyWeekHomeCard() {
   const budget = mw.storyBudget || 3;
   const dotsEl = document.getElementById('myweek-story-dots');
   if (dotsEl) dotsEl.innerHTML = Array.from({length: budget}, (_, i) =>
-    `<div style="width:11px;height:11px;border-radius:50%;background:${i < used ? 'white' : 'rgba(255,255,255,0.3)'}"></div>`).join('');
+    `<div style="width:11px;height:11px;border-radius:50%;background:${i < used ? '#FF6B35' : '#FFD4BA'}"></div>`).join('');
   const textEl = document.getElementById('myweek-story-budget-text');
   if (textEl) textEl.textContent = `${used} of ${budget} used`;
 }
