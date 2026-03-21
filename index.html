@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IA</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IB</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2506,32 +2506,43 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-screen-pick">BACK</button></div>
       <div style="font-size:2.2rem;margin-bottom:4px;">🔤</div>
       <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">Spelling Words</div>
-      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:18px;">Which words do you want to practice?</div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <!-- My Words -->
-        <button class="wiz-grade-btn" id="btn-spell-src-mywords" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);">
-          <span style="font-size:1.6rem;">📋</span>
+      <div id="spelling-source-subtitle" style="color:var(--muted);font-size:0.85rem;margin-bottom:18px;">What do you want to practice today?</div>
+
+      <!-- My Words — prominent card -->
+      <div style="background:var(--section);border:2.5px solid var(--purple);border-radius:18px;padding:14px 16px;margin-bottom:16px;box-shadow:0 4px 16px rgba(255,107,53,0.12);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:38px;height:38px;background:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📝</div>
           <div style="text-align:left;">
-            <div style="font-size:1.2rem;font-weight:900;">My Words</div>
-            <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Upload, type, or view your list</div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);">My Words</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--muted);">Your personal spelling list</div>
           </div>
-        </button>
-        <!-- Dolch Words -->
-        <button class="wiz-grade-btn" id="btn-spell-src-dolch" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">
-          <span style="font-size:1.6rem;">📖</span>
-          <div style="text-align:left;">
-            <div style="font-size:1.2rem;font-weight:900;">Dolch Words</div>
-            <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Classic sight words by grade</div>
-          </div>
-        </button>
-        <!-- Fry Words -->
-        <button class="wiz-grade-btn" id="btn-spell-src-fry" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);">
-          <span style="font-size:1.6rem;">🌟</span>
-          <div style="text-align:left;">
-            <div style="font-size:1.2rem;font-weight:900;">Fry Words</div>
-            <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">1,000 most common words by grade</div>
-          </div>
-        </button>
+        </div>
+        <button id="btn-spell-src-mywords" style="width:100%;background:linear-gradient(135deg,var(--purple),var(--purple-deep));color:white;border:none;border-radius:12px;padding:14px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,53,0.35);-webkit-tap-highlight-color:transparent;">🎯 Let's Practice!</button>
+      </div>
+
+      <!-- Divider -->
+      <div style="border-top:1.5px solid var(--border);padding-top:14px;margin-bottom:10px;">
+        <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Or practice with</div>
+        <div style="display:flex;gap:10px;">
+          <!-- Sight Words (Dolch) tile -->
+          <button id="btn-spell-src-dolch" style="flex:1;background:linear-gradient(135deg,#5CD85A,#27AE60);border:none;border-radius:16px;padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;">
+            <span style="font-size:1.8rem;">👀</span>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:white;line-height:1.2;">Sight Words</div>
+            <div style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.8);">Dolch · by grade</div>
+            <div style="background:rgba(0,0,0,0.18);border-radius:8px;padding:2px 8px;margin-top:2px;">
+              <span style="font-size:0.65rem;font-weight:800;color:rgba(255,255,255,0.9);">220 words</span>
+            </div>
+          </button>
+          <!-- Power Words (Fry) tile -->
+          <button id="btn-spell-src-fry" style="flex:1;background:linear-gradient(135deg,#9B59B6,#8E44AD);border:none;border-radius:16px;padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;">
+            <span style="font-size:1.8rem;">⚡</span>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:white;line-height:1.2;">Power Words</div>
+            <div style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.8);">Fry · by grade</div>
+            <div style="background:rgba(0,0,0,0.18);border-radius:8px;padding:2px 8px;margin-top:2px;">
+              <span style="font-size:0.65rem;font-weight:800;color:rgba(255,255,255,0.9);">1,000 words</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -3397,7 +3408,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IA</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -8891,6 +8902,9 @@ function triggerSpellingUpload() {
 
 // Home → Spelling Words: show the 3-way source picker
 document.getElementById('btn-spelling-start').addEventListener('click', () => {
+  const nickname = currentChildProfile?.nickname || (currentChildProfile?.name || '').split(' ')[0] || '';
+  const sub = document.getElementById('spelling-source-subtitle');
+  if (sub) sub.textContent = nickname ? `What do you want to practice today, ${nickname}? 🎯` : 'What do you want to practice today?';
   show('screen-spelling-source');
 });
 
