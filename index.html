@@ -1835,7 +1835,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HP</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HQ</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3387,7 +3387,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HP</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HQ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4710,13 +4710,13 @@ function showAppModal({ icon = '📖', title = '', message = '', buttons = [] })
       actionsEl.appendChild(btn);
     });
 
-    // Show BACK button — always visible, closes modal and resolves false
+    // Show BACK button — always visible, closes modal and resolves null (dismissed)
     backBtn.textContent = 'BACK';
     backBtn.style.display = 'flex';
     backBtn.onclick = () => {
       overlay.classList.remove('active');
       backBtn.style.display = 'none';
-      resolve(false);
+      resolve(null);
     };
 
     overlay.classList.add('active');
@@ -6514,6 +6514,7 @@ function stopLoadingMessages() {
 }
 
 async function loadStory() {
+  readingLaunchSource = 'home';
   show('screen-loading');
   startLoadingMessages(S.category);
   try {
@@ -8112,10 +8113,14 @@ function renderMyReadings() {
         '⏱ Time My Reading',
         '📖 Just Read'
       ).then(timedChoice => {
-        if (timedChoice) {
+        if (timedChoice === null) {
+          // BACK tapped — stay on My Readings, do nothing
+          return;
+        } else if (timedChoice) {
           // Timed reading flow
           wpmPassage = entry.text;
           wpmStandaloneMode = true;
+          readingLaunchSource = 'my-readings';
           S.grade = entry.grade || S.grade;
           updateWPMInstructionCount();
           show('screen-wpm-instructions');
@@ -8128,6 +8133,7 @@ function renderMyReadings() {
           S.isAIStory = entry.source === 'ai';
           S.isRace = false; S.myRole = null;
           wpmStandaloneMode = false;
+          readingLaunchSource = 'my-readings';
           recordStoryStart();
           renderStory(S.storyTitle, S.story);
           setupReadScreen();
@@ -8250,6 +8256,7 @@ function showWPMResults(wpm, wordCount, elapsedSec) {
 
 // WPM button handlers
 let wpmStandaloneMode = false; // true when launched from home screen
+let readingLaunchSource = 'home'; // 'home' or 'my-readings' — controls where BACK goes
 
 // Home screen → Timed Reading grade picker (Step 1)
 document.getElementById('btn-timed-reading-home').addEventListener('click', () => {
@@ -13193,19 +13200,24 @@ document.getElementById('btn-bar-settings').addEventListener('click', () => {
 });
 
 // ── Delegated handler for all in-screen back buttons ─────
-// All buttons added via data-back-target attribute route through here
 document.addEventListener('click', e => {
   const btn = e.target.closest('[data-back-target]');
   if (!btn) return;
-  const target = btn.dataset.backTarget;
+  let target = btn.dataset.backTarget;
   if (!target) return;
   e.stopPropagation();
 
   // Stop TTS if leaving reading screen
   if (ttsState === 'playing' || ttsState === 'paused') stopTTS();
 
-  // Special cases that need more than just show()
+  // If launched from My Readings, back from read/complete/wpm screens goes back there
+  const readScreens = ['screen-read', 'screen-solo-complete', 'screen-wpm-instructions', 'screen-wpm-results', 'screen-wpm-read', 'screen-wpm-tap'];
   const activeId = document.querySelector('.screen.active')?.id;
+  if (readingLaunchSource === 'my-readings' && readScreens.includes(activeId)) {
+    target = 'screen-my-readings';
+    readingLaunchSource = 'home'; // reset
+  }
+
   if (activeId === 'screen-wpm-results' || activeId === 'screen-solo-complete') {
     cleanupRoom();
   }
