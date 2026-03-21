@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ID</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3452,7 +3452,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ID</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -9012,11 +9012,12 @@ function renderMyWords() {
       </div>
       <button class="mw-spell-practice btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,var(--purple),var(--purple-deep));box-shadow:0 4px 14px rgba(255,107,53,0.3);">🎯 Let's Practice!</button>`;
 
-    // Practice → go straight to spelling screen
+    // Practice → go straight to spelling screen, back returns to My Words
     row.querySelector('.mw-spell-practice').addEventListener('click', () => {
       currentSpellingList = list;
       document.getElementById('spelling-week-label').textContent = label;
       renderSpellingWords(list);
+      SCREEN_BACK_MAP['screen-spelling'] = ['BACK', 'screen-my-words'];
       show('screen-spelling');
     });
 
@@ -9053,11 +9054,12 @@ function renderMyWords() {
       </div>
       <button class="mw-vocab-practice btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,#00CEC9,#00838F);box-shadow:0 4px 14px rgba(0,131,143,0.3);">🎯 Let's Practice!</button>`;
 
-    // Practice → go straight to vocab screen
+    // Practice → go straight to vocab screen, back returns to My Words
     row.querySelector('.mw-vocab-practice').addEventListener('click', () => {
       currentVocabList = list;
       document.getElementById('vocab-week-label').textContent = label;
       renderVocabWords(list);
+      SCREEN_BACK_MAP['screen-vocab'] = ['BACK', 'screen-my-words'];
       show('screen-vocab');
     });
 
@@ -9090,7 +9092,7 @@ function renderMyWords() {
       </div>
       <button id="mw-wordbank-practice" class="btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,#FFD93D,#F9A825);color:#5D4037;box-shadow:0 4px 14px rgba(249,168,37,0.3);">⭐ Review My Words</button>`;
     row.querySelector('#mw-wordbank-practice').addEventListener('click', () => {
-      show('screen-wordbank-review');
+      show('screen-wordbank');
     });
     wbContainer.appendChild(row);
   }
@@ -9205,6 +9207,7 @@ function renderSpellingSavedLists() {
 }
 
 document.getElementById('btn-spell-src-mywords').addEventListener('click', () => {
+  SCREEN_BACK_MAP['screen-spelling'] = ['BACK', 'screen-spelling-source'];
   renderSpellingSavedLists();
   show('screen-spelling-mywords');
 });
@@ -11844,6 +11847,7 @@ function renderVocabSavedLists() {
 
 // ── Home button ──────────────────────────────────────────────
 function showVocabSourceScreen() {
+  SCREEN_BACK_MAP['screen-vocab'] = ['BACK', 'screen-vocab-source'];
   renderVocabSavedLists();
   show('screen-vocab-source');
 }
