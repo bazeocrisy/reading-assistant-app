@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IB</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IC</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -1929,6 +1929,15 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:var(--ink);">✏️ Practice Words</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px;">
+      <!-- My Words — quick access to saved content, prominent at top -->
+      <button id="btn-my-words-sheet" class="kid-action-btn" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);box-shadow:0 8px 24px rgba(255,107,53,0.35);border:none;">
+        <span style="font-size:2.4rem;">⭐</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:white;">My Words</div>
+          <div style="font-size:0.88rem;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;">Your saved spelling &amp; vocab lists</div>
+          <span class="home-wordbank-badge" id="home-mywords-badge" style="background:rgba(255,255,255,0.25);color:#fff;margin-top:4px;"></span>
+        </div>
+      </button>
       <button id="btn-spelling-start" class="kid-action-btn" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 8px 24px rgba(238,90,36,0.35);">
         <span style="font-size:2.4rem;">🔤</span>
         <div style="text-align:left;">
@@ -1952,6 +1961,41 @@ body.bedtime .read-side-btn { opacity: 0.8; }
           <span class="home-wordbank-badge" id="home-wordbank-badge" style="margin-top:4px;"></span>
         </div>
       </button>
+    </div>
+  </div>
+
+  <!-- SCREEN: My Words — quick access to all saved word content -->
+  <div class="screen" id="screen-my-words">
+    <div class="card" style="text-align:center;">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-mywords-home">BACK</button></div>
+      <div style="font-size:2.2rem;margin-bottom:4px;">⭐</div>
+      <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">My Words</div>
+      <div id="my-words-subtitle" style="color:var(--muted);font-size:0.85rem;margin-bottom:18px;">Your saved lists, ready to practice!</div>
+
+      <!-- Section: Spelling Lists -->
+      <div id="mw-spelling-section" style="margin-bottom:18px;text-align:left;">
+        <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📝 Spelling Lists</div>
+        <div id="mw-spelling-lists" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- Section: Vocab Lists -->
+      <div id="mw-vocab-section" style="margin-bottom:18px;text-align:left;">
+        <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📚 Vocabulary Lists</div>
+        <div id="mw-vocab-lists" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- Section: Word Bank -->
+      <div id="mw-wordbank-section" style="margin-bottom:8px;text-align:left;">
+        <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">⭐ Word Bank</div>
+        <div id="mw-wordbank-entry" style=""></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="mw-empty" style="display:none;padding:30px 0;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:8px;">📭</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:6px;">No saved words yet!</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--muted);">Practice Spelling or Vocabulary Words to build your collection.</div>
+      </div>
     </div>
   </div>
 
@@ -3408,7 +3452,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IB</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IC</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4360,6 +4404,12 @@ document.getElementById('btn-cat-words').addEventListener('click', () => show('s
 
 document.getElementById('btn-cat-reading-back').addEventListener('click', () => show('screen-pick'));
 document.getElementById('btn-cat-words-back').addEventListener('click', () => show('screen-pick'));
+
+// My Words — quick access screen (from Practice Words sheet)
+document.getElementById('btn-my-words-sheet').addEventListener('click', () => {
+  renderMyWords();
+  show('screen-my-words');
+});
 
 // Close category screens when any inner feature button is tapped
 ['btn-timed-reading-home','btn-scan-page'].forEach(id => {
@@ -5686,6 +5736,14 @@ function updateHomeStats() {
       } else {
         wbBadge.style.display = 'none';
       }
+    }
+    // Update My Words badge
+    const myWordsBadge = document.getElementById('home-mywords-badge');
+    if (myWordsBadge) {
+      const d2 = getData();
+      const total = (d2.spellingLists || []).length + (d2.vocabLists || []).length + ((d2.wordBank || []).length > 0 ? 1 : 0);
+      myWordsBadge.textContent = total > 0 ? `${total} list${total !== 1 ? 's' : ''}` : '';
+      myWordsBadge.style.display = total > 0 ? 'inline-block' : 'none';
     }
   } catch(e) {}
   updateMyReadingsBadge();
@@ -8292,7 +8350,8 @@ function renderMyReadings() {
 }
 
 document.getElementById('btn-my-words-home').addEventListener('click', () => {
-  show('sheet-word-work');
+  renderMyWords();
+  show('screen-my-words');
 });
 
 document.getElementById('btn-my-readings-home').addEventListener('click', () => {
@@ -8909,6 +8968,134 @@ document.getElementById('btn-spelling-start').addEventListener('click', () => {
 });
 
 // Source screen: My Words → show mywords sub-screen
+// ── My Words Screen — quick access to all saved word content ──
+function renderMyWords() {
+  const d = getData();
+  const spellingLists = d.spellingLists || [];
+  const vocabLists = d.vocabLists || [];
+  const wordBank = d.wordBank || [];
+
+  const nickname = currentChildProfile?.nickname || (currentChildProfile?.name || '').split(' ')[0] || '';
+  const sub = document.getElementById('my-words-subtitle');
+  if (sub) sub.textContent = nickname ? `Your saved lists, ready to practice, ${nickname}!` : 'Your saved lists, ready to practice!';
+
+  const hasContent = spellingLists.length > 0 || vocabLists.length > 0 || wordBank.length > 0;
+  document.getElementById('mw-empty').style.display = hasContent ? 'none' : 'block';
+  document.getElementById('mw-spelling-section').style.display = spellingLists.length > 0 ? 'block' : 'none';
+  document.getElementById('mw-vocab-section').style.display = vocabLists.length > 0 ? 'block' : 'none';
+  document.getElementById('mw-wordbank-section').style.display = wordBank.length > 0 ? 'block' : 'none';
+
+  // Update badge on Practice Words screen
+  const myWordsBadge = document.getElementById('home-mywords-badge');
+  const total = spellingLists.length + vocabLists.length + (wordBank.length > 0 ? 1 : 0);
+  if (myWordsBadge) {
+    myWordsBadge.textContent = total > 0 ? `${total} list${total !== 1 ? 's' : ''}` : '';
+  }
+
+  // ── Spelling Lists ──────────────────────────────────────
+  const spellContainer = document.getElementById('mw-spelling-lists');
+  spellContainer.innerHTML = '';
+  [...spellingLists].reverse().forEach((list) => {
+    const label = list.label || 'Spelling List';
+    const wordCount = list.words ? list.words.length : 0;
+    const date = list.date ? new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const row = document.createElement('div');
+    row.style.cssText = 'background:var(--section);border:2.5px solid var(--purple);border-radius:18px;padding:14px 16px;box-shadow:0 4px 16px rgba(255,107,53,0.10);';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;background:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">📝</div>
+        <div style="flex:1;min-width:0;">
+          <div class="mw-spell-label" style="font-family:'Fredoka',sans-serif;font-size:1.05rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+        </div>
+        <button class="mw-spell-rename" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--muted);" title="Rename">✏️</button>
+      </div>
+      <button class="mw-spell-practice btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,var(--purple),var(--purple-deep));box-shadow:0 4px 14px rgba(255,107,53,0.3);">🎯 Let's Practice!</button>`;
+
+    // Practice → go straight to spelling screen
+    row.querySelector('.mw-spell-practice').addEventListener('click', () => {
+      currentSpellingList = list;
+      document.getElementById('spelling-week-label').textContent = label;
+      renderSpellingWords(list);
+      show('screen-spelling');
+    });
+
+    // Rename
+    row.querySelector('.mw-spell-rename').addEventListener('click', () => {
+      const newLabel = prompt('Rename this list:', label);
+      if (!newLabel || !newLabel.trim()) return;
+      const d2 = getData();
+      const found = d2.spellingLists.find(l => l.id === list.id);
+      if (found) { found.label = newLabel.trim(); saveData(d2); }
+      renderMyWords();
+    });
+
+    spellContainer.appendChild(row);
+  });
+
+  // ── Vocab Lists ─────────────────────────────────────────
+  const vocabContainer = document.getElementById('mw-vocab-lists');
+  vocabContainer.innerHTML = '';
+  [...vocabLists].reverse().forEach((list) => {
+    const label = list.label || 'Vocab List';
+    const wordCount = list.words ? list.words.length : 0;
+    const date = list.date ? new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const row = document.createElement('div');
+    row.style.cssText = 'background:var(--section);border:2.5px solid #00838F;border-radius:18px;padding:14px 16px;box-shadow:0 4px 16px rgba(0,131,143,0.10);';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;background:#00838F;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">📚</div>
+        <div style="flex:1;min-width:0;">
+          <div class="mw-vocab-label" style="font-family:'Fredoka',sans-serif;font-size:1.05rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+        </div>
+        <button class="mw-vocab-rename" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--muted);" title="Rename">✏️</button>
+      </div>
+      <button class="mw-vocab-practice btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,#00CEC9,#00838F);box-shadow:0 4px 14px rgba(0,131,143,0.3);">🎯 Let's Practice!</button>`;
+
+    // Practice → go straight to vocab screen
+    row.querySelector('.mw-vocab-practice').addEventListener('click', () => {
+      currentVocabList = list;
+      document.getElementById('vocab-week-label').textContent = label;
+      renderVocabWords(list);
+      show('screen-vocab');
+    });
+
+    // Rename
+    row.querySelector('.mw-vocab-rename').addEventListener('click', () => {
+      const newLabel = prompt('Rename this list:', label);
+      if (!newLabel || !newLabel.trim()) return;
+      const d2 = getData();
+      const found = d2.vocabLists.find(l => l.id === list.id);
+      if (found) { found.label = newLabel.trim(); saveData(d2); }
+      renderMyWords();
+    });
+
+    vocabContainer.appendChild(row);
+  });
+
+  // ── Word Bank ────────────────────────────────────────────
+  const wbContainer = document.getElementById('mw-wordbank-entry');
+  wbContainer.innerHTML = '';
+  if (wordBank.length > 0) {
+    const row = document.createElement('div');
+    row.style.cssText = 'background:var(--section);border:2.5px solid #F9A825;border-radius:18px;padding:14px 16px;box-shadow:0 4px 16px rgba(249,168,37,0.10);';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;background:#F9A825;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">⭐</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.05rem;font-weight:700;color:var(--ink);">My Word Bank</div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);">${wordBank.length} word${wordBank.length !== 1 ? 's' : ''} saved from reading</div>
+        </div>
+      </div>
+      <button id="mw-wordbank-practice" class="btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,#FFD93D,#F9A825);color:#5D4037;box-shadow:0 4px 14px rgba(249,168,37,0.3);">⭐ Review My Words</button>`;
+    row.querySelector('#mw-wordbank-practice').addEventListener('click', () => {
+      show('screen-wordbank-review');
+    });
+    wbContainer.appendChild(row);
+  }
+}
+
 function renderSpellingSavedLists() {
   const d = getData();
   const lists = d.spellingLists || [];
@@ -13294,6 +13481,7 @@ const SCREEN_BACK_MAP = {
   'screen-read': ['BACK', 'screen-pick'],
   'screen-solo-complete': ['BACK', 'screen-pick'],
   'screen-spelling-source': ['BACK', 'screen-pick'],
+  'screen-my-words': ['BACK', 'screen-pick'],
   'screen-spelling-mywords': ['BACK', 'screen-spelling-source'],
   'screen-spell-grade-pick': ['BACK', 'screen-spelling-source'],
   'screen-spell-group-pick': ['BACK', 'screen-spell-grade-pick'],
