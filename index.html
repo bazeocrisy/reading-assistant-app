@@ -1820,7 +1820,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HN</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2072,6 +2072,9 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <div id="screen-together-choice" style="display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
   <div style="width:100%;max-width:420px;padding:16px;">
     <div class="card" style="text-align:center;padding:24px 20px;">
+      <div style="text-align:left;margin-bottom:12px;">
+        <button class="btn-back-nav" id="btn-together-choice-close">BACK</button>
+      </div>
       <!-- Bookie with a friend -->
       <div style="font-size:3rem;margin-bottom:4px;">🦉🤝🧒</div>
       <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Read Together!</div>
@@ -2183,8 +2186,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Together Step 1 — Your Room (room code + partner status) -->
   <div class="screen" id="screen-together-room">
     <div class="card" style="text-align:center;">
-      <div style="text-align:left;margin-bottom:4px;">      <button class="btn-back-nav" id="btn-together-cancel" style="margin-top:16px;">BACK</button></div>
-    <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-screen-together-room">CANCEL</button></div>
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" id="btn-together-cancel">CANCEL</button></div>
       <div style="font-size:2.5rem;margin-bottom:4px;">🏠</div>
       <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Your Reading Room!</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.92rem;margin-bottom:10px;">Tell your reading partner this code:</p>
@@ -2306,6 +2308,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Together Step 3d — Spelling Words -->
   <div class="screen" id="screen-together-spelling">
     <div class="card" style="text-align:center;">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-together-pick" id="btn-inscreen-back-screen-together-spelling">BACK</button></div>
       <div style="font-size:2.5rem;margin-bottom:4px;">🔤</div>
       <div class="card-title" style="font-size:1.4rem;margin-bottom:4px;">Spelling Words</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:14px;">Take a photo or type your words!</p>
@@ -2743,6 +2746,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Write a Sentence -->
   <div class="screen" id="screen-spell-sentence">
     <div class="card">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-spelling" id="btn-inscreen-back-screen-spell-sentence">QUIT</button></div>
       <!-- Progress bar -->
       <div class="spell-practice-progress">
         <div class="spell-practice-label" id="sentence-progress-label">1 / 5</div>
@@ -2800,6 +2804,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Quiz Countdown -->
   <div class="screen" id="screen-quiz-countdown">
     <div class="card" style="text-align:center;padding:40px 20px;">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-spelling" id="btn-inscreen-back-screen-quiz-countdown">QUIT</button></div>
       <div class="card-title">📝 Spelling Quiz</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.95rem;margin-bottom:24px;">Get ready to spell!</p>
       <div class="quiz-countdown" id="quiz-countdown-num">3</div>
@@ -2809,6 +2814,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Quiz (Full Spelling Test) -->
   <div class="screen" id="screen-quiz">
     <div class="card">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-spelling" id="btn-inscreen-back-screen-quiz">QUIT</button></div>
       <div class="card-title">📝 Spelling Quiz</div>
       <div class="spell-practice-progress">
         <div class="spell-practice-label" id="quiz-progress-label">1 / 5</div>
@@ -2877,6 +2883,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Word Search Game -->
   <div class="screen" id="screen-wordsearch">
     <div class="card" style="text-align:center;padding:16px 12px;">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-spelling" id="btn-inscreen-back-screen-wordsearch">QUIT</button></div>
       <div class="card-title" style="font-size:1.2rem;margin-bottom:6px;">🔍 Word Search</div>
       <p style="color:var(--muted);font-weight:700;font-size:0.82rem;margin-bottom:10px;">Find all the hidden words!</p>
       <div id="ws-found-count" style="font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.9rem;color:var(--green);margin-bottom:8px;">0 / 5 found</div>
@@ -2894,6 +2901,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Word Scramble Game -->
   <div class="screen" id="screen-scramble">
     <div class="card" style="text-align:center;padding:20px 16px;">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-spelling" id="btn-inscreen-back-screen-scramble">QUIT</button></div>
       <div class="card-title" style="font-size:1.2rem;margin-bottom:4px;">🔀 Word Scramble</div>
       <div id="scramble-progress" style="font-weight:800;font-size:0.82rem;color:var(--muted);margin-bottom:10px;">Word 1 of 5</div>
       <div class="spell-practice-progress" style="margin-bottom:12px;">
@@ -3066,6 +3074,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Vocab Practice (multiple choice: see definition, pick word) -->
   <div class="screen" id="screen-vocab-practice">
     <div class="card">
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-vocab" id="btn-inscreen-back-screen-vocab-practice">QUIT</button></div>
       <div class="card-title" id="vocab-practice-title" style="text-align:center;">🎯 Vocabulary Practice</div>
       <div class="spell-practice-progress">
         <div class="spell-practice-label" id="vocab-practice-num">1 / 5</div>
@@ -3363,7 +3372,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HN</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5755,6 +5764,9 @@ document.getElementById('btn-join-room-choice').addEventListener('click', () => 
   show('screen-join');
 });
 document.getElementById('btn-together-cancel').addEventListener('click', () => {
+  document.getElementById('screen-together-choice').style.display = 'none';
+});
+document.getElementById('btn-together-choice-close').addEventListener('click', () => {
   document.getElementById('screen-together-choice').style.display = 'none';
 });
 
