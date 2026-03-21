@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD II</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IJ</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3497,7 +3497,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD II</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IJ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12952,18 +12952,23 @@ function renderMwWizStep() {
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Choose the dates ${nickname} will work on this material. The week can be 1 to 7 days. A progress report will automatically email you at 7PM on the last day.</p>
         <div style="display:flex;gap:10px;margin-bottom:16px;">
           <div style="flex:1;">
-            <div style="font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">START DATE</div>
-            <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;color:var(--ink);box-sizing:border-box;">
+            <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 Start Date</div>
+            <label style="display:block;position:relative;cursor:pointer;">
+              <div style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);pointer-events:none;" id="mw-start-display">${mwWizData.startDate || today}</div>
+              <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;" onchange="document.getElementById('mw-start-display').textContent=this.value">
+            </label>
           </div>
           <div style="flex:1;">
-            <div style="font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">END DATE</div>
-            <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;color:var(--ink);box-sizing:border-box;">
+            <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 End Date</div>
+            <label style="display:block;position:relative;cursor:pointer;">
+              <div style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);pointer-events:none;" id="mw-end-display">${mwWizData.endDate || today}</div>
+              <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;" onchange="document.getElementById('mw-end-display').textContent=this.value">
+            </label>
           </div>
         </div>
+        <div style="background:var(--purple-soft);border-radius:10px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);margin-bottom:12px;">📧 Report emails automatically at 7PM on the end date — whether or not everything is completed.</div>
         <div id="mw-date-error" style="color:var(--coral);font-size:0.82rem;font-weight:800;min-height:1.2em;margin-bottom:8px;"></div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn-main" id="mw-next" style="flex:2;background:linear-gradient(135deg,var(--purple),var(--purple-deep));">Next →</button>
-        </div>
+        <button class="btn-main" id="mw-next" style="background:linear-gradient(135deg,var(--purple),var(--purple-deep));">Next → Step 2 of 7</button>
       </div>`;
   }
 
@@ -12971,48 +12976,69 @@ function renderMwWizStep() {
     const hasPassage = !!mwWizData.passage;
     html = `
       <div class="card">
-        ${dotsHtml}${stepLabel}
+        ${dotsHtml}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div style="width:48px;height:48px;background:linear-gradient(135deg,#54A0FF,#2E86DE);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-size:0.72rem;font-weight:800;color:#2E86DE;text-transform:uppercase;letter-spacing:1.5px;">Step 2 of 7</div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);">Reading Passage</div>
+          </div>
+        </div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload the passage ${nickname} will practice this week. ${nickname} will read it multiple times to build fluency — the more reps the better. You choose whether to time the reads.</p>
         ${hasPassage ? `
-          <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+          <div style="background:linear-gradient(135deg,#EBF5FF,#DDEEFF);border:2px solid #54A0FF;border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
             <span style="font-size:1.5rem;">📖</span>
             <div style="flex:1;">
               <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">${mwWizData.passage.title}</div>
-              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">Uploaded · ${mwWizData.passage.text.split(/\s+/).length} words</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ Uploaded · ${mwWizData.passage.text.split(/\s+/).length} words</div>
             </div>
-            <button id="mw-change-passage" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;">Change</button>
+            <button id="mw-change-passage" style="background:none;border:1.5px solid #54A0FF;border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:#2E86DE;cursor:pointer;">Change</button>
           </div>` : `
-          <button id="mw-upload-passage" class="btn-main" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);margin-bottom:8px;">📖 Upload Passage</button>
+          <label for="mw-passage-file" id="mw-upload-passage" class="btn-main" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">📖 Upload Passage</label>
           <input type="file" id="mw-passage-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">`}
-        <div style="font-size:0.82rem;font-weight:800;color:var(--ink);margin:14px 0 8px;">Do you want to time ${nickname} after 3 reads?</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);margin:14px 0 8px;">Do you want to time ${nickname} after 3 reads?</div>
         <div style="display:flex;gap:10px;margin-bottom:8px;">
-          <button id="mw-timed-yes" class="btn-main" style="flex:1;${mwWizData.timed === true ? 'background:linear-gradient(135deg,#27AE60,#1B7A3E);' : 'background:var(--section);color:var(--ink);border:2px solid var(--border);box-shadow:none;'}font-size:0.9rem;">⏱️ Yes — time it</button>
-          <button id="mw-timed-no" class="btn-main" style="flex:1;${mwWizData.timed === false ? 'background:linear-gradient(135deg,var(--purple),var(--purple-deep));' : 'background:var(--section);color:var(--ink);border:2px solid var(--border);box-shadow:none;'}font-size:0.9rem;">📚 No — build reps</button>
+          <button id="mw-timed-yes" style="flex:1;padding:14px 8px;border-radius:14px;border:2.5px solid ${mwWizData.timed === true ? '#27AE60' : 'var(--border)'};background:${mwWizData.timed === true ? 'linear-gradient(135deg,#27AE60,#1B7A3E)' : 'var(--section)'};color:${mwWizData.timed === true ? 'white' : 'var(--muted)'};font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;">
+            <div style="font-size:1.4rem;margin-bottom:4px;">⏱️</div>Yes — time it
+          </button>
+          <button id="mw-timed-no" style="flex:1;padding:14px 8px;border-radius:14px;border:2.5px solid ${mwWizData.timed === false ? 'var(--purple)' : 'var(--border)'};background:${mwWizData.timed === false ? 'linear-gradient(135deg,var(--purple),var(--purple-deep))' : 'var(--section)'};color:${mwWizData.timed === false ? 'white' : 'var(--muted)'};font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;">
+            <div style="font-size:1.4rem;margin-bottom:4px;">📚</div>Build reps
+          </button>
         </div>
-        ${mwWizData.timed === true ? `<div style="background:var(--purple-soft);border-radius:12px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);line-height:1.5;margin-bottom:8px;">You must sit with ${nickname} during timed reads. When the timer ends, tap the last word ${nickname} read — the app calculates WPM automatically.</div>` : ''}
+        ${mwWizData.timed === true ? `<div style="background:var(--purple-soft);border-radius:12px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);line-height:1.5;margin-bottom:8px;">⚠️ You must sit with ${nickname} during timed reads. When the timer ends, tap the last word ${nickname} read — the app calculates WPM automatically.</div>` : ''}
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button class="btn-main btn-outline" id="mw-back" style="flex:1;">← Back</button>
           <button class="btn-main" id="mw-skip" style="flex:1;background:var(--section);color:var(--muted);box-shadow:none;border:2px solid var(--border);">Not This Week</button>
           <button class="btn-main" id="mw-next" style="flex:2;background:linear-gradient(135deg,var(--purple),var(--purple-deep));">Next →</button>
         </div>
       </div>`;
+  }
+
+  else if (mwWizStep === 3) {
     const hasSpelling = !!mwWizData.spelling;
     html = `
       <div class="card">
-        ${dotsHtml}${stepLabel}
+        ${dotsHtml}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div style="width:48px;height:48px;background:linear-gradient(135deg,#FF6B6B,#EE5A24);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">🔤</div>
+          <div>
+            <div style="font-size:0.72rem;font-weight:800;color:#EE5A24;text-transform:uppercase;letter-spacing:1.5px;">Step 3 of 7</div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);">Spelling Words</div>
+          </div>
+        </div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload or type ${nickname}'s spelling words for the week. ${nickname} can practice them anytime and you can assign a test at the end of the week.</p>
         ${hasSpelling ? `
-          <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+          <div style="background:linear-gradient(135deg,#FFF3E8,#FFE8D5);border:2px solid var(--purple);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
             <span style="font-size:1.5rem;">🔤</span>
             <div style="flex:1;">
               <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">${mwWizData.spelling.label}</div>
-              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">Loaded · ${mwWizData.spelling.words.length} words</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ Loaded · ${mwWizData.spelling.words.length} words</div>
             </div>
-            <button id="mw-change-spelling" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;">Change</button>
+            <button id="mw-change-spelling" style="background:none;border:1.5px solid var(--purple);border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:var(--purple);cursor:pointer;">Change</button>
           </div>` : `
-          <button id="mw-upload-spelling" class="btn-main" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);margin-bottom:8px;">📸 Upload Spelling List</button>
-          <button id="mw-type-spelling" class="btn-main btn-outline" style="margin-bottom:8px;">✏️ Type Words Manually</button>
-          <input type="file" id="mw-spelling-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">`}
+          <label for="mw-spelling-file" class="btn-main" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">📸 Upload Spelling List</label>
+          <input type="file" id="mw-spelling-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
+          <button id="mw-type-spelling" class="btn-main btn-outline" style="margin-bottom:8px;">✏️ Type Words Manually</button>`}
         <div id="mw-type-spelling-area" style="display:none;margin-bottom:10px;">
           <textarea id="mw-spelling-textarea" rows="5" placeholder="pear, warm, heart, January, doctor..." style="width:100%;border:2px solid var(--border);border-radius:12px;padding:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;"></textarea>
           <button id="mw-spelling-textarea-load" class="btn-main btn-green" style="margin-top:8px;">✅ Load These Words</button>
@@ -13032,17 +13058,17 @@ function renderMwWizStep() {
         ${dotsHtml}${stepLabel}
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload or type ${nickname}'s vocabulary words. ${nickname} will study the definitions, practice with flashcards, and you can assign a test at the end of the week.</p>
         ${hasVocab ? `
-          <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+          <div style="background:linear-gradient(135deg,#E1F5EE,#C8EDE0);border:2px solid #00838F;border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
             <span style="font-size:1.5rem;">📚</span>
             <div style="flex:1;">
               <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">${mwWizData.vocab.label}</div>
-              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">Loaded · ${mwWizData.vocab.words.length} words</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--green);">✅ Loaded · ${mwWizData.vocab.words.length} words</div>
             </div>
-            <button id="mw-change-vocab" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;">Change</button>
+            <button id="mw-change-vocab" style="background:none;border:1.5px solid #00838F;border-radius:8px;padding:5px 10px;font-size:0.78rem;font-weight:800;color:#00838F;cursor:pointer;">Change</button>
           </div>` : `
-          <button id="mw-upload-vocab" class="btn-main" style="background:linear-gradient(135deg,#00CEC9,#00838F);margin-bottom:8px;">📸 Upload Vocab List</button>
-          <button id="mw-type-vocab" class="btn-main btn-outline" style="margin-bottom:8px;">✏️ Type Words Manually</button>
-          <input type="file" id="mw-vocab-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">`}
+          <label for="mw-vocab-file" class="btn-main" style="background:linear-gradient(135deg,#00CEC9,#00838F);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">📸 Upload Vocab List</label>
+          <input type="file" id="mw-vocab-file" accept="image/*,.heic,.heif,.pdf,.doc,.docx,.txt" style="display:none;">
+          <button id="mw-type-vocab" class="btn-main btn-outline" style="margin-bottom:8px;">✏️ Type Words Manually</button>`}
         <div id="mw-type-vocab-area" style="display:none;margin-bottom:10px;">
           <textarea id="mw-vocab-textarea" rows="5" placeholder="ancient: very old&#10;parachute: a large cloth device&#10;research: careful study..." style="width:100%;border:2px solid var(--border);border-radius:12px;padding:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);resize:vertical;background:var(--section);box-sizing:border-box;"></textarea>
           <button id="mw-vocab-textarea-load" class="btn-main btn-green" style="margin-top:8px;">✅ Load These Words</button>
@@ -13177,10 +13203,8 @@ function bindMwWizEvents() {
   });
 
   // Step 2 — passage upload + timed toggle
-  const uploadPassage = document.getElementById('mw-upload-passage');
   const changePassage = document.getElementById('mw-change-passage');
   const passageFile   = document.getElementById('mw-passage-file');
-  if (uploadPassage) uploadPassage.addEventListener('click', () => passageFile?.click());
   if (changePassage)  changePassage.addEventListener('click', () => { mwWizData.passage = null; renderMwWizStep(); });
   if (passageFile) passageFile.addEventListener('change', async (e) => {
     const file = e.target.files[0]; if (!file) return; e.target.value = '';
@@ -13222,13 +13246,11 @@ function bindMwWizEvents() {
   if (timedNo)  timedNo.addEventListener('click',  () => { mwWizData.timed = false; renderMwWizStep(); });
 
   // Step 3 — spelling upload/type
-  const uploadSpell = document.getElementById('mw-upload-spelling');
-  const typeSpell   = document.getElementById('mw-type-spelling');
   const spellFile   = document.getElementById('mw-spelling-file');
   const changeSpell = document.getElementById('mw-change-spelling');
+  const typeSpell   = document.getElementById('mw-type-spelling');
   const spellArea   = document.getElementById('mw-type-spelling-area');
   const spellLoad   = document.getElementById('mw-spelling-textarea-load');
-  if (uploadSpell) uploadSpell.addEventListener('click', () => spellFile?.click());
   if (changeSpell) changeSpell.addEventListener('click', () => { mwWizData.spelling = null; renderMwWizStep(); });
   if (typeSpell && spellArea) typeSpell.addEventListener('click', () => { spellArea.style.display = spellArea.style.display === 'none' ? 'block' : 'none'; });
   if (spellLoad) spellLoad.addEventListener('click', () => {
@@ -13258,13 +13280,11 @@ function bindMwWizEvents() {
   });
 
   // Step 4 — vocab upload/type
-  const uploadVocab = document.getElementById('mw-upload-vocab');
-  const typeVocab   = document.getElementById('mw-type-vocab');
   const vocabFile   = document.getElementById('mw-vocab-file');
   const changeVocab = document.getElementById('mw-change-vocab');
+  const typeVocab   = document.getElementById('mw-type-vocab');
   const vocabArea   = document.getElementById('mw-type-vocab-area');
   const vocabLoad   = document.getElementById('mw-vocab-textarea-load');
-  if (uploadVocab) uploadVocab.addEventListener('click', () => vocabFile?.click());
   if (changeVocab) changeVocab.addEventListener('click', () => { mwWizData.vocab = null; renderMwWizStep(); });
   if (typeVocab && vocabArea) typeVocab.addEventListener('click', () => { vocabArea.style.display = vocabArea.style.display === 'none' ? 'block' : 'none'; });
   if (vocabLoad) vocabLoad.addEventListener('click', () => {
