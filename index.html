@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IP</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3504,7 +3504,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IP</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -13275,10 +13275,26 @@ function bindMwWizEvents() {
       let passageText = '';
       let passageTitle = file.name.replace(/\.[^.]+$/, '');
       if (isImage) {
-        const response = await fetch(CF_OCR, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64: fileBase64, mediaType }) });
-        if (!response.ok) throw new Error('OCR failed');
-        const data = await response.json();
-        passageText = data.text || '';
+        // Try CF_OCR first, fall back to CF_SPELLING if it fails (extractText has known 500 issues)
+        let ocrSuccess = false;
+        try {
+          const response = await fetch(CF_OCR, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64: fileBase64, mediaType }) });
+          if (response.ok) {
+            const data = await response.json();
+            passageText = data.text || '';
+            if (passageText.trim().length >= 10) ocrSuccess = true;
+          }
+        } catch(ocrErr) { console.warn('CF_OCR failed, trying fallback:', ocrErr); }
+
+        if (!ocrSuccess) {
+          // Fallback: use extractSpellingWords which is reliable for HEIC, join words as passage
+          const r2 = await fetch(CF_SPELLING, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64: fileBase64, mediaType, grade: S.grade||'2' }) });
+          if (!r2.ok) throw new Error(`Could not read image (${r2.status}). Try a PDF or Word doc instead.`);
+          const d2 = await r2.json();
+          if (!d2.words || d2.words.length === 0) throw new Error('No text found in image');
+          passageText = d2.words.map(w => w.word || w).join(' ');
+        }
+        if (!passageText || passageText.trim().length < 10) throw new Error('No text extracted from image');
       } else {
         const response = await fetch(CF_DOC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileBase64, mediaType, mode:'spelling', grade: S.grade||'2' }) });
         if (!response.ok) throw new Error('Extract failed');
@@ -13295,7 +13311,8 @@ function bindMwWizEvents() {
       renderMwWizStep();
     } catch(err) {
       hideMwSpinner(spinner);
-      showAppAlert('😕', 'Could not read passage', 'Try a clearer photo. For best results use a photo of the passage.');
+      console.error('Passage upload error:', err);
+      showAppAlert('😕', 'Could not read passage', err.message || 'Try a clearer photo or a PDF/Word doc instead.');
     }
   });
   const timedYes = document.getElementById('mw-timed-yes');
