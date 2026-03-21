@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IJ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IL</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3497,7 +3497,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IJ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IL</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12953,17 +12953,17 @@ function renderMwWizStep() {
         <div style="display:flex;gap:10px;margin-bottom:16px;">
           <div style="flex:1;">
             <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 Start Date</div>
-            <label style="display:block;position:relative;cursor:pointer;">
-              <div style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);pointer-events:none;" id="mw-start-display">${mwWizData.startDate || today}</div>
-              <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;" onchange="document.getElementById('mw-start-display').textContent=this.value">
-            </label>
+            <div style="position:relative;">
+              <div onclick="document.getElementById('mw-start-date').showPicker?document.getElementById('mw-start-date').showPicker():document.getElementById('mw-start-date').click()" style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);cursor:pointer;" id="mw-start-display">${mwWizData.startDate || today}</div>
+              <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;" oninput="document.getElementById('mw-start-display').textContent=this.value">
+            </div>
           </div>
           <div style="flex:1;">
             <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 End Date</div>
-            <label style="display:block;position:relative;cursor:pointer;">
-              <div style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);pointer-events:none;" id="mw-end-display">${mwWizData.endDate || today}</div>
-              <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;" onchange="document.getElementById('mw-end-display').textContent=this.value">
-            </label>
+            <div style="position:relative;">
+              <div onclick="document.getElementById('mw-end-date').showPicker?document.getElementById('mw-end-date').showPicker():document.getElementById('mw-end-date').click()" style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);cursor:pointer;" id="mw-end-display">${mwWizData.endDate || today}</div>
+              <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;" oninput="document.getElementById('mw-end-display').textContent=this.value">
+            </div>
           </div>
         </div>
         <div style="background:var(--purple-soft);border-radius:10px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);margin-bottom:12px;">📧 Report emails automatically at 7PM on the end date — whether or not everything is completed.</div>
@@ -13180,6 +13180,20 @@ function renderMwWizStep() {
   bindMwWizEvents();
 }
 
+function showMwSpinner(msg) {
+  const el = document.createElement('div');
+  el.className = 'mw-spinner-overlay';
+  el.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
+  el.innerHTML = `<div style="background:var(--card);border-radius:20px;padding:28px 32px;text-align:center;max-width:280px;">
+    <div class="spin-circle" style="margin:0 auto 16px;width:44px;height:44px;border-width:5px;border-color:var(--purple-light);border-top-color:var(--purple);"></div>
+    <div style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);">${msg}</div>
+    <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-top:6px;">This takes just a moment ✨</div>
+  </div>`;
+  document.body.appendChild(el);
+  return el;
+}
+function hideMwSpinner(el) { if (el && el.parentNode) el.parentNode.removeChild(el); }
+
 function bindMwWizEvents() {
   const next = document.getElementById('mw-next');
   const back = document.getElementById('mw-back');
@@ -13208,23 +13222,20 @@ function bindMwWizEvents() {
   if (changePassage)  changePassage.addEventListener('click', () => { mwWizData.passage = null; renderMwWizStep(); });
   if (passageFile) passageFile.addEventListener('change', async (e) => {
     const file = e.target.files[0]; if (!file) return; e.target.value = '';
-    showAppAlert('⏳', 'Reading passage...', 'This takes just a moment.');
+    const spinner = showMwSpinner('Reading passage...');
     try {
       const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
       let passageText = '';
       let passageTitle = file.name.replace(/\.[^.]+$/, '');
       if (isImage) {
-        // Image — use OCR extractText
         const response = await fetch(CF_OCR, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64: fileBase64, mediaType }) });
         if (!response.ok) throw new Error('OCR failed');
         const data = await response.json();
         passageText = data.text || '';
       } else {
-        // PDF/DOCX — use extractDocument in spelling mode but grab raw text
         const response = await fetch(CF_DOC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileBase64, mediaType, mode:'spelling', grade: S.grade||'2' }) });
         if (!response.ok) throw new Error('Extract failed');
         const data = await response.json();
-        // extractDocument returns words array — join them as passage text
         if (data.words && data.words.length > 0) {
           passageText = data.words.map(w => w.word || w).join(' ');
         } else if (data.text) {
@@ -13233,10 +13244,10 @@ function bindMwWizEvents() {
       }
       if (!passageText || passageText.trim().length < 10) throw new Error('No text found');
       mwWizData.passage = { title: passageTitle, text: passageText.trim() };
-      document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove());
+      hideMwSpinner(spinner);
       renderMwWizStep();
     } catch(err) {
-      document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove());
+      hideMwSpinner(spinner);
       showAppAlert('😕', 'Could not read passage', 'Try a clearer photo. For best results use a photo of the passage.');
     }
   });
@@ -13262,7 +13273,7 @@ function bindMwWizEvents() {
   });
   if (spellFile) spellFile.addEventListener('change', async (e) => {
     const file = e.target.files[0]; if (!file) return; e.target.value = '';
-    showAppAlert('⏳', 'Reading spelling words...', 'This takes just a moment.');
+    const spinner = showMwSpinner('Reading spelling words...');
     try {
       const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
       let data;
@@ -13274,9 +13285,9 @@ function bindMwWizEvents() {
         if (!r.ok) throw new Error('Failed'); data = await r.json();
       }
       mwWizData.spelling = { label: 'Spelling Words', words: data.words.map((w,i) => ({ word:w.word.toLowerCase().trim(), syllables:w.syllables||w.word, isRedWord:w.isRedWord||false, num:i+1, practiced:0, mastered:false })) };
-      document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove());
+      hideMwSpinner(spinner);
       renderMwWizStep();
-    } catch(err) { document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove()); showAppAlert('😕', 'Could not read spelling list', 'Try a clearer photo or type the words manually.'); }
+    } catch(err) { hideMwSpinner(spinner); showAppAlert('😕', 'Could not read spelling list', 'Try a clearer photo or type the words manually.'); }
   });
 
   // Step 4 — vocab upload/type
@@ -13301,15 +13312,32 @@ function bindMwWizEvents() {
   });
   if (vocabFile) vocabFile.addEventListener('change', async (e) => {
     const file = e.target.files[0]; if (!file) return; e.target.value = '';
-    showAppAlert('⏳', 'Reading vocabulary words...', 'This takes just a moment.');
+    const spinner = showMwSpinner('Reading vocabulary words...');
     try {
       const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
-      const r = await fetch(CF_DOC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileBase64, mediaType, mode:'vocab' }) });
-      if (!r.ok) throw new Error('Failed'); const data = await r.json();
-      mwWizData.vocab = { label: 'Vocabulary Words', words: (data.words||[]).map(w => ({ word: typeof w === 'string' ? w : w.word, definition: w.definition || '' })) };
-      document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove());
+      let extractedWords;
+      if (isImage) {
+        const spellResp = await fetch(CF_SPELLING, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64:fileBase64, mediaType, grade: S.grade||'2' }) });
+        if (!spellResp.ok) throw new Error('Extraction failed');
+        const spellData = await spellResp.json();
+        if (!spellData.words || spellData.words.length === 0) throw new Error('No words found');
+        let meaningMap = {};
+        try {
+          const ocrResp = await fetch(CF_OCR, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64:fileBase64, mediaType }) });
+          if (ocrResp.ok) { const ocrData = await ocrResp.json(); if (ocrData.text) meaningMap = parseMeaningsFromText(ocrData.text); }
+        } catch(ocrErr) { console.warn('OCR meaning extraction failed:', ocrErr); }
+        extractedWords = spellData.words.map(w => ({ word: w.word.toLowerCase().trim(), definition: meaningMap[w.word.toLowerCase().trim()] || '' }));
+      } else {
+        const r = await fetch(CF_DOC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileBase64, mediaType, mode:'vocab', grade: S.grade||'2' }) });
+        if (!r.ok) throw new Error('Failed'); const data = await r.json();
+        if (!data.words || data.words.length === 0) throw new Error('No words found');
+        extractedWords = data.words.map(w => ({ word:(w.word||'').toLowerCase().trim(), definition: w.definition||'' }));
+      }
+      if (!extractedWords || extractedWords.length === 0) throw new Error('No words found');
+      mwWizData.vocab = { label: 'Vocabulary Words', words: extractedWords };
+      hideMwSpinner(spinner);
       renderMwWizStep();
-    } catch(err) { document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove()); showAppAlert('😕', 'Could not read vocab list', 'Try a clearer photo or type the words manually.'); }
+    } catch(err) { hideMwSpinner(spinner); showAppAlert('😕', 'Could not read vocab list', 'Try a clearer photo or type the words manually.'); }
   });
 
   // Step 5 — test toggles + attempt counters
