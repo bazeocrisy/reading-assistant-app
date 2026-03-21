@@ -1252,14 +1252,16 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 /* ── Add Child Modal ─────────────────────────────────── */
 .add-child-overlay {
   position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.5);
-  display: flex; align-items: center; justify-content: center; padding: 20px;
+  display: flex; align-items: flex-start; justify-content: center; padding: 16px;
+  overflow-y: auto;
 }
 .add-child-modal {
-  background: white; border-radius: 24px; padding: 28px 24px;
+  background: white; border-radius: 24px; padding: 24px 20px;
   width: 100%; max-width: 360px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.25); animation: fadeUp 0.3s ease;
+  margin: auto 0;
 }
-.avatar-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; max-height: 280px; overflow-y: auto; padding: 4px; }
+.avatar-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0; max-height: 160px; overflow-y: auto; padding: 4px; }
 .avatar-section-label { grid-column: 1/-1; font-size: 0.68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 4px 0 0; text-align: left; padding-left: 2px; }
 .avatar-option {
   font-size: 2rem; width: 52px; height: 52px; border-radius: 14px;
@@ -1835,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HS</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3385,7 +3387,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3744,11 +3746,19 @@ document.getElementById('btn-email-signin').addEventListener('click', async () =
   const btn = document.getElementById('btn-email-signin');
   setAuthError('');
   if (!email || !password) { setAuthError('Please enter your email and password.'); return; }
-  // Loading state
   btn.disabled = true;
   btn.textContent = '⏳ Signing in...';
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    if (!cred.user.emailVerified) {
+      // Block unverified users — sign them back out and show message
+      await signOut(auth);
+      btn.disabled = false;
+      btn.textContent = 'Sign In →';
+      setAuthError('Please verify your email address before signing in. Check your inbox for the verification link.');
+      return;
+    }
+    // onAuthStateChanged handles navigation
   } catch(e) {
     const msgs = {
       'auth/user-not-found': 'No account found with that email. Did you mean to create an account?',
@@ -3769,6 +3779,25 @@ document.getElementById('signin-password').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('btn-email-signin').click();
 });
 
+// ── Email verification buttons ────────────────────────────
+document.getElementById('btn-verify-done').addEventListener('click', () => {
+  // Switch to sign-in tab
+  document.getElementById('auth-verify-msg').style.display = 'none';
+  document.getElementById('auth-form-signup').style.display = 'none';
+  document.getElementById('auth-tab-signin').click();
+});
+
+document.getElementById('btn-resend-verify').addEventListener('click', async () => {
+  try {
+    // Need to sign in temporarily to resend — use current auth state
+    const user = auth.currentUser;
+    if (user) {
+      await sendEmailVerification(user);
+      document.getElementById('btn-resend-verify').textContent = 'sent! ✅';
+    }
+  } catch(e) { console.warn('Resend failed:', e); }
+});
+
 // ── Email Sign Up ─────────────────────────────────────────
 document.getElementById('btn-email-signup').addEventListener('click', async () => {
   const name = document.getElementById('signup-name').value.trim();
@@ -3787,7 +3816,13 @@ document.getElementById('btn-email-signup').addEventListener('click', async () =
     await updateProfile(cred.user, { displayName: name });
     // Send email verification
     try { await sendEmailVerification(cred.user); } catch(ve) { console.warn('Verification email failed:', ve); }
-    // onAuthStateChanged handles navigation
+    // Sign out immediately — user must verify email before accessing the app
+    await signOut(auth);
+    btn.disabled = false;
+    btn.textContent = 'Create Account →';
+    // Show verification message in place of the form
+    document.getElementById('auth-form-signup').style.display = 'none';
+    document.getElementById('auth-verify-msg').style.display = 'block';
   } catch(e) {
     const msgs = {
       'auth/email-already-in-use': 'An account with this email already exists. Try signing in instead.',
@@ -4144,7 +4179,15 @@ function hideSplash() {
 onAuthStateChanged(auth, async (user) => {
   authReady = true;
   if (user) {
-    // Logged-in user — hide splash after session resolves
+    // Block unverified email/password accounts
+    // (Google accounts are always verified — skip check for them)
+    const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+    if (!isGoogleUser && !user.emailVerified) {
+      await signOut(auth);
+      hideSplash();
+      return; // onAuthStateChanged will fire again with null user
+    }
+
     hideSplash();
     currentUser = user;
     console.log('✅ Signed in:', user.email || user.displayName);
@@ -13791,6 +13834,15 @@ document.addEventListener('keydown', (e) => {
       </div>
       <button class="btn-main btn-green" id="btn-email-signup" style="margin-top:4px;">Create Account →</button>
       <div style="font-size:11px;font-weight:700;color:#94A3B8;text-align:center;margin-top:8px;">A verification email will be sent to confirm your address.</div>
+    </div>
+
+    <!-- Shown after successful signup — user must verify before signing in -->
+    <div id="auth-verify-msg" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:3rem;margin-bottom:12px;">📧</div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:8px;">Check Your Email!</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;line-height:1.5;margin-bottom:16px;">We sent a verification link to your email address. Click the link to activate your account, then come back and sign in.</p>
+      <button class="btn-main btn-green" id="btn-verify-done" style="font-size:1rem;">✅ I Verified — Sign In</button>
+      <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-top:10px;">Didn't get it? Check spam, or <button id="btn-resend-verify" style="background:none;border:none;color:var(--purple);font-weight:800;font-size:0.75rem;cursor:pointer;padding:0;">resend the email</button>.</div>
     </div>
 
     <div class="auth-footer" style="text-align:center;margin-top:14px;font-size:11px;font-weight:700;color:#64748B;">
