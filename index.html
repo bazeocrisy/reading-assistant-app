@@ -3709,6 +3709,28 @@ function showProfileScreen() {
   renderProfileGrid();
 }
 
+// Fast path — new user with no children: skip profile screen flash, go straight to modal
+async function showProfileScreenOrModal() {
+  if (!currentUser) { showProfileScreen(); return; }
+  try {
+    const snap = await get(ref(db, `users/${currentUser.uid}/children`));
+    const hasChildren = snap.exists() && Object.keys(snap.val()).length > 0;
+    if (!hasChildren) {
+      // No children yet — hide everything and show modal directly
+      document.getElementById('screen-landing').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('child-profile-screen').style.display = 'flex';
+      // Render the grid silently (Add Child card only), then open modal
+      await renderProfileGrid();
+      showAddChildModal();
+    } else {
+      showProfileScreen();
+    }
+  } catch(e) {
+    showProfileScreen();
+  }
+}
+
 function hideProfileScreen() {
   document.getElementById('child-profile-screen').style.display = 'none';
 }
@@ -3779,23 +3801,43 @@ document.getElementById('signin-password').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('btn-email-signin').click();
 });
 
+// Enter key submits sign up
+document.getElementById('signup-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-email-signup').click();
+});
+
 // ── Email verification buttons ────────────────────────────
 document.getElementById('btn-verify-done').addEventListener('click', () => {
-  // Switch to sign-in tab
+  // Reset all forms and switch cleanly to sign-in
   document.getElementById('auth-verify-msg').style.display = 'none';
   document.getElementById('auth-form-signup').style.display = 'none';
-  document.getElementById('auth-tab-signin').click();
+  document.getElementById('auth-form-signin').style.display = 'block';
+  document.getElementById('auth-form-reset').style.display = 'none';
+  document.getElementById('auth-tab-signin').classList.add('active');
+  document.getElementById('auth-tab-signup').classList.remove('active');
+  setAuthError('');
+  // Pre-fill email from signup if available
+  const signupEmail = document.getElementById('signup-email').value.trim();
+  if (signupEmail) document.getElementById('signin-email').value = signupEmail;
+  document.getElementById('signin-password').value = '';
+  setTimeout(() => document.getElementById('signin-password').focus(), 100);
 });
 
 document.getElementById('btn-resend-verify').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-resend-verify');
   try {
-    // Need to sign in temporarily to resend — use current auth state
-    const user = auth.currentUser;
+    const user = window._pendingVerifyUser || auth.currentUser;
     if (user) {
       await sendEmailVerification(user);
-      document.getElementById('btn-resend-verify').textContent = 'sent! ✅';
+      btn.textContent = 'sent! ✅';
+      btn.disabled = true;
+    } else {
+      btn.textContent = 'please sign in to resend';
     }
-  } catch(e) { console.warn('Resend failed:', e); }
+  } catch(e) {
+    btn.textContent = 'too many requests — try later';
+    console.warn('Resend failed:', e);
+  }
 });
 
 // ── Email Sign Up ─────────────────────────────────────────
@@ -3816,6 +3858,8 @@ document.getElementById('btn-email-signup').addEventListener('click', async () =
     await updateProfile(cred.user, { displayName: name });
     // Send email verification
     try { await sendEmailVerification(cred.user); } catch(ve) { console.warn('Verification email failed:', ve); }
+    // Store user ref for resend before signing out
+    window._pendingVerifyUser = cred.user;
     // Sign out immediately — user must verify email before accessing the app
     await signOut(auth);
     btn.disabled = false;
@@ -4229,8 +4273,8 @@ onAuthStateChanged(auth, async (user) => {
       console.warn('Could not restore child session:', e);
     }
 
-    // No saved session — show profile picker
-    showProfileScreen();
+    // No saved session — show profile picker (or modal directly if new user)
+    showProfileScreenOrModal();
 
   } else {
     // Not signed in — show landing page instantly, no splash wait
