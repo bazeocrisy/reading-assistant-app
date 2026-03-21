@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IV</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IX</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3549,7 +3549,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IV</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IX</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4942,6 +4942,11 @@ function show(id) {
   }
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'screen-pick') updateHomeStats();
+  // Clear My Week mode restriction when child returns to a My Week screen or home
+  if (id === 'screen-my-week-active' || id === 'screen-my-week-child' || id === 'screen-pick') {
+    window._mwMode = false;
+    SCREEN_BACK_MAP['screen-my-week-child'] = ['BACK', 'screen-pick']; // restore normal route
+  }
   if (typeof updateBottomBar === 'function') updateBottomBar();
   document.dispatchEvent(new CustomEvent('readup-screen-shown', { detail: id }));
 }
@@ -9863,6 +9868,12 @@ function renderSpellingWords(list) {
   actionsEl.style.display = 'grid';
   countBar.style.display = 'flex';
 
+  // My Week mode: hide list management buttons — child should only practice
+  const spellingNew = document.getElementById('btn-spelling-new');
+  const spellingClear = document.getElementById('btn-spelling-clear-all');
+  if (spellingNew) spellingNew.style.display = window._mwMode ? 'none' : '';
+  if (spellingClear) spellingClear.style.display = window._mwMode ? 'none' : '';
+
   // Show voice & speed controls, set grade-appropriate speed default
   const spellControls = document.getElementById('spelling-controls');
   if (spellControls) {
@@ -12264,6 +12275,10 @@ function renderVocabWords(list) {
   emptyEl.style.display = 'none';
   actionsEl.style.display = 'grid';
 
+  // My Week mode: hide list management button — child should only practice
+  const vocabNew = document.getElementById('btn-vocab-new');
+  if (vocabNew) vocabNew.style.display = window._mwMode ? 'none' : '';
+
   // Update home badge
   const badge = document.getElementById('home-vocab-badge');
   if (badge) { badge.textContent = `${list.words.length} words`; badge.style.display = 'inline-block'; }
@@ -13664,6 +13679,9 @@ function renderMyWeekChildScreen(mw) {
 }
 
 function launchMwTask(mw, itemIdx) {
+  window._mwMode = true;  // child is in My Week — restrict wizards/list management
+  // While in mwMode, BACK from task screens returns to My Week Active (not home grid)
+  SCREEN_BACK_MAP['screen-my-week-child'] = ['BACK', 'screen-my-week-active'];
   const items = buildMwChecklistItems(mw);
   const item = items[itemIdx];
   const prog = mw.progress || {};
