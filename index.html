@@ -826,6 +826,21 @@ body.bedtime .btn-rm-listen { background: #8a6a3a; }
   .countdown-number { font-size: 6rem; }
   .tts-controls { grid-template-columns: 1fr 1fr 1fr; }
   .app { padding: 12px 10px 40px; }
+
+  /* ── Phone header compression ── */
+  header { padding: 12px 0 8px; }
+  /* Smaller Bookie */
+  #bookie-mascot { width: 100px !important; height: 100px !important; }
+  /* Tighter mascot zone */
+  #mascot-zone { gap: 2px !important; margin-top: 2px !important; }
+  /* Smaller speech bubble */
+  #bookie-speech { font-size: 0.88rem !important; padding: 7px 14px !important; max-width: 240px !important; }
+  /* Tighter stats bar */
+  #home-stats-bar { gap: 10px !important; margin-top: 2px !important; }
+  #home-stats-bar span { font-size: 1rem !important; }
+  #home-streak, #home-stories-count, #home-words-count { font-size: 0.82rem !important; }
+  /* Smaller profile badge */
+  #active-profile-badge { font-size: 0.82rem; padding: 4px 10px; }
 }
 
 /* Tablet (768px - 1024px) */
@@ -1820,7 +1835,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HP</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3372,7 +3387,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HP</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
