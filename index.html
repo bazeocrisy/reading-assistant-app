@@ -4930,7 +4930,16 @@ function show(id) {
     }
   }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  // Fixed-position overlay screens need display:block set explicitly
+  if (id === 'screen-my-week-active') {
+    el.style.display = 'block';
+  } else {
+    // Hide My Week Active if navigating away from it
+    const mwa = document.getElementById('screen-my-week-active');
+    if (mwa) mwa.style.display = 'none';
+  }
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'screen-pick') updateHomeStats();
   if (typeof updateBottomBar === 'function') updateBottomBar();
@@ -13755,8 +13764,8 @@ function openMyWeekActive() {
     openParentPIN();
   };
 
-  // Set BACK_MAP so any sub-screen returns here
-  SCREEN_BACK_MAP['screen-my-week-active'] = ['BACK', 'screen-my-week-active'];
+  // Set BACK_MAP — null means no back button (this IS the home for active week)
+  SCREEN_BACK_MAP['screen-my-week-active'] = null;
 
   show('screen-my-week-active');
 }
@@ -14625,6 +14634,7 @@ const SCREEN_BACK_MAP = {
   'screen-spelling-source': ['BACK', 'screen-pick'],
   'screen-my-words': ['BACK', 'screen-pick'],
   'screen-my-week-child': ['BACK', 'screen-pick'],
+  'screen-my-week-active': null,
   'screen-spelling-mywords': ['BACK', 'screen-spelling-source'],
   'screen-spell-grade-pick': ['BACK', 'screen-spelling-source'],
   'screen-spell-group-pick': ['BACK', 'screen-spell-grade-pick'],
