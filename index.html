@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HU</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HV</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3387,7 +3387,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HU</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HV</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4164,6 +4164,12 @@ document.getElementById('btn-add-child-save').addEventListener('click', async ()
   errEl.style.display = 'none';
 
   try {
+    if (!currentUser) {
+      errEl.textContent = 'Session expired — please sign in again.';
+      errEl.style.display = 'block';
+      return;
+    }
+    console.log('💾 Saving profile, uid:', currentUser.uid, 'auth.currentUser:', auth.currentUser?.uid);
     if (editingChildId) {
       // EDIT MODE — update existing child in Firebase
       await update(ref(db, `users/${currentUser.uid}/children/${editingChildId}`), {
@@ -4185,7 +4191,8 @@ document.getElementById('btn-add-child-save').addEventListener('click', async ()
     hideAddChildModal();
     renderProfileGrid();
   } catch(e) {
-    errEl.textContent = 'Failed to save profile. Please try again.';
+    console.error('Profile save error:', e.code, e.message);
+    errEl.textContent = `Failed to save: ${e.message || e.code || 'Unknown error'}`;
     errEl.style.display = 'block';
   }
 });
