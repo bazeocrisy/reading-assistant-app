@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IH</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD II</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3497,7 +3497,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IH</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD II</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -12921,13 +12921,26 @@ function renderMwWizStep() {
   if (!container) return;
   const nickname = currentChildProfile?.nickname || (currentChildProfile?.name || 'your child').split(' ')[0];
 
+  const stepIcons = ['📅','📖','🔤','📚','📝','✨','🎯'];
+  const stepColors = ['#FF6B35','#54A0FF','#FF6B6B','#00CEC9','#9B59B6','#FFD93D','#27AE60'];
+  const stepTitles = ['Pick Your Week','Reading Passage','Spelling Words','Vocabulary Words','Tests','Story Budget','Review & Publish'];
+
   const dots = Array.from({length: MW_TOTAL_STEPS}, (_, i) => {
-    const cls = i + 1 < mwWizStep ? 'background:#27AE60' : i + 1 === mwWizStep ? 'background:#FF6B35' : 'background:var(--border)';
+    const cls = i + 1 < mwWizStep ? 'background:#27AE60' : i + 1 === mwWizStep ? `background:${stepColors[i]}` : 'background:var(--border)';
     return `<div style="width:10px;height:10px;border-radius:50%;${cls};flex-shrink:0;"></div>`;
   }).join('');
 
   const dotsHtml = `<div style="display:flex;gap:6px;margin-bottom:16px;">${dots}</div>`;
-  const stepLabel = `<div style="font-size:0.72rem;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Step ${mwWizStep} of ${MW_TOTAL_STEPS}</div>`;
+  const stepColor = stepColors[mwWizStep - 1];
+  const stepIcon  = stepIcons[mwWizStep - 1];
+  const stepLabel = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="width:42px;height:42px;background:${stepColor};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">${stepIcon}</div>
+      <div>
+        <div style="font-size:0.72rem;font-weight:800;color:${stepColor};text-transform:uppercase;letter-spacing:1.5px;">Step ${mwWizStep} of ${MW_TOTAL_STEPS}</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);">${stepTitles[mwWizStep-1]}</div>
+      </div>
+    </div>`;
 
   let html = '';
 
@@ -12936,7 +12949,6 @@ function renderMwWizStep() {
     html = `
       <div class="card">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Pick Your Week</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Choose the dates ${nickname} will work on this material. The week can be 1 to 7 days. A progress report will automatically email you at 7PM on the last day.</p>
         <div style="display:flex;gap:10px;margin-bottom:16px;">
           <div style="flex:1;">
@@ -12960,7 +12972,6 @@ function renderMwWizStep() {
     html = `
       <div class="card">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Reading Passage</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload the passage ${nickname} will practice this week. ${nickname} will read it multiple times to build fluency — the more reps the better. You choose whether to time the reads.</p>
         ${hasPassage ? `
           <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
@@ -12981,17 +12992,14 @@ function renderMwWizStep() {
         ${mwWizData.timed === true ? `<div style="background:var(--purple-soft);border-radius:12px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);line-height:1.5;margin-bottom:8px;">You must sit with ${nickname} during timed reads. When the timer ends, tap the last word ${nickname} read — the app calculates WPM automatically.</div>` : ''}
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button class="btn-main btn-outline" id="mw-back" style="flex:1;">← Back</button>
+          <button class="btn-main" id="mw-skip" style="flex:1;background:var(--section);color:var(--muted);box-shadow:none;border:2px solid var(--border);">Not This Week</button>
           <button class="btn-main" id="mw-next" style="flex:2;background:linear-gradient(135deg,var(--purple),var(--purple-deep));">Next →</button>
         </div>
       </div>`;
-  }
-
-  else if (mwWizStep === 3) {
     const hasSpelling = !!mwWizData.spelling;
     html = `
       <div class="card">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Spelling Words</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload or type ${nickname}'s spelling words for the week. ${nickname} can practice them anytime and you can assign a test at the end of the week.</p>
         ${hasSpelling ? `
           <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
@@ -13011,7 +13019,7 @@ function renderMwWizStep() {
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button class="btn-main btn-outline" id="mw-back" style="flex:1;">← Back</button>
-          <button class="btn-main" id="mw-skip" style="flex:1;background:var(--section);color:var(--muted);box-shadow:none;border:2px solid var(--border);">Skip</button>
+          <button class="btn-main" id="mw-skip" style="flex:1;background:var(--section);color:var(--muted);box-shadow:none;border:2px solid var(--border);">Not This Week</button>
           <button class="btn-main" id="mw-next" style="flex:2;background:linear-gradient(135deg,var(--purple),var(--purple-deep));">Next →</button>
         </div>
       </div>`;
@@ -13022,7 +13030,6 @@ function renderMwWizStep() {
     html = `
       <div class="card">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Vocabulary Words</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Upload or type ${nickname}'s vocabulary words. ${nickname} will study the definitions, practice with flashcards, and you can assign a test at the end of the week.</p>
         ${hasVocab ? `
           <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
@@ -13042,7 +13049,7 @@ function renderMwWizStep() {
         </div>
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button class="btn-main btn-outline" id="mw-back" style="flex:1;">← Back</button>
-          <button class="btn-main" id="mw-skip" style="flex:1;background:var(--section);color:var(--muted);box-shadow:none;border:2px solid var(--border);">Skip</button>
+          <button class="btn-main" id="mw-skip" style="flex:1;background:var(--section);color:var(--muted);box-shadow:none;border:2px solid var(--border);">Not This Week</button>
           <button class="btn-main" id="mw-next" style="flex:2;background:linear-gradient(135deg,var(--purple),var(--purple-deep));">Next →</button>
         </div>
       </div>`;
@@ -13052,7 +13059,6 @@ function renderMwWizStep() {
     html = `
       <div class="card">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Tests</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Choose whether ${nickname} takes a spelling test, vocabulary test, or both at the end of the week. Set how many attempts ${nickname} gets — ${nickname} will only retest words missed, so each retry gets shorter.</p>
         <div style="background:var(--section);border-radius:14px;padding:14px;margin-bottom:10px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:${mwWizData.spellingTest ? '12px' : '0'};">
@@ -13099,7 +13105,6 @@ function renderMwWizStep() {
     html = `
       <div class="card">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Story Budget</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:20px;line-height:1.6;">AI stories keep ${nickname} engaged and build reading fluency. Set how many ${nickname} can generate per day so reading stays fun without becoming a distraction. ${nickname} always picks the theme.</p>
         <div style="display:flex;align-items:center;justify-content:center;gap:24px;background:var(--section);border-radius:16px;padding:24px;margin-bottom:20px;">
           <button id="mw-budget-minus" style="width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:var(--card);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:700;color:var(--muted);">−</button>
@@ -13128,7 +13133,6 @@ function renderMwWizStep() {
     html = `
       <div class="card" style="border:2px solid var(--purple);">
         ${dotsHtml}${stepLabel}
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Review ${nickname}'s Week</div>
         <p style="font-size:0.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;line-height:1.6;">Here's everything you set up. Read through it carefully — once you publish, ${nickname} will see the checklist immediately.</p>
         <div style="border-top:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:1.2rem;">📅</span><div><div style="font-size:0.88rem;font-weight:700;color:var(--ink);">${start} – ${end}</div><div style="font-size:0.75rem;color:var(--muted);font-weight:700;">Report emails at 7PM on ${end}</div></div></div>
@@ -13183,13 +13187,34 @@ function bindMwWizEvents() {
     showAppAlert('⏳', 'Reading passage...', 'This takes just a moment.');
     try {
       const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
-      const response = await fetch(CF_DOC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileBase64, mediaType, mode:'passage' }) });
-      if (!response.ok) throw new Error('Extract failed');
-      const data = await response.json();
-      mwWizData.passage = { title: data.title || file.name.replace(/\.[^.]+$/,''), text: data.text || data.story || '' };
+      let passageText = '';
+      let passageTitle = file.name.replace(/\.[^.]+$/, '');
+      if (isImage) {
+        // Image — use OCR extractText
+        const response = await fetch(CF_OCR, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageBase64: fileBase64, mediaType }) });
+        if (!response.ok) throw new Error('OCR failed');
+        const data = await response.json();
+        passageText = data.text || '';
+      } else {
+        // PDF/DOCX — use extractDocument in spelling mode but grab raw text
+        const response = await fetch(CF_DOC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ fileBase64, mediaType, mode:'spelling', grade: S.grade||'2' }) });
+        if (!response.ok) throw new Error('Extract failed');
+        const data = await response.json();
+        // extractDocument returns words array — join them as passage text
+        if (data.words && data.words.length > 0) {
+          passageText = data.words.map(w => w.word || w).join(' ');
+        } else if (data.text) {
+          passageText = data.text;
+        }
+      }
+      if (!passageText || passageText.trim().length < 10) throw new Error('No text found');
+      mwWizData.passage = { title: passageTitle, text: passageText.trim() };
       document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove());
       renderMwWizStep();
-    } catch(err) { document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove()); showAppAlert('😕', 'Could not read passage', 'Try a clearer photo or a different file format.'); }
+    } catch(err) {
+      document.querySelectorAll('.app-alert-overlay').forEach(el => el.remove());
+      showAppAlert('😕', 'Could not read passage', 'Try a clearer photo. For best results use a photo of the passage.');
+    }
   });
   const timedYes = document.getElementById('mw-timed-yes');
   const timedNo  = document.getElementById('mw-timed-no');
