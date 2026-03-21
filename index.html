@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HW</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HX</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -1851,42 +1851,43 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     <!-- 2×2 Category Grid -->
     <div class="home-feature-grid" style="margin-top:14px;">
 
-      <!-- Practice Reading -->
+      <!-- LEFT COL: Practice Reading -->
       <button class="home-feature-card" id="btn-cat-reading" aria-label="Practice Reading" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);box-shadow:0 6px 18px rgba(142,68,173,0.3);padding:24px 14px 20px;">
         <div class="home-feature-emoji" aria-hidden="true">⏱</div>
         <div class="home-feature-label">Practice Reading</div>
       </button>
 
-      <!-- Read Together -->
-      <button class="home-feature-card" id="btn-together-start" aria-label="Read Together" style="background:linear-gradient(135deg,#5CD85A,#27AE60);box-shadow:0 6px 18px rgba(39,174,96,0.3);padding:24px 14px 20px;">
-        <div class="home-feature-emoji" aria-hidden="true">👫</div>
-        <div class="home-feature-label">Read Together</div>
+      <!-- RIGHT COL: My Readings -->
+      <button class="home-feature-card" id="btn-my-readings-home" aria-label="My Readings" style="background:linear-gradient(135deg,#F9A825,#FF6B35);box-shadow:0 6px 18px rgba(249,168,37,0.3);padding:24px 14px 20px;position:relative;">
+        <div class="home-feature-emoji" aria-hidden="true">🎒</div>
+        <div class="home-feature-label">My Readings</div>
+        <span id="my-readings-count-badge" style="position:absolute;top:8px;right:8px;background:white;color:#F9A825;border-radius:50px;padding:1px 8px;font-family:'Fredoka',sans-serif;font-size:0.75rem;font-weight:700;"></span>
       </button>
 
-      <!-- Practice Words -->
+      <!-- LEFT COL: Practice Words -->
       <button class="home-feature-card" id="btn-cat-words" aria-label="Practice Words" style="background:linear-gradient(135deg,#FF6B6B,#EE5A24);box-shadow:0 6px 18px rgba(238,90,36,0.3);padding:24px 14px 20px;">
         <div class="home-feature-emoji" aria-hidden="true">✏️</div>
         <div class="home-feature-label">Practice Words</div>
       </button>
 
-      <!-- My Words — always visible -->
+      <!-- RIGHT COL: My Words -->
       <button class="home-feature-card" id="btn-my-words-home" aria-label="My Words" style="background:linear-gradient(135deg,#00CEC9,#00838F);box-shadow:0 6px 18px rgba(0,131,143,0.3);padding:24px 14px 20px;">
         <div class="home-feature-emoji" aria-hidden="true">📚</div>
         <div class="home-feature-label">My Words</div>
       </button>
 
-      <!-- My Assignments — always in grid, hidden until assigned -->
+      <!-- My Assignments — hidden until assigned -->
       <button class="home-feature-card" id="btn-assignments-home" aria-label="My Assignments" style="display:none;background:linear-gradient(135deg,#E74C3C,#C0392B);box-shadow:0 6px 18px rgba(192,57,43,0.3);padding:24px 14px 20px;position:relative;">
         <div class="home-feature-emoji" aria-hidden="true">📋</div>
         <div class="home-feature-label">My Assignments</div>
         <span id="assignments-count-badge" style="position:absolute;top:8px;right:8px;background:white;color:#E74C3C;border-radius:50px;padding:1px 8px;font-family:'Fredoka',sans-serif;font-size:0.75rem;font-weight:700;"></span>
       </button>
 
-      <!-- My Readings — always visible -->
-      <button class="home-feature-card" id="btn-my-readings-home" aria-label="My Readings" style="background:linear-gradient(135deg,#F9A825,#FF6B35);box-shadow:0 6px 18px rgba(249,168,37,0.3);padding:24px 14px 20px;position:relative;">
-        <div class="home-feature-emoji" aria-hidden="true">🎒</div>
-        <div class="home-feature-label">My Readings</div>
-        <span id="my-readings-count-badge" style="position:absolute;top:8px;right:8px;background:white;color:#F9A825;border-radius:50px;padding:1px 8px;font-family:'Fredoka',sans-serif;font-size:0.75rem;font-weight:700;"></span>
+      <!-- Read Together — full width skinny strip at bottom -->
+      <button class="home-feature-card" id="btn-together-start" aria-label="Read Together" style="grid-column:1/-1;background:linear-gradient(135deg,#5CD85A,#27AE60);box-shadow:0 4px 14px rgba(39,174,96,0.3);padding:10px 20px;flex-direction:row;justify-content:center;gap:10px;border-radius:16px;min-height:unset;">
+        <div style="font-size:1.4rem;" aria-hidden="true">👫</div>
+        <div class="home-feature-label" style="font-size:0.95rem;margin:0;">Read Together</div>
+        <div style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.85);margin:0;">Read the same story on two devices</div>
       </button>
 
     </div>
@@ -3393,7 +3394,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HW</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HX</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
