@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IU</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3549,7 +3549,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -13758,11 +13758,7 @@ function openMyWeekActive() {
   // Set BACK_MAP so any sub-screen returns here
   SCREEN_BACK_MAP['screen-my-week-active'] = ['BACK', 'screen-my-week-active'];
 
-  document.getElementById('screen-my-week-active').style.display = 'block';
-  // Hide the normal home screen
-  document.getElementById('screen-pick').style.display = 'none';
-  document.getElementById('screen-pick').classList.remove('active');
-  document.getElementById('screen-my-week-active').classList.add('active');
+  show('screen-my-week-active');
 }
 
 function renderMwaChecklist(mw) {
@@ -13780,32 +13776,42 @@ function renderMwaChecklist(mw) {
     const isNext = !item.done && items.slice(0, idx).every(i => i.done);
     const isLocked = item.label.includes('📝') && isTestLocked(mw);
 
-    const row = document.createElement('div');
-    row.style.cssText = `
-      display:flex;align-items:center;gap:12px;padding:14px 16px;
-      border-radius:16px;cursor:${item.done || isLocked ? 'default' : 'pointer'};
-      background:${item.done ? '#EAF3DE' : isNext ? 'white' : 'var(--card)'};
-      border:2px solid ${item.done ? '#27AE60' : isNext ? '#FF6B35' : 'var(--border)'};
-      box-shadow:${isNext ? '0 4px 14px rgba(255,107,53,0.2)' : 'none'};
-      transition:all 0.2s;
-    `;
+    // Color per task type
+    let accent = '#636e72', bgColor = 'var(--card)', borderColor = 'var(--border)';
+    if (item.done)                              { accent = '#27AE60'; bgColor = '#EAF3DE'; borderColor = '#27AE60'; }
+    else if (isLocked)                          { accent = '#b2bec3'; bgColor = 'var(--section)'; borderColor = 'var(--border)'; }
+    else if (item.label.includes('read'))       { accent = '#9B59B6'; bgColor = isNext ? '#F5F0FF' : 'var(--card)'; borderColor = isNext ? '#9B59B6' : 'var(--border)'; }
+    else if (item.label.includes('Spelling'))   { accent = '#EE5A24'; bgColor = isNext ? '#FFF3EE' : 'var(--card)'; borderColor = isNext ? '#EE5A24' : 'var(--border)'; }
+    else if (item.label.includes('Vocabulary')) { accent = '#00838F'; bgColor = isNext ? '#E1F5EE' : 'var(--card)'; borderColor = isNext ? '#00838F' : 'var(--border)'; }
 
-    const icon = item.done ? '✅' : isLocked ? '🔒' : isNext ? '▶️' : '⭕';
-    const labelColor = item.done ? '#27500A' : isLocked ? 'var(--muted)' : isNext ? '#FF6B35' : 'var(--ink)';
-    const textDecor  = item.done ? 'text-decoration:line-through;' : '';
+    const taskIcon = item.done ? '✅' : isLocked ? '🔒' :
+                     item.label.includes('read') ? '📖' :
+                     item.label.includes('Spelling Practice') ? '🔤' :
+                     item.label.includes('Vocabulary Practice') ? '📚' :
+                     item.label.includes('Spelling Test') ? '📝' :
+                     item.label.includes('Vocabulary Test') ? '📝' : '⭕';
+
+    const row = document.createElement('div');
+    row.style.cssText = `display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;background:${bgColor};border:2px solid ${borderColor};box-shadow:${isNext ? '0 4px 14px rgba(0,0,0,0.1)' : 'none'};transition:all 0.2s;`;
+
+    const labelText = item.label.replace('📝 ', '');
+    const textDecor = item.done ? 'text-decoration:line-through;opacity:0.7;' : '';
 
     row.innerHTML = `
-      <div style="font-size:1.4rem;flex-shrink:0;">${icon}</div>
-      <div style="flex:1;">
-        <div style="font-family:'Fredoka',sans-serif;font-size:1.05rem;font-weight:700;color:${labelColor};${textDecor}">${item.label.replace('📝 ', '')}</div>
-        ${isNext ? `<div style="font-size:0.75rem;font-weight:800;color:#FF9F43;">Tap to start!</div>` : ''}
-        ${item.wpm  ? `<div style="font-size:0.75rem;font-weight:800;color:var(--green);">⚡ ${item.wpm} WPM</div>` : ''}
-        ${isLocked  ? `<div style="font-size:0.75rem;font-weight:800;color:var(--muted);">Available on the last day</div>` : ''}
+      <div style="width:40px;height:40px;border-radius:12px;background:${item.done ? '#27AE60' : isLocked ? 'var(--border)' : accent};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">${taskIcon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:${item.done ? '#27500A' : isLocked ? 'var(--muted)' : 'var(--ink)'};${textDecor}white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${labelText}</div>
+        ${isNext && !item.done ? `<div style="font-size:0.72rem;font-weight:800;color:${accent};">Up next!</div>` : ''}
+        ${item.wpm ? `<div style="font-size:0.72rem;font-weight:800;color:#27AE60;">⚡ ${item.wpm} WPM</div>` : ''}
+        ${isLocked ? `<div style="font-size:0.72rem;font-weight:700;color:var(--muted);">Available on the last day</div>` : ''}
       </div>
-      ${!item.done && !isLocked ? `<button style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:12px;padding:10px 18px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">Start →</button>` : ''}
+      ${!item.done && !isLocked ? `<button data-mwa-idx="${idx}" style="background:${accent};color:white;border:none;border-radius:12px;padding:10px 18px;font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;flex-shrink:0;touch-action:manipulation;">Start →</button>` : ''}
     `;
 
     if (!item.done && !isLocked) {
+      // Bind directly to the button to avoid click interception issues
+      const btn = row.querySelector('[data-mwa-idx]');
+      if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); launchMwaTask(mw, idx); });
       row.addEventListener('click', () => launchMwaTask(mw, idx));
     }
     container.appendChild(row);
