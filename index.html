@@ -1557,21 +1557,22 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
 /* ── Parent Dashboard Tabs ──────────────────────────────── */
 .dash-tab {
-  flex: 1; padding: 8px 4px; border: none; border-radius: 12px;
-  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.1rem;
-  cursor: pointer; transition: all 0.2s; background: none; color: var(--muted);
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  line-height: 1.2; white-space: nowrap;
+  flex: 1; padding: 10px 4px; border: 1.5px solid var(--border); border-radius: 14px;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.7rem;
+  cursor: pointer; transition: all 0.2s;
+  background: var(--card); color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 .dash-tab.active {
-  background: white; color: var(--purple);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: white; border-color: transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  transform: translateY(-1px);
 }
-.dash-tab[data-tab="overview"].active { color: #FF6B35; }
-.dash-tab[data-tab="readings"].active { color: #9B59B6; }
-.dash-tab[data-tab="spelling"].active { color: #27AE60; }
-.dash-tab[data-tab="myweek"].active   { color: #FF6B35; }
-.dash-tab[data-tab="settings"].active { color: #636e72; }
+.dash-tab[data-tab="overview"].active  { background: #FF6B35; }
+.dash-tab[data-tab="readings"].active  { background: #9B59B6; }
+.dash-tab[data-tab="spelling"].active  { background: #27AE60; }
+.dash-tab[data-tab="myweek"].active    { background: #FF6B35; }
+.dash-tab[data-tab="settings"].active  { background: #636e72; }
 .dash-tab-content { animation: fadeUp 0.2s ease both; }
 
 /* ── Reading Cards ──────────────────────────────────────── */
@@ -1843,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IN</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IO</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3503,7 +3504,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IN</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IO</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3583,12 +3584,27 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
 
     <!-- TAB NAV -->
-    <div style="display:flex;gap:4px;background:var(--section);border-radius:16px;padding:4px;margin-bottom:16px;">
-      <button class="dash-tab active" data-tab="overview" style="font-family:'Fredoka',sans-serif;">📊<br><span style="font-size:0.65rem;">Overview</span></button>
-      <button class="dash-tab" data-tab="readings" style="font-family:'Fredoka',sans-serif;">⏱️<br><span style="font-size:0.65rem;">Readings</span></button>
-      <button class="dash-tab" data-tab="spelling" style="font-family:'Fredoka',sans-serif;">🔤<br><span style="font-size:0.65rem;">Spelling</span></button>
-      <button class="dash-tab" data-tab="myweek" style="font-family:'Fredoka',sans-serif;">📅<br><span style="font-size:0.65rem;">My Week</span></button>
-      <button class="dash-tab" data-tab="settings" style="font-family:'Fredoka',sans-serif;">⚙️<br><span style="font-size:0.65rem;">Settings</span></button>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="dash-tab active" data-tab="overview" data-color="#FF6B35">
+        <span style="font-size:1.4rem;">📊</span>
+        <span style="font-size:0.7rem;font-weight:700;">Overview</span>
+      </button>
+      <button class="dash-tab" data-tab="readings" data-color="#9B59B6">
+        <span style="font-size:1.4rem;">⏱️</span>
+        <span style="font-size:0.7rem;font-weight:700;">Readings</span>
+      </button>
+      <button class="dash-tab" data-tab="spelling" data-color="#27AE60">
+        <span style="font-size:1.4rem;">🔤</span>
+        <span style="font-size:0.7rem;font-weight:700;">Spelling</span>
+      </button>
+      <button class="dash-tab" data-tab="myweek" data-color="#FF6B35">
+        <span style="font-size:1.4rem;">📅</span>
+        <span style="font-size:0.7rem;font-weight:700;">My Week</span>
+      </button>
+      <button class="dash-tab" data-tab="settings" data-color="#636e72">
+        <span style="font-size:1.4rem;">⚙️</span>
+        <span style="font-size:0.7rem;font-weight:700;">Settings</span>
+      </button>
     </div>
 
     <!-- TAB: OVERVIEW -->
@@ -12986,11 +13002,11 @@ function renderMwWizStep() {
         <div style="display:flex;gap:10px;margin-bottom:16px;">
           <div style="flex:1;">
             <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 Start Date</div>
-            <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="width:100%;padding:12px 14px;border:2.5px solid #FF6B35;border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;cursor:pointer;-webkit-appearance:none;">
+            <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="width:100%;padding:12px 14px;border:2.5px solid #FF6B35;border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;cursor:pointer;">
           </div>
           <div style="flex:1;">
             <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 End Date</div>
-            <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="width:100%;padding:12px 14px;border:2.5px solid #FF6B35;border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;cursor:pointer;-webkit-appearance:none;">
+            <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="width:100%;padding:12px 14px;border:2.5px solid #FF6B35;border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;cursor:pointer;">
           </div>
         </div>
         <div style="background:var(--purple-soft);border-radius:10px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);margin-bottom:12px;">📧 Report emails automatically at 7PM on the end date — whether or not everything is completed.</div>
@@ -13239,6 +13255,10 @@ function bindMwWizEvents() {
       if (diff < 0) { errEl.textContent = 'End date must be after start date.'; return; }
       if (diff > 6) { errEl.textContent = 'Week can be at most 7 days.'; return; }
       mwWizData.startDate = s; mwWizData.endDate = e;
+    }
+    if (mwWizStep === 2 && mwWizData.passage && mwWizData.timed === undefined) {
+      showAppAlert('⚠️', 'One more thing!', 'Please choose whether you want to time King\'s reads or just build reps — tap ⏱️ Yes or 📚 Build reps before continuing.');
+      return;
     }
     mwWizStep++; renderMwWizStep();
   });
