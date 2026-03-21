@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HT</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HU</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3387,7 +3387,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HT</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HU</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3926,7 +3926,18 @@ async function renderProfileGrid() {
   const grid = document.getElementById('profile-grid');
   grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-weight:700;">Loading profiles...</div>';
 
-  if (!currentUser) return;
+  if (!currentUser) {
+    grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-weight:700;">Session expired — please sign in again.</div>';
+    return;
+  }
+
+  // Safety timeout — if Firebase takes >8s, show add-child option anyway
+  const timeoutId = setTimeout(() => {
+    if (grid.innerHTML.includes('Loading profiles')) {
+      grid.innerHTML = '';
+      renderAddChildCard(grid);
+    }
+  }, 8000);
 
   // Update welcome name
   const parentName = currentUser.displayName || 'Parent';
@@ -3934,6 +3945,7 @@ async function renderProfileGrid() {
 
   try {
     const snap = await get(ref(db, `users/${currentUser.uid}/children`));
+    clearTimeout(timeoutId);
     const children = snap.exists() ? snap.val() : {};
     const childList = Object.entries(children).map(([id, data]) => ({ id, ...data }));
 
@@ -3971,9 +3983,20 @@ async function renderProfileGrid() {
       setTimeout(showAddChildModal, 400);
     }
   } catch(e) {
+    clearTimeout(timeoutId);
     console.error('Failed to load profiles:', e);
-    grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--coral);font-weight:700;">Failed to load profiles. Check your connection.</div>';
+    grid.innerHTML = '';
+    renderAddChildCard(grid);
   }
+}
+
+function renderAddChildCard(grid) {
+  const addCard = document.createElement('div');
+  addCard.className = 'profile-add';
+  addCard.innerHTML = `<span class="profile-add-icon">➕</span><span class="profile-add-label">Add Child</span>`;
+  addCard.addEventListener('click', () => showAddChildModal());
+  grid.appendChild(addCard);
+  setTimeout(showAddChildModal, 400);
 }
 
 // ── Select a child profile ────────────────────────────────
