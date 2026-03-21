@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IS</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IT</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2064,7 +2064,52 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
   </div>
 
-  <!-- SCREEN: Story Wizard Step 1 — Grade -->
+  <!-- SCREEN: My Week Active — full-screen child mode when week is published -->
+  <div class="screen" id="screen-my-week-active" style="display:none;position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;">
+    <div class="app" style="padding-bottom:40px;">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">📅</div>
+          <div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:#FF6B35;" id="mwa-title">My Week</div>
+            <div style="font-size:0.78rem;font-weight:700;color:var(--muted);" id="mwa-dates"></div>
+          </div>
+        </div>
+        <div id="mwa-progress-badge" style="background:#FFF3EE;border:2px solid #FF6B35;border-radius:20px;padding:5px 14px;">
+          <span style="font-family:'Fredoka',sans-serif;font-size:0.88rem;font-weight:700;color:#FF6B35;" id="mwa-progress-text">0 of 0 done</span>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="background:var(--border);border-radius:10px;height:8px;margin-bottom:20px;overflow:hidden;">
+        <div id="mwa-progress-bar" style="width:0%;background:linear-gradient(90deg,#FF9F43,#27AE60);height:100%;border-radius:10px;transition:width 0.5s;"></div>
+      </div>
+
+      <!-- Checklist -->
+      <div id="mwa-checklist" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
+
+      <!-- Story budget -->
+      <div style="background:white;border-radius:16px;border:2px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;" id="mwa-story-section" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.2rem;">✨</span>
+          <span style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">Stories today</span>
+        </div>
+        <div style="display:flex;gap:5px;" id="mwa-story-dots"></div>
+        <span style="font-size:0.82rem;font-weight:800;color:var(--muted);" id="mwa-story-text">0 used</span>
+      </div>
+
+      <!-- Story button (when budget allows) -->
+      <button id="btn-mwa-story" class="btn-main" style="margin-top:12px;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:none;">✨ Read a Story!</button>
+
+      <!-- Parent access -->
+      <div style="text-align:center;margin-top:20px;">
+        <button id="btn-mwa-parent" style="background:none;border:none;font-size:0.78rem;font-weight:800;color:var(--muted);cursor:pointer;text-decoration:underline;">👤 Parent Access</button>
+      </div>
+
+    </div>
+  </div>
   <div class="screen" id="screen-wiz-grade">
     <div class="card" style="text-align:center;">
     <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-screen-pick">BACK</button></div>
@@ -3504,7 +3549,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IS</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IT</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4299,7 +4344,13 @@ async function selectChildProfile(child) {
   // Make sure welcome screen is hidden
   document.getElementById('screen-welcome-1').style.display = 'none';
   document.getElementById('screen-welcome-1').classList.remove('active');
-  show('screen-pick');
+  // Check if a published My Week exists — if so, go to My Week Active mode
+  const mwData = getData();
+  if (mwData.myWeek && mwData.myWeek.published) {
+    openMyWeekActive();
+  } else {
+    show('screen-pick');
+  }
 
   updateHomeStats();
   updateAssignmentsBadge();
@@ -4883,6 +4934,7 @@ function show(id) {
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'screen-pick') updateHomeStats();
   if (typeof updateBottomBar === 'function') updateBottomBar();
+  document.dispatchEvent(new CustomEvent('readup-screen-shown', { detail: id }));
 }
 // Bug 6 fix: robust fallback chain handles missing grade levels
 function getStory(cat, grade, wordTarget) {
@@ -13654,6 +13706,182 @@ function launchMwTask(mw, itemIdx) {
     }
   }
 }
+
+// ══════════════════════════════════════════════════════════
+// MY WEEK ACTIVE — Full-screen child mode
+// ══════════════════════════════════════════════════════════
+
+function openMyWeekActive() {
+  const d = getData();
+  const mw = d.myWeek;
+  if (!mw || !mw.published) { show('screen-pick'); return; }
+
+  const nickname = currentChildProfile?.nickname || (currentChildProfile?.name || '').split(' ')[0] || 'King';
+  const start = new Date(mw.startDate + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  const end   = new Date(mw.endDate   + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+  document.getElementById('mwa-title').textContent = `${nickname}'s Week`;
+  document.getElementById('mwa-dates').textContent = `${start} – ${end}`;
+
+  renderMwaChecklist(mw);
+
+  // Story budget
+  const today = new Date().toISOString().split('T')[0];
+  const used   = (mw.storiesUsedByDate || {})[today] || 0;
+  const budget = mw.storyBudget || 0;
+  const storySection = document.getElementById('mwa-story-section');
+  const storyBtn     = document.getElementById('btn-mwa-story');
+  if (budget > 0) {
+    storySection.style.display = 'flex';
+    document.getElementById('mwa-story-dots').innerHTML = Array.from({length: budget}, (_, i) =>
+      `<div style="width:12px;height:12px;border-radius:50%;background:${i < used ? '#FF6B35' : 'var(--border)'}"></div>`).join('');
+    document.getElementById('mwa-story-text').textContent = `${used} of ${budget} used`;
+    storyBtn.style.display = used < budget ? 'block' : 'none';
+  } else {
+    storySection.style.display = 'none';
+    storyBtn.style.display = 'none';
+  }
+
+  // Story button → go to story wizard, return to My Week Active
+  storyBtn.onclick = () => {
+    SCREEN_BACK_MAP['screen-wiz-grade'] = ['BACK', 'screen-my-week-active'];
+    SCREEN_BACK_MAP['screen-wiz-length'] = ['BACK', 'screen-my-week-active'];
+    SCREEN_BACK_MAP['screen-wiz-topic'] = ['BACK', 'screen-my-week-active'];
+    show('screen-wiz-grade');
+  };
+
+  // Parent access button → show PIN
+  document.getElementById('btn-mwa-parent').onclick = () => {
+    openParentPIN();
+  };
+
+  // Set BACK_MAP so any sub-screen returns here
+  SCREEN_BACK_MAP['screen-my-week-active'] = ['BACK', 'screen-my-week-active'];
+
+  document.getElementById('screen-my-week-active').style.display = 'block';
+  // Hide the normal home screen
+  document.getElementById('screen-pick').style.display = 'none';
+  document.getElementById('screen-pick').classList.remove('active');
+  document.getElementById('screen-my-week-active').classList.add('active');
+}
+
+function renderMwaChecklist(mw) {
+  const items   = buildMwChecklistItems(mw);
+  const prog    = mwProgress(mw);
+  const container = document.getElementById('mwa-checklist');
+
+  // Progress
+  document.getElementById('mwa-progress-text').textContent = `${prog.done} of ${prog.total} done`;
+  const pct = prog.total ? Math.round(prog.done / prog.total * 100) : 0;
+  document.getElementById('mwa-progress-bar').style.width = pct + '%';
+
+  container.innerHTML = '';
+  items.forEach((item, idx) => {
+    const isNext = !item.done && items.slice(0, idx).every(i => i.done);
+    const isLocked = item.label.includes('📝') && isTestLocked(mw);
+
+    const row = document.createElement('div');
+    row.style.cssText = `
+      display:flex;align-items:center;gap:12px;padding:14px 16px;
+      border-radius:16px;cursor:${item.done || isLocked ? 'default' : 'pointer'};
+      background:${item.done ? '#EAF3DE' : isNext ? 'white' : 'var(--card)'};
+      border:2px solid ${item.done ? '#27AE60' : isNext ? '#FF6B35' : 'var(--border)'};
+      box-shadow:${isNext ? '0 4px 14px rgba(255,107,53,0.2)' : 'none'};
+      transition:all 0.2s;
+    `;
+
+    const icon = item.done ? '✅' : isLocked ? '🔒' : isNext ? '▶️' : '⭕';
+    const labelColor = item.done ? '#27500A' : isLocked ? 'var(--muted)' : isNext ? '#FF6B35' : 'var(--ink)';
+    const textDecor  = item.done ? 'text-decoration:line-through;' : '';
+
+    row.innerHTML = `
+      <div style="font-size:1.4rem;flex-shrink:0;">${icon}</div>
+      <div style="flex:1;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.05rem;font-weight:700;color:${labelColor};${textDecor}">${item.label.replace('📝 ', '')}</div>
+        ${isNext ? `<div style="font-size:0.75rem;font-weight:800;color:#FF9F43;">Tap to start!</div>` : ''}
+        ${item.wpm  ? `<div style="font-size:0.75rem;font-weight:800;color:var(--green);">⚡ ${item.wpm} WPM</div>` : ''}
+        ${isLocked  ? `<div style="font-size:0.75rem;font-weight:800;color:var(--muted);">Available on the last day</div>` : ''}
+      </div>
+      ${!item.done && !isLocked ? `<button style="background:linear-gradient(135deg,#FF9F43,#FF6B35);color:white;border:none;border-radius:12px;padding:10px 18px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">Start →</button>` : ''}
+    `;
+
+    if (!item.done && !isLocked) {
+      row.addEventListener('click', () => launchMwaTask(mw, idx));
+    }
+    container.appendChild(row);
+  });
+}
+
+function isTestLocked(mw) {
+  // Tests locked until the end date
+  const today  = new Date().toISOString().split('T')[0];
+  return mw.endDate > today;
+}
+
+function launchMwaTask(mw, itemIdx) {
+  const items = buildMwChecklistItems(mw);
+  const item  = items[itemIdx];
+
+  // Set BACK to always return to My Week Active
+  const backToMwa = ['BACK', 'screen-my-week-active'];
+
+  if (item.label.includes('1st read') || item.label.includes('2nd read') || item.label.includes('3rd read')) {
+    S.story = mw.passage.text;
+    S.storyTitle = mw.passage.title || 'My Reading';
+    S.isAIStory = false;
+    S._mwReadIdx = item.label.includes('1st') ? 1 : item.label.includes('2nd') ? 2 : 3;
+    S._mwTimed = !!mw.timed;
+    SCREEN_BACK_MAP['screen-read'] = backToMwa;
+    setupReadScreen();
+    show('screen-read');
+
+  } else if (item.label.includes('Spelling Practice')) {
+    if (mw.spelling) {
+      const list = { id:'mw-spelling', date:new Date().toISOString(), grade: currentChildProfile?.grade || S.grade, label: mw.spelling.label || 'Spelling Words', words: mw.spelling.words };
+      currentSpellingList = list;
+      document.getElementById('spelling-week-label').textContent = list.label;
+      renderSpellingWords(list);
+      SCREEN_BACK_MAP['screen-spelling'] = backToMwa;
+      show('screen-spelling');
+    }
+
+  } else if (item.label.includes('Vocabulary Practice')) {
+    if (mw.vocab) {
+      const list = { id:'mw-vocab', date:new Date().toISOString(), label: mw.vocab.label || 'Vocabulary Words', words: mw.vocab.words };
+      currentVocabList = list;
+      document.getElementById('vocab-week-label').textContent = list.label;
+      renderVocabWords(list);
+      SCREEN_BACK_MAP['screen-vocab'] = backToMwa;
+      show('screen-vocab');
+    }
+
+  } else if (item.label.includes('Spelling Test')) {
+    if (mw.spelling) {
+      const list = { id:'mw-spelling', date:new Date().toISOString(), grade: currentChildProfile?.grade || S.grade, label: mw.spelling.label || 'Spelling Words', words: mw.spelling.words };
+      currentSpellingList = list;
+      spellingPickedWords = [...list.words];
+      startSpellingQuiz(spellingPickedWords);
+      SCREEN_BACK_MAP['screen-quiz'] = backToMwa;
+    }
+
+  } else if (item.label.includes('Vocabulary Test')) {
+    if (mw.vocab) {
+      const list = { id:'mw-vocab', date:new Date().toISOString(), label: mw.vocab.label || 'Vocabulary Words', words: mw.vocab.words };
+      currentVocabList = list;
+      startVocabQuiz(list.words);
+      SCREEN_BACK_MAP['screen-vocab-quiz'] = backToMwa;
+    }
+  }
+}
+
+// Re-render checklist when returning to My Week Active
+const _origShow = window._showOverride;
+document.addEventListener('readup-screen-shown', (e) => {
+  if (e.detail === 'screen-my-week-active') {
+    const d = getData();
+    if (d.myWeek && d.myWeek.published) renderMwaChecklist(d.myWeek);
+  }
+});
 
 // ── My Week tab click handler ─────────────────────────────
 document.querySelector('.dash-tab[data-tab="myweek"]').addEventListener('click', () => {
