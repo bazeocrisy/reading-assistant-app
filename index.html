@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IQ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IR</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3504,7 +3504,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IQ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IR</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -13256,8 +13256,22 @@ function bindMwWizEvents() {
       if (diff > 6) { errEl.textContent = 'Week can be at most 7 days.'; return; }
       mwWizData.startDate = s; mwWizData.endDate = e;
     }
-    if (mwWizStep === 2 && mwWizData.passage && mwWizData.timed === undefined) {
-      showAppAlert('⚠️', 'One more thing!', 'Please choose whether to time the reads or build reps — tap ⏱️ or 📚 before continuing.');
+    if (mwWizStep === 2) {
+      if (!mwWizData.passage) {
+        showAppAlert('⚠️', 'No passage uploaded', 'Please upload a passage, or tap "Not This Week" to skip.');
+        return;
+      }
+      if (mwWizData.timed === undefined) {
+        showAppAlert('⚠️', 'One more choice!', 'Please choose ⏱️ time it or 📚 build reps before continuing.');
+        return;
+      }
+    }
+    if (mwWizStep === 3 && !mwWizData.spelling) {
+      showAppAlert('⚠️', 'No spelling words', 'Please upload or type spelling words, or tap "Not This Week" to skip.');
+      return;
+    }
+    if (mwWizStep === 4 && !mwWizData.vocab) {
+      showAppAlert('⚠️', 'No vocabulary words', 'Please upload or type vocabulary words, or tap "Not This Week" to skip.');
       return;
     }
     mwWizStep++; renderMwWizStep();
@@ -13308,7 +13322,7 @@ function bindMwWizEvents() {
     } catch(err) {
       hideMwSpinner(spinner);
       console.error('Passage upload error:', err);
-      showAppAlert('😕', 'Could not read passage', err.message || 'Try a clearer photo or a PDF/Word doc instead.');
+      showAppAlert('😕', 'Could not read passage', 'The image could not be processed. Try taking a regular photo (not HEIC), or use a PDF or Word doc instead.');
     }
   });
   const timedYes = document.getElementById('mw-timed-yes');
@@ -13397,7 +13411,7 @@ function bindMwWizEvents() {
       mwWizData.vocab = { label: 'Vocabulary Words', words: extractedWords };
       hideMwSpinner(spinner);
       renderMwWizStep();
-    } catch(err) { hideMwSpinner(spinner); showAppAlert('😕', 'Could not read vocab list', 'Try a clearer photo or type the words manually.'); }
+    } catch(err) { hideMwSpinner(spinner); showAppAlert('😕', 'Could not read vocab list', 'The image could not be processed. Try a regular JPG photo, or type the words manually below.'); }
   });
 
   // Step 5 — test toggles + attempt counters

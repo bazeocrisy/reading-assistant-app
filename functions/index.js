@@ -69,7 +69,7 @@ exports.generateStory = onRequest(
 
 // ── Extract Text from Image (OCR via Claude Vision) ──────
 exports.extractText = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "512MiB", timeoutSeconds: 120},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, memory: "1GiB", timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -81,15 +81,19 @@ exports.extractText = onRequest(
     }
 
     try {
-      // Convert HEIC/HEIF to JPEG — Claude vision API only accepts jpeg/png/gif/webp
       let finalBase64 = imageBase64;
       let finalMediaType = mediaType || "image/jpeg";
       if (finalMediaType === "image/heic" || finalMediaType === "image/heif") {
-        const inputBuffer = Buffer.from(imageBase64, "base64");
-        const jpegBuffer = await heicConvert({ buffer: inputBuffer, format: "JPEG", quality: 0.85 });
-        finalBase64 = Buffer.from(jpegBuffer).toString("base64");
-        finalMediaType = "image/jpeg";
-        logger.info("Converted HEIC to JPEG for Claude vision");
+        try {
+          const inputBuffer = Buffer.from(imageBase64, "base64");
+          const jpegBuffer = await heicConvert({ buffer: inputBuffer, format: "JPEG", quality: 0.85 });
+          finalBase64 = Buffer.from(jpegBuffer).toString("base64");
+          finalMediaType = "image/jpeg";
+          logger.info("Converted HEIC to JPEG for Claude vision");
+        } catch (heicErr) {
+          logger.error("HEIC conversion failed:", heicErr.message);
+          return res.status(500).json({error: "Could not convert HEIC image. Please use a JPG photo or PDF instead.", detail: heicErr.message});
+        }
       }
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -145,7 +149,7 @@ exports.extractText = onRequest(
 
 // ── Extract Spelling Words from Image (OCR + AI parsing) ──
 exports.extractSpellingWords = onRequest(
-  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "512MiB"},
+  {secrets: [anthropicKey], cors: CORS_ORIGIN, timeoutSeconds: 120, memory: "1GiB"},
   async (req, res) => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
@@ -157,15 +161,19 @@ exports.extractSpellingWords = onRequest(
     }
 
     try {
-      // Convert HEIC/HEIF to JPEG — Claude vision API only accepts jpeg/png/gif/webp
       let finalBase64 = imageBase64;
       let finalMediaType = mediaType || "image/jpeg";
       if (finalMediaType === "image/heic" || finalMediaType === "image/heif") {
-        const inputBuffer = Buffer.from(imageBase64, "base64");
-        const jpegBuffer = await heicConvert({ buffer: inputBuffer, format: "JPEG", quality: 0.85 });
-        finalBase64 = Buffer.from(jpegBuffer).toString("base64");
-        finalMediaType = "image/jpeg";
-        logger.info("Converted HEIC to JPEG for Claude vision");
+        try {
+          const inputBuffer = Buffer.from(imageBase64, "base64");
+          const jpegBuffer = await heicConvert({ buffer: inputBuffer, format: "JPEG", quality: 0.85 });
+          finalBase64 = Buffer.from(jpegBuffer).toString("base64");
+          finalMediaType = "image/jpeg";
+          logger.info("Converted HEIC to JPEG for Claude vision");
+        } catch (heicErr) {
+          logger.error("HEIC conversion failed in extractSpellingWords:", heicErr.message);
+          return res.status(500).json({error: "Could not convert HEIC image. Please use a JPG photo or PDF instead.", detail: heicErr.message});
+        }
       }      const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
