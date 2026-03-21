@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HZ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IA</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2542,29 +2542,32 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-spelling-source" id="btn-inscreen-back-screen-spelling-source">BACK</button></div>
       <div style="font-size:2.2rem;margin-bottom:4px;">📋</div>
       <div class="card-title" style="font-size:1.5rem;margin-bottom:4px;">My Word Lists</div>
-      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Pick a saved list or add new words</div>
+      <div id="mywords-subtitle" style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Your lists are ready!</div>
 
-      <!-- Saved lists — rendered dynamically -->
-      <div id="spelling-saved-lists" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;text-align:left;"></div>
+      <!-- Saved lists — rendered dynamically, prominent when present -->
+      <div id="spelling-saved-lists" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;text-align:left;"></div>
 
-      <!-- Upload -->
-      <button class="wiz-grade-btn" id="btn-spell-source-upload" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);margin-bottom:8px;">
-        <span style="font-size:1.6rem;">📄</span>
-        <div style="text-align:left;">
-          <div style="font-size:1.2rem;font-weight:900;">Upload a Document</div>
-          <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Photo, PDF, Word doc, or text file</div>
+      <!-- Add more words section — always visible but visually secondary when lists exist -->
+      <div id="mywords-add-section" style="border-top:1.5px solid var(--border);padding-top:14px;margin-top:4px;">
+        <div style="font-size:0.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">➕ Add New Words</div>
+        <div style="display:flex;gap:10px;">
+          <!-- Upload — compact tile -->
+          <button id="btn-spell-source-upload" style="flex:1;background:linear-gradient(135deg,#54A0FF,#2E86DE);border:none;border-radius:16px;padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform 0.15s;-webkit-tap-highlight-color:transparent;" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(0.96)'" ontouchend="this.style.transform=''">
+            <span style="font-size:1.6rem;">📄</span>
+            <div style="font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;color:white;line-height:1.2;">Upload</div>
+            <div style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.3;">Photo, PDF,<br>Word doc</div>
+          </button>
+          <!-- Type — compact tile -->
+          <button id="btn-spell-source-type" style="flex:1;background:linear-gradient(135deg,#5CD85A,#27AE60);border:none;border-radius:16px;padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform 0.15s;-webkit-tap-highlight-color:transparent;" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(0.96)'" ontouchend="this.style.transform=''">
+            <span style="font-size:1.6rem;">✏️</span>
+            <div style="font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;color:white;line-height:1.2;">Type Words</div>
+            <div style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.8);line-height:1.3;">Type or paste<br>your words</div>
+          </button>
         </div>
-      </button>
-      <!-- Type -->
-      <button class="wiz-grade-btn" id="btn-spell-source-type" style="background:linear-gradient(135deg,#5CD85A,#27AE60);">
-        <span style="font-size:1.6rem;">✏️</span>
-        <div style="text-align:left;">
-          <div style="font-size:1.2rem;font-weight:900;">Type My Words</div>
-          <div style="font-size:0.75rem;font-weight:700;opacity:0.85;">Type or paste your spelling words</div>
-        </div>
-      </button>
-      <!-- Clear All Words — only shown when lists exist -->
-      <button class="btn-main" id="btn-mywords-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:10px;">🗑️ Clear All My Lists</button>
+      </div>
+
+      <!-- Clear All — quiet red text link, only shown when lists exist -->
+      <button class="btn-main" id="btn-mywords-clear-all" style="display:none;background:none;border:none;color:var(--coral);font-size:0.82rem;font-weight:800;margin-top:14px;padding:6px;box-shadow:none;text-decoration:underline;cursor:pointer;">🗑️ Clear All My Lists</button>
     </div>
   </div>
 
@@ -3394,7 +3397,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HZ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IA</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -8899,12 +8902,15 @@ function renderSpellingSavedLists() {
   const clearAllBtn = document.getElementById('btn-mywords-clear-all');
   container.innerHTML = '';
 
+  const subtitle = document.getElementById('mywords-subtitle');
   if (lists.length === 0) {
-    container.innerHTML = '<div style="text-align:center;padding:10px 0 4px;color:var(--muted);font-size:0.85rem;font-weight:700;">No saved word lists yet — upload or type words below!</div>';
+    if (subtitle) subtitle.textContent = 'Add your first word list below!';
+    container.innerHTML = '';
     clearAllBtn.style.display = 'none';
     return;
   }
 
+  if (subtitle) subtitle.textContent = 'Your lists are ready!';
   clearAllBtn.style.display = 'block';
 
   // Show lists newest first
@@ -8915,20 +8921,21 @@ function renderSpellingSavedLists() {
     const date = list.date ? new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
 
     const row = document.createElement('div');
-    row.style.cssText = 'background:var(--section);border-radius:14px;padding:12px 14px;border:2px solid var(--border);';
+    row.style.cssText = 'background:var(--section);border-radius:18px;padding:14px 16px;border:2.5px solid var(--purple);box-shadow:0 4px 16px rgba(255,107,53,0.12);';
     row.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <div style="width:38px;height:38px;background:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📝</div>
         <div style="flex:1;min-width:0;">
-          <div class="spell-list-label-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+          <div class="spell-list-label-display" style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
           <input class="spell-list-label-input" type="text" value="${label.replace(/"/g,'&quot;')}" maxlength="40"
             style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;outline:none;">
-          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:2px;">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+          <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-top:2px;">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
         </div>
         <button class="spell-list-edit-btn" style="background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px;color:var(--muted);flex-shrink:0;" title="Rename">✏️</button>
         <button class="spell-list-delete-btn" style="background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px;color:var(--muted);flex-shrink:0;" title="Delete">🗑️</button>
       </div>
       <div class="spell-list-normal-row" style="display:flex;">
-        <button class="spell-list-open-btn btn-main btn-green" style="width:100%;padding:9px 14px;font-size:0.9rem;">▶ Practice</button>
+        <button class="spell-list-open-btn btn-main" style="width:100%;padding:14px;font-size:1.1rem;background:linear-gradient(135deg,var(--purple),var(--purple-deep));box-shadow:0 4px 14px rgba(255,107,53,0.35);">🎯 Let's Practice!</button>
       </div>
       <div class="spell-list-edit-row" style="display:none;gap:8px;">
         <button class="spell-list-cancel-btn" style="flex:1;background:none;border:2px solid var(--border);border-radius:12px;padding:9px;font-family:'Fredoka',sans-serif;font-size:0.9rem;font-weight:700;color:var(--muted);cursor:pointer;">Cancel</button>
