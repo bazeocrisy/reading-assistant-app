@@ -1837,7 +1837,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD ID</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IE</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3452,7 +3452,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD ID</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IE</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7608,6 +7608,7 @@ document.getElementById('btn-solo-save-reading').addEventListener('click', () =>
   });
 });
 document.getElementById('btn-wordbank-home').addEventListener('click', () => {
+  SCREEN_BACK_MAP['screen-wordbank'] = ['BACK', 'screen-pick'];
   openWordBankReview();
 });
 document.getElementById('btn-wordbank-done').addEventListener('click', () => {
@@ -9092,7 +9093,8 @@ function renderMyWords() {
       </div>
       <button id="mw-wordbank-practice" class="btn-main" style="width:100%;padding:13px;font-size:1.05rem;background:linear-gradient(135deg,#FFD93D,#F9A825);color:#5D4037;box-shadow:0 4px 14px rgba(249,168,37,0.3);">⭐ Review My Words</button>`;
     row.querySelector('#mw-wordbank-practice').addEventListener('click', () => {
-      show('screen-wordbank');
+      SCREEN_BACK_MAP['screen-wordbank'] = ['BACK', 'screen-my-words'];
+      openWordBankReview();
     });
     wbContainer.appendChild(row);
   }
