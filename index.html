@@ -1835,7 +1835,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HQ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD HR</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2946,30 +2946,28 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <div class="screen" id="screen-vocab-source">
     <div class="card" style="text-align:center;">
     <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-screen-pick">BACK</button></div>
-      <div class="card-title">📚 Vocabulary Words</div>
-      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:16px;">How do you want to add your vocabulary words?</p>
+      <div class="card-title">📚 My Vocabulary Lists</div>
+      <p style="font-weight:700;color:var(--muted);font-size:0.88rem;margin-bottom:14px;">Pick a saved list or add new words</p>
+
+      <!-- Saved vocab lists — rendered dynamically -->
+      <div id="vocab-saved-lists" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;text-align:left;"></div>
 
       <!-- Upload / Photo -->
-      <button class="kid-action-btn" id="btn-vocab-source-upload" aria-label="Upload a vocabulary list" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:12px;">
+      <button class="kid-action-btn" id="btn-vocab-source-upload" aria-label="Upload a vocabulary list" style="background:linear-gradient(135deg, #54A0FF, #2E86DE);box-shadow:0 6px 18px rgba(46,134,222,0.25);margin-bottom:4px;">
         <div class="kid-action-icon" aria-hidden="true">📄</div>
         <div class="kid-action-label">Upload a Document</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Photo, PDF, Word doc, or text file</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:0 0 12px;">Photo, PDF, Word doc, or text file</p>
 
       <!-- Type / Paste -->
-      <button class="kid-action-btn" id="btn-vocab-source-type" aria-label="Type or paste vocabulary words" style="background:linear-gradient(135deg, #00CEC9, #00838F);box-shadow:0 6px 18px rgba(0,131,143,0.25);margin-bottom:12px;">
+      <button class="kid-action-btn" id="btn-vocab-source-type" aria-label="Type or paste vocabulary words" style="background:linear-gradient(135deg, #00CEC9, #00838F);box-shadow:0 6px 18px rgba(0,131,143,0.25);margin-bottom:4px;">
         <div class="kid-action-icon" aria-hidden="true">✏️</div>
         <div class="kid-action-label">Type My Words</div>
       </button>
-      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:-6px 0 14px;">Type or paste words — with or without definitions</p>
+      <p style="font-weight:700;color:var(--muted);font-size:0.75rem;margin:0 0 12px;">Type or paste words — with or without definitions</p>
 
-      <!-- View existing list (if any) — matches spelling style -->
-      <button class="kid-action-btn" id="btn-vocab-source-existing" style="display:none;background:linear-gradient(135deg, #FFD93D, #F9A825);box-shadow:0 6px 18px rgba(249,168,37,0.3);">
-        <div class="kid-action-icon" aria-hidden="true">📋</div>
-        <div class="kid-action-label" id="btn-vocab-source-existing-label">View My Current Words</div>
-      </button>
-      <!-- Clear All Vocab Words — only shown when a list exists -->
-      <button class="btn-main" id="btn-vocab-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:6px;">🗑️ Clear All My Vocab Words</button>
+      <!-- Clear All — only shown when lists exist -->
+      <button class="btn-main" id="btn-vocab-clear-all" style="display:none;background:linear-gradient(135deg,#b2bec3,#95a5a6);color:#fff;font-size:0.9rem;margin-top:4px;">🗑️ Clear All My Vocab Lists</button>
     </div>
   </div>
 
@@ -3387,7 +3385,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HQ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD HR</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -11363,21 +11361,143 @@ let vocabPracticeMissed = [];
 let vocabFlashIndex = 0;
 let vocabFlashFlipped = false;
 
+// ── Vocab naming wizard ──────────────────────────────────────
+function showVocabListNamingWizard(wordCount, onSave) {
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const defaultName = `My Vocab List — ${today}`;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:24px;padding:24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:2rem;margin-bottom:6px;">📚</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);">Name Your Vocab List</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-top:4px;">${wordCount} word${wordCount !== 1 ? 's' : ''} ready to study!</div>
+      </div>
+      <input id="vocab-list-name-input" type="text" maxlength="40"
+        style="width:100%;border:2.5px solid var(--purple);border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;outline:none;margin-bottom:8px;"
+        placeholder="Name this list..." value="${defaultName}">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:14px;text-align:center;">e.g. "Chapter 5 Vocab" or "Week 3 Words"</div>
+      <div style="display:flex;gap:10px;">
+        <button id="vocab-list-name-cancel" style="flex:1;background:none;border:2px solid var(--border);border-radius:12px;padding:11px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);cursor:pointer;">Cancel</button>
+        <button id="vocab-list-name-save" style="flex:2;background:linear-gradient(135deg,#00CEC9,#00838F);color:white;border:none;border-radius:12px;padding:11px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">📚 Save List</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const input = overlay.querySelector('#vocab-list-name-input');
+  setTimeout(() => { input.focus(); input.select(); }, 100);
+  overlay.querySelector('#vocab-list-name-cancel').addEventListener('click', () => document.body.removeChild(overlay));
+  overlay.querySelector('#vocab-list-name-save').addEventListener('click', () => {
+    const name = input.value.trim() || defaultName;
+    document.body.removeChild(overlay);
+    onSave(name);
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { overlay.querySelector('#vocab-list-name-save').click(); } });
+}
+
+// ── Vocab saved list picker ──────────────────────────────────
+function renderVocabSavedLists() {
+  const d = getData();
+  const lists = d.vocabLists || [];
+  const container = document.getElementById('vocab-saved-lists');
+  const clearAllBtn = document.getElementById('btn-vocab-clear-all');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (lists.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:10px 0 4px;color:var(--muted);font-size:0.85rem;font-weight:700;">No saved vocab lists yet — upload or type words below!</div>';
+    clearAllBtn.style.display = 'none';
+    return;
+  }
+
+  clearAllBtn.style.display = 'block';
+
+  [...lists].reverse().forEach((list, idx) => {
+    const realIdx = lists.length - 1 - idx;
+    const label = list.label || `Vocab List ${realIdx + 1}`;
+    const wordCount = list.words ? list.words.length : 0;
+    const date = list.date ? new Date(list.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'background:var(--section);border-radius:14px;padding:12px 14px;border:2px solid var(--border);';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;min-width:0;">
+          <div class="vocab-list-label-display" style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
+          <input class="vocab-list-label-input" type="text" value="${label.replace(/"/g,'&quot;')}" maxlength="40"
+            style="display:none;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);border:2px solid var(--purple);border-radius:8px;padding:4px 8px;width:100%;box-sizing:border-box;outline:none;">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--muted);margin-top:2px;">${wordCount} word${wordCount !== 1 ? 's' : ''}${date ? ' · ' + date : ''}</div>
+        </div>
+        <button class="vocab-list-edit-btn" style="background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px;color:var(--muted);flex-shrink:0;" title="Rename">✏️</button>
+        <button class="vocab-list-delete-btn" style="background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px;color:var(--muted);flex-shrink:0;" title="Delete">🗑️</button>
+      </div>
+      <div class="vocab-list-normal-row" style="display:flex;">
+        <button class="vocab-list-open-btn btn-main" style="width:100%;padding:9px 14px;font-size:0.9rem;background:linear-gradient(135deg,#00CEC9,#00838F);color:white;border:none;">▶ Study</button>
+      </div>
+      <div class="vocab-list-edit-row" style="display:none;gap:8px;">
+        <button class="vocab-list-cancel-btn" style="flex:1;background:none;border:2px solid var(--border);border-radius:12px;padding:9px;font-family:'Fredoka',sans-serif;font-size:0.9rem;font-weight:700;color:var(--muted);cursor:pointer;">Cancel</button>
+        <button class="vocab-list-save-btn" style="flex:2;background:var(--green);color:white;border:none;border-radius:12px;padding:9px;font-family:'Fredoka',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;">✅ Save Name</button>
+      </div>`;
+
+    // Open list
+    row.querySelector('.vocab-list-open-btn').addEventListener('click', () => {
+      currentVocabList = list;
+      document.getElementById('vocab-week-label').textContent = label;
+      renderVocabWords(list);
+      show('screen-vocab');
+    });
+
+    // Edit label
+    const editBtn = row.querySelector('.vocab-list-edit-btn');
+    const labelDisplay = row.querySelector('.vocab-list-label-display');
+    const labelInput = row.querySelector('.vocab-list-label-input');
+    const saveBtn = row.querySelector('.vocab-list-save-btn');
+    const cancelBtn = row.querySelector('.vocab-list-cancel-btn');
+    const normalRow = row.querySelector('.vocab-list-normal-row');
+    const editRow = row.querySelector('.vocab-list-edit-row');
+
+    const enterEdit = () => {
+      labelDisplay.style.display = 'none'; labelInput.style.display = 'block';
+      normalRow.style.display = 'none'; editRow.style.display = 'flex';
+      labelInput.focus(); labelInput.select();
+    };
+    const exitEdit = (save) => {
+      const newLabel = labelInput.value.trim() || label;
+      if (save) {
+        const d2 = getData();
+        if (d2.vocabLists[realIdx]) d2.vocabLists[realIdx].label = newLabel;
+        saveData(d2);
+        labelDisplay.textContent = newLabel;
+      }
+      labelDisplay.style.display = ''; labelInput.style.display = 'none';
+      normalRow.style.display = 'flex'; editRow.style.display = 'none';
+    };
+
+    editBtn.addEventListener('click', enterEdit);
+    saveBtn.addEventListener('mousedown', e => e.preventDefault());
+    saveBtn.addEventListener('click', () => exitEdit(true));
+    cancelBtn.addEventListener('mousedown', e => e.preventDefault());
+    cancelBtn.addEventListener('click', () => exitEdit(false));
+    labelInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); exitEdit(true); } });
+
+    // Delete list
+    row.querySelector('.vocab-list-delete-btn').addEventListener('click', () => {
+      showAppConfirm('🗑️', 'Delete this list?', `"${label}" will be removed.`, '🗑️ Delete', 'Keep It').then(yes => {
+        if (!yes) return;
+        const d2 = getData();
+        d2.vocabLists.splice(realIdx, 1);
+        saveData(d2);
+        renderVocabSavedLists();
+      });
+    });
+
+    container.appendChild(row);
+  });
+}
+
 // ── Home button ──────────────────────────────────────────────
 function showVocabSourceScreen() {
-  const d = getData();
-  const existingBtn = document.getElementById('btn-vocab-source-existing');
-  const existingLabel = document.getElementById('btn-vocab-source-existing-label');
-  const clearAllBtn = document.getElementById('btn-vocab-clear-all');
-  if (d.vocabLists && d.vocabLists.length > 0) {
-    existingBtn.style.display = 'flex';
-    const latest = d.vocabLists[d.vocabLists.length - 1];
-    if (existingLabel) existingLabel.textContent = `View My Current Words (${latest.words.length})`;
-    clearAllBtn.style.display = 'block';
-  } else {
-    existingBtn.style.display = 'none';
-    clearAllBtn.style.display = 'none';
-  }
+  renderVocabSavedLists();
   show('screen-vocab-source');
 }
 
@@ -11394,43 +11514,21 @@ document.getElementById('btn-vocab-source-type').addEventListener('click', () =>
   show('screen-vocab-type');
 });
 
-document.getElementById('btn-vocab-source-existing').addEventListener('click', () => {
-  const d = getData();
-  if (d.vocabLists && d.vocabLists.length > 0) {
-    currentVocabList = d.vocabLists[d.vocabLists.length - 1];
-    renderVocabWords(currentVocabList);
-    show('screen-vocab');
-  }
-});
-
 // Vocab: Clear All Words button
 document.getElementById('btn-vocab-clear-all').addEventListener('click', () => {
-  showAppModal({
-    icon: '🗑️',
-    title: 'Clear All Vocab Words?',
-    message: 'This will remove all your saved vocabulary words. This cannot be undone.',
-    buttons: [
-      {
-        label: '✅ Yes, Clear All',
-        class: 'modal-red',
-        action: () => {
-          const d = getData();
-          d.vocabLists = [];
-          saveData(d);
-          currentVocabList = null;
-          document.getElementById('btn-vocab-source-existing').style.display = 'none';
-          document.getElementById('btn-vocab-clear-all').style.display = 'none';
-          // Update home badge
-          const badge = document.getElementById('home-vocab-badge');
-          if (badge) badge.style.display = 'none';
-          const t = document.getElementById('word-toast');
-          t.textContent = '🗑️ All vocabulary words cleared';
-          t.classList.add('show');
-          setTimeout(() => t.classList.remove('show'), 2000);
-        }
-      },
-      { label: '← Cancel', class: 'modal-outline', action: () => {} }
-    ]
+  showAppConfirm('🗑️', 'Clear All Vocab Lists?', 'This will remove all your saved vocabulary lists. This cannot be undone.', '🗑️ Yes, Clear All', 'Keep Them').then(yes => {
+    if (!yes) return;
+    const d = getData();
+    d.vocabLists = [];
+    saveData(d);
+    currentVocabList = null;
+    renderVocabSavedLists();
+    const badge = document.getElementById('home-vocab-badge');
+    if (badge) badge.style.display = 'none';
+    const t = document.getElementById('word-toast');
+    t.textContent = '🗑️ All vocabulary lists cleared';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
   });
 });
 
@@ -11478,21 +11576,24 @@ document.getElementById('btn-vocab-type-go').addEventListener('click', () => {
   const safety = checkContentSafety(words.map(w => w.word).join(' '));
   if (!safety.safe) { showAppAlert('🚫', 'Oops!', safety.reason); return; }
 
-  const vocabList = {
+  const vocabListData = {
     id: Date.now().toString(36),
     date: new Date().toISOString(),
     grade: S.grade || '2',
     words: words.map((w, i) => ({ ...w, num: i + 1, practiced: 0, mastered: false }))
   };
 
-  const d = getData();
-  d.vocabLists.push(vocabList);
-  if (d.vocabLists.length > 10) d.vocabLists.splice(0, d.vocabLists.length - 10);
-  saveData(d);
-
-  currentVocabList = vocabList;
-  renderVocabWords(vocabList);
-  show('screen-vocab');
+  showVocabListNamingWizard(vocabListData.words.length, (chosenLabel) => {
+    vocabListData.label = chosenLabel;
+    const d = getData();
+    d.vocabLists.push(vocabListData);
+    if (d.vocabLists.length > 10) d.vocabLists.splice(0, d.vocabLists.length - 10);
+    saveData(d);
+    currentVocabList = vocabListData;
+    document.getElementById('vocab-week-label').textContent = chosenLabel;
+    renderVocabWords(vocabListData);
+    show('screen-vocab');
+  });
 });
 
 // ── Parse definitions from raw OCR text ──────────────────────
@@ -11530,12 +11631,15 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
   if (!file) return;
   e.target.value = '';
 
-  show('screen-vocab');
-  document.getElementById('vocab-word-list').innerHTML = '';
-  document.getElementById('vocab-empty').style.display = 'none';
-  document.getElementById('vocab-loading').style.display = 'block';
-  document.getElementById('vocab-actions').style.display = 'none';
-  document.getElementById('vocab-week-label').textContent = '';
+  // Show loading toast — stay on vocab-source screen so wizard appears correctly
+  const loadingToast = document.createElement('div');
+  loadingToast.style.cssText = 'position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
+  loadingToast.innerHTML = `<div style="background:var(--card);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3);">
+    <div class="spin-circle" style="margin:0 auto 16px;width:40px;height:40px;border-width:5px;"></div>
+    <div style="font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink);">Reading your vocab list...</div>
+    <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-top:6px;">This may take a few seconds</div>
+  </div>`;
+  document.body.appendChild(loadingToast);
 
   try {
     const { fileBase64, mediaType, isImage } = await readUploadedFile(file);
@@ -11592,40 +11696,35 @@ document.getElementById('vocab-file-input').addEventListener('change', async (e)
     const vocabWordStr = extractedWords.map(w => w.word).join(' ');
     const vocabUploadSafety = checkContentSafety(vocabWordStr);
     if (!vocabUploadSafety.safe) {
-      document.getElementById('vocab-loading').style.display = 'none';
-      document.getElementById('vocab-empty').style.display = 'block';
+      document.body.removeChild(loadingToast);
       showAppAlert('🚫', 'Oops!', vocabUploadSafety.reason);
       return;
     }
 
-    const vocabList = {
+    const vocabListData = {
       id: Date.now().toString(36),
       date: new Date().toISOString(),
       grade: S.grade || '2',
       words: extractedWords.map((w, i) => ({ ...w, num: i + 1, practiced: 0, mastered: false }))
     };
 
-    const d = getData();
-    d.vocabLists.push(vocabList);
-    if (d.vocabLists.length > 10) d.vocabLists.splice(0, d.vocabLists.length - 10);
-    saveData(d);
-
-    currentVocabList = vocabList;
-    renderVocabWords(vocabList);
+    document.body.removeChild(loadingToast);
+    showVocabListNamingWizard(vocabListData.words.length, (chosenLabel) => {
+      vocabListData.label = chosenLabel;
+      const d = getData();
+      d.vocabLists.push(vocabListData);
+      if (d.vocabLists.length > 10) d.vocabLists.splice(0, d.vocabLists.length - 10);
+      saveData(d);
+      currentVocabList = vocabListData;
+      document.getElementById('vocab-week-label').textContent = chosenLabel;
+      renderVocabWords(vocabListData);
+      show('screen-vocab');
+    });
 
   } catch (err) {
     console.error('Vocab upload error:', err);
-    document.getElementById('vocab-loading').style.display = 'none';
-    document.getElementById('vocab-word-list').innerHTML = `
-      <div style="text-align:center;padding:30px 0;">
-        <div style="font-size:2.5rem;margin-bottom:8px;">😕</div>
-        <p style="font-weight:800;color:#e74c3c;font-size:1rem;">Couldn't read those words</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:6px;">Try a clearer photo, or type your words instead.</p>
-        <button class="btn-main" id="btn-vocab-retry-error" style="margin-top:16px;font-size:0.95rem;background:linear-gradient(135deg,#00CEC9,#00838F);">📄 Try Again</button>
-      </div>`;
-    document.getElementById('btn-vocab-retry-error').addEventListener('click', () => {
-      document.getElementById('vocab-file-input').click();
-    });
+    try { document.body.removeChild(loadingToast); } catch(e) {}
+    showAppAlert('😕', 'Couldn\'t read those words', (err.message || 'Unknown error') + ' — Try a clearer photo, or type your words instead.');
   }
 });
 
