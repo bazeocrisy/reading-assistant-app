@@ -1557,15 +1557,21 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
 /* ── Parent Dashboard Tabs ──────────────────────────────── */
 .dash-tab {
-  flex: 1; padding: 9px 4px; border: none; border-radius: 12px;
-  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.72rem;
+  flex: 1; padding: 8px 4px; border: none; border-radius: 12px;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.1rem;
   cursor: pointer; transition: all 0.2s; background: none; color: var(--muted);
-  white-space: nowrap;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  line-height: 1.2; white-space: nowrap;
 }
 .dash-tab.active {
   background: white; color: var(--purple);
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+.dash-tab[data-tab="overview"].active { color: #FF6B35; }
+.dash-tab[data-tab="readings"].active { color: #9B59B6; }
+.dash-tab[data-tab="spelling"].active { color: #27AE60; }
+.dash-tab[data-tab="myweek"].active   { color: #FF6B35; }
+.dash-tab[data-tab="settings"].active { color: #636e72; }
 .dash-tab-content { animation: fadeUp 0.2s ease both; }
 
 /* ── Reading Cards ──────────────────────────────────────── */
@@ -1837,7 +1843,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IL</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IN</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3497,7 +3503,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IL</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IN</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -3577,59 +3583,83 @@ body.bedtime .read-side-btn { opacity: 0.8; }
     </div>
 
     <!-- TAB NAV -->
-    <div style="display:flex;gap:0;background:var(--section);border-radius:16px;padding:4px;margin-bottom:16px;">
-      <button class="dash-tab active" data-tab="overview">📊 Overview</button>
-      <button class="dash-tab" data-tab="readings">⏱ Readings</button>
-      <button class="dash-tab" data-tab="spelling">🔤 Spelling</button>
-      <button class="dash-tab" data-tab="myweek">📅 My Week</button>
-      <button class="dash-tab" data-tab="settings">⚙️</button>
+    <div style="display:flex;gap:4px;background:var(--section);border-radius:16px;padding:4px;margin-bottom:16px;">
+      <button class="dash-tab active" data-tab="overview" style="font-family:'Fredoka',sans-serif;">📊<br><span style="font-size:0.65rem;">Overview</span></button>
+      <button class="dash-tab" data-tab="readings" style="font-family:'Fredoka',sans-serif;">⏱️<br><span style="font-size:0.65rem;">Readings</span></button>
+      <button class="dash-tab" data-tab="spelling" style="font-family:'Fredoka',sans-serif;">🔤<br><span style="font-size:0.65rem;">Spelling</span></button>
+      <button class="dash-tab" data-tab="myweek" style="font-family:'Fredoka',sans-serif;">📅<br><span style="font-size:0.65rem;">My Week</span></button>
+      <button class="dash-tab" data-tab="settings" style="font-family:'Fredoka',sans-serif;">⚙️<br><span style="font-size:0.65rem;">Settings</span></button>
     </div>
 
     <!-- TAB: OVERVIEW -->
     <div id="dash-tab-overview" class="dash-tab-content">
 
       <!-- This Week -->
-      <div class="card" style="margin-bottom:12px;">
-        <div class="dash-section-title">📅 This Week</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFF8EE,#FFF3E0);border:2px solid var(--border);">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#FF6B35;margin-bottom:12px;">📅 This Week</div>
         <div class="dash-stat-grid">
-          <div class="dash-stat"><div class="dash-stat-num" id="week-stories">0</div><div class="dash-stat-label">Stories</div></div>
-          <div class="dash-stat"><div class="dash-stat-num" id="week-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
-          <div class="dash-stat"><div class="dash-stat-num" id="week-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
-          <div class="dash-stat"><div class="dash-stat-num" id="week-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:14px;">
+            <div class="dash-stat-num" id="week-stories" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">📖 Stories</div>
+          </div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);border-radius:14px;">
+            <div class="dash-stat-num" id="week-reads" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">🔄 Reads</div>
+          </div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#5CD85A,#27AE60);border-radius:14px;">
+            <div class="dash-stat-num" id="week-mins" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">⏱ Minutes</div>
+          </div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#9B59B6,#8E44AD);border-radius:14px;">
+            <div class="dash-stat-num" id="week-rereads" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">⭐ 3× Read</div>
+          </div>
         </div>
       </div>
 
       <!-- All Time -->
-      <div class="card" style="margin-bottom:12px;">
-        <div class="dash-section-title">🏆 All Time</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#F0F8FF,#E8F4FD);border:2px solid #B5D4F4;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#2E86DE;margin-bottom:12px;">🏆 All Time</div>
         <div class="dash-stat-grid">
-          <div class="dash-stat"><div class="dash-stat-num" id="all-stories">0</div><div class="dash-stat-label">Stories</div></div>
-          <div class="dash-stat"><div class="dash-stat-num" id="all-reads">0</div><div class="dash-stat-label">Total Reads</div></div>
-          <div class="dash-stat"><div class="dash-stat-num" id="all-mins">0</div><div class="dash-stat-label">Est. Minutes</div></div>
-          <div class="dash-stat"><div class="dash-stat-num" id="all-rereads">0</div><div class="dash-stat-label">3× Stories</div></div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#54A0FF,#2E86DE);border-radius:14px;">
+            <div class="dash-stat-num" id="all-stories" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">📖 Stories</div>
+          </div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#00CEC9,#00838F);border-radius:14px;">
+            <div class="dash-stat-num" id="all-reads" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">🔄 Reads</div>
+          </div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:14px;">
+            <div class="dash-stat-num" id="all-mins" style="color:white;">0</div>
+            <div class="dash-stat-label" style="color:rgba(255,255,255,0.85);">⏱ Minutes</div>
+          </div>
+          <div class="dash-stat" style="background:linear-gradient(135deg,#FFD93D,#F9A825);border-radius:14px;">
+            <div class="dash-stat-num" id="all-rereads" style="color:#5D4037;">0</div>
+            <div class="dash-stat-label" style="color:rgba(93,64,55,0.8);">⭐ 3× Read</div>
+          </div>
         </div>
-        <div style="text-align:center;font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:6px;" id="first-used-label"></div>
+        <div style="text-align:center;font-size:0.75rem;color:var(--muted);font-weight:700;margin-top:8px;" id="first-used-label"></div>
       </div>
 
       <!-- WPM Summary -->
-      <div class="card" style="margin-bottom:12px;">
-        <div class="dash-section-title">⚡ Reading Speed (WPM)</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#F5F0FF,#EDE7FD);border:2px solid #AFA9EC;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#8E44AD;margin-bottom:10px;">⚡ Reading Speed (WPM)</div>
         <div id="dash-wpm-content"></div>
       </div>
 
       <!-- Favorite Topics -->
-      <div class="card" style="margin-bottom:12px;">
-        <div class="dash-section-title">❤️ Favorite Topics</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFF0F5,#FFE4EE);border:2px solid #F4C0D1;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#D4537E;margin-bottom:10px;">❤️ Favorite Topics</div>
         <div id="topic-bars"></div>
       </div>
 
       <!-- Word Bank -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div class="dash-section-title" style="margin:0;">📖 Word Bank</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#FFFBF0,#FFF8E1);border:2px solid #FAC775;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#BA7517;">📖 Word Bank</div>
           <button class="btn-main btn-outline" id="btn-clear-words" style="width:auto;margin-top:0;padding:5px 12px;font-size:0.78rem;">Clear</button>
         </div>
-        <p style="font-size:0.75rem;color:var(--muted);font-weight:700;margin:6px 0 8px;">Words your child tapped for help. 🔴 = needs more practice.</p>
+        <p style="font-size:0.75rem;color:var(--muted);font-weight:700;margin:0 0 8px;">Words King tapped for help. 🔴 = needs more practice.</p>
         <div class="word-bank-list" id="word-bank-display"></div>
       </div>
 
@@ -3637,20 +3667,23 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
     <!-- TAB: TIMED READINGS -->
     <div id="dash-tab-readings" class="dash-tab-content" style="display:none;">
-      <div id="dash-readings-content">
-        <div style="text-align:center;padding:40px 20px;color:var(--muted);">
-          <div style="font-size:2.5rem;margin-bottom:10px;">⏱</div>
-          <div style="font-weight:800;font-size:1rem;">No timed readings yet</div>
-          <div style="font-size:0.82rem;margin-top:6px;">Complete a Speed Test to see results here</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#F5F0FF,#EDE7FD);border:2px solid #AFA9EC;">
+        <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#8E44AD;margin-bottom:10px;">⏱️ Timed Readings</div>
+        <div id="dash-readings-content">
+          <div style="text-align:center;padding:30px 20px;color:var(--muted);">
+            <div style="font-size:2.5rem;margin-bottom:10px;">⏱</div>
+            <div style="font-weight:800;font-size:1rem;">No timed readings yet</div>
+            <div style="font-size:0.82rem;margin-top:6px;">Complete a Speed Test to see results here</div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- TAB: SPELLING -->
     <div id="dash-tab-spelling" class="dash-tab-content" style="display:none;">
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div class="dash-section-title" style="margin:0;">📝 Spelling Words</div>
+      <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#EAFAF1,#D5F5E3);border:2px solid #A9DFBF;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:700;color:#27AE60;">🔤 Spelling Words</div>
           <button class="btn-main btn-outline" id="btn-clear-spelling" style="width:auto;margin-top:0;padding:5px 12px;font-size:0.78rem;">Clear</button>
         </div>
         <div id="dash-spelling-content">
@@ -12953,17 +12986,11 @@ function renderMwWizStep() {
         <div style="display:flex;gap:10px;margin-bottom:16px;">
           <div style="flex:1;">
             <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 Start Date</div>
-            <div style="position:relative;">
-              <div onclick="document.getElementById('mw-start-date').showPicker?document.getElementById('mw-start-date').showPicker():document.getElementById('mw-start-date').click()" style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);cursor:pointer;" id="mw-start-display">${mwWizData.startDate || today}</div>
-              <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;" oninput="document.getElementById('mw-start-display').textContent=this.value">
-            </div>
+            <input type="date" id="mw-start-date" value="${mwWizData.startDate || today}" style="width:100%;padding:12px 14px;border:2.5px solid #FF6B35;border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;cursor:pointer;-webkit-appearance:none;">
           </div>
           <div style="flex:1;">
             <div style="font-size:0.75rem;font-weight:800;color:#FF6B35;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📅 End Date</div>
-            <div style="position:relative;">
-              <div onclick="document.getElementById('mw-end-date').showPicker?document.getElementById('mw-end-date').showPicker():document.getElementById('mw-end-date').click()" style="background:var(--section);border:2.5px solid #FF6B35;border-radius:12px;padding:12px 14px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);cursor:pointer;" id="mw-end-display">${mwWizData.endDate || today}</div>
-              <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;" oninput="document.getElementById('mw-end-display').textContent=this.value">
-            </div>
+            <input type="date" id="mw-end-date" value="${mwWizData.endDate || today}" style="width:100%;padding:12px 14px;border:2.5px solid #FF6B35;border-radius:12px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);background:var(--section);box-sizing:border-box;cursor:pointer;-webkit-appearance:none;">
           </div>
         </div>
         <div style="background:var(--purple-soft);border-radius:10px;padding:10px 14px;font-size:0.78rem;font-weight:700;color:var(--purple-dark);margin-bottom:12px;">📧 Report emails automatically at 7PM on the end date — whether or not everything is completed.</div>
