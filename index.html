@@ -788,6 +788,8 @@ body.bedtime .quiz-correction { color: #8adca0; }
 .dict-sentence { background: var(--section); border-radius: 12px; padding: 10px 14px; margin-bottom: 7px; font-size: 0.92rem; font-weight: 700; color: var(--ink); line-height: 1.5; border-left: 4px solid var(--purple-light); text-align: left; }
 .dict-sentence .dict-word-span { display: inline; border-radius: 4px; padding: 0 1px; transition: background 0.1s; }
 .dict-sentence .dict-word-span.dict-word-active { background: var(--gold); color: var(--ink); border-radius: 4px; padding: 0 2px; }
+.dict-def-word { display: inline; border-radius: 4px; padding: 0 1px; transition: background 0.1s; cursor: default; }
+.dict-def-word.dict-word-active { background: var(--gold); color: var(--ink); border-radius: 4px; padding: 0 3px; transform: scale(1.05); }
 .dict-loading { text-align: center; color: var(--muted); font-weight: 700; font-size: 0.9rem; }
 .dict-loading .spin-circle { width: 28px; height: 28px; border-width: 4px; margin: 0 auto 8px; }
 .dict-speaker-btn { display: block; margin: 0 auto 12px; padding: 10px 24px; border-radius: 14px; border: 2.5px solid var(--purple); background: var(--purple-soft); font-family: 'Nunito'; font-weight: 800; font-size: 0.95rem; color: var(--purple-deep); cursor: pointer; transition: all 0.2s; }
@@ -1876,7 +1878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JG</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JI</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2664,19 +2666,41 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   <!-- SCREEN: Word Bank Review -->
   <div class="screen" id="screen-wordbank">
     <div class="card">
-    <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-screen-pick">BACK</button></div>
-      <div class="card-title">📖 Word Bank</div>
-      <p style="color:var(--muted);font-weight:700;font-size:0.88rem;margin-bottom:4px;">Tap any word to hear it. Hit ✅ when you know it!</p>
+      <div style="text-align:left;margin-bottom:4px;"><button class="btn-back-nav" data-back-target="screen-pick" id="btn-inscreen-back-screen-pick">BACK</button></div>
+      <div class="card-title">📖 My Words</div>
       <div class="encouragement" id="wordbank-count-msg" style="margin-bottom:12px;"></div>
-      <div id="wordbank-review-list"></div>
-      <div id="wordbank-empty" style="display:none;text-align:center;padding:30px 0;">
-        <div style="font-size:2.5rem;margin-bottom:8px;">🌟</div>
-        <p style="font-weight:800;color:var(--muted);font-size:1rem;">No words yet!</p>
-        <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap words while reading to add them here.</p>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="wb-tab-story" onclick="wbSwitchTab('story')" style="flex:1;padding:10px 8px;border-radius:12px;border:2px solid var(--purple);background:var(--purple);color:white;font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;">📖 Story Words</button>
+        <button id="wb-tab-vocab" onclick="wbSwitchTab('vocab')" style="flex:1;padding:10px 8px;border-radius:12px;border:2px solid var(--border);background:var(--section);color:var(--muted);font-family:'Fredoka',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;">📚 Vocab Words</button>
       </div>
-      <div id="wordbank-clear-section" style="display:none;margin-top:18px;text-align:center;">
-        <button class="btn-main btn-outline" id="btn-wordbank-clear-all" aria-label="Clear all words from Word Bank" style="font-size:0.88rem;border-color:var(--coral) !important;color:var(--coral) !important;">🗑 Clear All Words</button>
+
+      <!-- Story Words Tab -->
+      <div id="wb-panel-story">
+        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:12px;">Words you tapped while reading — tap to hear!</p>
+        <div id="wordbank-review-list"></div>
+        <div id="wordbank-empty" style="display:none;text-align:center;padding:30px 0;">
+          <div style="font-size:2.5rem;margin-bottom:8px;">🌟</div>
+          <p style="font-weight:800;color:var(--muted);font-size:1rem;">No story words yet!</p>
+          <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Tap any word while reading to save it here.</p>
+        </div>
+        <div id="wordbank-clear-section" style="display:none;margin-top:18px;text-align:center;">
+          <button class="btn-main btn-outline" id="btn-wordbank-clear-all" aria-label="Clear all words from Word Bank" style="font-size:0.88rem;border-color:var(--coral) !important;color:var(--coral) !important;">🗑 Clear All Story Words</button>
+        </div>
       </div>
+
+      <!-- Vocab Words Tab -->
+      <div id="wb-panel-vocab" style="display:none;">
+        <p style="color:var(--muted);font-weight:700;font-size:0.85rem;margin-bottom:12px;">Your vocabulary words — tap to hear the word and definition!</p>
+        <div id="wordbank-vocab-list"></div>
+        <div id="wordbank-vocab-empty" style="display:none;text-align:center;padding:30px 0;">
+          <div style="font-size:2.5rem;margin-bottom:8px;">📚</div>
+          <p style="font-weight:800;color:var(--muted);font-size:1rem;">No vocab words yet!</p>
+          <p style="font-weight:700;color:var(--muted);font-size:0.85rem;margin-top:4px;">Add vocabulary words from Practice Words to see them here.</p>
+        </div>
+      </div>
+
       <button class="btn-main btn-green" id="btn-wordbank-done" style="display:none;">✅ Done Reviewing</button>
     </div>
   </div>
@@ -3589,7 +3613,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JG</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JI</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7459,15 +7483,30 @@ function showDictionaryPopup(word, idx) {
   // Fetch definition
   getWordDefinition(word, S.grade).then(definition => {
     if (!dictPopupOpen) return; // popup was closed already
+    const defEl = document.getElementById('dict-definition');
     if (definition) {
-      document.getElementById('dict-definition').textContent = definition;
+      // Render definition as individual word spans for yellow highlight tracking
+      defEl.innerHTML = '';
+      const defWords = definition.split(/(\s+)/);
+      const defWordEls = [];
+      defWords.forEach(chunk => {
+        if (/\S/.test(chunk)) {
+          const span = document.createElement('span');
+          span.className = 'dict-def-word';
+          span.textContent = chunk;
+          defEl.appendChild(span);
+          defWordEls.push(span);
+        } else {
+          defEl.appendChild(document.createTextNode(chunk));
+        }
+      });
       document.getElementById('dict-hear-all-btn').style.display = 'block';
       document.getElementById('dict-hear-btn').textContent = '🔤 Just the Word';
       document.getElementById('dict-hear-btn').style.display = 'block';
-      // Auto-read word + definition
-      sayDictEntry(word, definition);
+      // Auto-read word + definition with word-by-word yellow highlight
+      sayHearItAll(word, definition, [], defWordEls);
     } else {
-      document.getElementById('dict-definition').textContent = 'Tap 🔊 to hear the word!';
+      defEl.textContent = 'Tap 🔊 to hear the word!';
       document.getElementById('dict-hear-all-btn').style.display = 'none';
       document.getElementById('dict-hear-btn').textContent = '🔤 Just the Word';
       document.getElementById('dict-hear-btn').style.display = 'block';
@@ -7484,8 +7523,9 @@ function closeDictionaryPopup() {
   if (dictRafId) { cancelAnimationFrame(dictRafId); dictRafId = null; }
   if (dictAudio) { dictAudio.pause(); dictAudio = null; }
 
-  // Clear word highlight
+  // Clear word highlight — story words and definition spans
   S.wordEls.forEach(w => { w.style.background = ''; w.style.color = ''; w.classList.remove('highlight'); });
+  document.querySelectorAll('#dict-definition .dict-def-word').forEach(el => el.classList.remove('dict-word-active'));
 
   // Resume teacher if we paused it
   if (teacherWasPaused && ttsState === 'paused') {
@@ -7560,14 +7600,17 @@ function showSightWordPopup(entry) {
   sayHearItAll(word, definition, sentences, sentWordEls);
 }
 
-// Hear It All button for sight word popup
+// Hear It All button — works for both sight word popup (sentence spans) and regular dict popup (def spans)
 document.getElementById('btn-dict-hear-all').addEventListener('click', () => {
   const word = document.getElementById('dict-word').textContent;
   const def = document.getElementById('dict-definition').textContent;
   const sentEls = Array.from(document.querySelectorAll('#dict-sentences .dict-sentence'));
   const sentences = sentEls.map(el => Array.from(el.querySelectorAll('.dict-word-span')).map(s => s.textContent).join(' '));
   const sentWordEls = Array.from(document.querySelectorAll('#dict-sentences .dict-word-span'));
-  sayHearItAll(word, def, sentences, sentWordEls);
+  // For regular dict popup, use definition word spans; for sight word popup use sentence spans
+  const defWordEls = Array.from(document.querySelectorAll('#dict-definition .dict-def-word'));
+  const targetEls = sentWordEls.length > 0 ? sentWordEls : defWordEls;
+  sayHearItAll(word, def, sentences, targetEls);
 });
 
 // Speak word + definition + sentences with word-by-word yellow highlighting
@@ -7842,96 +7885,151 @@ document.getElementById('btn-wordbank-done').addEventListener('click', () => {
 });
 
 // ── Word Bank Review Screen Logic ─────────────────────────
+function wbSwitchTab(tab) {
+  const storyPanel = document.getElementById('wb-panel-story');
+  const vocabPanel = document.getElementById('wb-panel-vocab');
+  const storyBtn   = document.getElementById('wb-tab-story');
+  const vocabBtn   = document.getElementById('wb-tab-vocab');
+  if (tab === 'story') {
+    storyPanel.style.display = 'block';
+    vocabPanel.style.display = 'none';
+    storyBtn.style.background = 'var(--purple)'; storyBtn.style.color = 'white'; storyBtn.style.borderColor = 'var(--purple)';
+    vocabBtn.style.background = 'var(--section)'; vocabBtn.style.color = 'var(--muted)'; vocabBtn.style.borderColor = 'var(--border)';
+  } else {
+    storyPanel.style.display = 'none';
+    vocabPanel.style.display = 'block';
+    vocabBtn.style.background = '#00838F'; vocabBtn.style.color = 'white'; vocabBtn.style.borderColor = '#00838F';
+    storyBtn.style.background = 'var(--section)'; storyBtn.style.color = 'var(--muted)'; storyBtn.style.borderColor = 'var(--border)';
+  }
+}
+
 function openWordBankReview() {
   const d = getData();
-  const listEl = document.getElementById('wordbank-review-list');
-  const emptyEl = document.getElementById('wordbank-empty');
-  const countEl = document.getElementById('wordbank-count-msg');
+  const listEl      = document.getElementById('wordbank-review-list');
+  const emptyEl     = document.getElementById('wordbank-empty');
+  const countEl     = document.getElementById('wordbank-count-msg');
   const clearSection = document.getElementById('wordbank-clear-section');
+  const vocabListEl = document.getElementById('wordbank-vocab-list');
+  const vocabEmptyEl = document.getElementById('wordbank-vocab-empty');
   listEl.innerHTML = '';
+  vocabListEl.innerHTML = '';
 
-  // Get words sorted by most recently seen
-  const words = [...d.wordBank].sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+  // ── Story Words tab ──
+  const storyWords = [...(d.wordBank || [])].sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+  const totalVocab = (d.vocabLists || []).reduce((n, l) => n + (l.words || []).length, 0);
+  countEl.textContent = `${storyWords.length} story word${storyWords.length === 1 ? '' : 's'} · ${totalVocab} vocab word${totalVocab === 1 ? '' : 's'}`;
 
-  if (words.length === 0) {
+  if (storyWords.length === 0) {
     emptyEl.style.display = 'block';
     listEl.style.display = 'none';
-    countEl.textContent = '';
     clearSection.style.display = 'none';
   } else {
     emptyEl.style.display = 'none';
     listEl.style.display = 'block';
     clearSection.style.display = 'block';
-    countEl.textContent = `You have ${words.length} word${words.length === 1 ? '' : 's'} to practice!`;
-
     const dictCache = getDictCache();
-    words.forEach(w => {
+    storyWords.forEach(w => {
       const clean = w.word.toLowerCase().replace(/[^a-z']/g, '');
       const cacheKey = `${clean}_${S.grade}`;
       const definition = dictCache[cacheKey] || '';
-
       const item = document.createElement('div');
       item.className = 'wb-review-item';
-      item.style.flexDirection = 'column';
-      item.style.alignItems = 'flex-start';
-      // Build card with safe DOM methods (no innerHTML with user/API data)
+      item.style.cssText = 'flex-direction:column;align-items:flex-start;';
       const topRow = document.createElement('div');
       topRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;width:100%;';
       const wordDiv = document.createElement('div');
       wordDiv.className = 'wb-review-word';
       wordDiv.style.cssText = 'flex:1;cursor:pointer;';
       wordDiv.textContent = w.word;
-      const knowBtn2 = document.createElement('button');
-      knowBtn2.className = 'wb-know-btn';
-      knowBtn2.setAttribute('aria-label', 'I know the word ' + w.word);
-      knowBtn2.textContent = '✅ I Know This!';
+      const knowBtn = document.createElement('button');
+      knowBtn.className = 'wb-know-btn';
+      knowBtn.setAttribute('aria-label', 'I know the word ' + w.word);
+      knowBtn.textContent = '✅ I Know This!';
       topRow.appendChild(wordDiv);
-      topRow.appendChild(knowBtn2);
+      topRow.appendChild(knowBtn);
       item.appendChild(topRow);
-
       const defDiv = document.createElement('div');
-      if (definition) {
-        defDiv.style.cssText = 'font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;cursor:pointer;';
-        defDiv.textContent = definition;
-      } else {
-        defDiv.style.cssText = 'font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;cursor:pointer;';
-        defDiv.textContent = 'Tap to look up meaning';
-      }
+      defDiv.style.cssText = definition
+        ? 'font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;cursor:pointer;'
+        : 'font-size:0.82rem;font-weight:700;color:var(--muted);margin-top:4px;cursor:pointer;';
+      defDiv.textContent = definition || 'Tap to look up meaning';
       item.appendChild(defDiv);
-
-      // Tap word/definition area to hear it
       item.addEventListener('click', (e) => {
-        // Don't trigger dictionary if they clicked the "I Know This" button
         if (e.target.closest('.wb-know-btn')) return;
         showDictionaryPopup(w.word, -1);
       });
-
-      // "I Know This!" removes the word
-      knowBtn2.addEventListener('click', (e) => {
+      knowBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         item.classList.add('removing');
         setTimeout(() => {
-          // Remove from data
           const d2 = getData();
           d2.wordBank = d2.wordBank.filter(wb => wb.word !== w.word);
           saveData(d2);
           item.remove();
-          // Update count
           const remaining = d2.wordBank.length;
           if (remaining === 0) {
             emptyEl.style.display = 'block';
             listEl.style.display = 'none';
             clearSection.style.display = 'none';
-            countEl.textContent = '🎉 You learned every word!';
+            countEl.textContent = '🎉 You learned every story word!';
           } else {
-            countEl.textContent = `You have ${remaining} word${remaining === 1 ? '' : 's'} to practice!`;
+            countEl.textContent = `${remaining} story word${remaining === 1 ? '' : 's'} · ${totalVocab} vocab word${totalVocab === 1 ? '' : 's'}`;
           }
         }, 400);
       });
-
       listEl.appendChild(item);
     });
   }
+
+  // ── Vocab Words tab ──
+  const allVocabWords = [];
+  (d.vocabLists || []).forEach(list => {
+    (list.words || []).forEach(w => {
+      allVocabWords.push({ word: w.word, definition: w.definition || '', listLabel: list.label || 'Vocab' });
+    });
+  });
+
+  if (allVocabWords.length === 0) {
+    vocabEmptyEl.style.display = 'block';
+    vocabListEl.style.display = 'none';
+  } else {
+    vocabEmptyEl.style.display = 'none';
+    vocabListEl.style.display = 'block';
+    allVocabWords.forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'wb-review-item';
+      item.style.cssText = 'flex-direction:column;align-items:flex-start;cursor:pointer;border-left:4px solid #00838F;';
+      const topRow = document.createElement('div');
+      topRow.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;';
+      const wordDiv = document.createElement('div');
+      wordDiv.className = 'wb-review-word';
+      wordDiv.style.color = '#00838F';
+      wordDiv.textContent = w.word;
+      const speakBtn = document.createElement('button');
+      speakBtn.style.cssText = 'margin-left:auto;background:none;border:none;font-size:1.3rem;cursor:pointer;padding:0 4px;';
+      speakBtn.textContent = '🔊';
+      speakBtn.setAttribute('aria-label', 'Hear ' + w.word);
+      topRow.appendChild(wordDiv);
+      topRow.appendChild(speakBtn);
+      item.appendChild(topRow);
+      if (w.definition) {
+        const defDiv = document.createElement('div');
+        defDiv.style.cssText = 'font-size:0.88rem;font-weight:700;color:var(--body);margin-top:4px;line-height:1.4;';
+        defDiv.textContent = w.definition;
+        item.appendChild(defDiv);
+      }
+      const labelDiv = document.createElement('div');
+      labelDiv.style.cssText = 'font-size:0.7rem;font-weight:800;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;';
+      labelDiv.textContent = w.listLabel;
+      item.appendChild(labelDiv);
+      // Tap anywhere or speaker icon to hear word + definition
+      item.addEventListener('click', () => showDictionaryPopup(w.word, -1));
+      vocabListEl.appendChild(item);
+    });
+  }
+
+  // Default to story tab
+  wbSwitchTab('story');
   show('screen-wordbank');
 }
 
