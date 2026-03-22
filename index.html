@@ -1878,7 +1878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JK</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JM</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3616,7 +3616,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JK</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JM</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4393,6 +4393,13 @@ async function selectChildProfile(child) {
       try { localStorage.setItem(getLSKey(), JSON.stringify(local)); } catch(e) {}
       // Refresh any visible UI
       updateHomeStats();
+      // If myWeek just arrived/updated and child is on home screen, lock them in
+      if (cloudData.myWeek && cloudData.myWeek.published) {
+        const activeScreen = document.querySelector('.screen.active')?.id;
+        if (activeScreen === 'screen-pick') {
+          openMyWeekActive();
+        }
+      }
       console.log('🔄 Real-time sync applied from another device');
     });
   }
@@ -4625,8 +4632,14 @@ document.head.appendChild(lpStyle);
 document.getElementById('btn-cat-reading').addEventListener('click', () => show('sheet-practice-reading'));
 document.getElementById('btn-cat-words').addEventListener('click', () => show('sheet-word-work'));
 
-document.getElementById('btn-cat-reading-back').addEventListener('click', () => show('screen-pick'));
-document.getElementById('btn-cat-words-back').addEventListener('click', () => show('screen-pick'));
+document.getElementById('btn-cat-reading-back').addEventListener('click', () => {
+  if (window._mwMode) { openMyWeekActive(); return; }
+  show('screen-pick');
+});
+document.getElementById('btn-cat-words-back').addEventListener('click', () => {
+  if (window._mwMode) { openMyWeekActive(); return; }
+  show('screen-pick');
+});
 
 // My Words — quick access screen (from Practice Words sheet)
 document.getElementById('btn-my-words-sheet').addEventListener('click', () => {
@@ -5787,7 +5800,10 @@ document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click
 document.getElementById('btn-generate').addEventListener('click', () => { S.isRace = false; S.myRole = null; loadStory(); });
 
 // ── Story Builder navigation ─────────────────────────────
-document.getElementById('btn-go-story-builder').addEventListener('click', () => show('screen-wiz-grade'));
+document.getElementById('btn-go-story-builder').addEventListener('click', () => {
+  if (window._mwMode) { openMyWeekActive(); return; }
+  show('screen-wiz-grade');
+});
 document.getElementById('btn-story-builder-back').addEventListener('click', () => show('screen-pick'));
 
 // ── Story Wizard (3-step: Grade → Length → Topic) ────────
@@ -7419,6 +7435,7 @@ async function getWordDefinition(word, grade) {
       .replace(/^["']+|["']+$/g, '')   // strip leading/trailing quotes
       .replace(/^#+\s*/g, '')          // strip markdown headers
       .replace(/^\*\*(.*?)\*\*/g, '$1') // strip bold markers
+      .replace(/^=\s*/g, '')           // strip leading equals sign (AI stylistic artifact)
       .trim();
     // Remove word echo at the start (e.g. "Walked You moved..." → "You moved...")
     const wordPattern = new RegExp('^' + clean + '[\\s:—–\\-]*', 'i');
@@ -7489,6 +7506,9 @@ function showDictionaryPopup(word, idx) {
     const defEl = document.getElementById('dict-definition');
     if (definition) {
       // Render definition as individual word spans for yellow highlight tracking
+      // Strip any leading = sign from cached definitions
+      const cleanDef = definition.replace(/^=\s*/, '');
+      definition = cleanDef;
       defEl.innerHTML = '';
       const defWords = definition.split(/(\s+)/);
       const defWordEls = [];
