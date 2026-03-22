@@ -1878,7 +1878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JI</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JJ</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3613,7 +3613,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JI</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JJ</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7647,29 +7647,44 @@ async function sayHearItAll(word, definition, sentences, allWordEls) {
 
     if (dictAudio) { dictAudio.pause(); }
     dictAudio = new Audio('data:audio/mp3;base64,' + data.audioBase64);
-    const speed = S.spellingSpeed || S.speed || 1.0;
+    // Dictionary popup always reads at a calm child-friendly pace (0.8x)
+    // regardless of the story speed slider setting
+    const speed = 0.8;
     dictAudio.playbackRate = speed;
 
 
-    // Find where sentences start in the timings array by matching
-    // the first word of the first sentence — same robust approach as reading screen reconciliation.
-    // IMPORTANT: start scanning AFTER the word+definition prefix tokens, not from index 0.
-    // Otherwise a word like "blue" matches itself at position 0 instead of "Blue sky up."
+    // Find where the target words start in the timings array.
+    // fullText = "word — definition. sentences..."
+    // allWordEls maps to either: definition words only (sentences=[]) or sentence words only.
+    // We must skip the prefix tokens that aren't represented in allWordEls.
     let prefixWords = 0;
+
     if (sentences.length > 0 && rawTimings.length > 0) {
+      // Sight word popup: allWordEls = sentence word spans
+      // Skip "word — definition." prefix tokens to find where sentences start
       const firstWord = sentences[0].trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
-      // Estimate minimum prefix length: word token + "—" token + definition tokens
       const prefixTokenCount = 1 + 1 + (definition ? definition.trim().split(/\s+/).length : 0);
       const scanStart = Math.min(prefixTokenCount, rawTimings.length - 1);
       for (let i = scanStart; i < rawTimings.length; i++) {
         const tw = (rawTimings[i].word || '').toLowerCase().replace(/[^a-z]/g, '');
         if (tw === firstWord) { prefixWords = i; break; }
       }
-      // Fallback: if no match found after prefix, use the prefix token count itself
       if (prefixWords === 0 && scanStart > 0) prefixWords = scanStart;
+    } else if (sentences.length === 0 && rawTimings.length > 0 && allWordEls.length > 0) {
+      // Definition-only popup: allWordEls = definition word spans
+      // fullText = "word — definition." so skip "word" + "—" = 2 prefix tokens
+      // Then match the first definition word in timings for accuracy
+      const firstDefWord = allWordEls[0]?.textContent?.toLowerCase().replace(/[^a-z]/g, '') || '';
+      const scanStart = Math.min(2, rawTimings.length - 1);
+      for (let i = scanStart; i < rawTimings.length; i++) {
+        const tw = (rawTimings[i].word || '').toLowerCase().replace(/[^a-z]/g, '');
+        if (tw === firstDefWord) { prefixWords = i; break; }
+      }
+      // Fallback: skip first 2 tokens (word + "—")
+      if (prefixWords === 0) prefixWords = Math.min(2, rawTimings.length - 1);
     }
 
-    // Slice to only the sentence timings
+    // Slice to only the target timings
     const sentenceTimings = rawTimings.slice(prefixWords);
 
     if (sentenceTimings.length > 0 && allWordEls.length > 0) {
