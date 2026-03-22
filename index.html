@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD IZ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JB</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3549,7 +3549,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD IZ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JB</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -4942,12 +4942,7 @@ function show(id) {
   }
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'screen-pick') updateHomeStats();
-  // Clear My Week mode restriction when child returns to a My Week screen or home
-  if (id === 'screen-my-week-active' || id === 'screen-my-week-child' || id === 'screen-pick') {
-    window._mwMode = false;
-    SCREEN_BACK_MAP['screen-my-week-child'] = ['BACK', 'screen-pick']; // restore normal route
-  }
-  // Restore nav bar when navigating home — but only if not in My Week mode
+  // Only clear My Week lock when child reaches the full home screen (parent unlocked)
   if (id === 'screen-pick' && !window._mwMode) {
     const pbar = document.getElementById('parent-bar');
     if (pbar) pbar.style.display = '';
@@ -7741,6 +7736,8 @@ document.getElementById('btn-new').addEventListener('click', async () => {
   stopTTS(); cleanupRoom();
   clearTimeout(S._finishedBtnTimer);
   document.getElementById('btn-finished-reading').style.display = 'none';
+  // My Week mode: return to task list, not full home
+  if (window._mwMode) { openMyWeekActive(); return; }
   show('screen-pick');
 });
 document.getElementById('btn-finished-reading').addEventListener('click', () => {
@@ -7753,7 +7750,10 @@ document.getElementById('btn-solo-retry').addEventListener('click', () => {
   setupReadScreen(); show('screen-read');
 });
 document.getElementById('btn-solo-new').addEventListener('click', () => {
-  stopTTS(); cleanupRoom(); show('screen-pick');
+  stopTTS(); cleanupRoom();
+  // My Week mode: return to task list, not full home
+  if (window._mwMode) { openMyWeekActive(); return; }
+  show('screen-pick');
 });
 document.getElementById('btn-solo-wordbank').addEventListener('click', () => {
   openWordBankReview();
@@ -9740,6 +9740,7 @@ document.getElementById('btn-spelling-new').addEventListener('click', () => {
 });
 
 document.getElementById('btn-spelling-done').addEventListener('click', () => {
+  if (window._mwMode) { openMyWeekActive(); return; }
   show('screen-pick');
 });
 
@@ -14762,10 +14763,10 @@ function updateBottomBar() {
     hideBarBtn(barStop);
   }
 
-  // Hide bar on welcome screens and overlays
+  // Hide bar on welcome screens, overlays, and whenever child is in My Week mode
   const parentBar = document.getElementById('parent-bar');
-  const hideOnScreens = ['screen-welcome-1'];
-  if (hideOnScreens.includes(activeScreenId)) {
+  const hideOnScreens = ['screen-welcome-1', 'screen-my-week-active'];
+  if (hideOnScreens.includes(activeScreenId) || window._mwMode) {
     parentBar.style.display = 'none';
   } else {
     parentBar.style.display = 'flex';
@@ -14846,9 +14847,14 @@ document.addEventListener('click', e => {
   // Stop TTS if leaving reading screen
   if (ttsState === 'playing' || ttsState === 'paused') stopTTS();
 
+  // My Week mode: override data-back-target using SCREEN_BACK_MAP if available
+  const activeId = document.querySelector('.screen.active')?.id;
+  if (window._mwMode && activeId && SCREEN_BACK_MAP[activeId]) {
+    target = SCREEN_BACK_MAP[activeId][1];
+  }
+
   // If launched from My Readings, back from read/complete/wpm screens goes back there
   const readScreens = ['screen-read', 'screen-solo-complete', 'screen-wpm-instructions', 'screen-wpm-results', 'screen-wpm-read', 'screen-wpm-tap'];
-  const activeId = document.querySelector('.screen.active')?.id;
   if (readingLaunchSource === 'my-readings' && readScreens.includes(activeId)) {
     target = 'screen-my-readings';
     readingLaunchSource = 'home'; // reset
