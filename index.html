@@ -528,6 +528,38 @@ body.bedtime .spell-study-word { color: #d4a76a; }
 body.bedtime .spell-study-syllables { color: #e0d8c0; }
 body.bedtime .spell-study-def { color: #908870; }
 body.bedtime .spell-study-fab button { background: #252540; border-color: #3a3a5c; color: #b09060; }
+
+/* ── My Week Active — responsive layout ── */
+/* Mobile (default): full-bleed hero, single column tasks */
+#screen-my-week-active .mwa-hero {
+  margin: 0 -20px;
+  border-radius: 0 0 28px 28px;
+}
+/* Tablet 768px+: slight padding, centered */
+@media (min-width: 768px) {
+  #screen-my-week-active .mwa-app {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #screen-my-week-active .mwa-hero {
+    margin: 0;
+    border-radius: 24px;
+  }
+}
+/* Desktop 1280px+: wider card, side padding */
+@media (min-width: 1280px) {
+  #screen-my-week-active .mwa-app {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 32px !important;
+  }
+  #screen-my-week-active .mwa-hero {
+    margin: 0;
+    border-radius: 28px;
+  }
+}
 @media (min-width: 1024px) {
   .spell-study-word { font-size: 2.2rem; }
   .spell-study-card { padding: 24px 30px; }
@@ -1844,7 +1876,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JE</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JG</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2066,10 +2098,10 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: My Week Active — full-screen child mode when week is published -->
   <div class="screen" id="screen-my-week-active" style="display:none;position:fixed;inset:0;z-index:50;background:#FFF8F4;overflow-y:auto;">
-    <div class="app" style="padding-bottom:50px;max-width:600px;">
+    <div class="app mwa-app" style="padding-bottom:50px;">
 
       <!-- Hero header -->
-      <div style="background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:0 0 28px 28px;padding:20px 20px 24px;margin:0 -16px 20px;box-shadow:0 8px 24px rgba(255,107,53,0.25);">
+      <div class="mwa-hero" style="background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:0 0 28px 28px;padding:20px 20px 24px;margin:0 -20px 20px;box-shadow:0 8px 24px rgba(255,107,53,0.25);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <div style="width:48px;height:48px;background:rgba(255,255,255,0.25);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">&#x1F989;</div>
@@ -3557,7 +3589,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JE</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JG</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7516,6 +7548,9 @@ function showSightWordPopup(entry) {
   document.getElementById('dict-hear-all-btn').style.display = 'block';
   document.getElementById('dict-hear-btn').textContent = '🔤 Just the Word';
   document.getElementById('dict-hear-btn').style.display = 'block';
+
+  // Highlight the tapped word in the story (gold, same as showDictionaryPopup)
+  S.wordEls.forEach(w => { w.classList.remove('highlight'); w.style.background = ''; w.style.color = ''; });
 
   // Show popup
   document.getElementById('dict-overlay').style.display = 'flex';
