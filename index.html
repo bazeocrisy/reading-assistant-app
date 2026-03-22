@@ -1844,7 +1844,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JC</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JE</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2065,39 +2065,41 @@ body.bedtime .read-side-btn { opacity: 0.8; }
   </div>
 
   <!-- SCREEN: My Week Active — full-screen child mode when week is published -->
-  <div class="screen" id="screen-my-week-active" style="display:none;position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;">
-    <div class="app" style="padding-bottom:40px;">
+  <div class="screen" id="screen-my-week-active" style="display:none;position:fixed;inset:0;z-index:50;background:#FFF8F4;overflow-y:auto;">
+    <div class="app" style="padding-bottom:50px;max-width:600px;">
 
-      <!-- Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:44px;height:44px;background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">📅</div>
-          <div>
-            <div style="font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:700;color:#FF6B35;" id="mwa-title">My Week</div>
-            <div style="font-size:0.78rem;font-weight:700;color:var(--muted);" id="mwa-dates"></div>
+      <!-- Hero header -->
+      <div style="background:linear-gradient(135deg,#FF9F43,#FF6B35);border-radius:0 0 28px 28px;padding:20px 20px 24px;margin:0 -16px 20px;box-shadow:0 8px 24px rgba(255,107,53,0.25);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:48px;height:48px;background:rgba(255,255,255,0.25);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">&#x1F989;</div>
+            <div>
+              <div style="font-family:'Fredoka',sans-serif;font-size:1.6rem;font-weight:700;color:white;line-height:1.1;" id="mwa-title">My Week</div>
+              <div style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.85);" id="mwa-dates"></div>
+            </div>
+          </div>
+          <div id="mwa-progress-badge" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);border-radius:20px;padding:5px 14px;">
+            <span style="font-family:'Fredoka',sans-serif;font-size:0.88rem;font-weight:700;color:white;" id="mwa-progress-text">0 of 0 done</span>
           </div>
         </div>
-        <div id="mwa-progress-badge" style="background:#FFF3EE;border:2px solid #FF6B35;border-radius:20px;padding:5px 14px;">
-          <span style="font-family:'Fredoka',sans-serif;font-size:0.88rem;font-weight:700;color:#FF6B35;" id="mwa-progress-text">0 of 0 done</span>
+        <!-- Bookie encouragement -->
+        <div style="background:rgba(255,255,255,0.2);border-radius:14px;padding:10px 14px;">
+          <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:white;" id="mwa-bookie-text">You've got this! Let's go!</div>
+        </div>
+        <!-- Progress bar -->
+        <div style="background:rgba(255,255,255,0.3);border-radius:10px;height:10px;margin-top:14px;overflow:hidden;">
+          <div id="mwa-progress-bar" style="width:0%;background:white;height:100%;border-radius:10px;transition:width 0.5s;box-shadow:0 0 8px rgba(255,255,255,0.6);"></div>
         </div>
       </div>
 
-      <!-- Bookie encouragement -->
-      <div style="display:flex;align-items:center;gap:10px;background:white;border-radius:16px;padding:10px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-        <div style="font-size:1.8rem;flex-shrink:0;">&#x1F989;</div>
-        <div style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);" id="mwa-bookie-text">You've got this! Let's go!</div>
-      </div>
-
-      <!-- Progress bar -->
-      <div style="background:var(--border);border-radius:10px;height:8px;margin-bottom:20px;overflow:hidden;">
-        <div id="mwa-progress-bar" style="width:0%;background:linear-gradient(90deg,#FF9F43,#27AE60);height:100%;border-radius:10px;transition:width 0.5s;"></div>
-      </div>
+      <!-- Section label -->
+      <div style="font-family:'Fredoka',sans-serif;font-size:0.82rem;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding:0 2px;">This Week's Tasks</div>
 
       <!-- Checklist -->
-      <div id="mwa-checklist" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
+      <div id="mwa-checklist" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
 
       <!-- Story budget -->
-      <div style="background:white;border-radius:16px;border:2px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;" id="mwa-story-section" style="display:none;">
+      <div style="background:white;border-radius:18px;border:2px solid #FFD6B0;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(255,107,53,0.08);" id="mwa-story-section" style="display:none;">
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:1.2rem;">✨</span>
           <span style="font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);">Stories today</span>
@@ -2107,11 +2109,11 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       </div>
 
       <!-- Story button (when budget allows) -->
-      <button id="btn-mwa-story" class="btn-main" style="margin-top:12px;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:none;">✨ Read a Story!</button>
+      <button id="btn-mwa-story" class="btn-main" style="margin-top:14px;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:none;font-size:1.1rem;padding:16px;border-radius:18px;box-shadow:0 6px 20px rgba(255,107,53,0.3);">✨ Read a Story!</button>
 
       <!-- Parent access -->
-      <div style="text-align:center;margin-top:24px;padding-bottom:8px;">
-        <button id="btn-mwa-parent" style="background:var(--section);border:2px solid var(--border);border-radius:14px;padding:12px 28px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:800;color:var(--muted);cursor:pointer;width:100%;max-width:320px;">🔒 Parent Access</button>
+      <div style="text-align:center;margin-top:28px;padding-bottom:8px;">
+        <button id="btn-mwa-parent" style="background:white;border:2.5px solid #FFD6B0;border-radius:50px;padding:14px 36px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:#FF6B35;cursor:pointer;width:100%;max-width:320px;box-shadow:0 2px 10px rgba(255,107,53,0.12);letter-spacing:0.5px;">🔒 Parent Access</button>
       </div>
 
     </div>
@@ -3555,7 +3557,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JC</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JE</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7411,11 +7413,15 @@ function showDictionaryPopup(word, idx) {
   document.getElementById('dict-hear-btn').style.display = 'none';
   document.getElementById('dict-overlay').style.display = 'flex';
 
-  // Highlight the tapped word (only if in story, not word bank)
-  S.wordEls.forEach(w => w.classList.remove('highlight'));
+  // Highlight the tapped word — use gold .highlight class consistently
+  S.wordEls.forEach(w => {
+    w.classList.remove('highlight');
+    w.style.background = '';
+    w.style.color = '';
+  });
   if (idx >= 0 && S.wordEls[idx]) {
-    S.wordEls[idx].style.background = '#A259FF';
-    S.wordEls[idx].style.color = '#ffffff';
+    S.wordEls[idx].classList.add('highlight');
+    S.wordEls[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   // Fetch definition
@@ -12340,16 +12346,8 @@ function renderVocabWords(list) {
     card.appendChild(mainDiv);
     card.appendChild(tapDiv);
     card.addEventListener('click', () => {
-      // Speak word + definition directly — no API call, no throttle
-      const knownDef = w.definition || defDiv.textContent.replace('Looking it up...', '').trim();
-      if (knownDef && knownDef.length > 2) {
-        sayDictEntry(w.word, knownDef);
-      } else {
-        sayWordOnly(w.word);
-      }
-      // Visual feedback
-      card.style.borderColor = 'var(--ocean)';
-      setTimeout(() => { card.style.borderColor = ''; }, 800);
+      // Open dictionary popup — shows word, definition, and hear buttons
+      showDictionaryPopup(w.word, -1);
     });
     listEl.appendChild(card);
   });
