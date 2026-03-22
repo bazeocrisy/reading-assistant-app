@@ -1878,7 +1878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JO</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JP</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3616,7 +3616,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JO</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JP</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -5016,9 +5016,11 @@ function show(id) {
   if (id === 'screen-my-week-active') {
     el.style.display = 'block';
   } else {
-    // Hide My Week Active if navigating away from it
-    const mwa = document.getElementById('screen-my-week-active');
-    if (mwa) mwa.style.display = 'none';
+    // Only hide My Week Active if NOT in locked child mode
+    if (!window._mwMode) {
+      const mwa = document.getElementById('screen-my-week-active');
+      if (mwa) mwa.style.display = 'none';
+    }
   }
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (id === 'screen-pick') updateHomeStats();
