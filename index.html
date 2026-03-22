@@ -1878,7 +1878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JJ</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JK</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -2145,8 +2145,11 @@ body.bedtime .read-side-btn { opacity: 0.8; }
       <!-- Story button (when budget allows) -->
       <button id="btn-mwa-story" class="btn-main" style="margin-top:14px;background:linear-gradient(135deg,#FF9F43,#FF6B35);display:none;font-size:1.1rem;padding:16px;border-radius:18px;box-shadow:0 6px 20px rgba(255,107,53,0.3);">✨ Read a Story!</button>
 
+      <!-- My Words button -->
+      <button id="btn-mwa-mywords" style="width:100%;background:linear-gradient(135deg,#00CEC9,#00838F);border:none;border-radius:18px;padding:16px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(0,131,143,0.25);margin-top:8px;">📖 My Words</button>
+
       <!-- Parent access -->
-      <div style="text-align:center;margin-top:28px;padding-bottom:8px;">
+      <div style="text-align:center;margin-top:16px;padding-bottom:8px;">
         <button id="btn-mwa-parent" style="background:white;border:2.5px solid #FFD6B0;border-radius:50px;padding:14px 36px;font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;color:#FF6B35;cursor:pointer;width:100%;max-width:320px;box-shadow:0 2px 10px rgba(255,107,53,0.12);letter-spacing:0.5px;">🔒 Parent Access</button>
       </div>
 
@@ -3613,7 +3616,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JJ</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JK</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -7688,7 +7691,7 @@ async function sayHearItAll(word, definition, sentences, allWordEls) {
     const sentenceTimings = rawTimings.slice(prefixWords);
 
     if (sentenceTimings.length > 0 && allWordEls.length > 0) {
-      const AUDIO_OFFSET_MS = 20;
+      const AUDIO_OFFSET_MS = 50; // slower child-friendly pace needs more lead-in than story reading
       let lastActiveIdx = -1;
       let scaledTimings = null; // computed once duration is known
 
@@ -13948,6 +13951,12 @@ function openMyWeekActive() {
     SCREEN_BACK_MAP['screen-wiz-length'] = ['BACK', 'screen-my-week-active'];
     SCREEN_BACK_MAP['screen-wiz-topic'] = ['BACK', 'screen-my-week-active'];
     show('screen-wiz-grade');
+  };
+
+  // My Words button → open word bank, return to My Week Active
+  document.getElementById('btn-mwa-mywords').onclick = () => {
+    SCREEN_BACK_MAP['screen-wordbank'] = ['BACK', 'screen-my-week-active'];
+    openWordBankReview();
   };
 
   // Parent access button → show PIN
