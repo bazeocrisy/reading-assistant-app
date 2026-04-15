@@ -1878,7 +1878,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 
   <!-- SCREEN: Pick (Kid Launchpad) -->
   <div class="screen" id="screen-pick">
-    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JR</div>
+    <div id="dev-build-tag" style="text-align:center;font-size:0.6rem;font-weight:800;color:#C4A882;letter-spacing:1.5px;margin-bottom:2px;">BUILD JS</div>
 
     <!-- HERO: Read a Story (primary CTA — full width) -->
     <button class="hero-read-btn" id="btn-go-story-builder" aria-label="Read a Story" style="flex-direction:column;text-align:center;padding:28px 24px 24px;">
@@ -3616,7 +3616,7 @@ body.bedtime .read-side-btn { opacity: 0.8; }
 <footer>
   <strong>ReadUp!</strong> &nbsp;|&nbsp; Made with 💛 for kids everywhere<br>
   <span class="foot-sub">A Transforming Youth, Inc. Program &nbsp;·&nbsp; ✨ Inspired by Kamryn &amp; Christopher II ✨</span><br>
-  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JR</span>
+  <span id="build-tag" style="font-size:0.6rem;font-weight:800;color:var(--border);letter-spacing:1px;cursor:pointer;" title="Build version">BUILD JS</span>
 </footer>
 
 <!-- Fixed bottom bar for parent access -->
@@ -8125,8 +8125,31 @@ let wpmWordEls = []; // tappable word elements for "tap last word" screen
 function renderWPMWords(container) {
   container.innerHTML = '';
   wpmWordEls = [];
-  const passage = (wpmPassage || S.story || '').trim();
+  let passage = (wpmPassage || S.story || '').trim();
   if (!passage) return; // nothing to render
+
+  // Strip DIBELS/worksheet header lines — lines with | scoring tables, 
+  // read count markers, or lines that are mostly non-letter characters
+  const lines = passage.split('\n');
+  const cleanLines = [];
+  let foundProse = false;
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) { if (foundProse) cleanLines.push(''); continue; }
+    // Skip lines that look like scoring tables or headers
+    const letters = (t.match(/[a-zA-Z]/g) || []).length;
+    const total = t.replace(/\s/g, '').length;
+    const letterRatio = total > 0 ? letters / total : 0;
+    // If less than 50% of non-space chars are letters, it's a table/header line
+    if (letterRatio < 0.5) continue;
+    // Also skip lines that are just a title with no sentence punctuation
+    // and appear before any prose (e.g. "Plant Life Cycles" as a standalone header)
+    foundProse = true;
+    cleanLines.push(line);
+  }
+  passage = cleanLines.join('\n').trim();
+  if (!passage) return;
+
   const paragraphs = passage.split(/\n\s*\n/);
   paragraphs.forEach((para, pIdx) => {
     const words = para.trim().split(/\s+/);
