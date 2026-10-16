@@ -197,6 +197,55 @@
 const CF_STORY = "https://us-central1-readup-transforming-youth.cloudfunctions.net/generateStory";
 const STORE_KEY = "readup_comprehension_v1";
 
+/* ── Built-in story library (library.json, same folder) ──────────
+   Ready-made, level-checked stories. Used first: instant, free,
+   and works when the AI service is off. AI is optional variety. */
+let LIB = null, libPromise = null;
+function loadLibrary() {
+  if (LIB) return Promise.resolve(LIB);
+  if (!libPromise) {
+    libPromise = fetch("library.json", { cache: "no-cache" })
+      .then(r => { if (!r.ok) throw new Error("Story library " + r.status); return r.json(); })
+      .then(d => {
+        d.sessions.forEach(r => (r.est = textStats(r.paragraphs).lexile));
+        d.placement.forEach(r => (r.est = textStats(r.paragraphs).lexile));
+        LIB = d; return d;
+      })
+      .catch(e => { libPromise = null; throw e; });
+  }
+  return libPromise;
+}
+function libStory(raw, target) {
+  const s = {
+    id: raw.id, source: "library", title: raw.title, paragraphs: raw.paragraphs.slice(),
+    stops: (raw.stops || []).map(x => Object.assign({}, x)),
+    questions: (raw.questions || []).map(x => Object.assign({}, x))
+  };
+  s.stats = textStats(s.paragraphs);
+  s.target = target;
+  return s;
+}
+function usedBy(kidIds, key) {
+  const u = new Set();
+  kidIds.forEach(id => (((DB[key] || {})[id]) || []).forEach(x => u.add(x)));
+  return u;
+}
+/* Closest-level story this reader hasn't had yet; random among the 3 closest. */
+function pickFromPool(pool, level, used, exclude) {
+  const cands = pool.filter(r => !exclude.includes(r.id));
+  if (!cands.length) return null;
+  const near = cands.filter(r => Math.abs(r.est - level) <= 100);
+  const base = near.length ? near : cands;
+  const fresh = base.filter(r => !used.has(r.id));
+  const list = (fresh.length ? fresh : base).slice().sort((a, b) => Math.abs(a.est - level) - Math.abs(b.est - level));
+  const top = list.slice(0, Math.min(3, list.length));
+  return top[Math.floor(Math.random() * top.length)];
+}
+function markUsed(key, kidIds, ids) {
+  DB[key] = DB[key] || {};
+  kidIds.forEach(k => { DB[key][k] = (DB[key][k] || []).concat(ids.filter(Boolean)).slice(-300); });
+}
+
 /* ── Text structures (one per week, six-week rotation) ───────── */
 const STRUCTURES = [
   {
@@ -475,7 +524,7 @@ function roundWpm(r) {
 
 function startPlacement(kidId) {
   const k = kidById(kidId);
-  const start = Math.max(200, Math.min(900, Math.round((k.practice || 400) / 50) * 50));
+  const start = Math.max(200, Math.min(900, Math.round((k.practice || 400) / 100) * 100));
   DB.placement = { kidId, date: new Date().toISOString(), start, rounds: [], listen: null, stage: "intro", lookBack: false };
   save();
   view = "place";
@@ -495,7 +544,7 @@ function placementNext() {
   const bracketed = hiPass !== null && done.some(r => !roundPassed(r) && r.target > hiPass);
   if (bracketed || done.length >= PLACE_MAX_ROUNDS) return { stop: true };
   const next = roundPassed(last) ? last.target + 100 : last.target - 100;
-  if (next < 150 || next > 1100 || tried.includes(next)) return { stop: true };
+  if (next < 200 || next > 900 || tried.includes(next)) return { stop: true };
   return { stop: false, level: next };
 }
 
@@ -544,6 +593,31 @@ function placementResult() {
   return { practice, listen, note, listenNote, wpm, accuracy, byType, limit };
 }
 
+/* Placement passage at a level: unseen library form first, AI only as backup. */
+async function placementPassage(level, fiction, topicIdx) {
+  const p = P();
+  try {
+    await loadLibrary();
+    const inCheck = p.rounds.map(r => r.story && r.story.id).concat(p.listen && p.listen.story ? [p.listen.story.id] : []).filter(Boolean);
+    const pool = LIB.placement.filter(r => r.level === level && !inCheck.includes(r.id));
+    if (pool.length) {
+      const used = usedBy([p.kidId], "placeUsed");
+      const fresh = pool.filter(r => !used.has(r.id));
+      const list = fresh.length ? fresh : pool;
+      const raw = list[Math.floor(Math.random() * list.length)];
+      const st = libStory(raw, level);
+      st.questions = st.questions.slice(0, 5);
+      return st;
+    }
+  } catch (e) { /* fall back to AI */ }
+  const st = await generateLeveled({
+    level, topic: PLACE_TOPICS[topicIdx % PLACE_TOPICS.length],
+    words: level < 450 ? 140 : 170, paragraphs: 3, fiction
+  }, buildPlacementPrompt, 5);
+  st.questions = st.questions.slice(0, 5);
+  return st;
+}
+
 async function loadPlacementRound() {
   const p = P();
   const n = placementNext();
@@ -551,11 +625,7 @@ async function loadPlacementRound() {
   busy = true; lastError = null; p.stage = "round"; render();
   try {
     const idx = p.rounds.length;
-    const story = await generateLeveled({
-      level: n.level, topic: PLACE_TOPICS[(idx + Math.floor(Math.random() * 8)) % PLACE_TOPICS.length],
-      words: n.level < 450 ? 140 : 170, paragraphs: 3, fiction: idx % 2 === 0
-    }, buildPlacementPrompt, 5);
-    story.questions = story.questions.slice(0, 5);
+    const story = await placementPassage(n.level, idx % 2 === 0, idx + Math.floor(Math.random() * 8));
     p.rounds.push({ target: n.level, story, phase: "read", ms: 0, misses: 0, marks: story.questions.map(() => null) });
     save();
   } catch (e) { lastError = e; }
@@ -565,11 +635,11 @@ async function loadPlacementRound() {
 async function loadListenCheck() {
   const p = P();
   const res = placementResult();
+  const level = Math.max(200, Math.min(900, Math.round((res.practice + 200) / 100) * 100));
   busy = true; lastError = null; p.stage = "listen"; render();
   try {
-    const story = await generateLeveled({ level: res.practice + 200, topic: PLACE_TOPICS[Math.floor(Math.random() * PLACE_TOPICS.length)], words: 220, paragraphs: 4, fiction: true }, buildPlacementPrompt, 5);
-    story.questions = story.questions.slice(0, 5);
-    p.listen = { target: res.practice + 200, story, phase: "read", marks: story.questions.map(() => null) };
+    const story = await placementPassage(level, true, Math.floor(Math.random() * 8));
+    p.listen = { target: level, story, phase: "read", marks: story.questions.map(() => null) };
     save();
   } catch (e) { lastError = e; }
   finally { busy = false; render(); window.scrollTo(0, 0); }
@@ -582,6 +652,7 @@ function savePlacement() {
   k.practice = r.practice;
   k.listen = r.listen;
   k.placements = (k.placements || []).concat({ date: p.date, practice: r.practice, listen: r.listen, wpm: r.wpm, accuracy: r.accuracy, byType: r.byType });
+  markUsed("placeUsed", [p.kidId], p.rounds.map(r => r.story && r.story.id).concat(p.listen && p.listen.story ? [p.listen.story.id] : []));
   DB.placement = null;
   save();
 }
@@ -814,10 +885,17 @@ function renderHome(app) {
     </div>
 
     <div class="card">
-      <h2>Topic</h2>
-      <div class="chips">${TOPICS.map(t => `<button class="chip ${t === sel.topic ? "on" : ""}" data-topic="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-      <label class="field" for="customTopic">Or type your own</label>
-      <input type="text" id="customTopic" placeholder="e.g. a kid who builds a robot dog" maxlength="80" value="${TOPICS.includes(sel.topic) ? "" : esc(sel.topic)}">
+      <h2>Stories</h2>
+      <div class="chips">
+        <button class="chip ${sel.source !== "ai" ? "on" : ""}" data-source="library">📚 Story library</button>
+        <button class="chip ${sel.source === "ai" ? "on" : ""}" data-source="ai">✨ New AI stories</button>
+      </div>
+      ${sel.source === "ai" ? `
+        <p class="muted" style="margin-top:10px">Fresh stories on any topic. Needs the AI service to be on.</p>
+        <div class="chips">${TOPICS.map(t => `<button class="chip ${t === sel.topic ? "on" : ""}" data-topic="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+        <label class="field" for="customTopic">Or type your own</label>
+        <input type="text" id="customTopic" placeholder="e.g. a kid who builds a robot dog" maxlength="80" value="${TOPICS.includes(sel.topic) ? "" : esc(sel.topic)}">`
+      : `<p class="muted" style="margin-top:10px">Ready-made stories, checked for level. Instant, free, and they work even when the AI is off. Each reader gets stories they haven't had yet.</p>`}
     </div>
 
     <button class="btn block" data-act="start" ${sel.kidIds.length ? "" : "disabled"}>Start session</button>
@@ -870,7 +948,7 @@ function renderSession(app) {
   const header = `
     <div class="steplabel">Step ${s.step + 1} of 5 · ${STEPS[s.step]}</div>
     <div class="steps">${STEPS.map((_, i) => `<div class="${i < s.step ? "done" : i === s.step ? "now" : ""}"></div>`).join("")}</div>
-    <p class="muted" style="margin:6px 0 0">${st.emoji} ${esc(st.name)} · ${esc(s.topic)} · ${kids.map(k => esc(k.name)).join(" & ")}</p>`;
+    <p class="muted" style="margin:6px 0 0">${st.emoji} ${esc(st.name)} · ${s.source === "ai" ? esc(s.topic) : "Story library"} · ${kids.map(k => esc(k.name)).join(" & ")}</p>`;
 
   let body = "";
   let nav = { back: s.step > 0, nextLabel: "Next", nextDisabled: false };
@@ -908,7 +986,7 @@ function renderSession(app) {
           L.stops.filter(x => x.after === i).map(x => `<div class="stop" data-toggle><b>🛑 Stop &amp; ask:</b> ${esc(x.question)}<div class="look">✔ Look for: ${esc(x.lookFor)}</div></div>`).join("")
         ).join("")}</div>
         ${questionsCard(L.questions, "After reading — talk it over")}
-        <div class="row" style="justify-content:center"><button class="btn ghost small" data-act="regen-listen">↻ Different story</button></div>`;
+        <div class="row" style="justify-content:center"><button class="btn ghost small" data-act="regen-listen">↻ Different story</button><button class="btn ghost small" data-act="ai-listen">✨ New AI story</button></div>`;
     }
     nav.nextLabel = "Next: Read";
     nav.nextDisabled = busy || !s.listen;
@@ -936,7 +1014,7 @@ function renderSession(app) {
         </div>
         ${timerCard(kids, R)}
         ${questionsCard(R.questions, "After the third read")}
-        <div class="row" style="justify-content:center"><button class="btn ghost small" data-act="regen-read">↻ Different story</button></div>`;
+        <div class="row" style="justify-content:center"><button class="btn ghost small" data-act="regen-read">↻ Different story</button><button class="btn ghost small" data-act="ai-read">✨ New AI story</button></div>`;
     }
     nav.nextLabel = "Next: Organize";
     nav.nextDisabled = busy || !s.read;
@@ -991,9 +1069,10 @@ function errorCard(err) {
   const backend = err.kind === "server" || err.kind === "network";
   return `<div class="card"><div class="error">
     <b>${esc(err.message)}</b>
-    ${backend ? `<p style="margin-top:8px">This usually means the AI service is switched off — either the Firebase pay-as-you-go (Blaze) plan was downgraded, or the Anthropic API balance ran out. Everything else in ReadUp still works.</p>` : ""}
+    ${backend ? `<p style="margin-top:8px">The AI story service isn't responding (the Firebase function, the Blaze plan, or the Anthropic balance). The story library works without it.</p>` : ""}
     </div>
-    <button class="btn" style="margin-top:12px" data-act="retry">Try again</button></div>`;
+    <div class="row" style="margin-top:12px"><button class="btn" data-act="retry">Try again</button>
+    ${view === "session" ? `<button class="btn secondary" data-act="use-library">📚 Use a library story</button>` : ""}</div></div>`;
 }
 
 function questionsCard(qs, title) {
@@ -1075,7 +1154,7 @@ function startSession() {
   const topic = custom || sel.topic;
   DB.current = {
     id: uid(), date: new Date().toISOString(), kidIds: sel.kidIds.slice(),
-    structureId: sel.structureId, topic, step: 0,
+    structureId: sel.structureId, topic, step: 0, source: sel.source || "library",
     listen: null, read: null, organizer: {}, retell: {}, wpm: {}, swap: false, bigText: false, done: false
   };
   save();
@@ -1093,19 +1172,34 @@ function readLevel(s) {
   return Math.min(...kids.map(k => k.practice));
 }
 
-async function ensureStory(which, force) {
+async function ensureStory(which, force, useAI) {
   const s = S();
   if (!force && s[which]) return;
   busy = true; lastError = null; render();
   try {
     const st = structById(s.structureId);
-    const opts = which === "listen"
-      ? { structure: st, topic: s.topic, level: listenLevel(s), words: 380, paragraphs: 6, stops: 4 }
-      : { structure: st, topic: s.topic, level: readLevel(s), words: 200, paragraphs: s.kidIds.length > 1 ? 6 : 4, stops: 0 };
-    const story = await generateLeveled(opts);
+    const level = which === "listen" ? listenLevel(s) : readLevel(s);
+    let story = null;
+    if (!(useAI || s.source === "ai")) {
+      try {
+        await loadLibrary();
+        const exclude = [s.listen && s.listen.id, s.read && s.read.id].concat(s.seen || []).filter(Boolean);
+        const raw = pickFromPool(LIB.sessions.filter(r => r.structure === s.structureId), level, usedBy(s.kidIds, "used"), exclude);
+        if (raw) story = libStory(raw, level);
+      } catch (e) { /* library unavailable: fall through to AI */ }
+    }
+    if (!story) {
+      const opts = which === "listen"
+        ? { structure: st, topic: s.topic, level, words: 380, paragraphs: 6, stops: 4 }
+        : { structure: st, topic: s.topic, level, words: 200, paragraphs: s.kidIds.length > 1 ? 6 : 4, stops: 0 };
+      story = await generateLeveled(opts);
+      story.source = "ai";
+    }
     s[which] = story;
+    if (story.id) s.seen = (s.seen || []).concat(story.id);
     save();
   } catch (e) {
+    e.fromAI = true;
     lastError = e;
   } finally {
     busy = false;
@@ -1129,7 +1223,7 @@ function goStep(n) {
 
 async function prefetchRead() {
   const s = S();
-  if (s.read || s._prefetching) return;
+  if (s.source !== "ai" || s.read || s._prefetching) return;
   s._prefetching = true;
   try {
     const st = structById(s.structureId);
@@ -1152,6 +1246,7 @@ function finishSession() {
     listenTitle: s.listen && s.listen.title, readTitle: s.read && s.read.title,
     listenLevel: s.listen && s.listen.stats.lexile, readLevel: s.read && s.read.stats.lexile
   });
+  markUsed("used", s.kidIds, [s.listen && s.listen.id, s.read && s.read.id]);
   DB.current = null;
   save();
   view = "progress";
@@ -1201,7 +1296,7 @@ function printPack() {
 
 /* ── Events ──────────────────────────────────────────────────── */
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-act],[data-kid],[data-struct],[data-topic],[data-delkid],[data-toggle],[data-timerkid],[data-place],[data-mark],[data-lmark]");
+  const t = e.target.closest("[data-act],[data-kid],[data-struct],[data-topic],[data-delkid],[data-toggle],[data-timerkid],[data-place],[data-mark],[data-lmark],[data-source]");
   if (!t) return;
 
   // Placement check
@@ -1268,6 +1363,7 @@ document.addEventListener("click", (e) => {
     return render();
   }
   if (t.dataset.struct) { sel.structureId = t.dataset.struct; return render(); }
+  if (t.dataset.source) { sel.source = t.dataset.source; return render(); }
   if (t.dataset.topic) { sel.topic = t.dataset.topic; const c = $("#customTopic"); if (c) c.value = ""; return render(); }
   if (t.dataset.delkid) {
     if (confirm("Remove this reader? Their saved scores will be hidden.")) {
@@ -1307,6 +1403,9 @@ document.addEventListener("click", (e) => {
     case "retry": ensureStory(s.step === 1 ? "listen" : "read", true); break;
     case "regen-listen": ensureStory("listen", true); break;
     case "regen-read": stopTimer(false); s.wpm = {}; ensureStory("read", true); break;
+    case "ai-listen": ensureStory("listen", true, true); break;
+    case "ai-read": stopTimer(false); s.wpm = {}; ensureStory("read", true, true); break;
+    case "use-library": s.source = "library"; save(); ensureStory(s.step === 1 ? "listen" : "read", true, false); break;
     case "swap": s.swap = !s.swap; save(); render(); break;
     case "bigtext": s.bigText = !s.bigText; save(); render(); break;
     case "print": printPack(); break;
