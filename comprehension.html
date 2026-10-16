@@ -270,7 +270,7 @@ const RUBRIC = [
 ];
 
 /* ── Storage (on this device only) ───────────────────────────── */
-let DB = { kids: [], sessions: [], rotationStart: null, current: null };
+let DB = { kids: [], sessions: [], rotationStart: null, current: null, placement: null };
 function load() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -371,7 +371,7 @@ function parseStory(raw) {
   const stops = (obj.stops || [])
     .map(s => ({ after: Math.max(0, Math.min(paragraphs.length - 2, parseInt(s.after, 10) || 0)), question: String(s.question || ""), lookFor: String(s.lookFor || "") }))
     .filter(s => s.question);
-  const questions = (obj.questions || []).map(q => ({ q: String(q.q || ""), a: String(q.a || "") })).filter(q => q.q);
+  const questions = (obj.questions || []).map(q => ({ type: String(q.type || "").toLowerCase(), q: String(q.q || ""), a: String(q.a || "") })).filter(q => q.q);
   return { title: String(obj.title || "Today's Story"), paragraphs, stops, questions };
 }
 
@@ -397,13 +397,16 @@ async function callStory(prompt) {
 }
 
 /* Generate, estimate the level, and regenerate once if far off. */
-async function generateLeveled(opts) {
+async function generateLeveled(opts, buildFn = buildPrompt, minQuestions = 0) {
   let best = null;
   let adjust = "";
   for (let attempt = 0; attempt < 2; attempt++) {
-    const raw = await callStory(buildPrompt(Object.assign({}, opts, { adjust })));
+    const raw = await callStory(buildFn(Object.assign({}, opts, { adjust })));
     let story;
-    try { story = parseStory(raw); }
+    try {
+      story = parseStory(raw);
+      if (story.questions.length < minQuestions) throw new Error("The questions didn't come back. Try again.");
+    }
     catch (e) { if (attempt === 0) continue; throw e; }
     story.stats = textStats(story.paragraphs);
     const off = story.stats.lexile - opts.level;
@@ -417,6 +420,320 @@ async function generateLeveled(opts) {
   best.target = opts.level;
   return best;
 }
+
+/* ── Placement check ───────────────────────────────────────────
+   An informal reading inventory: the child reads short passages
+   aloud (timed, misses counted), then answers 5 questions without
+   looking back. 4–5 right = passes the level. Levels move up or
+   down 100L until we find the highest level they pass (max 4
+   passages). An optional listening check sets the read-aloud level. */
+
+const PLACE_TOPICS = ["a kid who finds a lost puppy", "how bees make honey", "a soccer team's comeback", "why the moon changes shape",
+  "a girl who builds a treehouse", "how snow forms", "a class science fair", "how sea turtles find the ocean"];
+const QTYPES = [
+  { id: "literal", label: "Remembering details", help: "Answer is stated right in the text" },
+  { id: "vocab", label: "Word meaning", help: "Figuring out a word from the words around it" },
+  { id: "inference", label: "Reading between the lines", help: "Putting clues together" },
+  { id: "structure", label: "How the text is built", help: "Why the author included a part, how parts connect" }
+];
+const PLACE_MAX_ROUNDS = 4;
+
+function buildPlacementPrompt({ level, topic, words, paragraphs, fiction, adjust }) {
+  const r = levelRules(level);
+  const name = NAMES[Math.floor(Math.random() * NAMES.length)];
+  return [
+    `Write a ${fiction ? "fiction story" : "nonfiction informational passage"} for a reading check, for a child who reads at about ${level}L on the Lexile scale.`,
+    `Topic: ${topic}.`,
+    fiction ? `The main character is named ${name}.` : `Keep every fact accurate and true.`,
+    `LENGTH: about ${words} words in ${paragraphs} paragraphs. It must make sense on its own and hold enough information for the questions.`,
+    `READING LEVEL: average sentence length about ${r.msl} words. ${r.vocab}`,
+    adjust || "",
+    `Write exactly 5 comprehension questions in this order:`,
+    `1-2. type "literal": the answer is stated directly in the text.`,
+    `3. type "vocab": ask what one specific word from the text means, where the sentences around it give clues. Put the word in quotes.`,
+    `4. type "inference": the answer is NOT stated directly; the child must put clues together.`,
+    `5. type "structure": how the text is organized or why the author included a specific part.`,
+    `Each answer must be short and specific so a parent can mark it right or wrong.`,
+    `Return ONLY valid JSON with no markdown and no extra text, in exactly this shape:`,
+    `{"title":"...","paragraphs":["...","..."],"questions":[{"type":"literal","q":"...","a":"..."}]}`
+  ].filter(Boolean).join("\n");
+}
+
+function P() { return DB.placement; }
+function roundCorrect(r) { return (r.marks || []).filter(m => m === true).length; }
+function roundMarked(r) { return (r.marks || []).filter(m => m !== null && m !== undefined).length; }
+function roundPassed(r) { return roundCorrect(r) >= 4; }
+function roundAccuracy(r) {
+  if (!r.story) return null;
+  const w = r.story.stats.words;
+  return w ? Math.max(0, Math.round(((w - (r.misses || 0)) / w) * 100)) : null;
+}
+function roundWpm(r) {
+  if (!r.story || !r.ms || r.ms < 5000) return null;
+  return Math.round(r.story.stats.words / (r.ms / 60000));
+}
+
+function startPlacement(kidId) {
+  const k = kidById(kidId);
+  const start = Math.max(200, Math.min(900, Math.round((k.practice || 400) / 50) * 50));
+  DB.placement = { kidId, date: new Date().toISOString(), start, rounds: [], listen: null, stage: "intro", lookBack: false };
+  save();
+  view = "place";
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* Decide whether to stop, or which level comes next. */
+function placementNext() {
+  const p = P();
+  const done = p.rounds.filter(r => r.phase === "done");
+  if (!done.length) return { stop: false, level: p.start };
+  const last = done[done.length - 1];
+  const tried = done.map(r => r.target);
+  const passes = done.filter(roundPassed);
+  const hiPass = passes.length ? Math.max(...passes.map(r => r.target)) : null;
+  const bracketed = hiPass !== null && done.some(r => !roundPassed(r) && r.target > hiPass);
+  if (bracketed || done.length >= PLACE_MAX_ROUNDS) return { stop: true };
+  const next = roundPassed(last) ? last.target + 100 : last.target - 100;
+  if (next < 150 || next > 1100 || tried.includes(next)) return { stop: true };
+  return { stop: false, level: next };
+}
+
+function placementResult() {
+  const p = P();
+  const done = p.rounds.filter(r => r.phase === "done");
+  const passes = done.filter(roundPassed);
+  let practice, note = "", basis = null;
+  if (passes.length) {
+    basis = passes.reduce((a, b) => (b.target > a.target ? b : a));
+    practice = Math.round(Math.min(basis.target, basis.story.stats.lexile + 50) / 10) * 10;
+    const nextUp = done.find(r => r.target === basis.target + 100);
+    if (nextUp && roundCorrect(nextUp) === 3) { practice += 50; note = "Almost passed the next level up, so we started a little higher."; }
+    if (!done.some(r => !roundPassed(r) && r.target > basis.target)) note = "Passed every level tried. Run the check again soon to find the ceiling.";
+  } else {
+    const lowest = Math.min(...done.map(r => r.target));
+    practice = Math.max(150, lowest - 100);
+    note = "Didn't pass any level tried, so this starting point is below the lowest one. Retest in 3–4 weeks.";
+  }
+  // Fluency on the placement level (or nearest passage read).
+  const ref = basis || done[0];
+  const wpm = ref ? roundWpm(ref) : null;
+  const accuracy = ref ? roundAccuracy(ref) : null;
+  // Where comprehension breaks down, across every passage.
+  const byType = {};
+  QTYPES.forEach(t => (byType[t.id] = { right: 0, total: 0 }));
+  done.forEach(r => r.story.questions.forEach((q, i) => {
+    const t = byType[q.type] ? q.type : null;
+    if (!t || r.marks[i] === null || r.marks[i] === undefined) return;
+    byType[t].total++;
+    if (r.marks[i]) byType[t].right++;
+  }));
+  // Listening level.
+  let listen = practice + 200, listenNote = "Listening wasn't checked, so this is set 200L above.";
+  if (p.listen && p.listen.phase === "done") {
+    const c = roundCorrect(p.listen);
+    listen = practice + (c >= 4 ? 200 : c === 3 ? 150 : 100);
+    listenNote = `${c}/5 on the read-aloud check at ${p.listen.story.stats.lexile}L.`;
+  }
+  // What's limiting them.
+  const failedHigher = done.filter(r => !roundPassed(r) && (!basis || r.target > basis.target));
+  const decodingLimited = failedHigher.some(r => (roundAccuracy(r) || 100) < 93) || (accuracy !== null && accuracy < 93);
+  const limit = !done.length ? "" : decodingLimited
+    ? "Word reading is part of the limit: accuracy dropped below 93% on harder text. Keep up phonics and fluency practice alongside comprehension."
+    : "Comprehension is the limit, not word reading: accuracy stayed high even on the levels they didn't pass. Focus on the Comprehension sessions.";
+  return { practice, listen, note, listenNote, wpm, accuracy, byType, limit };
+}
+
+async function loadPlacementRound() {
+  const p = P();
+  const n = placementNext();
+  if (n.stop) { p.stage = "listen-offer"; save(); render(); return; }
+  busy = true; lastError = null; p.stage = "round"; render();
+  try {
+    const idx = p.rounds.length;
+    const story = await generateLeveled({
+      level: n.level, topic: PLACE_TOPICS[(idx + Math.floor(Math.random() * 8)) % PLACE_TOPICS.length],
+      words: n.level < 450 ? 140 : 170, paragraphs: 3, fiction: idx % 2 === 0
+    }, buildPlacementPrompt, 5);
+    story.questions = story.questions.slice(0, 5);
+    p.rounds.push({ target: n.level, story, phase: "read", ms: 0, misses: 0, marks: story.questions.map(() => null) });
+    save();
+  } catch (e) { lastError = e; }
+  finally { busy = false; render(); window.scrollTo(0, 0); }
+}
+
+async function loadListenCheck() {
+  const p = P();
+  const res = placementResult();
+  busy = true; lastError = null; p.stage = "listen"; render();
+  try {
+    const story = await generateLeveled({ level: res.practice + 200, topic: PLACE_TOPICS[Math.floor(Math.random() * PLACE_TOPICS.length)], words: 220, paragraphs: 4, fiction: true }, buildPlacementPrompt, 5);
+    story.questions = story.questions.slice(0, 5);
+    p.listen = { target: res.practice + 200, story, phase: "read", marks: story.questions.map(() => null) };
+    save();
+  } catch (e) { lastError = e; }
+  finally { busy = false; render(); window.scrollTo(0, 0); }
+}
+
+function savePlacement() {
+  const p = P();
+  const k = kidById(p.kidId);
+  const r = placementResult();
+  k.practice = r.practice;
+  k.listen = r.listen;
+  k.placements = (k.placements || []).concat({ date: p.date, practice: r.practice, listen: r.listen, wpm: r.wpm, accuracy: r.accuracy, byType: r.byType });
+  DB.placement = null;
+  save();
+}
+
+let ptimer = { running: false, start: 0, handle: null };
+function ptick() {
+  const d = $("#ptimer");
+  if (!d) return;
+  const secs = Math.floor((Date.now() - ptimer.start) / 1000);
+  d.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+}
+
+function renderPlacement(app) {
+  const p = P();
+  const k = kidById(p.kidId);
+  if (!k) { DB.placement = null; save(); view = "home"; return render(); }
+  const done = p.rounds.filter(r => r.phase === "done").length;
+  const head = `<div class="steplabel">Placement check · ${esc(k.name)}</div>`;
+  let body = "", nav = null;
+
+  if (p.stage === "intro") {
+    body = `
+      <h1 style="margin-top:8px">Find ${esc(k.name)}'s level</h1>
+      <div class="card">
+        <p><b>About 10–15 minutes.</b> ${esc(k.name)} reads 2–4 short passages out loud, then answers 5 questions about each. The passages get harder or easier depending on how they do.</p>
+        <h3 style="margin-top:12px">Your job</h3>
+        <ul style="margin:0;padding-left:20px">
+          <li>Start the timer when they start reading, stop it when they finish.</li>
+          <li>Tap <b>Missed word</b> each time they skip, misread, or need help with a word (wait 3 seconds before helping).</li>
+          <li>Ask each question out loud. <b>Hide the story first</b> — no looking back. Don't hint.</li>
+          <li>Tap ✓ or ✗. The answer key is under each question. Give credit if they got the idea in their own words.</li>
+        </ul>
+        <p class="muted" style="margin-top:12px">Pick a quiet time when they're not tired. A rushed or tired check will read lower than they really are.</p>
+      </div>
+      <div class="card"><p class="muted" style="margin:0">Starting at about <b>${p.start}L</b> (their current setting). This is an at-home estimate, not an official Lexile score.</p></div>`;
+    nav = { left: { act: "place-exit", label: "Cancel" }, right: { act: "place-begin", label: "Start first passage" } };
+  }
+
+  else if (p.stage === "round") {
+    const r = p.rounds[p.rounds.length - 1];
+    if (busy) body = loadingCard("Writing a passage at the next level…");
+    else if (lastError) body = errorCard(lastError);
+    else if (r && r.phase === "read") {
+      const running = ptimer.running;
+      body = `
+        <div class="steps">${Array.from({ length: PLACE_MAX_ROUNDS }, (_, i) => `<div class="${i < done ? "done" : i === done ? "now" : ""}"></div>`).join("")}</div>
+        <div class="card">
+          <div class="row"><h2 class="spacer">Passage ${done + 1}: read aloud</h2><span class="badge">≈ ${r.story.stats.lexile}L</span></div>
+          <p class="muted">Hand the phone to ${esc(k.name)} or hold it where they can see. Tap Start as they begin.</p>
+          <div class="row"><span class="timer" id="ptimer">${r.ms ? fmtMs(r.ms) : "0:00"}</span><span class="spacer"></span>
+            <button class="btn small" data-act="ptimer">${running ? "Stop" : r.ms ? "Restart" : "Start"}</button></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn secondary" data-act="miss" style="flex:1">Missed word: <b>${r.misses}</b></button>
+            <button class="btn ghost small" data-act="unmiss" aria-label="Undo missed word">−1</button>
+          </div>
+        </div>
+        <div class="card story big"><h2>${esc(r.story.title)}</h2>${r.story.paragraphs.map(x => `<p>${esc(x)}</p>`).join("")}</div>`;
+      nav = { left: { act: "place-exit", label: "Pause" }, right: { act: "place-toq", label: "Done reading → Questions", disabled: running } };
+    }
+    else if (r && r.phase === "questions") {
+      const marked = roundMarked(r);
+      body = `
+        <div class="steps">${Array.from({ length: PLACE_MAX_ROUNDS }, (_, i) => `<div class="${i < done ? "done" : i === done ? "now" : ""}"></div>`).join("")}</div>
+        <div class="card">
+          <h2>Passage ${done + 1}: questions</h2>
+          <p class="muted">Story hidden — no looking back. Ask each question out loud, then mark it. Tap a question to see the answer key.</p>
+          <p class="muted" style="margin:0">${roundWpm(r) ? `${roundWpm(r)} WPM · ` : ""}${roundAccuracy(r)}% words correct</p>
+        </div>
+        <div class="card">${r.story.questions.map((q, i) => `
+          <div class="q" data-toggle style="padding-bottom:12px">
+            <span class="badge" style="margin-bottom:4px">${esc((QTYPES.find(t => t.id === q.type) || { label: "Question" }).label)}</span><br>
+            <b>${esc(q.q)}</b><div class="a">✔ ${esc(q.a)}</div>
+            <div class="row" style="margin-top:8px">
+              <button class="chip ${r.marks[i] === true ? "on" : ""}" data-mark="${i}:1">✓ Right</button>
+              <button class="chip ${r.marks[i] === false ? "on" : ""}" data-mark="${i}:0">✗ Wrong</button>
+            </div></div>`).join("")}</div>`;
+      nav = { left: { act: "place-back-read", label: "Back" }, right: { act: "place-score", label: marked < 5 ? `Mark all 5 (${marked}/5)` : "Next passage", disabled: marked < 5 } };
+    }
+  }
+
+  else if (p.stage === "listen-offer") {
+    const res = placementResult();
+    body = `
+      <h1 style="margin-top:8px">Reading level found</h1>
+      <div class="card"><p>Reads on their own at about <b style="font-size:22px;color:var(--brand)">${res.practice}L</b></p>${res.note ? `<p class="muted">${esc(res.note)}</p>` : ""}</div>
+      <div class="card">
+        <h3>One more: listening check (3 minutes)</h3>
+        <p class="muted">You read a harder story out loud, then ask 5 questions. This sets the level for the read-aloud stories. Kids usually understand harder text by ear than they can read alone.</p>
+      </div>`;
+    nav = { left: { act: "place-skip-listen", label: "Skip" }, right: { act: "place-listen", label: "Do listening check" } };
+  }
+
+  else if (p.stage === "listen") {
+    const L = p.listen;
+    if (busy) body = loadingCard("Writing the listening passage…");
+    else if (lastError) body = errorCard(lastError);
+    else if (L && L.phase === "read") {
+      body = `
+        <div class="card"><div class="row"><h2 class="spacer">Listening check</h2><span class="badge">≈ ${L.story.stats.lexile}L</span></div>
+          <p class="muted"><b>You read this out loud.</b> ${esc(k.name)} just listens — they don't see the text. Read at a normal pace.</p></div>
+        <div class="card story"><h2>${esc(L.story.title)}</h2>${L.story.paragraphs.map(x => `<p>${esc(x)}</p>`).join("")}</div>`;
+      nav = { left: { act: "place-skip-listen", label: "Skip" }, right: { act: "place-listen-q", label: "Done → Questions" } };
+    } else if (L && L.phase === "questions") {
+      const marked = roundMarked(L);
+      body = `
+        <div class="card"><h2>Listening questions</h2><p class="muted">Ask each one out loud and mark it.</p></div>
+        <div class="card">${L.story.questions.map((q, i) => `
+          <div class="q" data-toggle style="padding-bottom:12px"><b>${esc(q.q)}</b><div class="a">✔ ${esc(q.a)}</div>
+            <div class="row" style="margin-top:8px">
+              <button class="chip ${L.marks[i] === true ? "on" : ""}" data-lmark="${i}:1">✓ Right</button>
+              <button class="chip ${L.marks[i] === false ? "on" : ""}" data-lmark="${i}:0">✗ Wrong</button>
+            </div></div>`).join("")}</div>`;
+      nav = { left: { act: "place-skip-listen", label: "Skip" }, right: { act: "place-listen-done", label: marked < 5 ? `Mark all 5 (${marked}/5)` : "See results", disabled: marked < 5 } };
+    }
+  }
+
+  else if (p.stage === "result") {
+    const res = placementResult();
+    const rows = p.rounds.filter(r => r.phase === "done");
+    body = `
+      <h1 style="margin-top:8px">${esc(k.name)}'s results</h1>
+      <div class="card">
+        <div class="row" style="gap:18px">
+          <div><div class="muted">Reads alone</div><div class="score">${res.practice}L</div></div>
+          <div><div class="muted">Read-aloud level</div><div class="score">${res.listen}L</div></div>
+        </div>
+        ${res.note ? `<p class="muted" style="margin-top:8px">${esc(res.note)}</p>` : ""}
+        <p class="muted">${esc(res.listenNote)}</p>
+        ${res.wpm ? `<p style="margin:0">Fluency at this level: <b>${res.wpm} WPM</b>, ${res.accuracy}% of words correct</p>` : ""}
+      </div>
+      <div class="card"><h3>What's holding them back</h3><p style="margin:0">${esc(res.limit)}</p></div>
+      <div class="card"><h3>Question types (all passages)</h3>
+        ${QTYPES.map(t => { const b = res.byType[t.id]; const pct = b.total ? Math.round((b.right / b.total) * 100) : null;
+          return `<div style="padding:8px 0;border-top:1px solid var(--border)"><div class="row"><b class="spacer">${esc(t.label)}</b><span>${b.total ? `${b.right}/${b.total}` : "—"}</span></div>
+            <div style="height:8px;background:var(--border);border-radius:4px;margin-top:6px"><div style="height:8px;width:${pct || 0}%;background:${pct !== null && pct < 60 ? "var(--coral)" : "var(--brand)"};border-radius:4px"></div></div>
+            <div class="muted" style="font-size:13px">${esc(t.help)}</div></div>`; }).join("")}
+      </div>
+      <div class="card"><h3>Passages</h3><table class="hist"><tr><th>Level</th><th>Score</th><th>WPM</th><th>Accuracy</th></tr>
+        ${rows.map(r => `<tr><td>${r.story.stats.lexile}L</td><td>${roundCorrect(r)}/5 ${roundPassed(r) ? "✓" : ""}</td><td>${roundWpm(r) || "—"}</td><td>${roundAccuracy(r)}%</td></tr>`).join("")}</table></div>`;
+    nav = { left: { act: "place-exit-discard", label: "Discard" }, right: { act: "place-save", label: `Save to ${k.name}'s profile` } };
+  }
+
+  app.innerHTML = head + body;
+  if (nav) {
+    $("#navInner").innerHTML = `
+      <button class="btn ghost" data-act="${nav.left.act}" style="flex:0 0 auto">${esc(nav.left.label)}</button>
+      <button class="btn" data-act="${nav.right.act}" ${nav.right.disabled ? "disabled" : ""}>${esc(nav.right.label)}</button>`;
+    $("#navbar").classList.remove("hidden");
+  }
+}
+
+function fmtMs(ms) { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
 
 /* ── App state ───────────────────────────────────────────────── */
 const STEPS = ["Teach", "Listen", "Read", "Organize", "Retell"];
@@ -434,15 +751,18 @@ function render() {
   $("#navbar").classList.add("hidden");
   if (view === "kids") return renderKids(app);
   if (view === "progress") return renderProgress(app);
+  if (view === "place" && P()) return renderPlacement(app);
   if (view === "session" && S()) return renderSession(app);
   return renderHome(app);
 }
 
 function kidCard(k, on) {
+  const last = (k.placements || []).slice(-1)[0];
   return `<div class="kid ${on ? "on" : ""}" data-kid="${k.id}">
     <div class="avatar">${esc(k.name.slice(0, 1).toUpperCase())}</div>
     <div class="spacer"><div class="name">${esc(k.name)}</div>
-      <div class="meta">Reads alone ≈ ${k.practice}L · Listens ≈ ${k.listen}L</div></div>
+      <div class="meta">Reads alone ≈ ${k.practice}L · Listens ≈ ${k.listen}L</div>
+      <div class="meta">${last ? `Placement check ${fmtDate(last.date)}` : "Not placed yet"}</div></div>
     <div class="check">${on ? "✓" : ""}</div></div>`;
 }
 
@@ -475,6 +795,16 @@ function renderHome(app) {
         `<p class="muted" style="margin-top:6px">Pick one reader, or two to partner-read.</p>`
         : `<p class="muted">Add a reader to get started.</p><button class="btn" data-act="kids">Add a reader</button>`}
     </div>
+
+    ${DB.kids.length ? `<div class="card">
+      <h2>📋 Placement check</h2>
+      ${P() && kidById(P().kidId)
+        ? `<p class="muted">${esc(kidById(P().kidId).name)}'s check is in progress.</p>
+           <div class="row"><button class="btn" data-act="place-resume">Continue check</button>
+           <button class="btn ghost small" data-act="place-exit-discard">Discard</button></div>`
+        : `<p class="muted">Not sure the level is right? A 10–15 minute check finds where they actually understand what they read. Redo it every 6–8 weeks.</p>
+           <div class="chips">${DB.kids.map(k => `<button class="chip" data-place="${k.id}">Check ${esc(k.name)}</button>`).join("")}</div>`}
+    </div>` : ""}
 
     <div class="card">
       <h2>Skill of the week</h2>
@@ -871,8 +1201,63 @@ function printPack() {
 
 /* ── Events ──────────────────────────────────────────────────── */
 document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-act],[data-kid],[data-struct],[data-topic],[data-delkid],[data-toggle],[data-timerkid]");
+  const t = e.target.closest("[data-act],[data-kid],[data-struct],[data-topic],[data-delkid],[data-toggle],[data-timerkid],[data-place],[data-mark],[data-lmark]");
   if (!t) return;
+
+  // Placement check
+  if (t.dataset.place) { startPlacement(t.dataset.place); return; }
+  if (t.dataset.mark || t.dataset.lmark) {
+    const p = P();
+    const target = t.dataset.mark ? p.rounds[p.rounds.length - 1] : p.listen;
+    const [i, v] = (t.dataset.mark || t.dataset.lmark).split(":");
+    target.marks[+i] = v === "1";
+    save(); render();
+    return;
+  }
+  if (view === "place" && t.dataset.act) {
+    const p = P();
+    const r = p && p.rounds[p.rounds.length - 1];
+    switch (t.dataset.act) {
+      case "place-begin": loadPlacementRound(); return;
+      case "retry": if (p.stage === "listen") loadListenCheck(); else loadPlacementRound(); return;
+      case "ptimer":
+        if (ptimer.running) {
+          clearInterval(ptimer.handle); ptimer.running = false;
+          r.ms = Date.now() - ptimer.start; save();
+        } else {
+          ptimer = { running: true, start: Date.now(), handle: setInterval(ptick, 250) };
+          r.ms = 0;
+        }
+        render(); return;
+      case "miss": r.misses++; save(); render(); return;
+      case "unmiss": r.misses = Math.max(0, r.misses - 1); save(); render(); return;
+      case "place-toq": r.phase = "questions"; save(); render(); window.scrollTo(0, 0); return;
+      case "place-back-read": r.phase = "read"; save(); render(); window.scrollTo(0, 0); return;
+      case "place-score": r.phase = "done"; save(); loadPlacementRound(); return;
+      case "place-listen": loadListenCheck(); return;
+      case "place-listen-q": p.listen.phase = "questions"; save(); render(); window.scrollTo(0, 0); return;
+      case "place-listen-done": p.listen.phase = "done"; p.stage = "result"; save(); render(); window.scrollTo(0, 0); return;
+      case "place-skip-listen": p.listen = null; p.stage = "result"; lastError = null; save(); render(); window.scrollTo(0, 0); return;
+      case "place-save": savePlacement(); view = "home"; render(); window.scrollTo(0, 0); return;
+      case "place-exit":
+        if (ptimer.running) { clearInterval(ptimer.handle); ptimer.running = false; }
+        view = "home"; lastError = null; render(); window.scrollTo(0, 0); return;
+      case "place-exit-discard":
+        if (confirm("Discard this placement check?")) { DB.placement = null; save(); view = "home"; render(); }
+        return;
+    }
+  }
+  if (t.dataset.act === "place-resume") {
+    view = "place"; lastError = null; render();
+    const p = P();
+    if (p.stage === "round" && (!p.rounds.length || p.rounds[p.rounds.length - 1].phase === "done")) loadPlacementRound();
+    if (p.stage === "listen" && !p.listen) loadListenCheck();
+    return;
+  }
+  if (t.dataset.act === "place-exit-discard") {
+    if (confirm("Discard this placement check?")) { DB.placement = null; save(); render(); }
+    return;
+  }
 
   if (t.dataset.toggle !== undefined) { t.classList.toggle("open"); return; }
 
