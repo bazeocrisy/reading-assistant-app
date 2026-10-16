@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>ReadUp! Comprehension</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #FF6B35;
+    --brand-deep: #E55D2B;
+    --brand-light: #FFB088;
+    --brand-soft: #FFF3E8;
+    --bg: #FFFBF2;
+    --card: #FFFFFF;
+    --section: #FFF8EE;
+    --ink: #2C3E50;
+    --body: #4A5568;
+    --muted: #64748B;
+    --border: #F0E6D8;
+    --gold: #FFD93D;
+    --green: #2E9E4F;
+    --green-soft: #E8F7EC;
+    --coral: #E5484D;
+    --ocean: #2F7FE0;
+    --ocean-soft: #EAF3FF;
+    --shadow: 0 4px 24px rgba(255,107,53,0.08);
+    --r: 18px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1, h2, h3 { font-family: 'Fredoka', 'Nunito', sans-serif; color: var(--ink); margin: 0 0 8px; line-height: 1.2; }
+  h1 { font-size: 26px; font-weight: 600; }
+  h2 { font-size: 21px; font-weight: 600; }
+  h3 { font-size: 17px; font-weight: 600; }
+  p { margin: 0 0 10px; }
+  button, input, select, textarea { font: inherit; }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 12px 16px 120px; }
+  header.top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  header.top .brand { white-space: nowrap; font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--ink); font-size: 19px; display: flex; gap: 8px; align-items: center; }
+  header.top .brand small { color: var(--brand); font-weight: 600; }
+  header.top a { color: var(--muted); font-size: 14px; text-decoration: none; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; margin: 14px 0; box-shadow: var(--shadow); }
+  .muted { color: var(--muted); font-size: 15px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .spacer { flex: 1; }
+
+  .btn {
+    border: 0; border-radius: 14px; padding: 13px 18px; cursor: pointer;
+    background: var(--brand); color: #fff; font-weight: 800; font-size: 16px;
+    min-height: 48px;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn[disabled] { opacity: .5; cursor: default; }
+  .btn.secondary { background: var(--brand-soft); color: var(--brand-deep); }
+  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn.small { padding: 8px 12px; min-height: 38px; font-size: 14px; border-radius: 10px; }
+  .btn.block { width: 100%; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 2px solid var(--border); background: var(--card); color: var(--ink);
+    border-radius: 999px; padding: 8px 14px; cursor: pointer; font-weight: 700; font-size: 15px;
+  }
+  .chip.on { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-deep); }
+
+  label.field { display: block; font-weight: 700; color: var(--ink); font-size: 15px; margin: 10px 0 4px; }
+  input[type=text], input[type=number], select, textarea {
+    width: 100%; padding: 11px 12px; border: 2px solid var(--border); border-radius: 12px; background: #fff; color: var(--ink);
+  }
+  textarea { min-height: 64px; resize: vertical; }
+
+  .kid {
+    display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid var(--border);
+    border-radius: 14px; margin: 8px 0; cursor: pointer; background: #fff;
+  }
+  .kid.on { border-color: var(--brand); background: var(--brand-soft); }
+  .kid .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--gold); display: grid; place-items: center; font-family: 'Fredoka'; font-weight: 600; color: var(--ink); font-size: 18px; flex: none; }
+  .kid .meta { font-size: 13px; color: var(--muted); }
+  .kid .name { font-weight: 800; color: var(--ink); }
+  .check { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--border); display: grid; place-items: center; flex: none; font-size: 15px; color: #fff; }
+  .on .check { background: var(--brand); border-color: var(--brand); }
+
+  .steps { display: flex; gap: 4px; margin: 12px 0 4px; }
+  .steps div { flex: 1; height: 6px; border-radius: 4px; background: var(--border); }
+  .steps div.done { background: var(--brand-light); }
+  .steps div.now { background: var(--brand); }
+  .steplabel { font-size: 13px; font-weight: 800; color: var(--brand-deep); text-transform: uppercase; letter-spacing: .04em; }
+
+  .badge { display: inline-block; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: var(--ocean-soft); color: var(--ocean); }
+  .badge.warn { background: #FFF4D6; color: #8A6100; }
+
+  .story { font-size: 19px; line-height: 1.75; color: var(--ink); }
+  .story p { margin: 0 0 16px; }
+  .story.big { font-size: 22px; }
+  .stop {
+    border-left: 5px solid var(--coral); background: #FFF1F0; border-radius: 12px;
+    padding: 12px 14px; margin: 4px 0 18px; font-size: 16px; line-height: 1.5;
+  }
+  .stop b { color: var(--coral); }
+  .stop .look { color: var(--muted); font-size: 14px; margin-top: 6px; display: none; }
+  .stop.open .look { display: block; }
+  .reader-tag { display: inline-block; font-size: 12px; font-weight: 800; padding: 2px 9px; border-radius: 999px; margin-bottom: 4px; }
+  .rt0 { background: var(--brand-soft); color: var(--brand-deep); }
+  .rt1 { background: var(--ocean-soft); color: var(--ocean); }
+
+  .script { background: var(--section); border-radius: 12px; padding: 12px 14px; font-style: italic; color: var(--ink); }
+  .signal { display: inline-block; background: #FFF4D6; color: #7A5600; font-weight: 800; border-radius: 8px; padding: 2px 8px; margin: 2px; font-size: 15px; }
+
+  .q { padding: 10px 0; border-top: 1px solid var(--border); }
+  .q:first-child { border-top: 0; }
+  .q .a { color: var(--green); font-size: 15px; display: none; margin-top: 4px; }
+  .q.open .a { display: block; }
+
+  .org-grid { display: grid; gap: 10px; }
+  .org-box { border: 2px dashed var(--brand-light); border-radius: 12px; padding: 10px; }
+  .org-box h3 { font-size: 15px; margin-bottom: 6px; color: var(--brand-deep); }
+  .org-3 { grid-template-columns: 1fr; }
+  @media (min-width: 560px) { .org-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+  .rubric label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--border); cursor: pointer; }
+  .rubric label:first-of-type { border-top: 0; }
+  .rubric input { width: 24px; height: 24px; accent-color: var(--brand); flex: none; margin-top: 2px; }
+  .score { font-family: 'Fredoka'; font-size: 34px; color: var(--brand); font-weight: 600; }
+
+  .timer { font-family: 'Fredoka'; font-size: 30px; color: var(--ink); min-width: 80px; }
+
+  .navbar {
+    position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--border);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); z-index: 10;
+  }
+  .navbar .inner { max-width: 720px; margin: 0 auto; display: flex; gap: 10px; }
+  .navbar .btn { flex: 1; }
+
+  .loading { text-align: center; padding: 40px 10px; }
+  .spin { width: 42px; height: 42px; border: 5px solid var(--brand-soft); border-top-color: var(--brand); border-radius: 50%; margin: 0 auto 14px; animation: sp 1s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  .error { background: #FFF1F0; border: 1px solid #F5C2C0; color: #8E1F1C; border-radius: 12px; padding: 14px; }
+
+  .hist { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .hist td, .hist th { padding: 7px 4px; border-top: 1px solid var(--border); text-align: left; }
+  .hist th { color: var(--muted); font-weight: 700; border-top: 0; }
+
+  .hidden { display: none !important; }
+  #printArea { display: none; }
+
+  @media print {
+    body { background: #fff; font-size: 13pt; color: #000; }
+    header.top, .navbar, #app { display: none !important; }
+    #printArea { display: block; padding: 0; }
+    #printArea h1 { font-size: 20pt; color: #000; }
+    #printArea .story { font-size: 14pt; line-height: 1.7; color: #000; }
+    #printArea .org-box { border: 1.5px solid #000; min-height: 90px; break-inside: avoid; }
+    #printArea .org-box h3 { color: #000; }
+    #printArea .pagebreak { break-before: page; }
+    #printArea .line { border-bottom: 1px solid #888; height: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">🦉 ReadUp! <small>Comprehension</small></div>
+  <a href="./">← ReadUp</a>
+</header>
+
+<main id="app" class="wrap"></main>
+<div id="navbar" class="navbar hidden"><div class="inner" id="navInner"></div></div>
+<div id="printArea"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   ReadUp! Comprehension Mode
+   One 20–30 min session: Teach → Listen → Read → Organize → Retell.
+   Stories come from the existing generateStory Cloud Function
+   (custom instructions, no backend change). Profiles and scores
+   are saved on this device only (localStorage).
+   ───────────────────────────────────────────────────────────── */
+
+const CF_STORY = "https://us-central1-readup-transforming-youth.cloudfunctions.net/generateStory";
+const STORE_KEY = "readup_comprehension_v1";
+
+/* ── Text structures (one per week, six-week rotation) ───────── */
+const STRUCTURES = [
+  {
+    id: "story", name: "Story Elements", emoji: "📖", genre: "fiction story",
+    what: "Every story has characters, a setting, a problem, events that happen because of the problem, and a solution.",
+    kidQ: "Who is it about, where are they, what goes wrong, and how does it get fixed?",
+    signals: ["one day", "but", "then", "so", "finally", "in the end"],
+    aiDesc: "a clear story arc: introduce the main character and setting, present one clear problem, show 2-3 events where the character tries to deal with it, then a solution",
+    think: "I just read that Maya's kite got stuck in the tree. I think that is the PROBLEM, because now the story is about how she will get it down. I'm going to watch for what she tries.",
+    organizer: { type: "list", boxes: ["Characters", "Setting", "Problem", "Event 1", "Event 2", "Event 3", "Solution"] }
+  },
+  {
+    id: "sequence", name: "Sequence", emoji: "🔢", genre: "fiction story",
+    what: "Sequence means things happen in a certain order. The author uses time words to show what comes first, next, and last.",
+    kidQ: "What happened first, next, then, and last? How do you know?",
+    signals: ["first", "next", "then", "after that", "later", "finally"],
+    aiDesc: "events told in a clear time order, with each step depending on the one before it",
+    think: "The author wrote 'after that.' That tells me this part happened later. If I mixed these steps up, the story would not make sense.",
+    organizer: { type: "list", boxes: ["First", "Next", "Then", "Last"] }
+  },
+  {
+    id: "cause", name: "Cause & Effect", emoji: "⚡", genre: "nonfiction informational passage",
+    what: "A cause is WHY something happens. An effect is WHAT happens because of it.",
+    kidQ: "What made this happen? What happened because of it?",
+    signals: ["because", "so", "since", "as a result", "that is why", "this caused"],
+    aiDesc: "a cause-and-effect explanation where each paragraph explains why something happens and what happens as a result, including at least one chain where an effect becomes the next cause",
+    think: "The author says the ice melts BECAUSE the sun warms it. 'Because' is my clue. The sun is the cause, and the melting is the effect.",
+    organizer: { type: "pairs", boxes: ["Cause → Effect", "Cause → Effect", "Cause → Effect"] }
+  },
+  {
+    id: "problem", name: "Problem & Solution", emoji: "🧩", genre: "fiction story",
+    what: "The author shows a problem, the things people try, and how the problem finally gets solved.",
+    kidQ: "What is the problem? What did they try? What finally worked?",
+    signals: ["problem", "tried", "but", "decided", "solved", "finally"],
+    aiDesc: "a problem-and-solution story where the characters try at least two solutions that do not work before one that does",
+    think: "They tried a bigger net, but it didn't work. So that was a TRY, not the solution. The problem is still there, so I'll keep reading.",
+    organizer: { type: "list", boxes: ["Problem", "Try 1 (did it work?)", "Try 2 (did it work?)", "Solution"] }
+  },
+  {
+    id: "compare", name: "Compare & Contrast", emoji: "⚖️", genre: "nonfiction informational passage",
+    what: "Comparing shows how two things are ALIKE. Contrasting shows how they are DIFFERENT.",
+    kidQ: "How are these two things the same? How are they different?",
+    signals: ["both", "alike", "same", "but", "however", "unlike", "different"],
+    aiDesc: "a compare-and-contrast passage about exactly two things, with paragraphs that clearly show how they are alike and how they are different",
+    think: "The author wrote 'unlike frogs.' That word tells me a DIFFERENCE is coming. Toads have dry, bumpy skin, and frogs don't.",
+    organizer: { type: "venn", boxes: ["Only the first thing", "Both", "Only the second thing"] }
+  },
+  {
+    id: "description", name: "Description", emoji: "🔎", genre: "nonfiction informational passage",
+    what: "Description gives a main topic and then details that tell more about it.",
+    kidQ: "What is the main topic? What details tell us more about it?",
+    signals: ["for example", "such as", "also", "in addition", "has", "looks like"],
+    aiDesc: "a descriptive passage with one clear main topic stated early, and each paragraph giving a different group of details about it",
+    think: "The first paragraph says this is all about owls. Every paragraph after that tells me something more about owls. That's description.",
+    organizer: { type: "list", boxes: ["Main topic", "Detail 1", "Detail 2", "Detail 3", "Main idea in 10 words or less"] }
+  }
+];
+
+const TOPICS = [
+  "a video game island adventure", "sports", "animals", "space", "weather",
+  "dinosaurs", "friends", "the ocean", "building and inventing", "music"
+];
+
+const NAMES = ["Maya","Jordan","Leo","Amara","Eli","Zoe","Marcus","Nia","Theo","Ava","Jayden","Lila","Omar","Rosa","Kai","Imani","Ben","Sofia","Malik","Hana"];
+
+const RUBRIC = [
+  { id: "main", label: "Main idea", help: "Told what it was mostly about, in their own words" },
+  { id: "order", label: "Key details in order", help: "Gave the important parts in the right order" },
+  { id: "why", label: "The \"why\"", help: "Explained why something happened or why the author included a part" },
+  { id: "words", label: "Used structure words", help: "Used words like because, first, problem, both, finally" }
+];
+
+/* ── Storage (on this device only) ───────────────────────────── */
+let DB = { kids: [], sessions: [], rotationStart: null, current: null };
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) DB = Object.assign(DB, JSON.parse(raw));
+  } catch (e) { /* storage unavailable: run in memory */ }
+  if (!DB.rotationStart) DB.rotationStart = mondayOf(new Date()).toISOString();
+  if (DB.current) delete DB.current._prefetching;
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); } catch (e) {}
+}
+
+/* ── Helpers ─────────────────────────────────────────────────── */
+const $ = (sel) => document.querySelector(sel);
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function uid() { return Math.random().toString(36).slice(2, 10); }
+function mondayOf(d) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const day = (x.getDay() + 6) % 7;
+  x.setDate(x.getDate() - day);
+  return x;
+}
+function weekStructureIndex() {
+  const start = mondayOf(new Date(DB.rotationStart));
+  const weeks = Math.floor((mondayOf(new Date()) - start) / (7 * 864e5));
+  return ((weeks % STRUCTURES.length) + STRUCTURES.length) % STRUCTURES.length;
+}
+function structById(id) { return STRUCTURES.find(s => s.id === id) || STRUCTURES[0]; }
+function kidById(id) { return DB.kids.find(k => k.id === id); }
+function fmtDate(iso) { const d = new Date(iso); return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
+
+/* ── Estimated reading level ─────────────────────────────────────
+   Lexile is proprietary. This estimate uses the same two signals
+   Lexile relies on (sentence length + word difficulty, here via
+   syllables) through Flesch-Kincaid, mapped to an approximate
+   Lexile scale. Treat it as a guide; spot-check at lexile.com. */
+function syllables(word) {
+  let w = word.toLowerCase().replace(/[^a-z]/g, "");
+  if (!w) return 0;
+  if (w.length <= 3) return 1;
+  w = w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, "").replace(/^y/, "");
+  const m = w.match(/[aeiouy]{1,2}/g);
+  return Math.max(1, m ? m.length : 1);
+}
+function textStats(paragraphs) {
+  const text = paragraphs.join(" ");
+  const sentences = text.split(/[.!?]+(?:["'”’)]*)(?:\s+|$)/).map(s => s.trim()).filter(s => /[a-zA-Z]/.test(s));
+  const words = text.match(/[A-Za-z][A-Za-z'’-]*/g) || [];
+  const syl = words.reduce((n, w) => n + syllables(w), 0);
+  const wc = words.length, sc = Math.max(1, sentences.length);
+  const msl = wc / sc, spw = wc ? syl / wc : 0;
+  const fk = 0.39 * msl + 11.8 * spw - 15.59;
+  let lex = Math.round((120 + 140 * fk) / 10) * 10;
+  lex = Math.max(100, Math.min(1100, lex));
+  return { words: wc, sentences: sc, msl: +msl.toFixed(1), spw: +spw.toFixed(2), lexile: lex };
+}
+function levelRules(target) {
+  const msl = Math.max(6, Math.min(15, Math.round(3 + target / 80)));
+  let vocab;
+  if (target < 450) vocab = "Use mostly one- and two-syllable everyday words. Avoid words with three or more syllables except names.";
+  else if (target < 600) vocab = "Use mostly common words. Allow a few three-syllable words when the topic needs them.";
+  else vocab = "Use rich but kid-friendly vocabulary. Include a few topic words (three syllables is fine) that the meaning around them helps explain.";
+  return { msl, vocab };
+}
+
+/* ── Story generation ────────────────────────────────────────── */
+function buildPrompt({ structure, topic, level, words, paragraphs, stops, adjust }) {
+  const r = levelRules(level);
+  const name = NAMES[Math.floor(Math.random() * NAMES.length)];
+  const lines = [
+    `Write a ${structure.genre} for 3rd grade students who read at about ${level}L on the Lexile scale.`,
+    `Topic: ${topic}.`,
+    structure.genre.startsWith("fiction") ? `The main character is named ${name}.` : `Keep every fact accurate and true.`,
+    `TEXT STRUCTURE: ${structure.name}. Build the passage as ${structure.aiDesc}. Make the structure easy to notice. Use these signal words naturally: ${structure.signals.join(", ")}.`,
+    `LENGTH: about ${words} words in ${paragraphs} paragraphs.`,
+    `READING LEVEL: average sentence length about ${r.msl} words. ${r.vocab}`,
+    adjust || "",
+  ];
+  if (stops > 0) {
+    lines.push(`Write ${stops} "stop and ask" questions a parent asks while reading this aloud. Each one goes after a paragraph (never after the last paragraph, and spread them out). Each must ask about how the text works: why the author included a part, what changed, what caused something, or how two parts connect. Never ask simple recall questions such as colors, names, or numbers. For each, give a short "lookFor" answer telling the parent what a good answer includes.`);
+  }
+  lines.push(`Write 3 after-reading questions about the ${structure.name.toLowerCase()} structure, each with a short answer for the parent.`);
+  lines.push(`Return ONLY valid JSON with no markdown and no extra text, in exactly this shape:`);
+  lines.push(`{"title":"...","paragraphs":["...","..."],"stops":[{"after":0,"question":"...","lookFor":"..."}],"questions":[{"q":"...","a":"..."}]}`);
+  lines.push(`"after" is the 0-based index of the paragraph the stop comes after.${stops > 0 ? "" : ` Use an empty array for "stops".`}`);
+  return lines.filter(Boolean).join("\n");
+}
+
+function parseStory(raw) {
+  let t = String(raw || "").trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a < 0 || b < a) throw new Error("The story came back in the wrong format.");
+  const obj = JSON.parse(t.slice(a, b + 1));
+  const paragraphs = (obj.paragraphs || []).map(p => String(p).trim()).filter(Boolean);
+  if (paragraphs.length < 2) throw new Error("The story came back too short.");
+  const stops = (obj.stops || [])
+    .map(s => ({ after: Math.max(0, Math.min(paragraphs.length - 2, parseInt(s.after, 10) || 0)), question: String(s.question || ""), lookFor: String(s.lookFor || "") }))
+    .filter(s => s.question);
+  const questions = (obj.questions || []).map(q => ({ q: String(q.q || ""), a: String(q.a || "") })).filter(q => q.q);
+  return { title: String(obj.title || "Today's Story"), paragraphs, stops, questions };
+}
+
+async function callStory(prompt) {
+  let res;
+  try {
+    res = await fetch(CF_STORY, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ grade: "3rd", topic: "comprehension", wordCount: 300, instructions: prompt })
+    });
+  } catch (e) {
+    throw Object.assign(new Error("Couldn't reach the story service."), { kind: "network" });
+  }
+  if (!res.ok) {
+    let detail = "";
+    try { detail = (await res.json()).error || ""; } catch (e) {}
+    throw Object.assign(new Error(`Story service error ${res.status}${detail ? ": " + detail : ""}`), { kind: "server", status: res.status });
+  }
+  const data = await res.json();
+  if (!data.story) throw new Error("The story service returned nothing.");
+  return data.story;
+}
+
+/* Generate, estimate the level, and regenerate once if far off. */
+async function generateLeveled(opts) {
+  let best = null;
+  let adjust = "";
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const raw = await callStory(buildPrompt(Object.assign({}, opts, { adjust })));
+    let story;
+    try { story = parseStory(raw); }
+    catch (e) { if (attempt === 0) continue; throw e; }
+    story.stats = textStats(story.paragraphs);
+    const off = story.stats.lexile - opts.level;
+    if (!best || Math.abs(off) < Math.abs(best.stats.lexile - opts.level)) best = story;
+    if (Math.abs(off) <= 120) break;
+    adjust = off > 0
+      ? `IMPORTANT: Your last version was too hard (about ${story.stats.lexile}L). Use shorter sentences (about ${Math.max(5, levelRules(opts.level).msl - 2)} words) and simpler, shorter words.`
+      : `IMPORTANT: Your last version was too easy (about ${story.stats.lexile}L). Use somewhat longer sentences (about ${levelRules(opts.level).msl + 2} words) and a few richer words.`;
+  }
+  if (!best) throw new Error("Couldn't get a usable story. Try again.");
+  best.target = opts.level;
+  return best;
+}
+
+/* ── App state ───────────────────────────────────────────────── */
+const STEPS = ["Teach", "Listen", "Read", "Organize", "Retell"];
+let view = "home";            // home | kids | session | progress
+let sel = { kidIds: [], structureId: null, topic: null };
+let busy = false;
+let lastError = null;
+let timer = { running: false, start: 0, elapsed: 0, handle: null, kidId: null };
+
+function S() { return DB.current; }   // active session
+
+/* ── Rendering ───────────────────────────────────────────────── */
+function render() {
+  const app = $("#app");
+  $("#navbar").classList.add("hidden");
+  if (view === "kids") return renderKids(app);
+  if (view === "progress") return renderProgress(app);
+  if (view === "session" && S()) return renderSession(app);
+  return renderHome(app);
+}
+
+function kidCard(k, on) {
+  return `<div class="kid ${on ? "on" : ""}" data-kid="${k.id}">
+    <div class="avatar">${esc(k.name.slice(0, 1).toUpperCase())}</div>
+    <div class="spacer"><div class="name">${esc(k.name)}</div>
+      <div class="meta">Reads alone ≈ ${k.practice}L · Listens ≈ ${k.listen}L</div></div>
+    <div class="check">${on ? "✓" : ""}</div></div>`;
+}
+
+function renderHome(app) {
+  if (!sel.structureId) sel.structureId = STRUCTURES[weekStructureIndex()].id;
+  if (!sel.topic) sel.topic = TOPICS[0];
+  sel.kidIds = sel.kidIds.filter(id => kidById(id));
+  if (!sel.kidIds.length && DB.kids[0]) sel.kidIds = [DB.kids[0].id];
+  const st = structById(sel.structureId);
+  const weekSt = STRUCTURES[weekStructureIndex()];
+
+  let resume = "";
+  if (S() && !S().done) {
+    resume = `<div class="card" style="border-color:var(--brand-light)">
+      <h3>Session in progress</h3>
+      <p class="muted">${esc(structById(S().structureId).name)} · ${esc(S().topic)} · step ${S().step + 1} of 5</p>
+      <div class="row"><button class="btn" data-act="resume">Continue</button>
+      <button class="btn ghost small" data-act="discard">Discard</button></div></div>`;
+  }
+
+  app.innerHTML = `
+    <h1 style="margin-top:8px">Today's reading session</h1>
+    <p class="muted">About 20–30 minutes. You lead it — the app supplies the stories and questions.</p>
+    ${resume}
+
+    <div class="card">
+      <div class="row"><h2 class="spacer">Who's reading?</h2>
+        <button class="btn ghost small" data-act="kids">${DB.kids.length ? "Edit" : "Add"} readers</button></div>
+      ${DB.kids.length ? DB.kids.map(k => kidCard(k, sel.kidIds.includes(k.id))).join("") +
+        `<p class="muted" style="margin-top:6px">Pick one reader, or two to partner-read.</p>`
+        : `<p class="muted">Add a reader to get started.</p><button class="btn" data-act="kids">Add a reader</button>`}
+    </div>
+
+    <div class="card">
+      <h2>Skill of the week</h2>
+      <p class="muted">This week's rotation: <b>${weekSt.emoji} ${esc(weekSt.name)}</b>. Change it if you need to.</p>
+      <div class="chips">${STRUCTURES.map(s => `<button class="chip ${s.id === sel.structureId ? "on" : ""}" data-struct="${s.id}">${s.emoji} ${esc(s.name)}</button>`).join("")}</div>
+      <p style="margin-top:12px">${esc(st.what)}</p>
+    </div>
+
+    <div class="card">
+      <h2>Topic</h2>
+      <div class="chips">${TOPICS.map(t => `<button class="chip ${t === sel.topic ? "on" : ""}" data-topic="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <label class="field" for="customTopic">Or type your own</label>
+      <input type="text" id="customTopic" placeholder="e.g. a kid who builds a robot dog" maxlength="80" value="${TOPICS.includes(sel.topic) ? "" : esc(sel.topic)}">
+    </div>
+
+    <button class="btn block" data-act="start" ${sel.kidIds.length ? "" : "disabled"}>Start session</button>
+    <div class="row" style="margin-top:12px;justify-content:center">
+      <button class="btn ghost small" data-act="progress">📈 Progress</button>
+    </div>
+  `;
+}
+
+function renderKids(app) {
+  app.innerHTML = `
+    <h1 style="margin-top:8px">Readers</h1>
+    <p class="muted">First names only. Scores stay on this device.</p>
+    ${DB.kids.map(k => `
+      <div class="card" data-kidedit="${k.id}">
+        <label class="field">First name</label>
+        <input type="text" data-f="name" value="${esc(k.name)}" maxlength="20">
+        <div class="row">
+          <div class="spacer"><label class="field">Reads alone (Lexile)</label>
+            <input type="number" data-f="practice" value="${k.practice}" min="100" max="1100" step="10"></div>
+          <div class="spacer"><label class="field">Listening level</label>
+            <input type="number" data-f="listen" value="${k.listen}" min="100" max="1200" step="10"></div>
+        </div>
+        <div class="row" style="margin-top:10px"><span class="spacer"></span>
+          <button class="btn ghost small" data-delkid="${k.id}">Remove</button></div>
+      </div>`).join("")}
+    <div class="card">
+      <h3>Add a reader</h3>
+      <label class="field" for="newName">First name</label>
+      <input type="text" id="newName" maxlength="20" placeholder="First name">
+      <div class="row">
+        <div class="spacer"><label class="field" for="newLex">School Lexile score</label>
+          <input type="number" id="newLex" min="100" max="1100" step="10" placeholder="e.g. 389"></div>
+      </div>
+      <p class="muted" style="margin-top:8px">We'll set practice stories near that score and read-aloud stories about 200L higher. You can adjust both later.</p>
+      <button class="btn secondary" data-act="addkid">Add</button>
+    </div>
+    <div class="card"><h3>How the levels work</h3>
+      <p class="muted"><b>Reads alone</b> is the level of the story they read themselves. Start at their school Lexile and raise it 25–50L when retells are consistently 3–4 out of 4.</p>
+      <p class="muted"><b>Listening level</b> is for the story you read to them. It's higher on purpose: kids understand harder language by ear before they can read it, and hearing it builds comprehension.</p>
+    </div>
+    <button class="btn block" data-act="home">Done</button>
+  `;
+}
+
+function renderSession(app) {
+  const s = S();
+  const st = structById(s.structureId);
+  const kids = s.kidIds.map(kidById).filter(Boolean);
+  const header = `
+    <div class="steplabel">Step ${s.step + 1} of 5 · ${STEPS[s.step]}</div>
+    <div class="steps">${STEPS.map((_, i) => `<div class="${i < s.step ? "done" : i === s.step ? "now" : ""}"></div>`).join("")}</div>
+    <p class="muted" style="margin:6px 0 0">${st.emoji} ${esc(st.name)} · ${esc(s.topic)} · ${kids.map(k => esc(k.name)).join(" & ")}</p>`;
+
+  let body = "";
+  let nav = { back: s.step > 0, nextLabel: "Next", nextDisabled: false };
+
+  if (s.step === 0) {
+    body = `
+      <div class="card">
+        <h2>${st.emoji} ${esc(st.name)}</h2>
+        <p>${esc(st.what)}</p>
+        <h3 style="margin-top:14px">Clue words to listen for</h3>
+        <div>${st.signals.map(w => `<span class="signal">${esc(w)}</span>`).join(" ")}</div>
+        <h3 style="margin-top:14px">The big question</h3>
+        <p><b>${esc(st.kidQ)}</b></p>
+      </div>
+      <div class="card">
+        <h3>Model it first (about 2 minutes)</h3>
+        <p class="muted">Before they try, show them how a good reader thinks. Say something like:</p>
+        <div class="script">"${esc(st.think)}"</div>
+        <p class="muted" style="margin-top:10px">Then tell them: "Today, you're going to be a detective for ${esc(st.name.toLowerCase())}. Listen for the clue words."</p>
+      </div>`;
+    nav.nextLabel = s.listen ? "Next: Listen" : "Make today's stories";
+  }
+
+  if (s.step === 1) {
+    if (busy) body = loadingCard("Writing the read-aloud story and checking its level…");
+    else if (lastError) body = errorCard(lastError);
+    else if (s.listen) {
+      const L = s.listen;
+      body = `
+        <div class="card">
+          <div class="row"><h2 class="spacer">${esc(L.title)}</h2>${levelBadge(L)}</div>
+          <p class="muted"><b>You read this one aloud.</b> At each red card, stop and ask. Tap a card to see what a good answer includes. Don't give the answer away — ask "What makes you think that?"</p>
+        </div>
+        <div class="card story">${L.paragraphs.map((p, i) => `<p>${esc(p)}</p>` +
+          L.stops.filter(x => x.after === i).map(x => `<div class="stop" data-toggle><b>🛑 Stop &amp; ask:</b> ${esc(x.question)}<div class="look">✔ Look for: ${esc(x.lookFor)}</div></div>`).join("")
+        ).join("")}</div>
+        ${questionsCard(L.questions, "After reading — talk it over")}
+        <div class="row" style="justify-content:center"><button class="btn ghost small" data-act="regen-listen">↻ Different story</button></div>`;
+    }
+    nav.nextLabel = "Next: Read";
+    nav.nextDisabled = busy || !s.listen;
+  }
+
+  if (s.step === 2) {
+    if (busy) body = loadingCard("Writing the practice story at their reading level…");
+    else if (lastError) body = errorCard(lastError);
+    else if (s.read) {
+      const R = s.read;
+      const partner = kids.length > 1;
+      body = `
+        <div class="card">
+          <div class="row"><h2 class="spacer">${esc(R.title)}</h2>${levelBadge(R)}</div>
+          <p class="muted">${partner
+            ? `<b>Partner reading.</b> Take turns by paragraph — the name tag shows whose turn it is. The listener follows along and asks one question at the end. Read it 3 times, switching who starts.`
+            : `<b>${esc(kids[0].name)} reads this out loud.</b> Read it 3 times. Help with a tricky word after a 3-second pause. After the last read, ask the questions below.`}</p>
+          <div class="row"><button class="btn ghost small" data-act="bigtext">${s.bigText ? "Smaller text" : "Bigger text"}</button></div>
+        </div>
+        <div class="card story ${s.bigText ? "big" : ""}">${R.paragraphs.map((p, i) => {
+          const tag = partner ? `<span class="reader-tag rt${i % 2}">${esc(kids[(i + (s.swap ? 1 : 0)) % 2].name)}</span><br>` : "";
+          return `<p>${tag}${esc(p)}</p>`;
+        }).join("")}
+          ${partner ? `<button class="btn ghost small" data-act="swap">⇄ Switch who starts</button>` : ""}
+        </div>
+        ${timerCard(kids, R)}
+        ${questionsCard(R.questions, "After the third read")}
+        <div class="row" style="justify-content:center"><button class="btn ghost small" data-act="regen-read">↻ Different story</button></div>`;
+    }
+    nav.nextLabel = "Next: Organize";
+    nav.nextDisabled = busy || !s.read;
+  }
+
+  if (s.step === 3) {
+    body = `
+      <div class="card">
+        <h2>Organize it</h2>
+        <p class="muted">Use the <b>read-aloud story</b> ("${esc(s.listen ? s.listen.title : "")}"). They tell you; you can type it or they can write it on the printout. Short phrases are fine.</p>
+        <button class="btn secondary small" data-act="print">🖨 Print stories + organizer</button>
+      </div>
+      <div class="card">${organizerHTML(st, s.organizer || {}, true)}</div>`;
+    nav.nextLabel = "Next: Retell";
+  }
+
+  if (s.step === 4) {
+    s.retell = s.retell || {};
+    body = `
+      <div class="card">
+        <h2>Retell</h2>
+        <p class="muted">Ask each reader: <b>"Tell me about the story you read, from the beginning, like you're telling a friend who didn't read it."</b> Don't prompt. Check what they did on their own.</p>
+      </div>
+      ${kids.map(k => {
+        const r = s.retell[k.id] || {};
+        const score = RUBRIC.filter(x => r[x.id]).length;
+        return `<div class="card rubric" data-retell="${k.id}">
+          <div class="row"><h2 class="spacer">${esc(k.name)}</h2><span class="score">${score}/4</span></div>
+          ${RUBRIC.map(x => `<label><input type="checkbox" data-rub="${x.id}" ${r[x.id] ? "checked" : ""}>
+            <span><b>${esc(x.label)}</b><br><span class="muted">${esc(x.help)}</span></span></label>`).join("")}
+          <label class="field">Notes (optional)</label>
+          <textarea data-note placeholder="e.g. mixed up the order, strong on the why">${esc(r.note || "")}</textarea>
+        </div>`;
+      }).join("")}`;
+    nav.nextLabel = "Save session";
+  }
+
+  app.innerHTML = header + body;
+  showNav(nav);
+}
+
+function levelBadge(story) {
+  const off = Math.abs(story.stats.lexile - story.target);
+  return `<span class="badge ${off > 120 ? "warn" : ""}" title="Estimated from sentence length and word difficulty">≈ ${story.stats.lexile}L · goal ${story.target}L</span>`;
+}
+
+function loadingCard(msg) {
+  return `<div class="card loading"><div class="spin"></div><p>${esc(msg)}</p><p class="muted">Usually 10–20 seconds.</p></div>`;
+}
+
+function errorCard(err) {
+  const backend = err.kind === "server" || err.kind === "network";
+  return `<div class="card"><div class="error">
+    <b>${esc(err.message)}</b>
+    ${backend ? `<p style="margin-top:8px">This usually means the AI service is switched off — either the Firebase pay-as-you-go (Blaze) plan was downgraded, or the Anthropic API balance ran out. Everything else in ReadUp still works.</p>` : ""}
+    </div>
+    <button class="btn" style="margin-top:12px" data-act="retry">Try again</button></div>`;
+}
+
+function questionsCard(qs, title) {
+  if (!qs || !qs.length) return "";
+  return `<div class="card"><h3>${esc(title)}</h3><p class="muted">Tap a question to see a good answer.</p>
+    ${qs.map(q => `<div class="q" data-toggle><b>${esc(q.q)}</b><div class="a">✔ ${esc(q.a)}</div></div>`).join("")}</div>`;
+}
+
+function timerCard(kids, R) {
+  const s = S();
+  s.wpm = s.wpm || {};
+  const t = timer;
+  const secs = Math.floor((t.running ? Date.now() - t.start + t.elapsed : t.elapsed) / 1000);
+  return `<div class="card">
+    <h3>Optional: time one full read</h3>
+    <p class="muted">Time a reader on one complete read (not partner turns) to log words per minute.</p>
+    <div class="chips" style="margin-bottom:10px">${kids.map(k => `<button class="chip ${t.kidId === k.id ? "on" : ""}" data-timerkid="${k.id}">${esc(k.name)}</button>`).join("")}</div>
+    <div class="row">
+      <span class="timer" id="timerDisplay">${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}</span>
+      <span class="spacer"></span>
+      <button class="btn small" data-act="timer" ${t.kidId ? "" : "disabled"}>${t.running ? "Stop" : t.elapsed ? "Restart" : "Start"}</button>
+    </div>
+    ${Object.keys(s.wpm).map(id => kidById(id) ? `<p style="margin:8px 0 0">${esc(kidById(id).name)}: <b>${s.wpm[id]} WPM</b> on this story</p>` : "").join("")}
+  </div>`;
+}
+
+function organizerHTML(st, values, editable) {
+  const o = st.organizer;
+  const box = (label, i) => `<div class="org-box"><h3>${esc(label)}</h3>${editable
+    ? `<textarea data-org="${i}" placeholder="">${esc(values[i] || "")}</textarea>`
+    : `<div class="line"></div><div class="line"></div>`}</div>`;
+  if (o.type === "venn") return `<div class="org-grid org-3">${o.boxes.map(box).join("")}</div>`;
+  return `<div class="org-grid">${o.boxes.map(box).join("")}</div>`;
+}
+
+function showNav({ back, nextLabel, nextDisabled }) {
+  $("#navInner").innerHTML = `
+    <button class="btn ghost" data-act="${back ? "back" : "home"}" style="flex:0 0 auto">${back ? "Back" : "Exit"}</button>
+    <button class="btn" data-act="next" ${nextDisabled ? "disabled" : ""}>${esc(nextLabel)}</button>`;
+  $("#navbar").classList.remove("hidden");
+}
+
+function renderProgress(app) {
+  const rows = DB.sessions.slice().reverse();
+  app.innerHTML = `
+    <h1 style="margin-top:8px">Progress</h1>
+    <p class="muted">Retell scores are the main measure. Aim for steady 3s and 4s, then raise the reading level.</p>
+    ${DB.kids.map(k => {
+      const mine = DB.sessions.filter(x => x.scores && x.scores[k.id] != null);
+      const last10 = mine.slice(-10);
+      const wpms = mine.filter(x => x.wpm && x.wpm[k.id]).map(x => x.wpm[k.id]);
+      return `<div class="card"><h2>${esc(k.name)}</h2>
+        ${mine.length ? chartSVG(last10.map(x => x.scores[k.id])) : `<p class="muted">No sessions yet.</p>`}
+        <p class="muted" style="margin-top:8px">${mine.length} session${mine.length === 1 ? "" : "s"}${mine.length ? ` · average retell ${(mine.reduce((n, x) => n + x.scores[k.id], 0) / mine.length).toFixed(1)}/4` : ""}${wpms.length ? ` · last timed read ${wpms[wpms.length - 1]} WPM` : ""}</p>
+        <p class="muted">Practice level now: ${k.practice}L</p></div>`;
+    }).join("")}
+    ${rows.length ? `<div class="card"><h3>History</h3><table class="hist"><tr><th>Date</th><th>Skill</th><th>Scores</th></tr>
+      ${rows.map(x => `<tr><td>${fmtDate(x.date)}</td><td>${esc(structById(x.structureId).name)}</td>
+        <td>${Object.keys(x.scores || {}).map(id => kidById(id) ? `${esc(kidById(id).name)} ${x.scores[id]}/4` : "").filter(Boolean).join(", ")}</td></tr>`).join("")}
+      </table></div>` : ""}
+    <button class="btn block" data-act="home">Back</button>`;
+}
+
+function chartSVG(scores) {
+  const w = 300, h = 110, n = scores.length, bw = Math.min(26, (w - 20) / n - 6);
+  const bars = scores.map((v, i) => {
+    const x = 10 + i * ((w - 20) / n) + ((w - 20) / n - bw) / 2;
+    const bh = Math.max(3, (v / 4) * (h - 30));
+    return `<rect x="${x}" y="${h - 18 - bh}" width="${bw}" height="${bh}" rx="5" fill="var(--brand)"></rect>
+      <text x="${x + bw / 2}" y="${h - 4}" font-size="11" text-anchor="middle" fill="var(--muted)">${v}</text>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:420px" role="img" aria-label="Retell scores for recent sessions">
+    <line x1="8" x2="${w - 8}" y1="${h - 18}" y2="${h - 18}" stroke="var(--border)"/>${bars}</svg>`;
+}
+
+/* ── Session flow ────────────────────────────────────────────── */
+function startSession() {
+  const custom = ($("#customTopic") && $("#customTopic").value.trim()) || "";
+  const topic = custom || sel.topic;
+  DB.current = {
+    id: uid(), date: new Date().toISOString(), kidIds: sel.kidIds.slice(),
+    structureId: sel.structureId, topic, step: 0,
+    listen: null, read: null, organizer: {}, retell: {}, wpm: {}, swap: false, bigText: false, done: false
+  };
+  save();
+  view = "session";
+  render();
+  window.scrollTo(0, 0);
+}
+
+function listenLevel(s) {
+  const kids = s.kidIds.map(kidById).filter(Boolean);
+  return Math.min(...kids.map(k => k.listen));
+}
+function readLevel(s) {
+  const kids = s.kidIds.map(kidById).filter(Boolean);
+  return Math.min(...kids.map(k => k.practice));
+}
+
+async function ensureStory(which, force) {
+  const s = S();
+  if (!force && s[which]) return;
+  busy = true; lastError = null; render();
+  try {
+    const st = structById(s.structureId);
+    const opts = which === "listen"
+      ? { structure: st, topic: s.topic, level: listenLevel(s), words: 380, paragraphs: 6, stops: 4 }
+      : { structure: st, topic: s.topic, level: readLevel(s), words: 200, paragraphs: s.kidIds.length > 1 ? 6 : 4, stops: 0 };
+    const story = await generateLeveled(opts);
+    s[which] = story;
+    save();
+  } catch (e) {
+    lastError = e;
+  } finally {
+    busy = false;
+    render();
+  }
+}
+
+function goStep(n) {
+  const s = S();
+  s.step = Math.max(0, Math.min(4, n));
+  lastError = null;
+  stopTimer(false);
+  save();
+  render();
+  window.scrollTo(0, 0);
+  if (s.step === 1 && !s.listen) ensureStory("listen");
+  if (s.step === 2 && !s.read) ensureStory("read");
+  // Pre-write the practice story in the background while they listen.
+  if (s.step === 1 && s.listen && !s.read) prefetchRead();
+}
+
+async function prefetchRead() {
+  const s = S();
+  if (s.read || s._prefetching) return;
+  s._prefetching = true;
+  try {
+    const st = structById(s.structureId);
+    s.read = await generateLeveled({ structure: st, topic: s.topic, level: readLevel(s), words: 200, paragraphs: s.kidIds.length > 1 ? 6 : 4, stops: 0 });
+    save();
+  } catch (e) { /* will retry when they reach Read */ }
+  finally { s._prefetching = false; }
+}
+
+function finishSession() {
+  const s = S();
+  const scores = {};
+  s.kidIds.forEach(id => {
+    const r = (s.retell || {})[id] || {};
+    scores[id] = RUBRIC.filter(x => r[x.id]).length;
+  });
+  DB.sessions.push({
+    id: s.id, date: s.date, structureId: s.structureId, topic: s.topic, kidIds: s.kidIds,
+    scores, wpm: s.wpm || {}, notes: Object.fromEntries(s.kidIds.map(id => [id, ((s.retell || {})[id] || {}).note || ""])),
+    listenTitle: s.listen && s.listen.title, readTitle: s.read && s.read.title,
+    listenLevel: s.listen && s.listen.stats.lexile, readLevel: s.read && s.read.stats.lexile
+  });
+  DB.current = null;
+  save();
+  view = "progress";
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ── Timer ───────────────────────────────────────────────────── */
+function tick() {
+  const d = $("#timerDisplay");
+  if (!d) return;
+  const secs = Math.floor((Date.now() - timer.start + timer.elapsed) / 1000);
+  d.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+}
+function stopTimer(record) {
+  if (!timer.running) return;
+  clearInterval(timer.handle);
+  timer.elapsed += Date.now() - timer.start;
+  timer.running = false;
+  const s = S();
+  if (record && s && s.read && timer.kidId && timer.elapsed > 5000) {
+    s.wpm = s.wpm || {};
+    s.wpm[timer.kidId] = Math.round(s.read.stats.words / (timer.elapsed / 60000));
+    save();
+  }
+}
+
+/* ── Print ───────────────────────────────────────────────────── */
+function printPack() {
+  const s = S();
+  const st = structById(s.structureId);
+  const kids = s.kidIds.map(kidById).filter(Boolean);
+  const storyBlock = (x, label) => x ? `<h1>${esc(x.title)}</h1><p><i>${esc(label)}</i></p>
+    <div class="story">${x.paragraphs.map(p => `<p>${esc(p)}</p>`).join("")}</div>` : "";
+  $("#printArea").innerHTML = `
+    ${storyBlock(s.read, `Practice story · ${kids.map(k => k.name).join(" & ")}`)}
+    <div class="pagebreak"></div>
+    <h1>${st.emoji} ${esc(st.name)} organizer</h1>
+    <p>Name: ____________________ &nbsp; Story: ${esc(s.listen ? s.listen.title : "")}</p>
+    <p><b>${esc(st.kidQ)}</b></p>
+    <p>Clue words: ${st.signals.map(esc).join(", ")}</p>
+    ${organizerHTML(st, {}, false)}
+    ${s.listen ? `<div class="pagebreak"></div>${storyBlock(s.listen, "Read-aloud story (for the adult)")}
+      <h3>Stop &amp; ask</h3><ol>${s.listen.stops.map(x => `<li>${esc(x.question)} <i>(look for: ${esc(x.lookFor)})</i></li>`).join("")}</ol>` : ""}`;
+  window.print();
+}
+
+/* ── Events ──────────────────────────────────────────────────── */
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-act],[data-kid],[data-struct],[data-topic],[data-delkid],[data-toggle],[data-timerkid]");
+  if (!t) return;
+
+  if (t.dataset.toggle !== undefined) { t.classList.toggle("open"); return; }
+
+  if (t.dataset.kid && view === "home") {
+    const id = t.dataset.kid;
+    if (sel.kidIds.includes(id)) sel.kidIds = sel.kidIds.filter(x => x !== id);
+    else sel.kidIds = sel.kidIds.concat(id).slice(-2);
+    return render();
+  }
+  if (t.dataset.struct) { sel.structureId = t.dataset.struct; return render(); }
+  if (t.dataset.topic) { sel.topic = t.dataset.topic; const c = $("#customTopic"); if (c) c.value = ""; return render(); }
+  if (t.dataset.delkid) {
+    if (confirm("Remove this reader? Their saved scores will be hidden.")) {
+      DB.kids = DB.kids.filter(k => k.id !== t.dataset.delkid); save(); render();
+    }
+    return;
+  }
+  if (t.dataset.timerkid) {
+    stopTimer(false);
+    timer = { running: false, start: 0, elapsed: 0, handle: null, kidId: t.dataset.timerkid };
+    return render();
+  }
+
+  const act = t.dataset.act;
+  const s = S();
+  switch (act) {
+    case "kids": view = "kids"; render(); window.scrollTo(0, 0); break;
+    case "home": view = "home"; render(); window.scrollTo(0, 0); break;
+    case "progress": view = "progress"; render(); window.scrollTo(0, 0); break;
+    case "addkid": {
+      const name = $("#newName").value.trim();
+      const lex = parseInt($("#newLex").value, 10);
+      if (!name) { $("#newName").focus(); return; }
+      const practice = isNaN(lex) ? 400 : Math.max(150, Math.min(1000, Math.round(lex / 10) * 10));
+      DB.kids.push({ id: uid(), name, practice, listen: Math.min(1100, practice + 200) });
+      save(); render();
+      break;
+    }
+    case "start": startSession(); break;
+    case "resume": view = "session"; render(); if (s.step === 1 && !s.listen) ensureStory("listen"); if (s.step === 2 && !s.read) ensureStory("read"); break;
+    case "discard": if (confirm("Discard this session?")) { DB.current = null; save(); render(); } break;
+    case "back": goStep(s.step - 1); break;
+    case "next":
+      if (s.step === 4) finishSession();
+      else goStep(s.step + 1);
+      break;
+    case "retry": ensureStory(s.step === 1 ? "listen" : "read", true); break;
+    case "regen-listen": ensureStory("listen", true); break;
+    case "regen-read": stopTimer(false); s.wpm = {}; ensureStory("read", true); break;
+    case "swap": s.swap = !s.swap; save(); render(); break;
+    case "bigtext": s.bigText = !s.bigText; save(); render(); break;
+    case "print": printPack(); break;
+    case "timer":
+      if (timer.running) { stopTimer(true); render(); }
+      else {
+        timer.elapsed = 0; timer.start = Date.now(); timer.running = true;
+        timer.handle = setInterval(tick, 250);
+        render();
+      }
+      break;
+  }
+});
+
+document.addEventListener("input", (e) => {
+  const s = S();
+  // Reader edits
+  const kc = e.target.closest("[data-kidedit]");
+  if (kc && e.target.dataset.f) {
+    const k = kidById(kc.dataset.kidedit);
+    const f = e.target.dataset.f;
+    if (f === "name") k.name = e.target.value.trim() || k.name;
+    else { const v = parseInt(e.target.value, 10); if (!isNaN(v)) k[f] = Math.max(100, Math.min(1200, v)); }
+    save();
+    return;
+  }
+  if (!s) return;
+  if (e.target.dataset.org !== undefined) { s.organizer[e.target.dataset.org] = e.target.value; save(); return; }
+  const rc = e.target.closest("[data-retell]");
+  if (rc) {
+    const id = rc.dataset.retell;
+    s.retell[id] = s.retell[id] || {};
+    if (e.target.dataset.rub) {
+      s.retell[id][e.target.dataset.rub] = e.target.checked;
+      rc.querySelector(".score").textContent = RUBRIC.filter(x => s.retell[id][x.id]).length + "/4";
+    }
+    if (e.target.dataset.note !== undefined) s.retell[id].note = e.target.value;
+    save();
+  }
+});
+
+document.addEventListener("change", (e) => {
+  if (e.target.id === "customTopic") { const v = e.target.value.trim(); if (v) { sel.topic = v; render(); } }
+  // Normalize reader edits and re-render once a field is committed.
+  if (e.target.closest("[data-kidedit]")) render();
+});
+
+load();
+render();
+</script>
+</body>
+</html>
